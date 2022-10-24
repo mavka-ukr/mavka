@@ -1,0 +1,29 @@
+{
+  "name": "diia",
+  "version": "0.0.1",
+  "description": "Diia language package",
+  "main": "src/diia.js",
+  "scripts": {
+    "start": "node src/diia.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kohutd/diia.git"
+  },
+  "keywords": [
+    "diia",
+    "дія",
+    "language",
+    "мова"
+  ],
+  "author": "kohutd <davyd.kohut@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kohutd/diia/issues"
+  },
+  "bin": {
+    "дія": "src/diia.js"
+  },
+  "homepage": "https://github.com/kohutd/diia#readme"
+}
