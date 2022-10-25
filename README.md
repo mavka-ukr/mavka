@@ -18,6 +18,7 @@ npm i -g diia
 
 - [diia-parser](https://github.com/kohutd/diia-parser)
 - [diia-compiler](https://github.com/kohutd/diia-compiler)
+- [diia-compiler-js](https://github.com/kohutd/diia-compiler-js)
 
 ## Development
 
