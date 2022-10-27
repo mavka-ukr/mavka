@@ -29,12 +29,12 @@
   global.Math.cos(к)
 кінець
 
-дія мін(к)
-  global.Math.min(к)
+дія мін(а, б)
+  global.Math.min(а, б)
 кінець
 
-дія макс(к)
-  global.Math.max(к)
+дія макс(а, б)
+  global.Math.max(а, б)
 кінець
 
 дія рандом()
