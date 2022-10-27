@@ -12,6 +12,13 @@ import IfNode from "diia-parser/src/ast/IfNode.js";
 import BooleanNode from "diia-parser/src/ast/BooleanNode.js";
 import TestNode from "diia-parser/src/ast/TestNode.js";
 import EachNode from "diia-parser/src/ast/EachNode.js";
+import StructureNode from "diia-parser/src/ast/StructureNode.js";
+
+class NamedParameters {
+    constructor(parameters) {
+        this.parameters = parameters;
+    }
+}
 
 class Context {
     constructor(parent) {
@@ -39,6 +46,10 @@ class Context {
 
         if (!fn) {
             throw new Error('Cannot find function: ' + name);
+        }
+
+        if (parameters[0] && parameters[0] instanceof NamedParameters) {
+            return fn(parameters[0]);
         }
 
         return fn(...parameters);
@@ -100,7 +111,18 @@ class Context {
         }
 
         if (node instanceof CallNode) {
-            const parameters = node.parameters.map((p) => this.evaluate(p));
+            let parameters = [];
+            if (Array.isArray(node.parameters)) {
+                parameters = node.parameters.map((p) => this.evaluate(p));
+            } else {
+                parameters = {};
+                Object.entries(node.parameters)
+                    .forEach(([k, v]) => {
+                        parameters[k] = this.evaluate(v);
+                    });
+                parameters = [new NamedParameters(parameters)];
+            }
+
             return this.invoke(node.identifier.value, parameters);
         }
 
@@ -108,9 +130,19 @@ class Context {
             const context = new Context(this);
 
             this.functions[node.name] = (...parameters) => {
-                node.parameters.forEach((p, i) => {
-                    context.vars[p] = parameters[i];
-                });
+                if (parameters[0] && parameters[0] instanceof NamedParameters) {
+                    context.vars['аргументи'] = parameters[0].parameters;
+
+                    node.parameters.forEach((p) => {
+                        context.vars[p] = parameters[0].parameters[p];
+                    });
+                } else {
+                    context.vars['аргументи'] = parameters;
+
+                    node.parameters.forEach((p, i) => {
+                        context.vars[p] = parameters[i];
+                    });
+                }
 
                 return context.run(node.body);
             }
@@ -180,6 +212,35 @@ class Context {
                 const eachContext = new Context(this);
                 eachContext.vars[name] = v;
                 eachContext.run(node.body);
+            }
+
+            return null;
+        }
+
+        if (node instanceof StructureNode) {
+            this.functions[node.name] = (...parameters) => {
+                const context = new Context(this);
+
+                if (parameters[0] && parameters[0] instanceof NamedParameters) {
+                    node.body.forEach((p) => {
+                        context.vars[p] = parameters[0].parameters[p];
+                    });
+                } else {
+                    node.body.forEach((p, i) => {
+                        context.vars[p] = parameters[i];
+                    });
+                }
+
+                const fnContext = new Context(this);
+                fnContext.vars['я'] = context;
+                fnContext.run(node.functions);
+
+                context.functions = {
+                    ...context.functions,
+                    ...fnContext.functions,
+                };
+
+                return context;
             }
 
             return null;

@@ -1,3 +1,11 @@
-дія друк(а)
-  global.console.log(а)
+дія друк()
+  global.console.log(аргументи)
+кінець
+
+дія об'єкт()
+  jsNew(global.DiiaObject, масив(аргументи))
+кінець
+
+дія масив()
+  jsNew(global.DiiaArray, аргументи)
 кінець

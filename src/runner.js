@@ -5,6 +5,25 @@ import path from "path";
 import { resolve } from 'import-meta-resolve';
 import promptSync from "prompt-sync";
 
+class DiiaArray extends Array {
+    constructor(...args) {
+        super(...args);
+    }
+
+    toString() {
+        return 'масив(' + this.map((v) => v.toString()).join(', ') + ')';
+    }
+}
+
+class DiiaObject {
+    constructor(args) {
+        Object.assign(this, args)
+    }
+}
+
+global.DiiaArray = DiiaArray;
+global.DiiaObject = DiiaObject;
+
 const prompt = promptSync({ sigint: true });
 
 const currDir = await resolve("./", import.meta.url);
@@ -48,6 +67,7 @@ async function loadGlobalContext() {
 
             globalContext.functions['читати'] = readinput;
             globalContext.functions['діапазон'] = makeRangeIterator;
+            globalContext.functions['jsNew'] = (fn, parameters) => new fn(...parameters);
             globalContext.vars['фс'] = await loadModule(rootDir + '/сб/файлова_система.дія', globalContext);
             globalContext.vars['М'] = await loadModule(rootDir + '/сб/математика.дія', globalContext);
 
