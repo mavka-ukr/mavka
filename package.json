@@ -3,6 +3,7 @@
   "version": "0.0.2",
   "description": "Diia language package",
   "main": "src/diia.js",
+  "type": "module",
   "scripts": {
     "start": "node src/diia.js",
     "test": "jest"
@@ -25,5 +26,12 @@
   "bin": {
     "дія": "src/diia.js"
   },
-  "homepage": "https://github.com/kohutd/diia#readme"
+  "homepage": "https://github.com/kohutd/diia#readme",
+  "dependencies": {
+    "diia-parser": "^0.0.3",
+    "fs": "^0.0.1-security",
+    "import-meta-resolve": "^2.1.0",
+    "path": "^0.12.7",
+    "prompt-sync": "^4.2.0"
+  }
 }
