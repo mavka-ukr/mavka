@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 import fs from "fs";
-import { run } from "./interpreter.js";
+import { run } from "./runner.js";
 
 let filename = process.argv[2];
 
-if (filename) {
+if (filename && filename !== 'допомога') {
     if (!filename.endsWith('.дія')) {
         filename = `${filename}.дія`;
     }

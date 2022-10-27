@@ -25,6 +25,15 @@ async function loadModule(path, parent) {
     });
 }
 
+function* makeRangeIterator(start = 0, end = Infinity, step = 1) {
+    let iterationCount = 0;
+    for (let i = start; i < end; i += step) {
+        iterationCount++;
+        yield i;
+    }
+    return iterationCount;
+}
+
 async function loadGlobalContext() {
     function readinput(question) {
         return prompt(question);
@@ -37,11 +46,12 @@ async function loadGlobalContext() {
             const globalAst = parse(code);
             const globalContext = new Context();
 
-            globalContext.run(globalAst);
-
             globalContext.functions['читати'] = readinput;
+            globalContext.functions['діапазон'] = makeRangeIterator;
             globalContext.vars['фс'] = await loadModule(rootDir + '/сб/файлова_система.дія', globalContext);
             globalContext.vars['М'] = await loadModule(rootDir + '/сб/математика.дія', globalContext);
+
+            globalContext.run(globalAst);
 
             resolve(globalContext);
         });
