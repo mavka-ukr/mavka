@@ -1,5 +1,5 @@
-дія друк()
-  global.console.log(аргументи)
+дія друк(а)
+  global.console.log(а)
 кінець
 
 дія об'єкт()
