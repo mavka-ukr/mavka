@@ -1,0 +1,42 @@
+Е = global.Math.E
+ПІ = global.Math.PI
+
+дія корінь(к)
+  global.Math.sqrt(к)
+кінець
+
+дія до_більшого(к)
+  global.Math.ceil(к)
+кінець
+
+дія до_меншого(к)
+  global.Math.floor(к)
+кінець
+
+дія до_степені(к)
+  global.Math.pow(к)
+кінець
+
+дія модуль(к)
+  global.Math.abs(к)
+кінець
+
+дія синус(к)
+  global.Math.sin(к)
+кінець
+
+дія косинус(к)
+  global.Math.cos(к)
+кінець
+
+дія мін(к)
+  global.Math.min(к)
+кінець
+
+дія макс(к)
+  global.Math.max(к)
+кінець
+
+дія рандом()
+  global.Math.random()
+кінець
