@@ -10,13 +10,13 @@ const prompt = promptSync({ sigint: true });
 const currDir = await resolve("./", import.meta.url);
 const rootDir = path.dirname(new URL(currDir).pathname);
 
-async function loadModule(path) {
+async function loadModule(path, parent) {
     return new Promise((resolve) => {
         fs.readFile(path, (error, data) => {
             const code = data.toString();
 
             const modAst = parse(code);
-            const modContext = new Context();
+            const modContext = new Context(parent);
 
             modContext.run(modAst);
 
@@ -37,10 +37,11 @@ async function loadGlobalContext() {
             const globalAst = parse(code);
             const globalContext = new Context();
 
-            globalContext.functions['читати'] = readinput;
-            globalContext.vars['фс'] = await loadModule(rootDir + '/сб/фс.дія');
-
             globalContext.run(globalAst);
+
+            globalContext.functions['читати'] = readinput;
+            globalContext.vars['фс'] = await loadModule(rootDir + '/сб/файлова_система.дія', globalContext);
+            globalContext.vars['М'] = await loadModule(rootDir + '/сб/математика.дія', globalContext);
 
             resolve(globalContext);
         });

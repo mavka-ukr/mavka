@@ -8,6 +8,9 @@ import CallNode from "diia-parser/src/ast/CallNode.js";
 import DiiaNode from "diia-parser/src/ast/DiiaNode.js";
 import ChainNode from "diia-parser/src/ast/ChainNode.js";
 import WaitChainNode from "diia-parser/src/ast/WaitChainNode.js";
+import IfNode from "diia-parser/src/ast/IfNode.js";
+import BooleanNode from "diia-parser/src/ast/BooleanNode.js";
+import TestNode from "diia-parser/src/ast/TestNode.js";
 
 class Context {
     constructor(parent) {
@@ -29,7 +32,7 @@ class Context {
             fn = this.functions[name];
         } else {
             if (this.parent) {
-                fn = this.parent.functions[name];
+                return this.parent.invoke(name, parameters);
             }
         }
 
@@ -52,7 +55,7 @@ class Context {
         return undefined;
     }
 
-    async evaluate(node) {
+    evaluate(node) {
         if (node instanceof NumberNode) {
             return node.value;
         }
@@ -61,13 +64,17 @@ class Context {
             return node.value;
         }
 
+        if (node instanceof BooleanNode) {
+            return node.value;
+        }
+
         if (node instanceof IdentifierNode) {
-            return await this.var(node.value);
+            return this.var(node.value);
         }
 
         if (node instanceof ArithmeticNode) {
-            const left = await this.evaluate(node.left);
-            const right = await this.evaluate(node.right);
+            const left = this.evaluate(node.left);
+            const right = this.evaluate(node.right);
 
             switch (node.operation) {
                 case '+':
@@ -78,20 +85,22 @@ class Context {
                     return left * right;
                 case '/':
                     return left / right;
+                default:
+                    return null;
             }
         }
 
         if (node instanceof NestedArithmeticNode) {
-            return await this.evaluate(node.arithmetic);
+            return this.evaluate(node.arithmetic);
         }
 
         if (node instanceof AssignNode) {
-            return this.vars[node.identifier.value] = await this.evaluate(node.value);
+            return this.vars[node.identifier.value] = this.evaluate(node.value);
         }
 
         if (node instanceof CallNode) {
-            const parameters = await Promise.all(node.parameters.map((p) => this.evaluate(p)));
-            return await this.invoke(node.identifier.value, parameters);
+            const parameters = node.parameters.map((p) => this.evaluate(p));
+            return this.invoke(node.identifier.value, parameters);
         }
 
         if (node instanceof DiiaNode) {
@@ -109,24 +118,23 @@ class Context {
         }
 
         if (node instanceof ChainNode) {
-            let prevPart = await this.evaluate(node.parts[0]);
+            let prevPart = this.evaluate(node.parts[0]);
 
             for (let i = 1; i < node.parts.length; i++) {
                 if (prevPart instanceof Context) {
-                    prevPart = await prevPart.evaluate(node.parts[i]);
+                    prevPart = prevPart.evaluate(node.parts[i]);
                 } else if (typeof prevPart === "object") {
                     const part = node.parts[i];
 
                     if (part instanceof IdentifierNode) {
                         prevPart = prevPart[part.value];
                     } else if (part instanceof CallNode) {
-                        const parameters = await Promise.all(part.parameters.map((p) => this.evaluate(p)));
+                        const parameters = part.parameters.map((p) => this.evaluate(p));
                         prevPart = prevPart[part.identifier.value](...parameters);
                     } else {
                         throw new Error('Failed!');
                     }
                 } else {
-                    console.log(prevPart);
                     throw new Error('Failed!');
                 }
             }
@@ -135,14 +143,39 @@ class Context {
         }
 
         if (node instanceof WaitChainNode) {
-            return await this.evaluate(node.chain);
+            return this.evaluate(node.chain);
+        }
+
+        if (node instanceof IfNode) {
+            const testResult = this.evaluate(node.expression);
+
+            if (testResult) {
+                const ifContext = new Context(this);
+                return ifContext.run(node.body);
+            } else {
+                return;
+            }
+        }
+
+        if (node instanceof TestNode) {
+            const left = this.evaluate(node.left);
+            const right = this.evaluate(node.right);
+
+            switch (node.operation) {
+                case '==':
+                    return left === right;
+                case '!=':
+                    return left !== right;
+                default:
+                    return null;
+            }
         }
     }
 
-    async run(ast) {
+    run(ast) {
         let value = null;
         for (const node of ast) {
-            value = await this.evaluate(node);
+            value = this.evaluate(node);
         }
         return value;
     }
