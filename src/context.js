@@ -11,6 +11,7 @@ import WaitChainNode from "diia-parser/src/ast/WaitChainNode.js";
 import IfNode from "diia-parser/src/ast/IfNode.js";
 import BooleanNode from "diia-parser/src/ast/BooleanNode.js";
 import TestNode from "diia-parser/src/ast/TestNode.js";
+import EachNode from "diia-parser/src/ast/EachNode.js";
 
 class Context {
     constructor(parent) {
@@ -169,6 +170,19 @@ class Context {
                 default:
                     return null;
             }
+        }
+
+        if (node instanceof EachNode) {
+            const name = node.name;
+            const iterator = this.evaluate(node.iterator);
+
+            for (const v of iterator) {
+                const eachContext = new Context(this);
+                eachContext.vars[name] = v;
+                eachContext.run(node.body);
+            }
+
+            return null;
         }
     }
 
