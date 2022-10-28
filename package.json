@@ -1,6 +1,6 @@
 {
   "name": "diia",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Diia language package",
   "main": "src/diia.js",
   "type": "module",
@@ -24,11 +24,12 @@
     "url": "https://github.com/kohutd/diia/issues"
   },
   "bin": {
-    "дія": "src/diia.js"
+    "дія": "src/diia.js",
+    "пак": "src/pak.js"
   },
   "homepage": "https://github.com/kohutd/diia#readme",
   "dependencies": {
-    "diia-parser": "^0.0.8",
+    "diia-parser": "^0.0.20",
     "fs": "^0.0.1-security",
     "import-meta-resolve": "^2.1.0",
     "path": "^0.12.7",
