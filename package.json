@@ -1,6 +1,6 @@
 {
   "name": "diia",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Diia language package",
   "main": "src/diia.js",
   "type": "module",
@@ -31,6 +31,7 @@
   "dependencies": {
     "diia-parser": "^0.0.20",
     "fs": "^0.0.1-security",
+    "git-clone": "^0.2.0",
     "import-meta-resolve": "^2.1.0",
     "path": "^0.12.7",
     "prompt-sync": "^4.2.0"

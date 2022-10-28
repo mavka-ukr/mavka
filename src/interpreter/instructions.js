@@ -336,7 +336,7 @@ function runTakeInstruction(context, takeNode) {
     } else {
         context.set(
             takeNode.as || moduleName,
-            takeNode
+            moduleContext
         );
     }
 
