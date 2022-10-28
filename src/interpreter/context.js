@@ -95,7 +95,7 @@ class Context {
                     value = runInstruction(this, node);
 
                     if (value instanceof WaitValue) {
-                        value = await value.value;
+                        value = await waitRecursively(value.value);
                     }
 
                     if (this.localGet('__return__')) {
@@ -146,21 +146,9 @@ export class ModuleContext extends Context {
 }
 
 export class LambdaContext extends Context {
-    get(name) {
-        return this.parent.get(name);
-    }
-
-    set(name, value) {
-        this.parent.set(name, value);
-    }
-
-    localGet(name) {
-        return this.parent.properties[name];
-    }
-
-    call(name, args) {
-        return this.parent.call(name, args);
-    }
+    // set(name, value) {
+    //     this.parent.set(name, value);
+    // }
 }
 
 export default Context;

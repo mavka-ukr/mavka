@@ -1,17 +1,24 @@
 import { StructureContext } from "./context.js";
+import { NamedArguments } from "./diia.js";
 
 export function makeStructure(context, name, parameters, functions) {
     const structureFn = (args) => {
         const structureContext = new StructureContext(context);
 
+        parameters.forEach((p) => {
+            structureContext.set(p, null);
+        });
+
         if (Array.isArray(args)) {
             parameters.forEach((p, i) => {
                 structureContext.set(p, args[i]);
             });
-        } else if (typeof args === "object") {
+        } else if (args instanceof NamedArguments) {
             parameters.forEach((p) => {
                 structureContext.set(p, args[p]);
             });
+        } else {
+            structureContext.set(parameters[0], args);
         }
 
         structureContext.run(functions);

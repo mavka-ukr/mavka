@@ -13,7 +13,7 @@ import TestNode from "diia-parser/src/ast/TestNode.js";
 import EachNode from "diia-parser/src/ast/EachNode.js";
 import IdentifiersChainNode from "diia-parser/src/ast/IdentifiersChainNode.js";
 import { makeDiia, makeLambda, NamedArguments } from "./diia.js";
-import Context, { waitAll, WaitValue } from "./context.js";
+import Context, { waitAll, waitRecursively, WaitValue } from "./context.js";
 import StructureNode from "diia-parser/src/ast/StructureNode.js";
 import TakeNode from "diia-parser/src/ast/TakeNode.js";
 import GiveNode from "diia-parser/src/ast/GiveNode.js";
@@ -106,7 +106,7 @@ export function runInstruction(context, node) {
     }
 
     if (node instanceof WaitChainNode) {
-        if (!context.get('__async__')) {
+        if (!context.async) {
             throw new Error('"чекати" може використовуватись лише в тривалому контексті.')
         }
 
@@ -179,18 +179,20 @@ function runCallOnObjectInstruction(context, object, callNode) {
 function runAssignInstruction(context, assignNode) {
     const identifier = assignNode.identifier;
     let value = runInstruction(context, assignNode.value);
+    const rootCtx = context;
 
     let name;
     if (identifier instanceof IdentifierNode) {
         name = identifier.value;
     } else if (identifier instanceof IdentifiersChainNode) {
-        // todo: handle it
+        context = rootCtx.get(identifier.chain[0].value);
+        name = identifier.chain[identifier.chain.length - 1].value;
     }
 
-    if (context.get('__async__')) {
+    if (rootCtx.async) {
         if (value instanceof WaitValue) {
             const code = async () => {
-                value = await value.value;
+                value = await waitRecursively(value.value);
 
                 context.set(name, value);
 
@@ -388,33 +390,35 @@ function runStructureInstruction(context, structureNode) {
 function runTakeInstruction(context, takeNode) {
     const rootPath = context.get('__кореневий_шлях_до_модуля');
 
-    let moduleName = takeNode.name;
+    return new WaitValue((async () => {
+        let moduleName = takeNode.name;
 
-    let loadedContext;
+        let loadedContext;
 
-    if (takeNode.pak) {
-        loadedContext = loadModule(global.globalContext, `${rootPath}/.пакидії/${moduleName}/${moduleName}.дія`);
-    } else {
-        loadedContext = loadModule(global.globalContext, `${rootPath}/${moduleName}.дія`);
-    }
+        if (takeNode.pak) {
+            loadedContext = await loadModule(global.globalContext, `${rootPath}/.пакидії/${moduleName}/${moduleName}.дія`);
+        } else {
+            loadedContext = await loadModule(global.globalContext, `${rootPath}/${moduleName}.дія`);
+        }
 
-    const moduleContext = loadedContext.get('__moduleContext');
+        const moduleContext = loadedContext.get('__moduleContext');
 
-    if (takeNode.chain) {
-        const lastElementName = takeNode.chain.chain[takeNode.chain.chain.length - 1].value;
+        if (takeNode.chain) {
+            const lastElementName = takeNode.chain.chain[takeNode.chain.chain.length - 1].value;
 
-        context.set(
-            takeNode.as || lastElementName,
-            runChainInstruction(moduleContext, takeNode.chain)
-        );
-    } else {
-        context.set(
-            takeNode.as || moduleName,
-            moduleContext
-        );
-    }
+            context.set(
+                takeNode.as || lastElementName,
+                runChainInstruction(moduleContext, takeNode.chain)
+            );
+        } else {
+            context.set(
+                takeNode.as || moduleName,
+                moduleContext
+            );
+        }
 
-    return loadedContext;
+        return loadedContext;
+    })());
 }
 
 /**
