@@ -1,28 +1,25 @@
 import { StructureContext } from "./context.js";
 
-export class StructureConstructor {
-    constructor(context, name, parameters, functions) {
-        this.context = context;
-        this.name = name;
-        this.parameters = parameters;
-        this.functions = functions;
-    }
-
-    call(args) {
-        const structureContext = new StructureContext(this.context);
+export function makeStructure(context, name, parameters, functions) {
+    const structureFn = (args) => {
+        const structureContext = new StructureContext(context);
 
         if (Array.isArray(args)) {
-            this.parameters.forEach((p, i) => {
+            parameters.forEach((p, i) => {
                 structureContext.set(p, args[i]);
             });
         } else if (typeof args === "object") {
-            this.parameters.forEach((p) => {
+            parameters.forEach((p) => {
                 structureContext.set(p, args[p]);
             });
         }
 
-        structureContext.run(this.functions);
+        structureContext.run(functions);
 
         return structureContext;
     }
+
+    structureFn.__diia_structure__ = true;
+
+    return structureFn;
 }
