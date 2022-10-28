@@ -1,3 +1,5 @@
+![logo](./assets/logo.png)
+
 # Diia
 
 Diia language main repository.

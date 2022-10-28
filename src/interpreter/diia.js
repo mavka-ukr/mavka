@@ -39,6 +39,8 @@ export function makeLambda(context, parameters, expression) {
     const lambdaFn = function (args) {
         const lambdaContext = new LambdaContext(context);
 
+        console.log(context);
+
         if (Array.isArray(args)) {
             parameters.forEach((p, i) => {
                 lambdaContext.set(p, args[i]);

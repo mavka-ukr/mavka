@@ -5,7 +5,7 @@ import Context, { ModuleContext, WaitValue } from "./context.js";
 
 const modulesCache = {};
 
-export function loadModule(globalContext, modulePath, onBeforeRun) {
+export async function loadModule(globalContext, modulePath, onBeforeRun) {
     if (modulesCache[modulePath]) {
         return modulesCache[modulePath];
     }
@@ -32,7 +32,7 @@ export function loadModule(globalContext, modulePath, onBeforeRun) {
         onBeforeRun(context);
     }
 
-    context.run(moduleAst);
+    await context.run(moduleAst);
 
     return context;
 }

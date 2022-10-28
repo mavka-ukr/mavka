@@ -3,6 +3,8 @@ import { resolve } from "import-meta-resolve";
 import path from "path";
 import axios from "axios";
 
+global.__axios__ = axios;
+
 const currPath = new URL(await resolve("./", import.meta.url)).pathname;
 const rootPath = path.dirname(path.dirname(currPath));
 
@@ -30,15 +32,15 @@ function diia_promise(promise) {
     });
 }
 
-function buildGlobalContext() {
-    const globalContext = loadModule(null, `${rootPath}/сб/глобальний_контекст.дія`, (context) => {
+async function buildGlobalContext() {
+    const globalContext = await loadModule(null, `${rootPath}/сб/глобальний_контекст.дія`, (context) => {
         global.globalContext = context;
 
         context.set('global', global);
     });
 
-    globalContext.set('фс', loadModule(globalContext, `${rootPath}/сб/файлова_система.дія`));
-    globalContext.set('М', loadModule(globalContext, `${rootPath}/сб/математика.дія`));
+    globalContext.set('фс', await loadModule(globalContext, `${rootPath}/сб/файлова_система.дія`));
+    globalContext.set('М', await loadModule(globalContext, `${rootPath}/сб/математика.дія`));
     globalContext.set('jsNew', (fn, ...parameters) => new fn(...parameters));
     globalContext.set('отримати', diia_fetch);
     globalContext.set('проміс', diia_promise);
@@ -46,7 +48,7 @@ function buildGlobalContext() {
     return globalContext;
 }
 
-const globalContext = buildGlobalContext();
+const globalContext = await buildGlobalContext();
 
 export function runProgram(code, path) {
     return loadModule(globalContext, path);
