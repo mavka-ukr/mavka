@@ -44,6 +44,7 @@ class Context {
                 const context = new Context(this);
                 return context.run(parse(code));
             },
+            '__async__': false,
         };
     }
 
