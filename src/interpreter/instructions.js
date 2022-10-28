@@ -12,13 +12,16 @@ import IfNode from "diia-parser/src/ast/IfNode.js";
 import TestNode from "diia-parser/src/ast/TestNode.js";
 import EachNode from "diia-parser/src/ast/EachNode.js";
 import IdentifiersChainNode from "diia-parser/src/ast/IdentifiersChainNode.js";
-import Diia from "./diia.js";
-import Context from "./context.js";
-import { StructureConstructor } from "./structure.js";
+import { makeDiia, makeLambda, NamedArguments } from "./diia.js";
+import Context, { waitAll, WaitValue } from "./context.js";
 import StructureNode from "diia-parser/src/ast/StructureNode.js";
 import TakeNode from "diia-parser/src/ast/TakeNode.js";
 import GiveNode from "diia-parser/src/ast/GiveNode.js";
 import { loadModule } from "./module.js";
+import ReturnNode from "diia-parser/src/ast/ReturnNode.js";
+import LambdaNode from "diia-parser/src/ast/LambdaNode.js";
+import { makeStructure } from "./structure.js";
+import WaitChainNode from "diia-parser/src/ast/WaitChainNode.js";
 
 /**
  * @param {Context} context
@@ -90,7 +93,27 @@ export function runInstruction(context, node) {
         return runGiveInstruction(context, node);
     }
 
-    throw new Error('Невідома інструкція: ' + node)
+    if (node instanceof ReturnNode) {
+        const value = runInstruction(context, node.value);
+
+        context.set('__return__', value);
+
+        return value;
+    }
+
+    if (node instanceof LambdaNode) {
+        return runLambdaInstruction(context, node);
+    }
+
+    if (node instanceof WaitChainNode) {
+        if (!context.get('__async__')) {
+            throw new Error('"чекати" може використовуватись лише в тривалому контексті.')
+        }
+
+        return new WaitValue(runInstruction(context, node.chain));
+    }
+
+    throw new Error('Невідома інструкція: ' + node);
 }
 
 /**
@@ -99,29 +122,41 @@ export function runInstruction(context, node) {
  */
 function runCallInstruction(context, callNode) {
     const name = callNode.name;
-    const parameters = extractCallParameters(context, callNode.parameters);
+    let parameters = extractCallArguments(context, callNode.parameters);
 
-    return context.call(name, parameters);
+    if (context.async) {
+        const resolve = async () => {
+            parameters = await waitAll(parameters);
+
+            return context.call(name, parameters);
+        }
+
+        return new WaitValue(resolve());
+    } else {
+        return context.call(name, parameters);
+    }
 }
 
 /**
  * @param context
- * @param {[]} callParameters
+ * @param {[]} callArguments
  */
-function extractCallParameters(context, callParameters) {
-    let parameters = {};
+function extractCallArguments(context, callArguments) {
+    let args;
 
-    if (Array.isArray(callParameters)) {
-        parameters = callParameters
-            .map((parameter) => runInstruction(context, parameter));
+    if (Array.isArray(callArguments)) {
+        args = callArguments
+            .map((arg) => runInstruction(context, arg));
     } else {
-        Object.entries(callParameters)
+        args = new NamedArguments();
+
+        Object.entries(callArguments)
             .forEach(([k, v]) => {
-                parameters[k] = runInstruction(context, v);
+                args[k] = runInstruction(context, v);
             });
     }
 
-    return parameters;
+    return args;
 }
 
 /**
@@ -132,7 +167,7 @@ function extractCallParameters(context, callParameters) {
  */
 function runCallOnObjectInstruction(context, object, callNode) {
     const name = callNode.name;
-    const parameters = extractCallParameters(context, callNode.parameters);
+    const parameters = extractCallArguments(context, callNode.parameters);
 
     return object[name](...Object.values(parameters));
 }
@@ -143,7 +178,7 @@ function runCallOnObjectInstruction(context, object, callNode) {
  */
 function runAssignInstruction(context, assignNode) {
     const identifier = assignNode.identifier;
-    const value = runInstruction(context, assignNode.value);
+    let value = runInstruction(context, assignNode.value);
 
     let name;
     if (identifier instanceof IdentifierNode) {
@@ -152,7 +187,25 @@ function runAssignInstruction(context, assignNode) {
         // todo: handle it
     }
 
-    return context.set(name, value);
+    if (context.get('__async__')) {
+        if (value instanceof WaitValue) {
+            const code = async () => {
+                value = await value.value;
+
+                context.set(name, value);
+
+                return value;
+            }
+
+            return new WaitValue(code());
+        } else {
+            context.set(name, value);
+        }
+    } else {
+        context.set(name, value);
+
+        return value;
+    }
 }
 
 /**
@@ -183,8 +236,21 @@ function runDiiaInstruction(context, diiaNode) {
     const name = diiaNode.name;
     const parameters = diiaNode.parameters;
     const body = diiaNode.body;
+    const async = diiaNode.async;
 
-    context.set(name, new Diia(context, name, parameters, body));
+    context.set(name, makeDiia(context, name, parameters, body, async));
+}
+
+/**
+ *
+ * @param context
+ * @param {LambdaNode} lambdaNode
+ */
+function runLambdaInstruction(context, lambdaNode) {
+    const parameters = lambdaNode.parameters;
+    const expression = lambdaNode.expression;
+
+    return makeLambda(context, parameters, expression);
 }
 
 /**
@@ -246,7 +312,7 @@ function runIfInstruction(context, ifNode) {
     const testResult = runInstruction(context, ifNode.expression);
 
     if (testResult) {
-        const ifContext = new Context(this);
+        const ifContext = new Context(context);
 
         return ifContext.run(ifNode.body);
     }
@@ -270,6 +336,8 @@ function runTestInstruction(context, testNode) {
             return left >= right;
         case '<=':
             return left <= right;
+        case 'є':
+            return left instanceof right;
         default:
             throw new Error('Недоступна операція: ' + testNode.operation);
     }
@@ -284,13 +352,19 @@ function runEachInstruction(context, eachNode) {
     const name = eachNode.name;
     const iterator = runInstruction(context, eachNode.iterator);
 
+    const eachContext = new Context(context);
+
     for (const v of iterator) {
-        const eachContext = new Context(context);
         eachContext.properties[name] = v;
         eachContext.run(eachNode.body);
-    }
 
-    return null;
+        const returnVal = eachContext.localGet('__return__');
+
+        if (returnVal) {
+            context.set('__return__', returnVal);
+            return returnVal;
+        }
+    }
 }
 
 /**
@@ -303,7 +377,7 @@ function runStructureInstruction(context, structureNode) {
     const parameters = structureNode.parameters;
     const functions = structureNode.functions;
 
-    context.set(name, new StructureConstructor(context, name, parameters, functions));
+    context.set(name, makeStructure(context, name, parameters, functions));
 }
 
 /**

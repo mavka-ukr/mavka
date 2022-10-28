@@ -1,6 +1,6 @@
 {
   "name": "diia",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Diia language package",
   "main": "src/diia.js",
   "type": "module",
@@ -29,7 +29,8 @@
   },
   "homepage": "https://github.com/kohutd/diia#readme",
   "dependencies": {
-    "diia-parser": "^0.0.20",
+    "axios": "^1.1.3",
+    "diia-parser": "^0.0.24",
     "fs": "^0.0.1-security",
     "git-clone": "^0.2.0",
     "import-meta-resolve": "^2.1.0",

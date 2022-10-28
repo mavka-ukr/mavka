@@ -15,6 +15,7 @@ export function loadModule(globalContext, modulePath, onBeforeRun) {
     const context = new Context(globalContext);
     context.set('__шлях_до_модуля', modulePath);
     context.set('__кореневий_шлях_до_модуля', rootDir);
+    context.set('__async__', true);
 
     const moduleCode = fs.readFileSync(modulePath).toString();
     const moduleAst = parse(moduleCode);
