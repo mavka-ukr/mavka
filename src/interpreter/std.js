@@ -39,17 +39,6 @@ function* diia_range(start = 0, end = Infinity, step = 1) {
     return iterationCount;
 }
 
-function* diia_eval(start = 0, end = Infinity, step = 1) {
-    let iterationCount = 0;
-
-    for (let i = start; i < end; i += step) {
-        iterationCount++;
-        yield i;
-    }
-
-    return iterationCount;
-}
-
 global.diia_read = diia_read;
 global.diia_range = diia_range;
 
