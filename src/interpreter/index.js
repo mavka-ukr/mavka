@@ -37,8 +37,8 @@ function buildGlobalContext() {
         context.set('global', global);
     });
 
-    // globalContext.set('фс', loadModule(globalContext, `${rootPath}/сб/файлова_система.дія`));
-    // globalContext.set('М', loadModule(globalContext, `${rootPath}/сб/математика.дія`));
+    globalContext.set('фс', loadModule(globalContext, `${rootPath}/сб/файлова_система.дія`));
+    globalContext.set('М', loadModule(globalContext, `${rootPath}/сб/математика.дія`));
     globalContext.set('jsNew', (fn, ...parameters) => new fn(...parameters));
     globalContext.set('отримати', diia_fetch);
     globalContext.set('проміс', diia_promise);
