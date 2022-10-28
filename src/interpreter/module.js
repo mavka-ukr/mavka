@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
 import { parse } from "diia-parser";
-import Context, { ModuleContext } from "./context.js";
+import Context, { ModuleContext, WaitValue } from "./context.js";
 
 const modulesCache = {};
 
@@ -16,6 +16,9 @@ export function loadModule(globalContext, modulePath, onBeforeRun) {
     context.set('__шлях_до_модуля', modulePath);
     context.set('__кореневий_шлях_до_модуля', rootDir);
     context.set('__async__', true);
+    context.set('jsLoad', (path) => {
+        return new WaitValue(import(`${rootDir}/${path}`));
+    });
 
     const moduleCode = fs.readFileSync(modulePath).toString();
     const moduleAst = parse(moduleCode);

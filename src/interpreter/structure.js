@@ -16,6 +16,12 @@ export function makeStructure(context, name, parameters, functions) {
 
         structureContext.run(functions);
 
+        const createDiia = structureContext.localGet('створити');
+        if (createDiia) {
+            createDiia();
+            delete structureContext.properties['створити'];
+        }
+
         return structureContext;
     }
 
