@@ -1,3 +1,0 @@
-дія читати_файл_синхронно(назва)
-  global.diia_node_fs.readFileSync(назва).toString()
-кінець
