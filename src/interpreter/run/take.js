@@ -1,4 +1,4 @@
-import { loadModuleNext } from "../module.js";
+import { loadModule } from "../module.js";
 import { AsyncVal, ModuleVal, WaitVal } from "../val/index.js";
 
 function runTakeNode(context, node) {
@@ -10,9 +10,9 @@ function runTakeNode(context, node) {
         let loadedContext;
 
         if (node.pak) {
-            loadedContext = await loadModuleNext(globalContext, `${rootPath}/.паки/${moduleName}/${moduleName}.дія`);
+            loadedContext = await loadModule(globalContext, `${rootPath}/.паки/${moduleName}/${moduleName}.дія`);
         } else {
-            loadedContext = await loadModuleNext(globalContext, `${rootPath}/${moduleName}.дія`);
+            loadedContext = await loadModule(globalContext, `${rootPath}/${moduleName}.дія`);
         }
 
         const givenContext = loadedContext.get('__given_context__');

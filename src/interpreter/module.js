@@ -6,7 +6,7 @@ import fs from "fs";
 
 const modulesCache = {};
 
-export async function loadModuleNext(globalContext, modulePath) {
+export async function loadModule(globalContext, modulePath, beforeRun) {
     if (modulesCache[modulePath]) {
         return modulesCache[modulePath];
     }
@@ -23,6 +23,10 @@ export async function loadModuleNext(globalContext, modulePath) {
 
     const givenContext = new Context();
     context.set('__given_context__', givenContext);
+
+    if (beforeRun) {
+        beforeRun(context);
+    }
 
     modulesCache[modulePath] = context;
 

@@ -1,6 +1,6 @@
 {
   "name": "diia",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Сучасна українська мова програмування",
   "main": "src/diia.js",
   "type": "module",

@@ -22,7 +22,9 @@ export const printFnVal = new JsFunctionVal((...args) => console.log(
         .map((arg) => arg.properties['__value__'])
 ));
 export const loadExtensionFileFnVal = new JsFunctionVal((path) => {
-    return new AsyncVal(import(path));
+    const rootPath = globalContext.get('__module_root_path__');
+
+    return new AsyncVal(new Promise(async (resolve) => resolve(await import(`${rootPath}/${path.asString().asJsString()}`))));
 });
 export const httpGet = new JsFunctionVal((url) => {
     url = url.asString().asJsString();
