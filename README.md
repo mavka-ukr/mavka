@@ -1,34 +1,36 @@
 ![logo](./assets/logo.png)
 
-# Diia
+# Дія
 
-Diia language main repository.
+Сучасна українська мова програмування.
 
-## Installation
+## Встановлення
+
+Через NPM:
 
 ```shell
 npm i -g diia
 ```
 
-## Usage
+## Використання
 
 ```shell
-дія допомога
+дія
 ```
 
-## Resources
+## Ресурси
 
-- [diia.dev](https://diia.dev)
-- [diia-parser](https://github.com/kohutd/diia-parser)
+- [diia.dev](https://diia.dev) - вебсайт
+- [diia-parser](https://github.com/kohutd/diia-parser) - парсер
 
-## Development
+## Розробка
 
-Requirements:
+Вимоги:
 
 - NodeJS 18+
 - NPM
 
-Installation:
+Встановлення:
 
 ```shell
 git clone https://github.com/kohutd/diia
@@ -38,7 +40,7 @@ cd diia
 npm install
 ```
 
-Running tests:
+Тести:
 
 ```shell
 npm test

@@ -12,7 +12,7 @@ if (command === 'додати') {
     if (name) {
         console.log(`Додаємо "${name}" з ${repo}...`);
 
-        const path = `.пакидії/${name}`;
+        const path = `.паки/${name}`;
 
         fs.rmSync(path, { recursive: true, force: true });
 
@@ -33,4 +33,3 @@ if (command === 'додати') {
 } else {
     console.log('пак (додати,створити,ініт)')
 }
-

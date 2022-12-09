@@ -1,45 +1,40 @@
+import { AsyncVal, DiiaVal, JsFunctionVal, NumberVal, RangeVal, StringVal } from "./val/index.js";
 import promptSync from "prompt-sync";
-import fs from "fs";
 
-class DiiaArray extends Array {
-    constructor(...args) {
-        super(...args);
+class RangeDiiaVal extends DiiaVal {
+    constructor() {
+        super();
     }
 
-    toString() {
-        return 'масив(' + this.map((v) => v.toString()).join(', ') + ')';
-    }
-}
-
-class DiiaObject {
-    constructor(args) {
-        Object.assign(this, args)
+    call(args) {
+        if (Array.isArray(args)) {
+            return new RangeVal(args[0], args[1], args[2] || new NumberVal(1));
+        } else {
+            return new RangeVal(args.from, args.to, args.step || new NumberVal(1));
+        }
     }
 }
 
-global.DiiaArray = DiiaArray;
-global.DiiaObject = DiiaObject;
+export const rangeFnVal = new RangeDiiaVal();
+export const printFnVal = new JsFunctionVal((...args) => console.log(
+    ...args
+        .map((arg) => arg.asString())
+        .map((arg) => arg.properties['__value__'])
+));
+export const loadExtensionFileFnVal = new JsFunctionVal((path) => {
+    return new AsyncVal(import(path));
+});
+export const httpGet = new JsFunctionVal((url) => {
+    url = url.asString().asJsString();
 
-function diia_read(question = '') {
-    if (!global.__diia_prompt__) {
-        global.__diia_prompt__ = promptSync({ sigint: true });
-    }
-
-    return global.__diia_prompt__(question);
-}
-
-function* diia_range(start = 0, end = Infinity, step = 1) {
-    let iterationCount = 0;
-
-    for (let i = start; i < end; i += step) {
-        iterationCount++;
-        yield i;
-    }
-
-    return iterationCount;
-}
-
-global.diia_read = diia_read;
-global.diia_range = diia_range;
-
-global.diia_node_fs = fs;
+    return new AsyncVal(fetch(url).then((r) => r.text()).then((text) => new StringVal(text)));
+});
+export const readInputFnVal = new JsFunctionVal((q = new StringVal('')) => {
+    return new StringVal(promptSync({ sigint: true })(q.asString().asJsString()));
+});
+export const toNumberFnVal = new JsFunctionVal((value) => {
+    return value.asNumber();
+});
+export const toStringFnVal = new JsFunctionVal((value) => {
+    return value.asString();
+});
