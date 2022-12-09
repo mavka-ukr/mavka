@@ -8,7 +8,7 @@ import {
     toStringFnVal
 } from "./std.js";
 import { Context } from "./context/index.js";
-import { loadModuleNext } from "./module.js";
+import { loadModule } from "./module.js";
 
 global.globalContext = new Context();
 
@@ -21,5 +21,8 @@ globalContext.set('до_числа', toNumberFnVal);
 globalContext.set('до_рядка', toStringFnVal);
 
 export function runProgram(path) {
-    return loadModuleNext(globalContext, path);
+    return loadModule(globalContext, path, (context) => {
+        globalContext.set('__module_path__', context.get('__module_path__'));
+        globalContext.set('__module_root_path__', context.get('__module_root_path__'));
+    });
 }
