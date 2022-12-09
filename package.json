@@ -1,6 +1,6 @@
 {
   "name": "diia",
-  "version": "0.0.11",
+  "version": "0.1.0",
   "description": "Сучасна українська мова програмування",
   "main": "src/diia.js",
   "type": "module",
@@ -16,7 +16,8 @@
     "diia",
     "дія",
     "language",
-    "мова"
+    "мова",
+    "мова програмування"
   ],
   "author": "kohutd <davyd.kohut@gmail.com>",
   "license": "MIT",
