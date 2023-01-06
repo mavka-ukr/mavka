@@ -45,3 +45,5 @@ npm install
 ```shell
 npm test
 ```
+
+![copyleft](./copyleft.png)
