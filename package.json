@@ -1,20 +1,26 @@
 {
-  "name": "diia",
-  "version": "0.1.1",
+  "name": "mavka",
+  "version": "0.9.0",
   "description": "Сучасна українська мова програмування",
-  "main": "src/diia.js",
+  "main": "src/main.js",
   "type": "module",
+  "exports": {
+    ".": "./src/main.js",
+    "./interpreter/*.js": "./src/interpreter/*.js",
+    "./loaders/*.js": "./src/loaders/*.js",
+    "./std/*.js": "./src/std/*.js"
+  },
   "scripts": {
-    "start": "node src/diia.js",
+    "start": "node src/bin/mavka.js",
     "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kohutd/diia.git"
+    "url": "git+https://github.com/mavka-ukr/mavka.git"
   },
   "keywords": [
-    "diia",
-    "дія",
+    "mavka",
+    "мавка",
     "language",
     "мова",
     "мова програмування"
@@ -22,20 +28,26 @@
   "author": "kohutd <davyd.kohut@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kohutd/diia/issues"
+    "url": "https://github.com/mavka-ukr/mavka/issues"
   },
   "bin": {
-    "дія": "src/diia.js",
-    "пак": "src/pak.js"
+    "мавка": "src/bin/mavka.js",
+    "пак": "src/bin/pak.js"
   },
-  "homepage": "https://github.com/kohutd/diia#readme",
+  "homepage": "https://github.com/mavka-ukr/mavka#readme",
   "dependencies": {
     "axios": "^1.1.3",
-    "diia-parser": "^0.0.31",
-    "fs": "^0.0.1-security",
     "git-clone": "^0.2.0",
     "import-meta-resolve": "^2.1.0",
+    "mavka-parser": "^0.9.10",
     "path": "^0.12.7",
     "prompt-sync": "^4.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.33.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-config-standard": "^17.0.0",
+    "prettier": "2.8.3"
   }
 }

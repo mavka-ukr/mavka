@@ -1,6 +1,6 @@
 ![logo](./assets/logo.png)
 
-# Дія
+# Мавка
 
 Сучасна українська мова програмування.
 
@@ -9,19 +9,19 @@
 Через NPM:
 
 ```shell
-npm i -g diia
+npm i -g mavka
 ```
 
 ## Використання
 
 ```shell
-дія
+мавка
 ```
 
 ## Ресурси
 
-- [diia.dev](https://diia.dev) - вебсайт
-- [diia-parser](https://github.com/kohutd/diia-parser) - парсер
+- [мавка.укр](https://мавка.укр) - офіційний вебсайт
+- [парсер](https://github.com/mavka-ukr/parser) - парсер мавки
 
 ## Розробка
 
@@ -33,9 +33,9 @@ npm i -g diia
 Встановлення:
 
 ```shell
-git clone https://github.com/kohutd/diia
+git clone https://github.com/mavka-ukr/mavka
 
-cd diia
+cd mavka
 
 npm install
 ```
@@ -45,5 +45,3 @@ npm install
 ```shell
 npm test
 ```
-
-![copyleft](./copyleft.png)
