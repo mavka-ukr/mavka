@@ -75,5 +75,5 @@ if (filename && filename !== "допомога") {
     }
   }
 } else {
-  console.log("дія :файл");
+  console.log("мавка :файл");
 }
