@@ -7,12 +7,16 @@ class MemoryLoader extends Loader {
     this.modules = modules;
   }
 
-  async load(context, name, pak = false) {
-    if (this.modules[name]) {
-      return this.modules[name];
-    } else {
-      throw `[помилка] модуль ${name} не знайдено`;
+  async load(context, path, pak = false, relative = false) {
+    for (let i = 0; i < path.length; i++) {
+      const lpath = path.slice(0, i).join(".");
+
+      if (this.modules[lpath]) {
+        return this.modules[lpath];
+      }
     }
+
+    throw `Неможливо завантажити модуль "${path.join(".")}"`;
   }
 }
 

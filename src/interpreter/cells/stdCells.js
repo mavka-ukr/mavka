@@ -3,7 +3,7 @@ import DiiaCell from "./diiaCell.js";
 
 export class JsFunctionCell extends Cell {
   constructor(mavka, fn) {
-    super(mavka);
+    super(mavka, "Дія");
 
     this.fn = fn;
   }
@@ -19,7 +19,7 @@ export class JsFunctionCell extends Cell {
 
 export class RangeCell extends Cell {
   constructor(mavka, from, to, step) {
-    super(mavka);
+    super(mavka, "Діапазон");
 
     this.from = from.asJsNumber();
     this.to = to.asJsNumber();

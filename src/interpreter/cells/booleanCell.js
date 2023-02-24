@@ -6,7 +6,7 @@ class BooleanCell extends Cell {
    * @param {boolean} value
    */
   constructor(mavka, value) {
-    super(mavka, {
+    super(mavka, "Логічне", {
       "__value__": value
     });
   }

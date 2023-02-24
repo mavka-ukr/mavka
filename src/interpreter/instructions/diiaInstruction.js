@@ -7,7 +7,7 @@ class DiiaInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    const diia = new this.mavka.diiaCell(this.mavka, context, node);
+    const diia = new this.mavka.DiiaCell(this.mavka, context, node);
 
     context.set(node.name.name, diia);
 
@@ -20,7 +20,7 @@ class DiiaInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    const diia = new this.mavka.diiaCell(this.mavka, context, node);
+    const diia = new this.mavka.DiiaCell(this.mavka, context, node);
 
     context.set(node.name.name, diia);
 

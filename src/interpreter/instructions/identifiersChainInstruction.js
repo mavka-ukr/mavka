@@ -7,9 +7,8 @@ class IdentifiersChainInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    let value = this.mavka.runSync(node.left);
+    let value = this.mavka.runSync(context, node.left);
     if (!value) {
-      // todo: throw
       value = this.mavka.emptyCellInstance;
     }
 
@@ -22,9 +21,8 @@ class IdentifiersChainInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    let value = await this.mavka.runAsync(node.left);
+    let value = await this.mavka.runAsync(context, node.left);
     if (!value) {
-      // todo: throw
       value = this.mavka.emptyCellInstance;
     }
 

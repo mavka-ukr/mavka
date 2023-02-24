@@ -7,13 +7,11 @@ export const makeLoadExtensionFromFileDiiaCell = (mavka) => new mavka.JsFunction
 
   return new mavka.WaitCell(mavka, new mavka.AsyncCell(
     mavka,
-    new Promise((resolve) => {
-      (async () => {
-        resolve(await import(`${moduleDirname}/${path}`));
-      })();
-    })
+    () => import(`${moduleDirname}/${path}`)
   ));
 });
+
+let extId = 0;
 
 export const makeLoadExtensionFromNetworkDiiaCell = (mavka) => new mavka.JsFunctionCell(mavka, (args, context) => {
   const url = mavka.toCell(args[0]).asString().asJsValue();
@@ -23,12 +21,23 @@ export const makeLoadExtensionFromNetworkDiiaCell = (mavka) => new mavka.JsFunct
 
   return new mavka.WaitCell(mavka, new mavka.AsyncCell(
     mavka,
-    new Promise((resolve) => {
-      (async () => {
-        const body = await (await fetch(url)).text();
-        resolve(eval(body));
-      })();
-    })
+    async () => {
+      const body = await (await fetch(url)).text();
+
+      extId++;
+
+      const wrappedCode = `
+global.EXTENSION_EVAL_ASYNC_${extId} = async () => {
+  ${body}
+}
+      `;
+
+      eval(wrappedCode);
+
+      const result = await global[`EXTENSION_EVAL_ASYNC_${extId}`]();
+      delete global[`EXTENSION_EVAL_ASYNC_${extId}`];
+      return result;
+    }
   ));
 });
 

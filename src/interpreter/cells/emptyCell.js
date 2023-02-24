@@ -1,17 +1,16 @@
 import { Cell } from "./cell.js";
-import { ThrowValue } from "../instructions/throwInstruction.js";
 
 class EmptyCell extends Cell {
   get(name) {
-    throw new ThrowValue(this, this.mavka.toCell(`Неможливо отримати "${name}" з пустоти.`));
+    throw new this.mavka.ThrowValue(this, this.mavka.toCell(`Неможливо отримати "${name}" з пустоти.`));
   }
 
   set(name, value) {
-    throw new ThrowValue(this, this.mavka.toCell(`Неможливо встановити "${name}" на пустоту.`));
+    throw new this.mavka.ThrowValue(this, this.mavka.toCell(`Неможливо встановити "${name}" на пустоту.`));
   }
 
   call(context) {
-    throw new ThrowValue(this, this.mavka.toCell(`Неможливо викликати пустоту.`));
+    throw new this.mavka.ThrowValue(this, this.mavka.toCell(`Неможливо викликати пустоту.`));
   }
 
   asString() {

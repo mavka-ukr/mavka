@@ -1,60 +1,51 @@
 import { ReturnValue } from "../instructions/returnInstruction.js";
 import { Cell } from "./cell.js";
+import { runParams } from "./utils.js";
 
 class DiiaCell extends Cell {
   /**
    * @param {Mavka} mavka
    * @param {Context} context
-   * @param {DiiaNode} node
+   * @param {DiiaNode|AnonymousDiiaNode} node
    */
   constructor(mavka, context, node) {
-    super(mavka);
+    super(mavka, "Дія");
 
-    this.context = context;
     this.node = node;
+    this.context = context;
+
+    this.meValue = this.mavka.emptyCellInstance;
+    this.superValue = this.mavka.emptyCellInstance;
+
+    this.defaultValues = {};
+
+    this.contextClass = this.mavka.Context;
   }
 
   /**
    * @param {Context} context
    * @param {Array|Object} args
+   * @param {Object} options
    * @return {Cell|Promise<Cell>}
    */
-  call(context, args) {
-    const runContext = new this.mavka.Context(this.mavka, this.context);
+  call(context, args, options = {}) {
+    const runContext = new this.contextClass(this.mavka, this.context);
+
+    if (!this.mavka.isEmpty(this.meValue)) {
+      runContext.set("я", this.meValue);
+    } else if (!this.mavka.isEmpty(options.meValue)) {
+      runContext.set("я", options.meValue);
+    }
+
+    if (!this.mavka.isEmpty(this.superValue)) {
+      runContext.set("предок", this.superValue);
+    }
 
     if (this.node.async) {
       runContext.setAsync(true);
     }
 
-    if (Array.isArray(args)) {
-      for (const [k, param] of Object.entries(this.node.params)) {
-        let value = args[k];
-
-        if (value == null) {
-          if (param.defaultValue) {
-            value = this.mavka.runSync(runContext, param.defaultValue);
-          } else {
-            value = new this.mavka.emptyCellInstance;
-          }
-        }
-
-        runContext.set(param.name.name, value);
-      }
-    } else {
-      for (const param of this.node.params) {
-        let value = args[param.name.name];
-
-        if (value == null) {
-          if (param.defaultValue) {
-            value = this.mavka.runSync(runContext, param.defaultValue);
-          } else {
-            value = new this.mavka.emptyCellInstance;
-          }
-        }
-
-        runContext.set(param.name.name, value);
-      }
-    }
+    runParams(this.mavka, runContext, runContext, this.node.params, args, this.defaultValues);
 
     let result = this.mavka.run(runContext, this.node.body);
 
@@ -64,9 +55,7 @@ class DiiaCell extends Cell {
 
     if (this.node.async) {
       if (!(result instanceof this.mavka.AsyncCell)) {
-        result = new this.mavka.AsyncCell(this.mavka, new Promise((resolve) => {
-          resolve(result);
-        }));
+        result = new this.mavka.AsyncCell(this.mavka, () => result);
       }
     }
 

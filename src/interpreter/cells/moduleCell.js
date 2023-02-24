@@ -2,7 +2,7 @@ import { Cell } from "./cell.js";
 
 class ModuleCell extends Cell {
   constructor(mavka, name, context) {
-    super(mavka, {
+    super(mavka, "Модуль", {
       "__name__": name,
       "__context__": context
     });

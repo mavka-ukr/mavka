@@ -1,5 +1,4 @@
 import Instruction from "./instruction.js";
-import { ThrowValue } from "./throwInstruction.js";
 
 class WaitInstruction extends Instruction {
   /**
@@ -8,7 +7,7 @@ class WaitInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    throw new ThrowValue(context, "Не можна чекати в нетривалому контексті.");
+    throw new this.mavka.ThrowValue(context, "Не можна чекати в нетривалому контексті.");
   }
 
   /**

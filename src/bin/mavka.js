@@ -7,7 +7,6 @@ import promptSync from "prompt-sync";
 import { makeToNumberDiiaCell } from "../std/casts.js";
 import { makeLoadExtensionFromFileDiiaCell, makeLoadExtensionFromNetworkDiiaCell } from "../std/extensions.js";
 import { makeRangeDiiaCell } from "../std/ranges.js";
-import { ThrowValue } from "../interpreter/instructions/throwInstruction.js";
 import { makeGetJsonDiiaCell } from "../std/network.js";
 import { ListConstructorCell } from "../interpreter/cells/structureCell.js";
 
@@ -17,6 +16,7 @@ let filename = process.argv[2];
 
 function buildGlobalContext(mavka) {
   const context = new mavka.Context(mavka, null, {
+    "Об'єкт": mavka.objectCell,
     "друк": makePrintDiiaCell(mavka),
     "читати": makeReadDiiaCell(mavka),
     "до_числа": makeToNumberDiiaCell(mavka),
@@ -42,8 +42,8 @@ function buildExternal(mavka) {
 
 
 if (filename && filename !== "допомога") {
-  if (!filename.endsWith(".дія")) {
-    filename = `${filename}.дія`;
+  if (!filename.endsWith(".м")) {
+    filename = `${filename}.м`;
   }
 
   const mavka = new Mavka({
@@ -53,21 +53,23 @@ if (filename && filename !== "допомога") {
   });
 
   const context = new mavka.Context(mavka);
+  context.set("__root_module_dirname__", cwdPath);
+  context.set("__root_module_path__", `${cwdPath}/${filename}`);
   context.set("__module_dirname__", cwdPath);
   context.set("__module_path__", `${cwdPath}/${filename}`);
 
-  const name = filename.substring(0, filename.length - 4);
+  const path = filename.substring(0, filename.length - 2).split(".");
 
   try {
-    await mavka.loader.load(context, name, false);
+    await mavka.loader.load(context, path, false);
   } catch (e) {
     if (e instanceof Error) {
       console.error(e.message);
     } else if (typeof e === "string") {
       console.error(e);
-    } else if (e instanceof ThrowValue) {
+    } else if (e instanceof mavka.ThrowValue) {
       const cell = mavka.toCell(e.value);
-      console.error(`Не вдалось зловити "${cell.asString().asJsString()}"`);
+      console.error(`Не вдалось зловити: ${cell.asString().asJsString()}`);
     } else {
       console.log(e);
     }

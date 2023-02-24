@@ -1,6 +1,4 @@
 import Instruction from "./instruction.js";
-import { ThrowValue } from "./throwInstruction.js";
-import Context from "../contexts/context.js";
 
 class TryInstruction extends Instruction {
   /**
@@ -13,7 +11,7 @@ class TryInstruction extends Instruction {
       return this.mavka.run(context, node.tryBody);
     } catch (e) {
       console.log(e);
-      if (e instanceof ThrowValue) {
+      if (e instanceof this.mavka.ThrowValue) {
         context.set(node.catchName, e.value);
         return this.mavka.run(context, node.catchBody);
       } else {
@@ -31,7 +29,7 @@ class TryInstruction extends Instruction {
     try {
       return await this.mavka.run(context, node.tryBody);
     } catch (e) {
-      if (e instanceof ThrowValue) {
+      if (e instanceof this.mavka.ThrowValue) {
         context.set(node.catchName, e.value);
         return await this.mavka.run(context, node.catchBody);
       } else {

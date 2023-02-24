@@ -1,6 +1,9 @@
 export const makePrintDiiaCell = (mavka) => new mavka.JsFunctionCell(mavka, (args) => console.log(
   ...args
-    .map((arg) => mavka.toCell(arg).asString().asJsString())
+    .map((arg) => {
+      const cell = mavka.toCell(arg);
+      return cell.asString().asJsValue();
+    })
 ));
 
 export const makeReadDiiaCell = (mavka) => new mavka.JsFunctionCell(

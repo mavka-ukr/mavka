@@ -1,36 +1,21 @@
 import Instruction from "./instruction.js";
+import IdentifierNode from "mavka-parser/src/ast/IdentifierNode.js";
 
 class TakeInstruction extends Instruction {
   commonRun(context, node) {
-    return new this.mavka.WaitCell(this.mavka, new this.mavka.AsyncCell(this.mavka, new Promise((resolve) => {
-      (async () => {
-        let moduleName = node.name;
+    return new this.mavka.WaitCell(this.mavka, new this.mavka.AsyncCell(this.mavka, async () => {
+      const path = node.id instanceof IdentifierNode ? [node.id.name] : node.id.toFlatArray();
 
-        let loadedContext = await this.mavka.loader.load(context, moduleName, node.pak);
+      let { name, result } = await this.mavka.loader.load(context, path, node.pak, node.relative);
 
-        const giveContext = loadedContext.get("__give_context__");
+      if (node.star && !node.as) {
+        console.log("not implemented");
+      } else {
+        context.set(node.as ? node.as : name, result);
+      }
 
-        if (node.chain) {
-          let k = node.chain.identifiers[0];
-
-          let value = giveContext.get(k);
-
-          for (k of node.chain.identifiers.slice(1)) {
-            value = value.get(k);
-          }
-
-          context.set(node.as ? node.as : k, value);
-
-          resolve(value);
-        } else {
-          const module = new this.mavka.ModuleCell(this.mavka, moduleName, giveContext);
-
-          context.set(node.as ? node.as : node.name, module);
-
-          resolve(module);
-        }
-      })();
-    })));
+      return result;
+    }));
   }
 
   /**

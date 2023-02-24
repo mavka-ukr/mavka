@@ -18,7 +18,7 @@ class ThrowInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    throw new ThrowValue(context, this.mavka.runSync(context, node.value));
+    throw new this.mavka.ThrowValue(context, this.mavka.runSync(context, node.value));
   }
 
   /**
@@ -27,7 +27,7 @@ class ThrowInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    throw new ThrowValue(context, await this.mavka.runAsync(context, node.value));
+    throw new this.mavka.ThrowValue(context, await this.mavka.runAsync(context, node.value));
   }
 }
 

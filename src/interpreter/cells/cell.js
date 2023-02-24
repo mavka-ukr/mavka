@@ -2,13 +2,25 @@
  * Cell represents a value in Mavka.
  */
 export class Cell {
+  static DEFAULT_NAME = "Об'єкт";
+
+  static PROTOTYPE_PROPERTY_NAME = "__прототип__";
+
+  static HIDDEN_PROPERTIES = [Cell.PROTOTYPE_PROPERTY_NAME, "прототип", "структура", "створити", "створено"];
+
   /**
    * @param {Mavka} mavka
+   * @param {string} name
    * @param {Object} properties
+   * @param {Object} options
    */
-  constructor(mavka, properties = {}) {
+  constructor(mavka, name, properties = {}, options = {}) {
     this.mavka = mavka;
+
+    this.name = name;
     this.properties = properties;
+
+    this.options = options;
   }
 
   /**
@@ -16,7 +28,27 @@ export class Cell {
    * @returns {Cell}
    */
   get(name) {
-    return this.mavka.toCell(this.properties[name]);
+    if (name in this.properties) {
+      return this.mavka.toCell(this.properties[name]);
+    }
+
+    if (this.hasPrototype()) {
+      return this.mavka.toCell(this.getPrototype().get(name));
+    }
+
+    return this.mavka.emptyCellInstance;
+  }
+
+  has(name) {
+    if (name in this.properties) {
+      return true;
+    }
+
+    if (this.hasPrototype()) {
+      return this.getPrototype().has(name);
+    }
+
+    return false;
   }
 
   /**
@@ -27,7 +59,7 @@ export class Cell {
     this.properties[name] = value;
   }
 
-  call(context) {
+  call(context, args, options = {}) {
     throw "Не реалізовано.";
   }
 
@@ -112,18 +144,45 @@ export class Cell {
    * @return {StringCell}
    */
   asString() {
-    return this.mavka.toCell("комірка");
+    const properties = Object.entries(this.properties)
+      .filter(([k]) => {
+        if (this.has(Cell.PROTOTYPE_PROPERTY_NAME)) {
+          if (this.get(Cell.PROTOTYPE_PROPERTY_NAME).has("структура")) {
+            const params = this.get(Cell.PROTOTYPE_PROPERTY_NAME).get("структура").getParams();
+
+            return !!params.find((param) => param.name.name === k);
+          }
+        }
+
+        return true;
+      })
+      .map(([k, v]) => `${k}=${this.mavka.toCell(v).asPrettyString().asJsValue()}`)
+      .join(", ");
+
+    return this.mavka.toCell(`${this.name}(${properties})`);
+  }
+
+  asPrettyString() {
+    return this.asString();
   }
 
   /**
    * @return {BooleanCell}
    */
+
   asBoolean() {
-    return true;
+    return this.mavka.toCell(true);
   }
 
   asJsValue() {
-    throw "Не реалізовано.";
+    const jsObject = {};
+
+    Object.entries(this.properties)
+      .forEach(([k, v]) => {
+        jsObject[k] = v.asJsValue();
+      });
+
+    return jsObject;
   }
 
   /**
@@ -132,6 +191,10 @@ export class Cell {
    * @return {BooleanCell}
    */
   compare(value, fn) {
+    if (value instanceof Cell) {
+      return this.mavka.toCell(fn(this, value));
+    }
+
     return this.mavka.falseCellInstance;
   }
 
@@ -141,6 +204,14 @@ export class Cell {
         return { done: true };
       }
     };
+  }
+
+  getPrototype() {
+    return this.properties[Cell.PROTOTYPE_PROPERTY_NAME];
+  }
+
+  hasPrototype() {
+    return !this.mavka.isEmpty(this.getPrototype());
   }
 }
 

@@ -17,8 +17,8 @@ class Instruction {
   async runAsync(context, node) {
   }
 
-  run(context, node) {
-    return context.isAsync() ?
+  run(context, node, options = {}) {
+    return context.isAsync() && !options.forceSync ?
       this.runAsync(context, node) :
       this.runSync(context, node);
   }
