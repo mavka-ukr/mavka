@@ -7,10 +7,11 @@ class Loader {
    * Load a module.
    *
    * @param {Context} context
-   * @param {string} name
+   * @param {string[]} path
    * @param {boolean} pak
+   * @param {boolean} relative
    */
-  async load(context, name, pak = false) {
+  async load(context, path, pak = false, relative = false) {
   }
 }
 

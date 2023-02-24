@@ -6,7 +6,7 @@ class AsyncCell extends Cell {
    * @param {Promise} promise
    */
   constructor(mavka, promise) {
-    super(mavka, {
+    super(mavka, "ТривалаОперація", {
       "__promise__": promise
     });
   }

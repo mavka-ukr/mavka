@@ -1,5 +1,4 @@
 import Instruction from "./instruction.js";
-import { StructureConstructorCell } from "../cells/structureCell.js";
 
 class StructureInstruction extends Instruction {
   /**
@@ -8,7 +7,7 @@ class StructureInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    const structureConstructor = new StructureConstructorCell(this.mavka, context, node);
+    const structureConstructor = new this.mavka.StructureCell(this.mavka, context, node);
 
     context.set(node.name.name, structureConstructor);
 
@@ -21,7 +20,7 @@ class StructureInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    const structureConstructor = new StructureConstructorCell(this.mavka, context, node);
+    const structureConstructor = new this.mavka.StructureCell(this.mavka, context, node);
 
     context.set(node.name.name, structureConstructor);
 

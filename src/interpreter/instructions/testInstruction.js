@@ -15,6 +15,12 @@ class TestInstruction extends Instruction {
    */
   runSync(context, node) {
     const left = this.mavka.runSync(context, node.left);
+    if (node.operation === "або") {
+      if (left.asBoolean().asJsValue()) {
+        return left;
+      }
+    }
+
     const right = this.mavka.runSync(context, node.right);
 
     return run(left, right, node.operation);
@@ -27,6 +33,12 @@ class TestInstruction extends Instruction {
    */
   async runAsync(context, node) {
     const left = await this.mavka.runAsync(context, node.left);
+    if (node.operation === "або") {
+      if (left.asBoolean().asJsValue()) {
+        return left;
+      }
+    }
+
     const right = await this.mavka.runAsync(context, node.right);
 
     return run(left, right, node.operation);

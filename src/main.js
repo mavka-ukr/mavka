@@ -37,7 +37,7 @@ import DiiaCell from "./interpreter/cells/diiaCell.js";
 import FunctionCell from "./interpreter/cells/functionCell.js";
 import AsyncCell from "./interpreter/cells/asyncCell.js";
 import WaitCell from "./interpreter/cells/waitCell.js";
-import StructureCell, { StructureConstructorCell } from "./interpreter/cells/structureCell.js";
+import { StructureCell } from "./interpreter/cells/structureCell.js";
 import ModuleCell from "./interpreter/cells/moduleCell.js";
 import { JsFunctionCell, RangeCell, RangeDiiaCell } from "./interpreter/cells/stdCells.js";
 import { parse } from "mavka-parser";
@@ -48,7 +48,7 @@ import AnonymousDiiaCell from "./interpreter/cells/anonymousDiiaCell.js";
 import AnonymousDiiaInstruction from "./interpreter/instructions/anonymousDiiaInstruction.js";
 import AnonymousDiiaNode from "mavka-parser/src/ast/AnonymousDiiaNode.js";
 import TryInstruction from "./interpreter/instructions/tryInstruction.js";
-import ThrowInstruction from "./interpreter/instructions/throwInstruction.js";
+import ThrowInstruction, { ThrowValue } from "./interpreter/instructions/throwInstruction.js";
 import ThrowNode from "mavka-parser/src/ast/ThrowNode.js";
 import TryNode from "mavka-parser/src/ast/TryNode.js";
 import WhileNode from "mavka-parser/src/ast/WhileNode.js";
@@ -68,6 +68,7 @@ import ComparisonNode from "mavka-parser/src/ast/ComparisonNode.js";
 import TestInstruction from "./interpreter/instructions/testInstruction.js";
 import TernaryNode from "mavka-parser/src/ast/TernaryNode.js";
 import TernaryInstruction from "./interpreter/instructions/ternaryInstruction.js";
+import IdentifiersChainNode from "mavka-parser/src/ast/IdentifiersChainNode.js";
 
 /**
  * @property {Context} context
@@ -107,12 +108,11 @@ class Mavka {
     this.StringCell = StringCell;
     this.BooleanCell = BooleanCell;
     this.EmptyCell = EmptyCell;
-    this.diiaCell = DiiaCell;
+    this.DiiaCell = DiiaCell;
     this.AnonymousDiiaCell = AnonymousDiiaCell;
     this.FunctionCell = FunctionCell;
-    this.StructureCell = StructureCell;
     this.ListCell = ListCell;
-    this.StructureConstructorCell = StructureConstructorCell;
+    this.StructureCell = StructureCell;
     this.ModuleCell = ModuleCell;
     this.AsyncCell = AsyncCell;
     this.WaitCell = WaitCell;
@@ -122,15 +122,19 @@ class Mavka {
     this.JsFunctionCell = JsFunctionCell;
 
     this.Context = Context;
-    this.LambdaContext = LightContext;
+    this.LightContext = LightContext;
+
+    this.ThrowValue = ThrowValue;
 
     this.emptyCellInstance = new this.EmptyCell(this);
     this.trueCellInstance = new this.BooleanCell(this, true);
     this.falseCellInstance = new this.BooleanCell(this, false);
 
+    this.objectCell = new this.Cell(this, this.Cell.DEFAULT_NAME);
+
     this.tools = {};
-    this.tools.fn = (context, fn) => makeFn(this, context, fn);
-    this.tools.asyncFn = (context, fn) => makeAsyncFn(this, context, fn);
+    this.tools.fn = (fn, options = {}) => makeFn(this, fn, options);
+    this.tools.asyncFn = (fn, options = {}) => makeAsyncFn(this, fn, options);
 
     this.context = options.buildGlobalContext(this);
     this.context.set("пусто", this.emptyCellInstance);
@@ -186,11 +190,11 @@ class Mavka {
     }
 
     if (typeof value === "object") {
-      const structureCell = new this.StructureCell(this, "Об'єкт");
+      const cell = new this.Cell(this, "Об'єкт");
       Object.entries(value).forEach(([k, v]) => {
-        structureCell.set(k, this.toCell(v));
+        cell.set(k, this.toCell(v));
       });
-      return structureCell;
+      return cell;
     }
 
     return this.emptyCellInstance;
@@ -236,69 +240,71 @@ class Mavka {
     return context.isAsync() ? runAsync() : runSync();
   }
 
-  runSync(context, node) {
+  runSync(context, node, options = {}) {
+    options.forceSync ??= false;
+
     if (node instanceof AnonymousDiiaNode) {
-      return this.anonymousDiiaInstruction.run(context, node);
+      return this.anonymousDiiaInstruction.run(context, node, options);
     }
 
     if (node instanceof ArithmeticNode) {
-      return this.arithmeticInstruction.run(context, node);
+      return this.arithmeticInstruction.run(context, node, options);
     }
 
     if (node instanceof AssignNode) {
-      return this.assignInstruction.run(context, node);
+      return this.assignInstruction.run(context, node, options);
     }
 
     if (node instanceof BooleanNode) {
-      return this.booleanInstruction.run(context, node);
+      return this.booleanInstruction.run(context, node, options);
     }
 
     if (node instanceof CallNode) {
-      return this.callInstruction.run(context, node);
+      return this.callInstruction.run(context, node, options);
     }
 
     if (node instanceof ChainNode) {
-      return this.chainInstruction.run(context, node);
+      return this.chainInstruction.run(context, node, options);
     }
 
     if (node instanceof ComparisonNode) {
-      return this.comparisonInstruction.run(context, node);
+      return this.comparisonInstruction.run(context, node, options);
     }
 
     if (node instanceof DiiaNode) {
-      return this.mavkaInstruction.run(context, node);
+      return this.mavkaInstruction.run(context, node, options);
     }
 
     if (node instanceof EachNode) {
-      return this.eachInstruction.run(context, node);
+      return this.eachInstruction.run(context, node, options);
     }
 
     if (node instanceof FunctionNode) {
-      return this.functionInstruction.run(context, node);
+      return this.functionInstruction.run(context, node, options);
     }
 
     if (node instanceof GiveNode) {
-      return this.giveInstruction.run(context, node);
+      return this.giveInstruction.run(context, node, options);
     }
 
     if (node instanceof IdentifierNode) {
-      return this.identifierInstruction.run(context, node);
+      return this.identifierInstruction.run(context, node, options);
     }
 
-    if (node instanceof IdentifiersChainInstruction) {
-      return this.identifiersChainInstruction.run(context, node);
+    if (node instanceof IdentifiersChainNode) {
+      return this.identifiersChainInstruction.run(context, node, options);
     }
 
     if (node instanceof IfNode) {
-      return this.ifInstruction.run(context, node);
+      return this.ifInstruction.run(context, node, options);
     }
 
     if (node instanceof ModuleNode) {
-      return this.moduleInstruction.run(context, node);
+      return this.moduleInstruction.run(context, node, options);
     }
 
     if (node instanceof NumberNode) {
-      return this.numberInstruction.run(context, node);
+      return this.numberInstruction.run(context, node, options);
     }
 
     // todo: param node
@@ -308,49 +314,49 @@ class Mavka {
     }
 
     if (node instanceof ReturnNode) {
-      return this.returnInstruction.run(context, node);
+      return this.returnInstruction.run(context, node, options);
     }
 
     if (node instanceof StringNode) {
-      return this.stringInstruction.run(context, node);
+      return this.stringInstruction.run(context, node, options);
     }
 
     if (node instanceof StructureNode) {
-      return this.structureInstruction.run(context, node);
+      return this.structureInstruction.run(context, node, options);
     }
 
     if (node instanceof TakeNode) {
-      return this.takeInstruction.run(context, node);
+      return this.takeInstruction.run(context, node, options);
     }
 
 
     if (node instanceof TernaryNode) {
-      return this.ternaryInstruction.run(context, node);
+      return this.ternaryInstruction.run(context, node, options);
     }
 
     if (node instanceof TestNode) {
-      return this.testInstruction.run(context, node);
+      return this.testInstruction.run(context, node, options);
     }
 
     if (node instanceof ThrowNode) {
-      return this.throwInstruction.run(context, node);
+      return this.throwInstruction.run(context, node, options);
     }
 
     if (node instanceof TryNode) {
-      return this.tryInstruction.run(context, node);
+      return this.tryInstruction.run(context, node, options);
     }
 
     if (node instanceof WaitNode) {
-      return this.waitInstruction.run(context, node);
+      return this.waitInstruction.run(context, node, options);
     }
 
     if (node instanceof WhileNode) {
-      return this.whileInstruction.run(context, node);
+      return this.whileInstruction.run(context, node, options);
     }
   }
 
-  async runAsync(context, node) {
-    let value = await this.runSync(context, node);
+  async runAsync(context, node, options = {}) {
+    let value = await this.runSync(context, node, options);
 
     if (value instanceof this.WaitCell) {
       value = await value.getValue();

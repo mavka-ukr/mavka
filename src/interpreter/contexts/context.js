@@ -1,5 +1,3 @@
-import { ThrowValue } from "../instructions/throwInstruction.js";
-
 class Context {
   constructor(mavka, parent = null, vars = {}) {
     this.mavka = mavka;
@@ -24,25 +22,27 @@ class Context {
       return this.parent.get(name);
     }
 
-    throw new ThrowValue(this, `"${name}" не знайдено у контексті`);
+    throw new this.mavka.ThrowValue(this, `"${name}" не знайдено у контексті`);
   }
 
   set(name, value) {
-    this.vars[name] = value;
+    this.vars[name] = value ?? this.mavka.emptyCellInstance;
+  }
+
+  has(name) {
+    if (name in this.vars) {
+      return true;
+    }
+
+    if (this.parent) {
+      return this.parent.has(name);
+    }
+
+    return false;
   }
 
   delete(name) {
     delete this.vars[name];
-  }
-
-  call(name, args) {
-    const diia = this.get(name);
-
-    if (!diia) {
-      throw new ThrowValue(this, `дію "${name}" не знайдено у контексті`);
-    }
-
-    return diia.call(this, args);
   }
 }
 

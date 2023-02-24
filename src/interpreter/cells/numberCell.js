@@ -6,7 +6,7 @@ class NumberCell extends Cell {
    * @param {number} value
    */
   constructor(mavka, value) {
-    super(mavka, {
+    super(mavka, "Число", {
       "__value__": value
     });
   }

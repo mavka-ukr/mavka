@@ -1,6 +1,6 @@
 {
   "name": "mavka",
-  "version": "0.9.0",
+  "version": "0.9.6",
   "description": "Сучасна українська мова програмування",
   "main": "src/main.js",
   "type": "module",
@@ -37,9 +37,10 @@
   "homepage": "https://github.com/mavka-ukr/mavka#readme",
   "dependencies": {
     "axios": "^1.1.3",
+    "chalk": "^5.2.0",
     "git-clone": "^0.2.0",
     "import-meta-resolve": "^2.1.0",
-    "mavka-parser": "^0.9.10",
+    "mavka-parser": "^0.9.25",
     "path": "^0.12.7",
     "prompt-sync": "^4.2.0"
   },

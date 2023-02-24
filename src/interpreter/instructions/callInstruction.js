@@ -1,5 +1,7 @@
 import Instruction from "./instruction.js";
 import runArgs from "./args.js";
+import ChainNode from "mavka-parser/src/ast/ChainNode.js";
+import IdentifierNode from "mavka-parser/src/ast/IdentifierNode.js";
 
 class CallInstruction extends Instruction {
   /**
@@ -8,10 +10,24 @@ class CallInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    const value = this.mavka.runSync(context, node.value);
+    let value = this.mavka.emptyCellInstance;
+
     const args = runArgs(this.mavka, context, node.args);
 
-    return value.call(context, args);
+    if (node.value instanceof ChainNode) {
+      value = this.mavka.runSync(context, node.value.left);
+
+      let meValue = value;
+      if (node.value.left instanceof IdentifierNode && node.value.left.name === "предок") {
+        meValue = context.get("я");
+      }
+
+      const diia = value.get(node.value.right.name);
+      return diia.call(context, args, { meValue });
+    } else {
+      const value = this.mavka.runSync(context, node.value);
+      return value.call(context, args);
+    }
   }
 
   /**
@@ -20,10 +36,24 @@ class CallInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    const value = await this.mavka.runAsync(context, node.value);
+    let value = this.mavka.emptyCellInstance;
+
     const args = await runArgs(this.mavka, context, node.args);
 
-    return value.call(context, args);
+    if (node.value instanceof ChainNode) {
+      value = await this.mavka.runAsync(context, node.value.left);
+
+      let meValue = value;
+      if (node.value.left instanceof IdentifierNode && node.value.left.name === "предок") {
+        meValue = context.get("я");
+      }
+
+      const diia = value.get(node.value.right.name);
+      return diia.call(context, args, { meValue });
+    } else {
+      const value = await this.mavka.runAsync(context, node.value);
+      return value.call(context, args);
+    }
   }
 }
 

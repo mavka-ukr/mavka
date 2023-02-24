@@ -2,13 +2,13 @@ import { Cell } from "./cell.js";
 
 class ListCell extends Cell {
   constructor(mavka, values) {
-    super(mavka);
+    super(mavka, "Список");
 
     this.values = values;
 
     const context = new this.mavka.Context(this.mavka, this.mavka.context);
 
-    this.set("отримати", this.mavka.tools.asyncFn(context, ([index]) => {
+    this.set("отримати", this.mavka.tools.asyncFn(([index]) => {
       return this.values[index];
     }));
   }
@@ -24,19 +24,7 @@ class ListCell extends Cell {
   asJsValue() {
     return this.values
       .map((v) => {
-        if (v instanceof this.mavka.NumberCell) {
-          return v.asJsValue();
-        }
-        if (v instanceof this.mavka.StringCell) {
-          return v.asJsValue();
-        }
-        if (v instanceof this.mavka.BooleanCell) {
-          return v.asJsValue();
-        }
-        if (v instanceof this.mavka.StructureCell) {
-          return v.asJsValue();
-        }
-        if (v instanceof this.mavka.ListCell) {
+        if (v instanceof this.mavka.Cell) {
           return v.asJsValue();
         }
 
