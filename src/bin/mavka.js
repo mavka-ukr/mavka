@@ -1,4 +1,4 @@
-#!/usr/bin/env node --no-warnings
+#!/usr/bin/env node
 
 import Mavka from "../main.js";
 import FileLoader from "../loaders/fileLoader.js";
