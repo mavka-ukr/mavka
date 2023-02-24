@@ -1,6 +1,6 @@
 {
   "name": "mavka",
-  "version": "0.9.12",
+  "version": "0.9.13",
   "description": "Сучасна українська мова програмування",
   "main": "src/main.js",
   "type": "module",
@@ -40,7 +40,7 @@
     "chalk": "^5.2.0",
     "git-clone": "^0.2.0",
     "import-meta-resolve": "^2.1.0",
-    "mavka-parser": "^0.9.29",
+    "mavka-parser": "^0.9.30",
     "path": "^0.12.7",
     "prompt-sync": "^4.2.0"
   },
