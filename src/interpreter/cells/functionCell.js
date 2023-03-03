@@ -9,7 +9,6 @@ class FunctionCell extends DiiaCell {
   constructor(mavka, context, node) {
     super(mavka, context, node);
 
-
     this.contextClass = this.mavka.LightContext;
   }
 

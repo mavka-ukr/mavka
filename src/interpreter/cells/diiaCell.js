@@ -53,11 +53,11 @@ class DiiaCell extends Cell {
       result = result.value;
     }
 
-    if (this.node.async) {
-      if (!(result instanceof this.mavka.AsyncCell)) {
-        result = new this.mavka.AsyncCell(this.mavka, () => result);
-      }
-    }
+    // if (this.node.async) {
+    //   if (!(result instanceof this.mavka.AsyncCell)) {
+    //     result = new this.mavka.AsyncCell(this.mavka, () => result);
+    //   }
+    // }
 
     return result;
   }
