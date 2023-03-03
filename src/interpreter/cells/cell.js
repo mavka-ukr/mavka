@@ -60,7 +60,16 @@ export class Cell {
   }
 
   call(context, args, options = {}) {
-    throw "Не реалізовано.";
+    const cell = new this.mavka.Cell(this.mavka, this.name);
+    cell.set(Cell.PROTOTYPE_PROPERTY_NAME, this);
+    if (Array.isArray(args)) {
+      //
+    } else {
+      Object.entries(args).forEach(([k, v]) => {
+        cell.set(k, v);
+      });
+    }
+    return cell;
   }
 
   /**

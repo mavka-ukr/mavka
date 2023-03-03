@@ -10,9 +10,9 @@ class TernaryInstruction extends Instruction {
     const value = this.mavka.runSync(context, node.value);
 
     if (value.asBoolean().asJsValue()) {
-      return this.mavka.run(context, node.positiveValue);
+      return this.mavka.runSync(context, node.positiveValue);
     } else {
-      return this.mavka.run(context, node.negativeValue);
+      return this.mavka.runSync(context, node.negativeValue);
     }
   }
 
@@ -25,9 +25,9 @@ class TernaryInstruction extends Instruction {
     let value = await this.mavka.runAsync(context, node.value);
 
     if (value.asBoolean().asJsValue()) {
-      return this.mavka.run(context, node.positiveValue);
+      return await this.mavka.runAsync(context, node.positiveValue);
     } else {
-      return this.mavka.run(context, node.negativeValue);
+      return await this.mavka.runAsync(context, node.negativeValue);
     }
   }
 }

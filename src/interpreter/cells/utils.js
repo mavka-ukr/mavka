@@ -61,6 +61,10 @@ export function runParams(mavka, context, cellOrContext, params, args, defaultVa
   for (const param of params) {
     const name = param.name.name;
     const value = retrieveValue(name, param.defaultValue, true);
-    cellOrContext.set(name, value);
+    if (cellOrContext instanceof mavka.LightContext) {
+      cellOrContext.setLocal(name, value);
+    } else {
+      cellOrContext.set(name, value);
+    }
   }
 }

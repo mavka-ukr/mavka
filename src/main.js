@@ -126,7 +126,7 @@ class Mavka {
 
     this.ThrowValue = ThrowValue;
 
-    this.emptyCellInstance = new this.EmptyCell(this);
+    this.emptyCellInstance = new this.EmptyCell(this, "пусто");
     this.trueCellInstance = new this.BooleanCell(this, true);
     this.falseCellInstance = new this.BooleanCell(this, false);
 
