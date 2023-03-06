@@ -188,6 +188,12 @@ export class Cell {
 
     Object.entries(this.properties)
       .forEach(([k, v]) => {
+        if (this.get("__оминати_пустоту_конвертуючи__").asBoolean().asJsValue()) {
+          if (this.mavka.isEmpty(v)) {
+            return;
+          }
+        }
+
         jsObject[k] = v.asJsValue();
       });
 

@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+process.removeAllListeners('warning');
+
 import Mavka from "../main.js";
 import FileLoader from "../loaders/fileLoader.js";
 import { makePrintDiiaCell, makeReadDiiaCell } from "../std/io.js";
