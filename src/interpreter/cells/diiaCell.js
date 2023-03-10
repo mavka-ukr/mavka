@@ -1,6 +1,6 @@
 import { ReturnValue } from "../instructions/returnInstruction.js";
 import { Cell } from "./cell.js";
-import { runParams } from "./utils.js";
+import { runParams } from "../../std/tools.js";
 
 class DiiaCell extends Cell {
   /**

@@ -14,8 +14,8 @@ class FileLoader extends Loader {
     const jsPath = (await import("path")).default;
 
     const currentModuleDirname = relative
-      ? context.get("__module_dirname__")
-      : context.get("__root_module_dirname__");
+      ? context.get("__шлях_до_папки_модуля__")
+      : context.get("__шлях_до_папки_кореневого_модуля__");
 
     let newModulePath = pak
       ? `${currentModuleDirname}/.паки` // todo: handle paks properly
@@ -61,20 +61,20 @@ class FileLoader extends Loader {
     }
 
     const moduleContext = new Context(this.mavka, this.mavka.context);
-    moduleContext.set("__root_module_dirname__", context.get("__root_module_dirname__"));
-    moduleContext.set("__root_module_path__", context.get("__root_module_path__"));
-    moduleContext.set("__module_dirname__", newModuleDirname);
-    moduleContext.set("__module_path__", newModulePath);
+    moduleContext.set("__шлях_до_папки_кореневого_модуля__", context.get("__шлях_до_папки_кореневого_модуля__"));
+    moduleContext.set("__шлях_до_кореневого_модуля__", context.get("__шлях_до_кореневого_модуля__"));
+    moduleContext.set("__шлях_до_папки_модуля__", newModuleDirname);
+    moduleContext.set("__шлях_до_модуля__", newModulePath);
     moduleContext.setAsync(true);
 
     const moduleCode = fs.readFileSync(newModulePath).toString();
     const moduleProgram = parse(moduleCode);
 
     const giveContext = new Context(this.mavka);
-    giveContext.set("__root_module_dirname__", context.get("__root_module_dirname__"));
-    giveContext.set("__root_module_path__", context.get("__root_module_path__"));
-    giveContext.set("__module_dirname__", newModuleDirname);
-    giveContext.set("__module_path__", newModulePath);
+    giveContext.set("__шлях_до_папки_кореневого_модуля__", context.get("__шлях_до_папки_кореневого_модуля__"));
+    giveContext.set("__шлях_до_кореневого_модуля__", context.get("__шлях_до_кореневого_модуля__"));
+    giveContext.set("__шлях_до_папки_модуля__", newModuleDirname);
+    giveContext.set("__шлях_до_модуля__", newModulePath);
 
     moduleContext.set("__give_context__", giveContext);
 

@@ -1,5 +1,5 @@
 import { Cell } from "./cell.js";
-import { runParams } from "./utils.js";
+import { runParams } from "../../std/tools.js";
 
 export class StructureCell extends Cell {
   /**
@@ -71,12 +71,9 @@ export class StructureCell extends Cell {
 export class ListConstructorCell extends Cell {
   /**
    * @param {Mavka} mavka
-   * @param {Context} context
    */
-  constructor(mavka, context) {
+  constructor(mavka) {
     super(mavka, "Список");
-
-    this.context = context;
   }
 
   call(context, args) {
@@ -93,7 +90,6 @@ export class ListConstructorCell extends Cell {
     return this.mavka.toCell(`структура Список`);
   }
 }
-
 
 export class ObjectConstructorCell extends Cell {
   /**

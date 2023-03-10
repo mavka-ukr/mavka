@@ -1,6 +1,10 @@
 import { Cell } from "./cell.js";
 
 class EmptyCell extends Cell {
+  constructor(mavka) {
+    super(mavka, "пусто");
+  }
+
   get(name) {
     throw new this.mavka.ThrowValue(this, this.mavka.toCell(`Неможливо отримати "${name}" з пустоти.`));
   }

@@ -2,8 +2,6 @@
  * Cell represents a value in Mavka.
  */
 export class Cell {
-  static DEFAULT_NAME = "Об'єкт";
-
   /**
    * @param {Mavka} mavka
    * @param {string} name
@@ -76,28 +74,52 @@ export class Cell {
   /**
    * @param {Cell} value
    */
-  plus(value) {
+  plus(context, value) {
+    const plusDiia = this.get("виконати_додавання");
+
+    if (!this.mavka.isEmpty(plusDiia)) {
+      return plusDiia.call(context, [value]);
+    }
+
     throw "Не реалізовано.";
   }
 
   /**
    * @param {Cell} value
    */
-  minus(value) {
+  minus(context, value) {
+    const minusDiia = this.get("виконати_віднімання");
+
+    if (!this.mavka.isEmpty(minusDiia)) {
+      return minusDiia.call(context, [value]);
+    }
+
     throw "Не реалізовано.";
   }
 
   /**
    * @param {Cell} value
    */
-  multiply(value) {
+  multiply(context, value) {
+    const multiplyDiia = this.get("виконати_множення");
+
+    if (!this.mavka.isEmpty(multiplyDiia)) {
+      return multiplyDiia.call(context, [value]);
+    }
+
     throw "Не реалізовано.";
   }
 
   /**
    * @param {Cell} value
    */
-  divide(value) {
+  divide(context, value) {
+    const divideDiia = this.get("виконати_ділення");
+
+    if (!this.mavka.isEmpty(divideDiia)) {
+      return divideDiia.call(context, [value]);
+    }
+
     throw "Не реалізовано.";
   }
 
@@ -147,7 +169,7 @@ export class Cell {
    * @param {Cell} value
    */
   isInstanceOf(value) {
-    return this.compare(value, (a, b) => this.prototype ? this.prototype === value || this.prototype.isInstanceOf(value) : false);
+    return this.mavka.toCell(this.prototype ? this.prototype === value || this.prototype.isInstanceOf(value) : false);
   }
 
   /**

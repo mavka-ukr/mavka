@@ -32,6 +32,22 @@ export function makeFn(mavka, fn, options = {}) {
   });
 }
 
+export function convertFnToDiia(mavka, fn, options = {}) {
+  options.jsArgs = options.jsArgs ?? true;
+
+  return new mavka.JsFunctionCell(mavka, (args, context) => {
+    if (options.jsArgs) {
+      args = args.map((arg) => {
+        return mavka.toCell(arg).asJsValue();
+      });
+    }
+
+    const result = fn(...args);
+
+    return mavka.toCell(result);
+  });
+}
+
 export function runParams(mavka, context, cellOrContext, params, args, defaultValues = {}) {
   const retrieveValue = (paramName, defaultValueNode) => {
     let value;

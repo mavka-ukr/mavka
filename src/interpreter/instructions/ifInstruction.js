@@ -23,7 +23,7 @@ class IfInstruction extends Instruction {
    */
   async runAsync(context, node) {
     let value = await this.mavka.runAsync(context, node.value);
-
+    
     if (value.asBoolean().asJsValue()) {
       return this.mavka.run(context, node.body);
     } else {

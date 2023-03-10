@@ -6,7 +6,7 @@ class BooleanCell extends Cell {
    * @param {boolean} value
    */
   constructor(mavka, value) {
-    super(mavka, "Логічне");
+    super(mavka, "Логічне", {}, {}, mavka.booleanConstructorCellInstance);
 
     this.value = value;
   }
@@ -30,6 +30,27 @@ class BooleanCell extends Cell {
 
   opposite() {
     return this.asJsValue() ? this.mavka.falseCellInstance : this.mavka.trueCellInstance;
+  }
+}
+
+export class BooleanConstructorCell extends Cell {
+  /**
+   * @param {Mavka} mavka
+   */
+  constructor(mavka) {
+    super(mavka, "логічне");
+  }
+
+  call(context, args, options = {}) {
+    if (Array.isArray(args)) {
+      return args[0].asBoolean();
+    } else {
+      throw "not ok";
+    }
+  }
+
+  asString() {
+    return this.mavka.toCell(`структура логічне`);
   }
 }
 
