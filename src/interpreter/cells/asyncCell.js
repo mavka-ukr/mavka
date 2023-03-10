@@ -6,16 +6,16 @@ class AsyncCell extends Cell {
    * @param {Promise} promise
    */
   constructor(mavka, promise) {
-    super(mavka, "ТривалаОперація", {
-      "__promise__": promise
-    });
+    super(mavka, "ТривалаОперація");
+
+    this.promise = promise;
   }
 
   /**
    * @return {Promise}
    */
   getPromise() {
-    return this.properties["__promise__"];
+    return this.promise;
   }
 
   asString() {

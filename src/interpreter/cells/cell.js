@@ -4,23 +4,25 @@
 export class Cell {
   static DEFAULT_NAME = "Об'єкт";
 
-  static PROTOTYPE_PROPERTY_NAME = "__прототип__";
-
-  static HIDDEN_PROPERTIES = [Cell.PROTOTYPE_PROPERTY_NAME, "прототип", "структура", "створити", "створено"];
-
   /**
    * @param {Mavka} mavka
    * @param {string} name
    * @param {Object} properties
-   * @param {Object} options
+   * @param {Object} methods
+   * @param {Object|null} prototype
    */
-  constructor(mavka, name, properties = {}, options = {}) {
+  constructor(mavka,
+              name,
+              properties = {},
+              methods = {},
+              prototype = null) {
     this.mavka = mavka;
 
     this.name = name;
     this.properties = properties;
+    this.methods = methods;
 
-    this.options = options;
+    this.prototype = prototype;
   }
 
   /**
@@ -29,11 +31,15 @@ export class Cell {
    */
   get(name) {
     if (name in this.properties) {
-      return this.mavka.toCell(this.properties[name]);
+      return this.properties[name];
     }
 
-    if (this.hasPrototype()) {
-      return this.mavka.toCell(this.getPrototype().get(name));
+    if (name in this.methods) {
+      return this.methods[name];
+    }
+
+    if (this.prototype) {
+      return this.prototype.get(name);
     }
 
     return this.mavka.emptyCellInstance;
@@ -44,8 +50,12 @@ export class Cell {
       return true;
     }
 
-    if (this.hasPrototype()) {
-      return this.getPrototype().has(name);
+    if (name in this.methods) {
+      return true;
+    }
+
+    if (this.prototype) {
+      return this.prototype.has(name);
     }
 
     return false;
@@ -56,20 +66,11 @@ export class Cell {
    * @param {Cell} value
    */
   set(name, value) {
-    this.properties[name] = value;
+    this.properties[name] = this.mavka.toCell(value);
   }
 
   call(context, args, options = {}) {
-    const cell = new this.mavka.Cell(this.mavka, this.name);
-    cell.set(Cell.PROTOTYPE_PROPERTY_NAME, this);
-    if (Array.isArray(args)) {
-      //
-    } else {
-      Object.entries(args).forEach(([k, v]) => {
-        cell.set(k, v);
-      });
-    }
-    return cell;
+    throw "Не реалізовано.";
   }
 
   /**
@@ -143,6 +144,13 @@ export class Cell {
   }
 
   /**
+   * @param {Cell} value
+   */
+  isInstanceOf(value) {
+    return this.compare(value, (a, b) => this.prototype ? this.prototype === value || this.prototype.isInstanceOf(value) : false);
+  }
+
+  /**
    * @return {NumberCell}
    */
   asNumber() {
@@ -154,21 +162,18 @@ export class Cell {
    */
   asString() {
     const properties = Object.entries(this.properties)
-      .filter(([k]) => {
-        if (this.has(Cell.PROTOTYPE_PROPERTY_NAME)) {
-          if (this.get(Cell.PROTOTYPE_PROPERTY_NAME).has("структура")) {
-            const params = this.get(Cell.PROTOTYPE_PROPERTY_NAME).get("структура").getParams();
-
-            return !!params.find((param) => param.name.name === k);
-          }
-        }
-
-        return true;
-      })
-      .map(([k, v]) => `${k}=${this.mavka.toCell(v).asPrettyString().asJsValue()}`)
+      .map(([k, v]) => `${k}=${v.asPrettyString().asJsValue()}`)
       .join(", ");
 
     return this.mavka.toCell(`${this.name}(${properties})`);
+  }
+
+  getParams() {
+    return [];
+  }
+
+  getMethods() {
+    return {};
   }
 
   asPrettyString() {
@@ -178,7 +183,6 @@ export class Cell {
   /**
    * @return {BooleanCell}
    */
-
   asBoolean() {
     return this.mavka.toCell(true);
   }
@@ -219,14 +223,6 @@ export class Cell {
         return { done: true };
       }
     };
-  }
-
-  getPrototype() {
-    return this.properties[Cell.PROTOTYPE_PROPERTY_NAME];
-  }
-
-  hasPrototype() {
-    return !this.mavka.isEmpty(this.getPrototype());
   }
 }
 

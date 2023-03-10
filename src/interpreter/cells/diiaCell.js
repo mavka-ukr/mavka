@@ -15,7 +15,6 @@ class DiiaCell extends Cell {
     this.context = context;
 
     this.meValue = this.mavka.emptyCellInstance;
-    this.superValue = this.mavka.emptyCellInstance;
 
     this.defaultValues = {};
 
@@ -35,10 +34,6 @@ class DiiaCell extends Cell {
       runContext.set("я", this.meValue);
     } else if (!this.mavka.isEmpty(options.meValue)) {
       runContext.set("я", options.meValue);
-    }
-
-    if (!this.mavka.isEmpty(this.superValue)) {
-      runContext.set("предок", this.superValue);
     }
 
     if (this.node.async) {

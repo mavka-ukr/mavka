@@ -6,11 +6,11 @@ class Context {
   }
 
   isAsync() {
-    return !!this.vars.__async__;
+    return !!this.vars["__тривалий__"];
   }
 
   setAsync(async) {
-    this.set("__async__", async);
+    this.set("__тривалий__", async);
   }
 
   get(name) {
@@ -22,7 +22,7 @@ class Context {
       return this.parent.get(name);
     }
 
-    throw new this.mavka.ThrowValue(this, `"${name}" не знайдено у контексті`);
+    throw new this.mavka.ThrowValue(this, `"${name}" не знайдено в контексті.`);
   }
 
   set(name, value) {

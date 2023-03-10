@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-process.removeAllListeners('warning');
+process.removeAllListeners("warning");
 
 import Mavka from "../main.js";
 import FileLoader from "../loaders/fileLoader.js";
@@ -10,7 +10,7 @@ import { makeToNumberDiiaCell } from "../std/casts.js";
 import { makeLoadExtensionFromFileDiiaCell, makeLoadExtensionFromNetworkDiiaCell } from "../std/extensions.js";
 import { makeRangeDiiaCell } from "../std/ranges.js";
 import { makeGetJsonDiiaCell } from "../std/network.js";
-import { ListConstructorCell } from "../interpreter/cells/structureCell.js";
+import { ListConstructorCell, ObjectConstructorCell } from "../interpreter/cells/structureCell.js";
 
 const cwdPath = process.cwd();
 
@@ -18,7 +18,8 @@ let filename = process.argv[2];
 
 function buildGlobalContext(mavka) {
   const context = new mavka.Context(mavka, null, {
-    "Об'єкт": mavka.objectCell,
+    "Об'єкт": new ObjectConstructorCell(mavka),
+    "Список": new ListConstructorCell(mavka, null),
     "друк": makePrintDiiaCell(mavka),
     "читати": makeReadDiiaCell(mavka),
     "до_числа": makeToNumberDiiaCell(mavka),
@@ -26,7 +27,7 @@ function buildGlobalContext(mavka) {
     "підключити_розширення_з_мережі": makeLoadExtensionFromNetworkDiiaCell(mavka),
     "діапазон": makeRangeDiiaCell(mavka),
     "отримати_джсон": makeGetJsonDiiaCell(mavka, null),
-    "Список": new ListConstructorCell(mavka, null)
+    "global": mavka.toCell(global)
   });
 
   return context;

@@ -15,6 +15,8 @@ function run(left, right, operation) {
     "менше": () => left.lesserThan(right),
     "не більше": () => left.lesserThanOrEquals(right),
     "не менше": () => left.greaterThanOrEquals(right),
+    "є": () => left.isInstanceOf(right),
+    "не є": () => left.isInstanceOf(right).opposite()
   }[operation])();
 }
 

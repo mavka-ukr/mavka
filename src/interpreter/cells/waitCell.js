@@ -6,13 +6,9 @@ class WaitCell extends Cell {
    * @param {AsyncCell} value
    */
   constructor(mavka, value) {
-    super(mavka, "Очікувач", {
-      "__value__": value
-    });
-  }
+    super(mavka, "Очікувач");
 
-  getValue() {
-    return this.properties["__value__"];
+    this.value = value;
   }
 
   asString() {
