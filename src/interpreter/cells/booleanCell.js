@@ -6,9 +6,9 @@ class BooleanCell extends Cell {
    * @param {boolean} value
    */
   constructor(mavka, value) {
-    super(mavka, "Логічне", {
-      "__value__": value
-    });
+    super(mavka, "Логічне");
+
+    this.value = value;
   }
 
   asString() {
@@ -25,7 +25,11 @@ class BooleanCell extends Cell {
    * @return {boolean}
    */
   asJsValue() {
-    return Boolean(this.properties["__value__"]);
+    return Boolean(this.value);
+  }
+
+  opposite() {
+    return this.asJsValue() ? this.mavka.falseCellInstance : this.mavka.trueCellInstance;
   }
 }
 

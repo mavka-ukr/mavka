@@ -6,9 +6,9 @@ class NumberCell extends Cell {
    * @param {number} value
    */
   constructor(mavka, value) {
-    super(mavka, "Число", {
-      "__value__": value
-    });
+    super(mavka, "Число");
+
+    this.value = value;
   }
 
   plus(value) {
@@ -35,7 +35,7 @@ class NumberCell extends Cell {
    * @return {number}
    */
   asJsNumber() {
-    return this.properties["__value__"];
+    return this.value;
   }
 
   asString() {

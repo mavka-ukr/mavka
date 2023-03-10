@@ -1,4 +1,5 @@
 import Instruction from "./instruction.js";
+import { ThrowValue } from "./throwInstruction.js";
 
 class DiiaInstruction extends Instruction {
   /**
@@ -9,7 +10,17 @@ class DiiaInstruction extends Instruction {
   runSync(context, node) {
     const diia = new this.mavka.DiiaCell(this.mavka, context, node);
 
-    context.set(node.name.name, diia);
+    if (node.structure) {
+      const cell = this.mavka.runSync(context, node.structure);
+
+      if (cell instanceof this.mavka.StructureCell) {
+        cell.methods[node.name.name] = diia;
+      } else {
+        throw new ThrowValue(context, `Не вдалось встановити дію "${node.structure.name}.${node.name.name}".`);
+      }
+    } else {
+      context.set(node.name.name, diia);
+    }
 
     return diia;
   }
@@ -22,7 +33,17 @@ class DiiaInstruction extends Instruction {
   async runAsync(context, node) {
     const diia = new this.mavka.DiiaCell(this.mavka, context, node);
 
-    context.set(node.name.name, diia);
+    if (node.structure) {
+      const cell = await this.mavka.runAsync(context, node.structure);
+
+      if (cell instanceof this.mavka.StructureCell) {
+        cell.methods[node.name.name] = diia;
+      } else {
+        throw new ThrowValue(context, `Не вдалось встановити дію "${node.structure.name}.${node.name.name}".`);
+      }
+    } else {
+      context.set(node.name.name, diia);
+    }
 
     return diia;
   }

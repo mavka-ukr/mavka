@@ -69,6 +69,7 @@ import TestInstruction from "./interpreter/instructions/testInstruction.js";
 import TernaryNode from "mavka-parser/src/ast/TernaryNode.js";
 import TernaryInstruction from "./interpreter/instructions/ternaryInstruction.js";
 import IdentifiersChainNode from "mavka-parser/src/ast/IdentifiersChainNode.js";
+import ProxyCell from "./interpreter/cells/proxyCell.js";
 
 /**
  * @property {Context} context
@@ -116,6 +117,7 @@ class Mavka {
     this.ModuleCell = ModuleCell;
     this.AsyncCell = AsyncCell;
     this.WaitCell = WaitCell;
+    this.ProxyCell = ProxyCell;
 
     this.RangeCell = RangeCell;
     this.RangeDiiaCell = RangeDiiaCell;
@@ -190,11 +192,7 @@ class Mavka {
     }
 
     if (typeof value === "object") {
-      const cell = new this.Cell(this, "Об'єкт");
-      Object.entries(value).forEach(([k, v]) => {
-        cell.set(k, this.toCell(v));
-      });
-      return cell;
+      return new this.ProxyCell(this, value);
     }
 
     return this.emptyCellInstance;
@@ -359,7 +357,7 @@ class Mavka {
     let value = await this.runSync(context, node, options);
 
     if (value instanceof this.WaitCell) {
-      value = await value.getValue();
+      value = await value.value;
 
       if (value instanceof this.AsyncCell) {
         value = value.getPromise();

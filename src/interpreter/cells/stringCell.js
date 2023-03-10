@@ -6,9 +6,9 @@ class StringCell extends Cell {
    * @param {string} value
    */
   constructor(mavka, value) {
-    super(mavka, "Текст", {
-      "__value__": value
-    });
+    super(mavka, "Текст");
+
+    this.value = value;
 
     this.set("обрізати", mavka.tools.fn(() => this.asJsValue().trim()));
   }
@@ -33,7 +33,7 @@ class StringCell extends Cell {
    * @return {string}
    */
   asJsString() {
-    return this.properties["__value__"];
+    return this.value;
   }
 
   asJsValue() {
