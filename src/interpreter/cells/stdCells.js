@@ -1,9 +1,9 @@
 import { Cell } from "./cell.js";
 import DiiaCell from "./diiaCell.js";
 
-export class JsFunctionCell extends Cell {
+export class ProxyFunctionCell extends Cell {
   constructor(mavka, fn) {
-    super(mavka, "Дія");
+    super(mavka, "ПроксіФункція");
 
     this.fn = fn;
   }
@@ -13,7 +13,7 @@ export class JsFunctionCell extends Cell {
   }
 
   asString() {
-    return this.mavka.toCell("ДжсФункція");
+    return this.mavka.toCell("ПроксіФункція");
   }
 }
 

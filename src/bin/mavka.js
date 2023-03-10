@@ -1,16 +1,19 @@
 #!/usr/bin/env node
 
-process.removeAllListeners("warning");
-
 import Mavka from "../main.js";
 import FileLoader from "../loaders/fileLoader.js";
 import { makePrintDiiaCell, makeReadDiiaCell } from "../std/io.js";
 import promptSync from "prompt-sync";
 import { makeToNumberDiiaCell } from "../std/casts.js";
-import { makeLoadExtensionFromFileDiiaCell, makeLoadExtensionFromNetworkDiiaCell } from "../std/extensions.js";
+import {
+  makeLoadExtensionDiiaCell,
+  makeLoadExtensionFromFileDiiaCell,
+  makeLoadExtensionFromNetworkDiiaCell
+} from "../std/extensions.js";
 import { makeRangeDiiaCell } from "../std/ranges.js";
 import { makeGetJsonDiiaCell } from "../std/network.js";
-import { ListConstructorCell, ObjectConstructorCell } from "../interpreter/cells/structureCell.js";
+
+process.removeAllListeners("warning");
 
 const cwdPath = process.cwd();
 
@@ -18,16 +21,18 @@ let filename = process.argv[2];
 
 function buildGlobalContext(mavka) {
   const context = new mavka.Context(mavka, null, {
-    "Об'єкт": new ObjectConstructorCell(mavka),
-    "Список": new ListConstructorCell(mavka, null),
     "друк": makePrintDiiaCell(mavka),
     "читати": makeReadDiiaCell(mavka),
+
     "до_числа": makeToNumberDiiaCell(mavka),
+
     "підключити_розширення_з_файлу": makeLoadExtensionFromFileDiiaCell(mavka),
     "підключити_розширення_з_мережі": makeLoadExtensionFromNetworkDiiaCell(mavka),
+    "підключити_розширення": makeLoadExtensionDiiaCell(mavka),
+
     "діапазон": makeRangeDiiaCell(mavka),
-    "отримати_джсон": makeGetJsonDiiaCell(mavka, null),
-    "global": mavka.toCell(global)
+
+    "отримати_джсон": makeGetJsonDiiaCell(mavka, null)
   });
 
   return context;
@@ -56,10 +61,10 @@ if (filename && filename !== "допомога") {
   });
 
   const context = new mavka.Context(mavka);
-  context.set("__root_module_dirname__", cwdPath);
-  context.set("__root_module_path__", `${cwdPath}/${filename}`);
-  context.set("__module_dirname__", cwdPath);
-  context.set("__module_path__", `${cwdPath}/${filename}`);
+  context.set("__шлях_до_папки_кореневого_модуля__", cwdPath);
+  context.set("__шлях_до_кореневого_модуля__", `${cwdPath}/${filename}`);
+  context.set("__шлях_до_папки_модуля__", cwdPath);
+  context.set("__шлях_до_модуля__", `${cwdPath}/${filename}`);
 
   const path = filename.substring(0, filename.length - 2).split(".");
 

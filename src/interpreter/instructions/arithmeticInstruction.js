@@ -11,10 +11,10 @@ class ArithmeticInstruction extends Instruction {
     const right = this.mavka.runSync(context, node.right);
 
     return ({
-      "+": () => left.plus(right),
-      "-": () => left.minus(right),
-      "*": () => left.multiply(right),
-      "/": () => left.divide(right)
+      "+": () => left.plus(context, right),
+      "-": () => left.minus(context, right),
+      "*": () => left.multiply(context, right),
+      "/": () => left.divide(context, right)
     }[node.operation])();
   }
 
@@ -28,10 +28,10 @@ class ArithmeticInstruction extends Instruction {
     const right = await this.mavka.runAsync(context, node.right);
 
     return ({
-      "+": () => left.plus(right),
-      "-": () => left.minus(right),
-      "*": () => left.multiply(right),
-      "/": () => left.divide(right)
+      "+": () => left.plus(context, right),
+      "-": () => left.minus(context, right),
+      "*": () => left.multiply(context, right),
+      "/": () => left.divide(context, right)
     }[node.operation])();
   }
 }

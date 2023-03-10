@@ -29,17 +29,17 @@ import StructureNode from "mavka-parser/src/ast/StructureNode.js";
 import WaitNode from "mavka-parser/src/ast/WaitNode.js";
 import TakeNode from "mavka-parser/src/ast/TakeNode.js";
 import GiveNode from "mavka-parser/src/ast/GiveNode.js";
-import BooleanCell from "./interpreter/cells/booleanCell.js";
-import NumberCell from "./interpreter/cells/numberCell.js";
-import StringCell from "./interpreter/cells/stringCell.js";
+import BooleanCell, { BooleanConstructorCell } from "./interpreter/cells/booleanCell.js";
+import NumberCell, { NumberConstructorCell } from "./interpreter/cells/numberCell.js";
+import StringCell, { TextConstructorCell } from "./interpreter/cells/stringCell.js";
 import EmptyCell from "./interpreter/cells/emptyCell.js";
 import DiiaCell from "./interpreter/cells/diiaCell.js";
 import FunctionCell from "./interpreter/cells/functionCell.js";
 import AsyncCell from "./interpreter/cells/asyncCell.js";
 import WaitCell from "./interpreter/cells/waitCell.js";
-import { StructureCell } from "./interpreter/cells/structureCell.js";
+import { ListConstructorCell, ObjectConstructorCell, StructureCell } from "./interpreter/cells/structureCell.js";
 import ModuleCell from "./interpreter/cells/moduleCell.js";
-import { JsFunctionCell, RangeCell, RangeDiiaCell } from "./interpreter/cells/stdCells.js";
+import { ProxyFunctionCell, RangeCell, RangeDiiaCell } from "./interpreter/cells/stdCells.js";
 import { parse } from "mavka-parser";
 import BooleanInstruction from "./interpreter/instructions/booleanInstruction.js";
 import LightContext from "./interpreter/contexts/lightContext.js";
@@ -54,7 +54,7 @@ import TryNode from "mavka-parser/src/ast/TryNode.js";
 import WhileNode from "mavka-parser/src/ast/WhileNode.js";
 import WhileInstruction from "./interpreter/instructions/whileInstruction.js";
 import ListCell from "./interpreter/cells/listCell.js";
-import { makeAsyncFn, makeFn } from "./interpreter/cells/utils.js";
+import { convertFnToDiia, makeAsyncFn, makeFn } from "./std/tools.js";
 import ModuleNode from "mavka-parser/src/ast/ModuleNode.js";
 import ModuleInstruction from "./interpreter/instructions/moduleInstruction.js";
 import ProgramNode from "mavka-parser/src/ast/ProgramNode.js";
@@ -119,27 +119,44 @@ class Mavka {
     this.WaitCell = WaitCell;
     this.ProxyCell = ProxyCell;
 
+    this.BooleanConstructorCell = BooleanConstructorCell;
+    this.NumberConstructorCell = NumberConstructorCell;
+    this.TextConstructorCell = TextConstructorCell;
+    this.ObjectConstructorCell = ObjectConstructorCell;
+    this.ListConstructorCell = ListConstructorCell;
+
     this.RangeCell = RangeCell;
     this.RangeDiiaCell = RangeDiiaCell;
-    this.JsFunctionCell = JsFunctionCell;
+    this.JsFunctionCell = ProxyFunctionCell;
 
     this.Context = Context;
     this.LightContext = LightContext;
 
     this.ThrowValue = ThrowValue;
 
-    this.emptyCellInstance = new this.EmptyCell(this, "пусто");
+    this.booleanConstructorCellInstance = new this.BooleanConstructorCell(this);
+    this.stringConstructorCellInstance = new this.TextConstructorCell(this);
+    this.numberConstructorCellInstance = new this.NumberConstructorCell(this);
+    this.listConstructorCellInstance = new this.ListConstructorCell(this);
+    this.objectConstructorCellInstance = new this.ObjectConstructorCell(this);
+    this.emptyCellInstance = new this.EmptyCell(this);
     this.trueCellInstance = new this.BooleanCell(this, true);
     this.falseCellInstance = new this.BooleanCell(this, false);
-
-    this.objectCell = new this.Cell(this, this.Cell.DEFAULT_NAME);
 
     this.tools = {};
     this.tools.fn = (fn, options = {}) => makeFn(this, fn, options);
     this.tools.asyncFn = (fn, options = {}) => makeAsyncFn(this, fn, options);
+    this.tools.convertFnToDiia = (fn, options = {}) => convertFnToDiia(this, fn, options);
 
     this.context = options.buildGlobalContext(this);
     this.context.set("пусто", this.emptyCellInstance);
+    this.context.set("Об'єкт", this.objectConstructorCellInstance);
+    this.context.set("Список", this.listConstructorCellInstance);
+    this.context.set("число", this.numberConstructorCellInstance);
+    this.context.set("текст", this.stringConstructorCellInstance);
+    this.context.set("логічне", this.booleanConstructorCellInstance);
+    this.context.set("global", this.toCell(global));
+
     this.loader = options.buildLoader(this);
     this.external = options.buildExternal ? options.buildExternal(this) : {};
 
@@ -193,6 +210,10 @@ class Mavka {
 
     if (typeof value === "object") {
       return new this.ProxyCell(this, value);
+    }
+
+    if (typeof value === "function") {
+      return this.tools.convertFnToDiia(value);
     }
 
     return this.emptyCellInstance;

@@ -6,25 +6,26 @@ class NumberCell extends Cell {
    * @param {number} value
    */
   constructor(mavka, value) {
-    super(mavka, "Число");
+    super(mavka, "Число", {}, {}, mavka.numberConstructorCellInstance);
 
     this.value = value;
-  }
 
-  plus(value) {
-    return new this.mavka.NumberCell(this.mavka, this.asJsNumber() + value.asNumber().asJsNumber());
-  }
-
-  minus(value) {
-    return new this.mavka.NumberCell(this.mavka, this.asNumber().asJsNumber() - value.asNumber().asJsNumber());
-  }
-
-  multiply(value) {
-    return new this.mavka.NumberCell(this.mavka, this.asNumber().asJsNumber() * value.asNumber().asJsNumber());
-  }
-
-  divide(value) {
-    return new this.mavka.NumberCell(this.mavka, this.asNumber().asJsNumber() / value.asNumber().asJsNumber());
+    this.methods["виконати_додавання"] = this.mavka.tools.convertFnToDiia(
+      (value) => new this.mavka.NumberCell(this.mavka, this.asJsNumber() + value.asNumber().asJsNumber()),
+      { jsArgs: false }
+    );
+    this.methods["виконати_віднімання"] = this.mavka.tools.convertFnToDiia(
+      (value) => new this.mavka.NumberCell(this.mavka, this.asJsNumber() - value.asNumber().asJsNumber()),
+      { jsArgs: false }
+    );
+    this.methods["виконати_множення"] = this.mavka.tools.convertFnToDiia(
+      (value) => new this.mavka.NumberCell(this.mavka, this.asJsNumber() * value.asNumber().asJsNumber()),
+      { jsArgs: false }
+    );
+    this.methods["виконати_ділення"] = this.mavka.tools.convertFnToDiia(
+      (value) => new this.mavka.NumberCell(this.mavka, this.asJsNumber() / value.asNumber().asJsNumber()),
+      { jsArgs: false }
+    );
   }
 
   asNumber() {
@@ -54,5 +55,27 @@ class NumberCell extends Cell {
     return this.mavka.toCell(false);
   }
 }
+
+export class NumberConstructorCell extends Cell {
+  /**
+   * @param {Mavka} mavka
+   */
+  constructor(mavka) {
+    super(mavka, "число");
+  }
+
+  call(context, args, options = {}) {
+    if (Array.isArray(args)) {
+      return args[0].asNumber();
+    } else {
+      throw "not ok";
+    }
+  }
+
+  asString() {
+    return this.mavka.toCell(`структура число`);
+  }
+}
+
 
 export default NumberCell;

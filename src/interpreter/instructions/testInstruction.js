@@ -23,7 +23,7 @@ class TestInstruction extends Instruction {
 
     const right = this.mavka.runSync(context, node.right);
 
-    return run(left, right, node.operation);
+    return this.mavka.toCell(run(left, right, node.operation));
   }
 
   /**
@@ -41,7 +41,7 @@ class TestInstruction extends Instruction {
 
     const right = await this.mavka.runAsync(context, node.right);
 
-    return run(left, right, node.operation);
+    return this.mavka.toCell(run(left, right, node.operation));
   }
 }
 
