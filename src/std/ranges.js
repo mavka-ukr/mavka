@@ -1,3 +1,1 @@
-import { RangeDiiaCell } from "../interpreter/cells/stdCells.js";
-
-export const makeRangeDiiaCell = (mavka) => new RangeDiiaCell(mavka, mavka.context);
+export const makeRangeDiiaCell = (mavka) => new mavka.RangeDiiaCell(mavka, mavka.context);

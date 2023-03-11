@@ -16,12 +16,19 @@ export class StructureCell extends Cell {
     this.defaultValues = {};
 
     if (this.node.parent) {
-      this.prototype = this.mavka.runSync(context, node.parent, { forceSync: true });
+      this.parent = this.mavka.runSync(context, node.parent, { forceSync: true });
     }
   }
 
   call(context, args) {
-    const cell = new this.mavka.Cell(this.mavka, this.node.name.name, {}, {}, this);
+    const cell = new this.mavka.Cell(
+      this.mavka,
+      this.node.name.name,
+      {},
+      {},
+      null,
+      this
+    );
 
     let params = this.getParams();
     runParams(this.mavka, context, cell, params, [], this.defaultValues);
@@ -43,18 +50,10 @@ export class StructureCell extends Cell {
 
   getParams() {
     let params = this.node.params;
-    if (this.prototype) {
-      params = [...params, ...this.prototype.getParams()];
+    if (this.parent) {
+      params = [...params, ...this.parent.getParams()];
     }
     return params;
-  }
-
-  getMethods() {
-    let methods = this.methods;
-    if (this.prototype) {
-      methods = { ...methods, ...this.prototype.getMethods() };
-    }
-    return methods;
   }
 
   asString() {
@@ -68,7 +67,7 @@ export class StructureCell extends Cell {
   }
 }
 
-export class ListConstructorCell extends Cell {
+export class ListStructureCell extends Cell {
   /**
    * @param {Mavka} mavka
    */
@@ -91,7 +90,7 @@ export class ListConstructorCell extends Cell {
   }
 }
 
-export class ObjectConstructorCell extends Cell {
+export class ObjectStructureCell extends Cell {
   /**
    * @param {Mavka} mavka
    */

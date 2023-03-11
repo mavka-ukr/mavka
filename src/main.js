@@ -29,15 +29,15 @@ import StructureNode from "mavka-parser/src/ast/StructureNode.js";
 import WaitNode from "mavka-parser/src/ast/WaitNode.js";
 import TakeNode from "mavka-parser/src/ast/TakeNode.js";
 import GiveNode from "mavka-parser/src/ast/GiveNode.js";
-import BooleanCell, { BooleanConstructorCell } from "./interpreter/cells/booleanCell.js";
-import NumberCell, { NumberConstructorCell } from "./interpreter/cells/numberCell.js";
-import StringCell, { TextConstructorCell } from "./interpreter/cells/stringCell.js";
+import BooleanCell, { BooleanStructureCell } from "./interpreter/cells/booleanCell.js";
+import NumberCell, { NumberStructureCell } from "./interpreter/cells/numberCell.js";
+import StringCell, { TextStructureCell } from "./interpreter/cells/stringCell.js";
 import EmptyCell from "./interpreter/cells/emptyCell.js";
 import DiiaCell from "./interpreter/cells/diiaCell.js";
 import FunctionCell from "./interpreter/cells/functionCell.js";
 import AsyncCell from "./interpreter/cells/asyncCell.js";
 import WaitCell from "./interpreter/cells/waitCell.js";
-import { ListConstructorCell, ObjectConstructorCell, StructureCell } from "./interpreter/cells/structureCell.js";
+import { ListStructureCell, ObjectStructureCell, StructureCell } from "./interpreter/cells/structureCell.js";
 import ModuleCell from "./interpreter/cells/moduleCell.js";
 import { ProxyFunctionCell, RangeCell, RangeDiiaCell } from "./interpreter/cells/stdCells.js";
 import { parse } from "mavka-parser";
@@ -119,11 +119,11 @@ class Mavka {
     this.WaitCell = WaitCell;
     this.ProxyCell = ProxyCell;
 
-    this.BooleanConstructorCell = BooleanConstructorCell;
-    this.NumberConstructorCell = NumberConstructorCell;
-    this.TextConstructorCell = TextConstructorCell;
-    this.ObjectConstructorCell = ObjectConstructorCell;
-    this.ListConstructorCell = ListConstructorCell;
+    this.BooleanStructureCell = BooleanStructureCell;
+    this.NumberStructureCell = NumberStructureCell;
+    this.TextStructureCell = TextStructureCell;
+    this.ObjectStructureCell = ObjectStructureCell;
+    this.ListStructureCell = ListStructureCell;
 
     this.RangeCell = RangeCell;
     this.RangeDiiaCell = RangeDiiaCell;
@@ -134,11 +134,11 @@ class Mavka {
 
     this.ThrowValue = ThrowValue;
 
-    this.booleanConstructorCellInstance = new this.BooleanConstructorCell(this);
-    this.stringConstructorCellInstance = new this.TextConstructorCell(this);
-    this.numberConstructorCellInstance = new this.NumberConstructorCell(this);
-    this.listConstructorCellInstance = new this.ListConstructorCell(this);
-    this.objectConstructorCellInstance = new this.ObjectConstructorCell(this);
+    this.booleanStructureCellInstance = new this.BooleanStructureCell(this);
+    this.stringStructureCellInstance = new this.TextStructureCell(this);
+    this.numberStructureCellInstance = new this.NumberStructureCell(this);
+    this.ListStructureCellInstance = new this.ListStructureCell(this);
+    this.ObjectStructureCellInstance = new this.ObjectStructureCell(this);
     this.emptyCellInstance = new this.EmptyCell(this);
     this.trueCellInstance = new this.BooleanCell(this, true);
     this.falseCellInstance = new this.BooleanCell(this, false);
@@ -150,11 +150,11 @@ class Mavka {
 
     this.context = options.buildGlobalContext(this);
     this.context.set("пусто", this.emptyCellInstance);
-    this.context.set("Об'єкт", this.objectConstructorCellInstance);
-    this.context.set("Список", this.listConstructorCellInstance);
-    this.context.set("число", this.numberConstructorCellInstance);
-    this.context.set("текст", this.stringConstructorCellInstance);
-    this.context.set("логічне", this.booleanConstructorCellInstance);
+    this.context.set("Об'єкт", this.ObjectStructureCellInstance);
+    this.context.set("Список", this.ListStructureCellInstance);
+    this.context.set("число", this.numberStructureCellInstance);
+    this.context.set("текст", this.stringStructureCellInstance);
+    this.context.set("логічне", this.booleanStructureCellInstance);
     this.context.set("global", this.toCell(global));
 
     this.loader = options.buildLoader(this);
