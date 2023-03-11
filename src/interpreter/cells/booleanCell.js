@@ -6,7 +6,14 @@ class BooleanCell extends Cell {
    * @param {boolean} value
    */
   constructor(mavka, value) {
-    super(mavka, "Логічне", {}, {}, mavka.booleanConstructorCellInstance);
+    super(
+      mavka,
+      "Логічне",
+      {},
+      {},
+      null,
+      mavka.booleanStructureCellInstance
+    );
 
     this.value = value;
   }
@@ -33,7 +40,7 @@ class BooleanCell extends Cell {
   }
 }
 
-export class BooleanConstructorCell extends Cell {
+export class BooleanStructureCell extends Cell {
   /**
    * @param {Mavka} mavka
    */

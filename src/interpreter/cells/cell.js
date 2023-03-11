@@ -7,20 +7,23 @@ export class Cell {
    * @param {string} name
    * @param {Object} properties
    * @param {Object} methods
-   * @param {Object|null} prototype
+   * @param {Cell|null} parent
+   * @param {StructureCell} structure
    */
   constructor(mavka,
               name,
               properties = {},
               methods = {},
-              prototype = null) {
+              parent = null,
+              structure = null) {
     this.mavka = mavka;
 
     this.name = name;
     this.properties = properties;
     this.methods = methods;
 
-    this.prototype = prototype;
+    this.parent = parent;
+    this.structure = structure;
   }
 
   /**
@@ -28,6 +31,14 @@ export class Cell {
    * @returns {Cell}
    */
   get(name) {
+    if (name === "__структура__") {
+      return this.structure || this.mavka.emptyCellInstance;
+    }
+
+    if (name === "__батько__") {
+      return this.parent || this.mavka.emptyCellInstance;
+    }
+
     if (name in this.properties) {
       return this.properties[name];
     }
@@ -36,14 +47,28 @@ export class Cell {
       return this.methods[name];
     }
 
-    if (this.prototype) {
-      return this.prototype.get(name);
+    if (this.parent) {
+      return this.parent.get(name);
+    }
+
+    if (this.structure) {
+      if (name in this.structure.methods) {
+        return this.structure.methods[name];
+      }
     }
 
     return this.mavka.emptyCellInstance;
   }
 
   has(name) {
+    if (name === "__структура__") {
+      return !this.mavka.isEmpty(this.structure);
+    }
+
+    if (name === "__батько__") {
+      return !this.mavka.isEmpty(this.parent);
+    }
+
     if (name in this.properties) {
       return true;
     }
@@ -52,8 +77,14 @@ export class Cell {
       return true;
     }
 
-    if (this.prototype) {
-      return this.prototype.has(name);
+    if (this.parent) {
+      return this.parent.has(name);
+    }
+
+    if (this.structure) {
+      if (name in this.structure.methods) {
+        return true;
+      }
     }
 
     return false;
@@ -169,7 +200,21 @@ export class Cell {
    * @param {Cell} value
    */
   isInstanceOf(value) {
-    return this.mavka.toCell(this.prototype ? this.prototype === value || this.prototype.isInstanceOf(value) : false);
+    return this.mavka.toCell(
+      this.structure
+        ? this.structure === value || this.isInstanceOfThroughStructure(this.structure, value)
+        : false
+    );
+  }
+
+  /**
+   * @param {StructureCell} structure
+   * @param {Cell} value
+   */
+  isInstanceOfThroughStructure(structure, value) {
+    return structure.parent
+      ? structure.parent === value || structure.parent.isInstanceOfThroughStructure(structure.parent, value)
+      : false;
   }
 
   /**
@@ -188,14 +233,6 @@ export class Cell {
       .join(", ");
 
     return this.mavka.toCell(`${this.name}(${properties})`);
-  }
-
-  getParams() {
-    return [];
-  }
-
-  getMethods() {
-    return {};
   }
 
   asPrettyString() {

@@ -7,11 +7,11 @@ class StructureInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    const structureConstructor = new this.mavka.StructureCell(this.mavka, context, node);
+    const structureCell = new this.mavka.StructureCell(this.mavka, context, node);
 
-    context.set(node.name.name, structureConstructor);
+    context.set(node.name.name, structureCell);
 
-    return structureConstructor;
+    return structureCell;
   }
 
   /**
@@ -20,11 +20,11 @@ class StructureInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    const structureConstructor = new this.mavka.StructureCell(this.mavka, context, node);
+    const structureCell = new this.mavka.StructureCell(this.mavka, context, node);
 
-    context.set(node.name.name, structureConstructor);
+    context.set(node.name.name, structureCell);
 
-    return structureConstructor;
+    return structureCell;
   }
 }
 

@@ -6,7 +6,14 @@ class StringCell extends Cell {
    * @param {string} value
    */
   constructor(mavka, value) {
-    super(mavka, "Текст", {}, {}, mavka.stringConstructorCellInstance);
+    super(
+      mavka,
+      "Текст",
+      {},
+      {},
+      null,
+      mavka.stringStructureCellInstance
+    );
 
     this.value = value;
 
@@ -54,7 +61,7 @@ class StringCell extends Cell {
   }
 }
 
-export class TextConstructorCell extends Cell {
+export class TextStructureCell extends Cell {
   /**
    * @param {Mavka} mavka
    */

@@ -6,7 +6,14 @@ class NumberCell extends Cell {
    * @param {number} value
    */
   constructor(mavka, value) {
-    super(mavka, "Число", {}, {}, mavka.numberConstructorCellInstance);
+    super(
+      mavka,
+      "Число",
+      {},
+      {},
+      null,
+      mavka.numberStructureCellInstance
+    );
 
     this.value = value;
 
@@ -56,7 +63,7 @@ class NumberCell extends Cell {
   }
 }
 
-export class NumberConstructorCell extends Cell {
+export class NumberStructureCell extends Cell {
   /**
    * @param {Mavka} mavka
    */
