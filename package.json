@@ -32,7 +32,9 @@
   },
   "bin": {
     "мавка": "src/bin/mavka.js",
-    "пак": "src/bin/pak.js"
+    "пак": "src/bin/pak.js",
+    "mavka": "src/bin/mavka.js",
+    "pak": "src/bin/pak.js"
   },
   "homepage": "https://github.com/mavka-ukr/mavka#readme",
   "dependencies": {
