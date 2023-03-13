@@ -109,7 +109,9 @@ export class Cell {
     const plusDiia = this.get("виконати_додавання");
 
     if (!this.mavka.isEmpty(plusDiia)) {
-      return plusDiia.call(context, [value]);
+      return plusDiia.call(context, [value], {
+        meValue: this
+      });
     }
 
     throw "Не реалізовано.";
@@ -122,7 +124,9 @@ export class Cell {
     const minusDiia = this.get("виконати_віднімання");
 
     if (!this.mavka.isEmpty(minusDiia)) {
-      return minusDiia.call(context, [value]);
+      return minusDiia.call(context, [value], {
+        meValue: this
+      });
     }
 
     throw "Не реалізовано.";
@@ -135,7 +139,9 @@ export class Cell {
     const multiplyDiia = this.get("виконати_множення");
 
     if (!this.mavka.isEmpty(multiplyDiia)) {
-      return multiplyDiia.call(context, [value]);
+      return multiplyDiia.call(context, [value], {
+        meValue: this
+      });
     }
 
     throw "Не реалізовано.";
@@ -148,7 +154,9 @@ export class Cell {
     const divideDiia = this.get("виконати_ділення");
 
     if (!this.mavka.isEmpty(divideDiia)) {
-      return divideDiia.call(context, [value]);
+      return divideDiia.call(context, [value], {
+        meValue: this
+      });
     }
 
     throw "Не реалізовано.";
