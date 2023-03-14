@@ -76,7 +76,7 @@ import ProxyCell from "./interpreter/cells/proxyCell.js";
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.9.22";
+  static VERSION = "0.9.24";
 
   constructor(options = {}) {
     this.arithmeticInstruction = new ArithmeticInstruction(this);
