@@ -32,7 +32,9 @@ function buildGlobalContext(mavka) {
 
     "діапазон": makeRangeDiiaCell(mavka),
 
-    "отримати_джсон": makeGetJsonDiiaCell(mavka, null)
+    "отримати_джсон": makeGetJsonDiiaCell(mavka, null),
+
+    "global": mavka.toCell(global)
   });
 
   return context;
