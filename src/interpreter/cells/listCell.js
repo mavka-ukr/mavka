@@ -6,11 +6,13 @@ class ListCell extends Cell {
 
     this.values = values;
 
-    const context = new this.mavka.Context(this.mavka, this.mavka.context);
-
-    this.set("отримати", this.mavka.tools.asyncFn(([index]) => {
+    const getFn = this.mavka.tools.fn(([index]) => {
       return this.values[index];
-    }));
+    });
+
+    this.set("отримати", getFn);
+
+    this.methods["виконати_виклик"] = getFn;
   }
 
   asString() {
