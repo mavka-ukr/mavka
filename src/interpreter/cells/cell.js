@@ -99,6 +99,14 @@ export class Cell {
   }
 
   call(context, args, options = {}) {
+    const callDiia = this.get("виконати_виклик");
+
+    if (!this.mavka.isEmpty(callDiia)) {
+      return callDiia.call(context, args, {
+        meValue: this
+      });
+    }
+
     throw "Не реалізовано.";
   }
 
