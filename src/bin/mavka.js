@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import Mavka from "../main.js";
-import FileLoader from "../loaders/fileLoader.js";
 import { makePrintDiiaCell, makeReadDiiaCell } from "../std/io.js";
 import promptSync from "prompt-sync";
 import { makeToNumberDiiaCell } from "../std/casts.js";
@@ -45,7 +44,7 @@ function buildGlobalContext(mavka) {
 }
 
 function buildLoader(mavka) {
-  return new FileLoader(mavka);
+  return new mavka.FileLoader(mavka);
 }
 
 function buildExternal(mavka) {

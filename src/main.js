@@ -70,13 +70,16 @@ import TernaryNode from "mavka-parser/src/ast/TernaryNode.js";
 import TernaryInstruction from "./interpreter/instructions/ternaryInstruction.js";
 import IdentifiersChainNode from "mavka-parser/src/ast/IdentifiersChainNode.js";
 import ProxyCell from "./interpreter/cells/proxyCell.js";
+import Loader from "./loaders/loader.js";
+import FileLoader from "./loaders/fileLoader.js";
+import MemoryLoader from "./loaders/memoryLoader.js";
 
 /**
  * @property {Context} context
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.9.27";
+  static VERSION = "0.9.28";
 
   constructor(options = {}) {
     this.arithmeticInstruction = new ArithmeticInstruction(this);
@@ -133,6 +136,10 @@ class Mavka {
 
     this.Context = Context;
     this.LightContext = LightContext;
+
+    this.Loader = Loader;
+    this.FileLoader = FileLoader;
+    this.MemoryLoader = MemoryLoader;
 
     this.ThrowValue = ThrowValue;
 

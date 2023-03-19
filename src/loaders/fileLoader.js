@@ -87,6 +87,7 @@ class FileLoader extends Loader {
     if (newPath.length) {
       let first = newPath.shift();
       while (first) {
+        name = first;
         result = result.get(first);
         first = newPath.shift();
       }
