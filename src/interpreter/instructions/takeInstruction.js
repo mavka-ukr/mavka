@@ -11,7 +11,7 @@ class TakeInstruction extends Instruction {
       if (node.star && !node.as) {
         console.log("not implemented");
       } else {
-        context.set(node.as ? node.as : name, result);
+        context.set(node.as ? node.as.name : name, result);
       }
 
       return result;
