@@ -73,13 +73,15 @@ import ProxyCell from "./interpreter/cells/proxyCell.js";
 import Loader from "./loaders/loader.js";
 import FileLoader from "./loaders/fileLoader.js";
 import MemoryLoader from "./loaders/memoryLoader.js";
+import NegativeInstruction from "./interpreter/instructions/negativeInstruction.js";
+import NegativeNode from "mavka-parser/src/ast/NegativeNode.js";
 
 /**
  * @property {Context} context
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.9.30";
+  static VERSION = "0.9.31";
 
   constructor(options = {}) {
     this.arithmeticInstruction = new ArithmeticInstruction(this);
@@ -108,6 +110,7 @@ class Mavka {
     this.tryInstruction = new TryInstruction(this);
     this.throwInstruction = new ThrowInstruction(this);
     this.moduleInstruction = new ModuleInstruction(this);
+    this.negativeInstruction = new NegativeInstruction(this);
 
     this.Cell = Cell;
     this.NumberCell = NumberCell;
@@ -328,6 +331,10 @@ class Mavka {
 
     if (node instanceof ModuleNode) {
       return this.moduleInstruction.run(context, node, options);
+    }
+
+    if (node instanceof NegativeNode) {
+      return this.negativeInstruction.run(context, node, options);
     }
 
     if (node instanceof NumberNode) {
