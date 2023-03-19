@@ -79,7 +79,7 @@ import MemoryLoader from "./loaders/memoryLoader.js";
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.9.28";
+  static VERSION = "0.9.30";
 
   constructor(options = {}) {
     this.arithmeticInstruction = new ArithmeticInstruction(this);
