@@ -12,6 +12,10 @@ import {
 } from "../std/extensions.js";
 import { makeRangeDiiaCell } from "../std/ranges.js";
 import { makeGetJsonDiiaCell } from "../std/network.js";
+import { getBinPathSync } from "get-bin-path";
+
+const fs = (await import("fs")).default;
+const jsPath = (await import("path")).default;
 
 process.removeAllListeners("warning");
 
@@ -67,6 +71,12 @@ if (filename && filename !== "допомога") {
   context.set("__шлях_до_кореневого_модуля__", `${cwdPath}/${filename}`);
   context.set("__шлях_до_папки_модуля__", cwdPath);
   context.set("__шлях_до_модуля__", `${cwdPath}/${filename}`);
+
+  const stdCode = fs.readFileSync(`${jsPath.dirname(jsPath.dirname(jsPath.dirname(getBinPathSync())))}/node_modules/mavka-teka/тека.м`).toString();
+
+  mavka.context.setAsync(true);
+  await mavka.eval(stdCode);
+  mavka.context.setAsync(false);
 
   const path = filename.substring(0, filename.length - 2).split(".");
 
