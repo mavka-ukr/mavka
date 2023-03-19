@@ -71,11 +71,14 @@ if (filename && filename !== "допомога") {
   context.set("__шлях_до_папки_модуля__", cwdPath);
   context.set("__шлях_до_модуля__", `${cwdPath}/${filename}`);
 
-  const stdCode = fs.readFileSync(`${jsPath.dirname(jsPath.dirname(jsPath.dirname(getBinPathSync())))}/node_modules/mavka-teka/тека.м`).toString();
+  const binPath = getBinPathSync();
+  if (binPath) {
+    const stdCode = fs.readFileSync(`${jsPath.dirname(jsPath.dirname(jsPath.dirname(binPath)))}/node_modules/mavka-teka/тека.м`).toString();
 
-  mavka.context.setAsync(true);
-  await mavka.eval(stdCode);
-  mavka.context.setAsync(false);
+    mavka.context.setAsync(true);
+    await mavka.eval(stdCode);
+    mavka.context.setAsync(false);
+  }
 
   const path = filename.substring(0, filename.length - 2).split(".");
 
