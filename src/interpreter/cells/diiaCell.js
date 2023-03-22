@@ -1,15 +1,15 @@
 import { ReturnValue } from "../instructions/returnInstruction.js";
-import { Cell } from "./cell.js";
+import { Cell } from "./utils/cell.js";
 import { runParams } from "../../std/tools.js";
 
 class DiiaCell extends Cell {
   /**
    * @param {Mavka} mavka
    * @param {Context} context
-   * @param {DiiaNode|AnonymousDiiaNode} node
+   * @param {DiiaNode|AnonymousDiiaNode|FunctionNode} node
    */
   constructor(mavka, context, node) {
-    super(mavka, "Дія");
+    super(mavka, "<дія>");
 
     this.node = node;
     this.context = context;
@@ -27,7 +27,7 @@ class DiiaCell extends Cell {
    * @param {Object} options
    * @return {Cell|Promise<Cell>}
    */
-  call(context, args, options = {}) {
+  doCall(context, args, options = {}) {
     const runContext = new this.contextClass(this.mavka, this.context);
 
     if (!this.mavka.isEmpty(this.meValue)) {
@@ -55,10 +55,6 @@ class DiiaCell extends Cell {
     // }
 
     return result;
-  }
-
-  asString() {
-    return this.mavka.toCell("Дія");
   }
 }
 

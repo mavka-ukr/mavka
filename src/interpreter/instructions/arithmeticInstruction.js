@@ -1,4 +1,17 @@
-import Instruction from "./instruction.js";
+import Instruction from "./utils/instruction.js";
+
+function doOperation(context, left, right, operation) {
+  return ({
+    "+": () => left.doAdd(context, right),
+    "-": () => left.doSub(context, right),
+    "*": () => left.doMul(context, right),
+    "/": () => left.doDiv(context, right),
+    "%": () => left.doDivMod(context, right),
+    "//": () => left.doDivFloor(context, right),
+    "**": () => left.doPow(context, right),
+    "^": () => left.doXor(context, right)
+  }[operation])();
+}
 
 class ArithmeticInstruction extends Instruction {
   /**
@@ -10,12 +23,7 @@ class ArithmeticInstruction extends Instruction {
     const left = this.mavka.runSync(context, node.left);
     const right = this.mavka.runSync(context, node.right);
 
-    return ({
-      "+": () => left.plus(context, right),
-      "-": () => left.minus(context, right),
-      "*": () => left.multiply(context, right),
-      "/": () => left.divide(context, right)
-    }[node.operation])();
+    return doOperation(context, left, right, node.operation);
   }
 
   /**
@@ -27,12 +35,7 @@ class ArithmeticInstruction extends Instruction {
     const left = await this.mavka.runAsync(context, node.left);
     const right = await this.mavka.runAsync(context, node.right);
 
-    return ({
-      "+": () => left.plus(context, right),
-      "-": () => left.minus(context, right),
-      "*": () => left.multiply(context, right),
-      "/": () => left.divide(context, right)
-    }[node.operation])();
+    return doOperation(context, left, right, node.operation);
   }
 }
 

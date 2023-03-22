@@ -1,4 +1,4 @@
-import { Cell } from "./cell.js";
+import { Cell } from "./utils/cell.js";
 
 class BooleanCell extends Cell {
   /**
@@ -8,7 +8,7 @@ class BooleanCell extends Cell {
   constructor(mavka, value) {
     super(
       mavka,
-      "Логічне",
+      "<логічне>",
       {},
       {},
       null,
@@ -18,8 +18,8 @@ class BooleanCell extends Cell {
     this.value = value;
   }
 
-  asString() {
-    return this.asJsValue()
+  asText(context) {
+    return this.asJsValue(context)
       ? this.mavka.toCell("так")
       : this.mavka.toCell("ні");
   }
@@ -31,33 +31,12 @@ class BooleanCell extends Cell {
   /**
    * @return {boolean}
    */
-  asJsValue() {
+  asJsValue(context) {
     return Boolean(this.value);
   }
 
-  opposite() {
-    return this.asJsValue() ? this.mavka.falseCellInstance : this.mavka.trueCellInstance;
-  }
-}
-
-export class BooleanStructureCell extends Cell {
-  /**
-   * @param {Mavka} mavka
-   */
-  constructor(mavka) {
-    super(mavka, "логічне");
-  }
-
-  call(context, args, options = {}) {
-    if (Array.isArray(args)) {
-      return args[0].asBoolean();
-    } else {
-      throw "not ok";
-    }
-  }
-
-  asString() {
-    return this.mavka.toCell(`структура логічне`);
+  not() {
+    return this.asJsValue(context) ? this.mavka.falseCellInstance : this.mavka.trueCellInstance;
   }
 }
 

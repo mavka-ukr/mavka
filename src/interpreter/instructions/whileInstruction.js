@@ -1,4 +1,4 @@
-import Instruction from "./instruction.js";
+import Instruction from "./utils/instruction.js";
 
 class WhileInstruction extends Instruction {
   /**
@@ -9,7 +9,7 @@ class WhileInstruction extends Instruction {
   runSync(context, node) {
     let result = null;
 
-    while (this.mavka.runSync(context, node.value).asBoolean().asJsValue()) {
+    while (this.mavka.runSync(context, node.value).asBoolean(context).asJsValue(context)) {
       result = this.mavka.run(context, node.body);
     }
 
@@ -23,8 +23,8 @@ class WhileInstruction extends Instruction {
    */
   async runAsync(context, node) {
     let result = null;
-    
-    while ((await this.mavka.runSync(context, node.value)).asBoolean().asJsValue()) {
+
+    while ((await this.mavka.runSync(context, node.value)).asBoolean(context).asJsValue(context)) {
       result = await this.mavka.run(context, node.body);
     }
 

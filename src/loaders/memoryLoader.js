@@ -15,7 +15,7 @@ class MemoryLoader extends Loader {
     const newPath = path.slice(1);
 
     if (!(name in this.files)) {
-      throw `Неможливо завантажити модуль "${name}"`;
+      throw `Не вдалось завантажити модуль "${name}"`;
     }
 
     if (this.loadedModules[name]) {

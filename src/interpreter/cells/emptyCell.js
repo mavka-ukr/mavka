@@ -1,8 +1,10 @@
-import { Cell } from "./cell.js";
+import { Cell } from "./utils/cell.js";
 
 class EmptyCell extends Cell {
   constructor(mavka) {
-    super(mavka, "пусто");
+    super(mavka, "<пусто>");
+
+    this.structure = this;
   }
 
   get(name) {
@@ -13,15 +15,15 @@ class EmptyCell extends Cell {
     throw new this.mavka.ThrowValue(this, this.mavka.toCell(`Неможливо встановити "${name}" на пустоту.`));
   }
 
-  call(context) {
+  doCall(context) {
     throw new this.mavka.ThrowValue(this, this.mavka.toCell(`Неможливо викликати пустоту.`));
   }
 
-  asString() {
+  asText(context) {
     return this.mavka.toCell("пусто");
   }
 
-  asJsValue() {
+  asJsValue(context) {
     return null;
   }
 

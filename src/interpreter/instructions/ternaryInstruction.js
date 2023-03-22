@@ -1,4 +1,4 @@
-import Instruction from "./instruction.js";
+import Instruction from "./utils/instruction.js";
 
 class TernaryInstruction extends Instruction {
   /**
@@ -9,7 +9,7 @@ class TernaryInstruction extends Instruction {
   runSync(context, node) {
     const value = this.mavka.runSync(context, node.value);
 
-    if (value.asBoolean().asJsValue()) {
+    if (value.asBoolean(context).asJsValue(context)) {
       return this.mavka.runSync(context, node.positiveValue);
     } else {
       return this.mavka.runSync(context, node.negativeValue);
@@ -24,7 +24,7 @@ class TernaryInstruction extends Instruction {
   async runAsync(context, node) {
     let value = await this.mavka.runAsync(context, node.value);
 
-    if (value.asBoolean().asJsValue()) {
+    if (value.asBoolean(context).asJsValue(context)) {
       return await this.mavka.runAsync(context, node.positiveValue);
     } else {
       return await this.mavka.runAsync(context, node.negativeValue);

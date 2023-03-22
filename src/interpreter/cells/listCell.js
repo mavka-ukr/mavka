@@ -1,8 +1,8 @@
-import { Cell } from "./cell.js";
+import { Cell } from "./utils/cell.js";
 
 class ListCell extends Cell {
   constructor(mavka, values) {
-    super(mavka, "Список");
+    super(mavka, "<список>", {}, {}, null, mavka.listStructureCellInstance);
 
     this.values = values;
 
@@ -12,22 +12,22 @@ class ListCell extends Cell {
 
     this.set("отримати", getFn);
 
-    this.methods["виконати_виклик"] = getFn;
+    this.methods["виконати_отримання_елементу"] = getFn;
   }
 
-  asString() {
+  asText(context) {
     const values = this.values
-      .map((v) => this.mavka.toCell(v).asString().asJsString())
+      .map((v) => this.mavka.toCell(v).asText(context).asJsString())
       .join(", ");
 
-    return this.mavka.toCell(`Список(${values})`);
+    return this.mavka.toCell(`[${values}]`);
   }
 
-  asJsValue() {
+  asJsValue(context) {
     return this.values
       .map((v) => {
         if (v instanceof this.mavka.Cell) {
-          return v.asJsValue();
+          return v.asJsValue(context);
         }
 
         return null;

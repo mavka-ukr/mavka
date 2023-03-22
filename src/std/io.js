@@ -1,15 +1,12 @@
-export const makePrintDiiaCell = (mavka) => new mavka.JsFunctionCell(mavka, (args) => console.log(
+export const makePrintDiiaCell = (mavka) => mavka.tools.fn((args, context) => console.log(
   ...args
     .map((arg) => {
       const cell = mavka.toCell(arg);
-      return cell.asString().asJsValue();
+      return cell.asText(context).asJsValue(context);
     })
 ));
 
-export const makeReadDiiaCell = (mavka) => new mavka.JsFunctionCell(
+export const makeReadDiiaCell = (mavka) => mavka.tools.fn((args, context) => new mavka.TextCell(
   mavka,
-  (args) => new mavka.StringCell(
-    mavka,
-    mavka.external.promptSync({ sigint: true })(mavka.toCell(args[0]).asString().asJsString())
-  )
-);
+  mavka.external.promptSync({ sigint: true })(mavka.toCell(args[0]).asText(context).asJsString())
+));

@@ -1,5 +1,5 @@
-import Instruction from "./instruction.js";
-import runArgs from "./args.js";
+import Instruction from "./utils/instruction.js";
+import runArgs from "./utils/args.js";
 import ChainNode from "mavka-parser/src/ast/ChainNode.js";
 import IdentifierNode from "mavka-parser/src/ast/IdentifierNode.js";
 
@@ -23,10 +23,10 @@ class CallInstruction extends Instruction {
       }
 
       const diia = value.get(node.value.right.name);
-      return diia.call(context, args, { meValue });
+      return diia.doCall(context, args, { meValue });
     } else {
       const value = this.mavka.runSync(context, node.value);
-      return value.call(context, args);
+      return value.doCall(context, args);
     }
   }
 
@@ -49,10 +49,10 @@ class CallInstruction extends Instruction {
       }
 
       const diia = value.get(node.value.right.name);
-      return diia.call(context, args, { meValue });
+      return diia.doCall(context, args, { meValue });
     } else {
       const value = await this.mavka.runAsync(context, node.value);
-      return value.call(context, args);
+      return value.doCall(context, args);
     }
   }
 }

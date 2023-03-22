@@ -3,7 +3,6 @@
 import Mavka from "../main.js";
 import { makePrintDiiaCell, makeReadDiiaCell } from "../std/io.js";
 import promptSync from "prompt-sync";
-import { makeToNumberDiiaCell } from "../std/casts.js";
 import {
   makeLoadExtensionDiiaCell,
   makeLoadExtensionFromFileDiiaCell,
@@ -27,17 +26,13 @@ function buildGlobalContext(mavka) {
     "друк": makePrintDiiaCell(mavka),
     "читати": makeReadDiiaCell(mavka),
 
-    "до_числа": makeToNumberDiiaCell(mavka),
-
     "підключити_розширення_з_файлу": makeLoadExtensionFromFileDiiaCell(mavka),
     "підключити_розширення_з_мережі": makeLoadExtensionFromNetworkDiiaCell(mavka),
     "підключити_розширення": makeLoadExtensionDiiaCell(mavka),
 
     "діапазон": makeRangeDiiaCell(mavka),
 
-    "отримати_джсон": makeGetJsonDiiaCell(mavka, null),
-
-    "global": mavka.toCell(global)
+    "отримати_джсон": makeGetJsonDiiaCell(mavka, null)
   });
 
   return context;
@@ -91,7 +86,7 @@ if (filename && filename !== "допомога") {
       console.error(e);
     } else if (e instanceof mavka.ThrowValue) {
       const cell = mavka.toCell(e.value);
-      console.error(`Не вдалось зловити: ${cell.asString().asJsString()}`);
+      console.error(`Не вдалось зловити: ${cell.asText(context).asJsString()}`);
     } else {
       console.log(e);
     }

@@ -1,10 +1,26 @@
+export function makeFn(mavka, fn, options = {}) {
+  options.jsArgs = options.jsArgs ?? true;
+
+  return new mavka.PortalFunctionCell(mavka, (args, context) => {
+    if (options.jsArgs) {
+      args = args.map((arg) => {
+        return mavka.toCell(arg).asJsValue(context);
+      });
+    }
+
+    const result = fn(args, context);
+
+    return mavka.toCell(result);
+  });
+}
+
 export function makeAsyncFn(mavka, fn, options = {}) {
   options.jsArgs = options.jsArgs ?? true;
 
-  return new mavka.JsFunctionCell(mavka, (args, context) => {
+  return new mavka.PortalFunctionCell(mavka, (args, context) => {
     if (options.jsArgs) {
       args = args.map((arg) => {
-        return mavka.toCell(arg).asJsValue();
+        return mavka.toCell(arg).asJsValue(context);
       });
     }
 
@@ -16,33 +32,23 @@ export function makeAsyncFn(mavka, fn, options = {}) {
   });
 }
 
-export function makeFn(mavka, fn, options = {}) {
+export function makePortalFn(mavka, fn, options = {}) {
   options.jsArgs = options.jsArgs ?? true;
 
-  return new mavka.JsFunctionCell(mavka, (args, context) => {
+  return new mavka.PortalFunctionCell(mavka, (args, context) => {
     if (options.jsArgs) {
       args = args.map((arg) => {
-        return mavka.toCell(arg).asJsValue();
+        return mavka.toCell(arg).asJsValue(context);
       });
     }
 
-    const result = fn(args, context);
+    let result;
 
-    return mavka.toCell(result);
-  });
-}
-
-export function convertFnToDiia(mavka, fn, options = {}) {
-  options.jsArgs = options.jsArgs ?? true;
-
-  return new mavka.JsFunctionCell(mavka, (args, context) => {
-    if (options.jsArgs) {
-      args = args.map((arg) => {
-        return mavka.toCell(arg).asJsValue();
-      });
+    if (options.thisArg) {
+      result = fn.call(options.thisArg, args);
+    } else {
+      result = fn(...args);
     }
-
-    const result = fn(...args);
 
     return mavka.toCell(result);
   });

@@ -1,5 +1,5 @@
-import Instruction from "./instruction.js";
-import { lastIdentifierName, resolveIdentifier } from "./chain.js";
+import Instruction from "./utils/instruction.js";
+import { lastIdentifierName, resolveIdentifier } from "./utils/chain.js";
 
 class GiveInstruction extends Instruction {
   /**

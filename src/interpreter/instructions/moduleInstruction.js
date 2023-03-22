@@ -1,4 +1,4 @@
-import Instruction from "./instruction.js";
+import Instruction from "./utils/instruction.js";
 import Context from "../contexts/context.js";
 import ModuleCell from "../cells/moduleCell.js";
 

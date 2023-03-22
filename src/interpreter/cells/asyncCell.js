@@ -1,4 +1,4 @@
-import { Cell } from "./cell.js";
+import { Cell } from "./utils/cell.js";
 
 class AsyncCell extends Cell {
   /**
@@ -6,7 +6,7 @@ class AsyncCell extends Cell {
    * @param {Promise} promise
    */
   constructor(mavka, promise) {
-    super(mavka, "ТривалаОперація");
+    super(mavka, "<тривала операція>");
 
     this.promise = promise;
   }
@@ -16,10 +16,6 @@ class AsyncCell extends Cell {
    */
   getPromise() {
     return this.promise;
-  }
-
-  asString() {
-    return this.mavka.toCell("ТривалаОперація");
   }
 }
 
