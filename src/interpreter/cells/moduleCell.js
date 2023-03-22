@@ -1,8 +1,8 @@
-import { Cell } from "./cell.js";
+import { Cell } from "./utils/cell.js";
 
 class ModuleCell extends Cell {
   constructor(mavka, name, context) {
-    super(mavka, "Модуль");
+    super(mavka, "<модуль>");
 
     this.name = name;
     this.context = context;
@@ -16,8 +16,8 @@ class ModuleCell extends Cell {
     throw "Неможливо записувати в модуль.";
   }
 
-  asString() {
-    return this.mavka.toCell(`модуль ${this.name}`);
+  asText(context) {
+    return this.mavka.toCell(`<модуль ${this.name}>`);
   }
 }
 

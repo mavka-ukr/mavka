@@ -11,10 +11,6 @@ class FunctionCell extends DiiaCell {
 
     this.contextClass = this.mavka.LightContext;
   }
-
-  asString() {
-    return this.mavka.toCell("Функція");
-  }
 }
 
 export default FunctionCell;

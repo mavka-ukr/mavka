@@ -1,22 +1,28 @@
-import Instruction from "./instruction.js";
+import Instruction from "./utils/instruction.js";
 
-function run(left, right, operation) {
+function doOperation(context, left, right, operation) {
   return ({
-    "==": () => left.equals(right),
-    "!=": () => left.notEquals(right),
-    ">": () => left.greaterThan(right),
-    "<": () => left.lesserThan(right),
-    ">=": () => left.greaterThanOrEquals(right),
-    "<=": () => left.lesserThanOrEquals(right),
-    "рівно": () => left.equals(right),
-    "не": () => left.notEquals(right),
-    "не рівно": () => left.notEquals(right),
-    "більше": () => left.greaterThan(right),
-    "менше": () => left.lesserThan(right),
-    "не більше": () => left.lesserThanOrEquals(right),
-    "не менше": () => left.greaterThanOrEquals(right),
-    "є": () => left.isInstanceOf(right),
-    "не є": () => left.isInstanceOf(right).opposite()
+    "==": () => left.doCompareEquals(context, right),
+    "!=": () => left.doCompareNotEquals(context, right),
+    "<": () => left.doCompareLesserThan(context, right),
+    ">=": () => left.doCompareGreaterThanOrEquals(context, right),
+    ">": () => left.doCompareGreaterThan(context, right),
+    "<=": () => left.doCompareLesserThanOrEquals(context, right),
+
+    "є": () => left.isInstanceOf(context, right), // instanceof
+    "не є": () => left.isInstanceOf(context, right).not(), // not instanceof
+
+    "рівно": () => left.doCompareEquals(context, right), // ==
+    "не рівно": () => left.doCompareNotEquals(context, right), // !=
+    "менше": () => left.doCompareLesserThan(context, right), // <
+    "не менше": () => left.doCompareGreaterThanOrEquals(context, right), // >=
+    "більше": () => left.doCompareGreaterThan(context, right), // >
+    "не більше": () => left.doCompareLesserThanOrEquals(context, right), // <=
+
+    "не": () => left.doCompareNotEquals(context, right), // не рівно
+
+    "містить": () => left.has(context, right), // in
+    "не містить": () => left.has(context, right).not() // not in
   }[operation])();
 }
 
@@ -30,7 +36,7 @@ class ComparisonInstruction extends Instruction {
     const left = this.mavka.runSync(context, node.left);
     const right = this.mavka.runSync(context, node.right);
 
-    return run(left, right, node.operation);
+    return doOperation(left, right, node.operation);
   }
 
   /**
@@ -42,7 +48,7 @@ class ComparisonInstruction extends Instruction {
     const left = await this.mavka.runAsync(context, node.left);
     const right = await this.mavka.runAsync(context, node.right);
 
-    return run(left, right, node.operation);
+    return doOperation(left, right, node.operation);
   }
 }
 

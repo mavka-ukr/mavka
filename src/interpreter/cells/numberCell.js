@@ -1,4 +1,4 @@
-import { Cell } from "./cell.js";
+import { Cell } from "./utils/cell.js";
 
 class NumberCell extends Cell {
   /**
@@ -8,7 +8,7 @@ class NumberCell extends Cell {
   constructor(mavka, value) {
     super(
       mavka,
-      "Число",
+      "<число>",
       {},
       {},
       null,
@@ -17,20 +17,20 @@ class NumberCell extends Cell {
 
     this.value = value;
 
-    this.methods["виконати_додавання"] = this.mavka.tools.convertFnToDiia(
-      (value) => new this.mavka.NumberCell(this.mavka, this.asJsNumber() + value.asNumber().asJsNumber()),
+    this.methods["виконати_додавання"] = this.mavka.tools.fn(
+      ([value], context) => new this.mavka.NumberCell(this.mavka, this.asJsValue(context) + value.asNumber(context).asJsValue(context)),
       { jsArgs: false }
     );
-    this.methods["виконати_віднімання"] = this.mavka.tools.convertFnToDiia(
-      (value) => new this.mavka.NumberCell(this.mavka, this.asJsNumber() - value.asNumber().asJsNumber()),
+    this.methods["виконати_віднімання"] = this.mavka.tools.fn(
+      ([value], context) => new this.mavka.NumberCell(this.mavka, this.asJsValue(context) - value.asNumber(context).asJsValue(context)),
       { jsArgs: false }
     );
-    this.methods["виконати_множення"] = this.mavka.tools.convertFnToDiia(
-      (value) => new this.mavka.NumberCell(this.mavka, this.asJsNumber() * value.asNumber().asJsNumber()),
+    this.methods["виконати_множення"] = this.mavka.tools.fn(
+      ([value], context) => new this.mavka.NumberCell(this.mavka, this.asJsValue(context) * value.asNumber(context).asJsValue(context)),
       { jsArgs: false }
     );
-    this.methods["виконати_ділення"] = this.mavka.tools.convertFnToDiia(
-      (value) => new this.mavka.NumberCell(this.mavka, this.asJsNumber() / value.asNumber().asJsNumber()),
+    this.methods["виконати_ділення"] = this.mavka.tools.fn(
+      ([value], context) => new this.mavka.NumberCell(this.mavka, this.asJsValue(context) / value.asNumber(context).asJsValue(context)),
       { jsArgs: false }
     );
   }
@@ -39,48 +39,32 @@ class NumberCell extends Cell {
     return this;
   }
 
-  /**
-   * @return {number}
-   */
-  asJsNumber() {
+  asText(context) {
+    return new this.mavka.TextCell(this.mavka, String(this.asJsValue(context)));
+  }
+
+  asBoolean() {
+    return this.asJsValue(context) ? this.mavka.trueCellInstance : this.mavka.falseCellInstance;
+  }
+
+  asJsValue(context) {
     return this.value;
   }
 
-  asString() {
-    return new this.mavka.StringCell(this.mavka, String(this.asJsNumber()));
+  negative(context) {
+    return this.mavka.toCell(-this.asJsValue(context));
   }
 
-  asJsValue() {
-    return this.asJsNumber();
+  positive(context) {
+    return this.mavka.toCell(+this.asJsValue(context));
   }
 
   compare(value, fn) {
     if (value instanceof NumberCell) {
-      return this.mavka.toCell(fn(this.asJsNumber(), value.asJsNumber()));
+      return this.mavka.toCell(fn(this.asJsValue(context), value.asJsValue(context)));
     }
 
     return this.mavka.toCell(false);
-  }
-}
-
-export class NumberStructureCell extends Cell {
-  /**
-   * @param {Mavka} mavka
-   */
-  constructor(mavka) {
-    super(mavka, "число");
-  }
-
-  call(context, args, options = {}) {
-    if (Array.isArray(args)) {
-      return args[0].asNumber();
-    } else {
-      throw "not ok";
-    }
-  }
-
-  asString() {
-    return this.mavka.toCell(`структура число`);
   }
 }
 

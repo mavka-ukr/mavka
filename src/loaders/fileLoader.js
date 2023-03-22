@@ -34,12 +34,12 @@ class FileLoader extends Loader {
           newModulePath = elPath;
           newPath.shift();
           if (!newPath.length) {
-            throw `Неможливо завантажити модуль "${moduleStr}"`;
+            throw `Не вдалось завантажити модуль "${moduleStr}"`;
           }
           continue;
         }
         if (elStat.isFile()) {
-          throw `Неможливо завантажити модуль "${moduleStr}"`;
+          throw `Не вдалось завантажити модуль "${moduleStr}"`;
         }
       }
 
@@ -49,7 +49,7 @@ class FileLoader extends Loader {
         break;
       }
 
-      throw `Неможливо завантажити модуль "${moduleStr}"`;
+      throw `Не вдалось завантажити модуль "${moduleStr}"`;
     }
 
     const newModuleDirname = jsPath.dirname(newModulePath);

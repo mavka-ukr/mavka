@@ -1,4 +1,4 @@
-import Instruction from "./instruction.js";
+import Instruction from "./utils/instruction.js";
 
 class NegativeInstruction extends Instruction {
   /**
@@ -9,7 +9,7 @@ class NegativeInstruction extends Instruction {
   runSync(context, node) {
     const value = this.mavka.runSync(context, node.value);
 
-    return new this.mavka.NumberCell(this.mavka, -(value.asNumber().asJsValue()));
+    return value.asNumber(context).negative();
   }
 
   /**
@@ -20,7 +20,7 @@ class NegativeInstruction extends Instruction {
   async runAsync(context, node) {
     const value = await this.mavka.runAsync(context, node.value);
 
-    return new this.mavka.NumberCell(this.mavka, -(value.asNumber().asJsValue()));
+    return value.asNumber(context).negative();
   }
 }
 

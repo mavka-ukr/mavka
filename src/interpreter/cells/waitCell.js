@@ -1,4 +1,4 @@
-import { Cell } from "./cell.js";
+import { Cell } from "./utils/cell.js";
 
 class WaitCell extends Cell {
   /**
@@ -6,13 +6,9 @@ class WaitCell extends Cell {
    * @param {AsyncCell} value
    */
   constructor(mavka, value) {
-    super(mavka, "Очікувач");
+    super(mavka, "<очікування>");
 
     this.value = value;
-  }
-
-  asString() {
-    return this.mavka.toCell("Очікувач");
   }
 }
 

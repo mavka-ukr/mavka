@@ -1,4 +1,4 @@
-import Instruction from "./instruction.js";
+import Instruction from "./utils/instruction.js";
 
 class FunctionInstruction extends Instruction {
   /**

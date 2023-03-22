@@ -1,4 +1,4 @@
-import Instruction from "./instruction.js";
+import Instruction from "./utils/instruction.js";
 import IdentifierNode from "mavka-parser/src/ast/IdentifierNode.js";
 
 class TakeInstruction extends Instruction {

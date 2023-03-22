@@ -1,6 +1,6 @@
-import Instruction from "./instruction.js";
+import Instruction from "./utils/instruction.js";
 import { parse } from "mavka-parser";
-import StringCell from "../cells/stringCell.js";
+import TextCell from "../cells/textCell.js";
 
 function interpolate(value) {
   const parts = [];
@@ -62,11 +62,11 @@ class StringInstruction extends Instruction {
       if (typeof el === "string") {
         value += el;
       } else {
-        value += this.mavka.runSync(context, el).asString().asJsString();
+        value += this.mavka.runSync(context, el).asText(context).asJsString();
       }
     }
 
-    return new StringCell(this.mavka, value);
+    return new TextCell(this.mavka, value);
   }
 
   /**
@@ -83,11 +83,11 @@ class StringInstruction extends Instruction {
       if (typeof el === "string") {
         value += el;
       } else {
-        value += (await this.mavka.runAsync(context, el)).asString().asJsString();
+        value += (await this.mavka.runAsync(context, el)).asText(context).asJsString();
       }
     }
 
-    return new StringCell(this.mavka, value);
+    return new TextCell(this.mavka, value);
   }
 }
 

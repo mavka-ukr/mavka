@@ -29,17 +29,17 @@ class Context {
     this.vars[name] = value ?? this.mavka.emptyCellInstance;
   }
 
-  has(name) {
-    if (name in this.vars) {
-      return true;
-    }
-
-    if (this.parent) {
-      return this.parent.has(name);
-    }
-
-    return false;
-  }
+  // has(name) {
+  //   if (name in this.vars) {
+  //     return true;
+  //   }
+  //
+  //   if (this.parent) {
+  //     return this.parent.has(name);
+  //   }
+  //
+  //   return false;
+  // }
 
   delete(name) {
     delete this.vars[name];

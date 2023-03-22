@@ -1,4 +1,4 @@
-import Instruction from "./instruction.js";
+import Instruction from "./utils/instruction.js";
 import WaitNode from "mavka-parser/src/ast/WaitNode.js";
 import IdentifierNode from "mavka-parser/src/ast/IdentifierNode.js";
 
