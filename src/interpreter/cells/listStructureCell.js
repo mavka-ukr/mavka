@@ -6,10 +6,24 @@ class ListStructureCell extends Cell {
    */
   constructor(mavka) {
     super(mavka, "<структура список>");
-  }
 
-  doCall(context, args) {
-    return new this.mavka.ListCell(this.mavka, Object.values(args));
+    this.methods["виконати_виклик"] = this.mavka.tools.fn(
+      (args) => {
+        return new this.mavka.ListCell(this.mavka, Object.values(args));
+      },
+      { jsArgs: false }
+    );
+
+    this.methods["виконати_перетворення_на_текст"] = this.mavka.tools.fn(
+      (args, context, options) => {
+        const values = options.meValue.values
+          .map((v) => v.asText(context).asJsValue(context))
+          .join(", ");
+
+        return this.mavka.toCell(`[${values}]`);
+      },
+      { jsArgs: false }
+    );
   }
 }
 

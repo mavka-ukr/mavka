@@ -6,23 +6,17 @@ export class Cell {
    * @param {Mavka} mavka
    * @param {string} name
    * @param {Object} properties
-   * @param {Object} methods
-   * @param {Cell|null} parent
    * @param {StructureCell} structure
    */
   constructor(mavka,
               name = "<>",
               properties = {},
-              methods = {},
-              parent = null, // structure's parent (mb will be multiple inheritance in the future)
               structure = null) {
     this.mavka = mavka;
 
     this.name = name;
     this.properties = properties;
-    this.methods = methods;
 
-    this.parent = parent;
     this.structure = structure;
   }
 
@@ -44,12 +38,8 @@ export class Cell {
       return this.properties[name];
     }
 
-    if (name in this.methods) {
-      return this.methods[name];
-    }
-
     if (this.parent) {
-      return this.parent.get(name);
+      return this.parent.get(context, name);
     }
 
     if (this.structure) {

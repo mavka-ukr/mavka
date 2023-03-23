@@ -10,8 +10,6 @@ class TextCell extends Cell {
       mavka,
       "<текст>",
       {},
-      {},
-      null,
       mavka.textStructureCellInstance
     );
 
@@ -20,41 +18,34 @@ class TextCell extends Cell {
     this.methods["обрізати"] = mavka.tools.fn(() => this.asJsValue(context).trim());
 
     this.methods["виконати_додавання"] = mavka.tools.fn(
-      ([value], context) => new this.mavka.TextCell(this.mavka, this.asJsString() + value.asText(context).asJsString()),
+      ([value], context) => new this.mavka.TextCell(this.mavka, this.asJsValue(context) + value.asText(context).asJsValue(context)),
       { jsArgs: false }
     );
   }
 
-  asBoolean() {
-    return this.mavka.toCell(!!this.asJsString());
+  asBoolean(context) {
+    return this.mavka.toCell(!!this.asJsValue(context));
   }
 
   asText(context) {
     return this;
   }
 
-  asPrettyString() {
-    return this.mavka.toCell(`"${this.asJsValue(context)}"`);
-  }
-
   /**
+   * @param {Context} context
    * @return {string}
    */
-  asJsString() {
+  asJsValue(context) {
     return this.value;
   }
 
-  asJsValue(context) {
-    return this.asJsString();
-  }
-
   asNumber() {
-    return new this.mavka.NumberCell(this.mavka, Number(this.asJsString()));
+    return new this.mavka.NumberCell(this.mavka, Number(this.asJsValue()));
   }
 
   compare(value, fn) {
     if (value instanceof TextCell) {
-      return this.mavka.toCell(fn(this.asJsString(), value.asJsString()));
+      return this.mavka.toCell(fn(this.asJsValue(), value.asJsValue()));
     }
 
     return this.mavka.toCell(false);

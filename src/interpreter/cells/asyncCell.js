@@ -10,13 +10,6 @@ class AsyncCell extends Cell {
 
     this.promise = promise;
   }
-
-  /**
-   * @return {Promise}
-   */
-  getPromise() {
-    return this.promise;
-  }
 }
 
 export default AsyncCell;

@@ -14,6 +14,7 @@ class StructureCell extends Cell {
     this.node = node;
 
     this.defaultValues = {};
+    this.methods = {};
 
     if (this.node.parent) {
       this.parent = this.mavka.runSync(context, node.parent, { forceSync: true });
@@ -27,8 +28,6 @@ class StructureCell extends Cell {
       this.mavka,
       this.node.name.name,
       {},
-      {},
-      null,
       this
     );
 

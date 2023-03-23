@@ -1,6 +1,6 @@
 export const makeLoadExtensionFromFileDiiaCell = (mavka) => new mavka.PortalFunctionCell(mavka, (args, context) => {
   const path = mavka.toCell(args[0]).asText(context).asJsValue(context);
-  const moduleDirname = context.get("__шлях_до_папки_модуля__");
+  const moduleDirname = context.get("__шлях_до_папки_модуля__").asJsValue(context);
 
   mavka.global.getContext = () => context;
 

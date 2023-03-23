@@ -7,8 +7,8 @@ class PortalFunctionCell extends Cell {
     this.fn = fn;
   }
 
-  doCall(context, args) {
-    return this.fn(args, context);
+  doCall(context, args, options = {}) {
+    return this.fn(args, context, options);
   }
 }
 

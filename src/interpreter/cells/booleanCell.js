@@ -10,33 +10,28 @@ class BooleanCell extends Cell {
       mavka,
       "<логічне>",
       {},
-      {},
-      null,
       mavka.booleanStructureCellInstance
     );
 
-    this.value = value;
-  }
-
-  asText(context) {
-    return this.asJsValue(context)
-      ? this.mavka.toCell("так")
-      : this.mavka.toCell("ні");
-  }
-
-  asBoolean() {
-    return this;
+    this.value = Boolean(value);
   }
 
   /**
+   * @param {Context} context
    * @return {boolean}
    */
   asJsValue(context) {
-    return Boolean(this.value);
+    return this.value;
   }
 
-  not() {
-    return this.asJsValue(context) ? this.mavka.falseCellInstance : this.mavka.trueCellInstance;
+  /**
+   * @param {Context} context
+   * @return {BooleanCell}
+   */
+  not(context) {
+    return this.asJsValue(context)
+      ? this.mavka.falseCellInstance
+      : this.mavka.trueCellInstance;
   }
 }
 

@@ -1,14 +1,13 @@
 export function makeFn(mavka, fn, options = {}) {
   options.jsArgs = options.jsArgs ?? true;
 
-  return new mavka.PortalFunctionCell(mavka, (args, context) => {
+  return new mavka.PortalFunctionCell(mavka, (args, context, callOptions = {}) => {
     if (options.jsArgs) {
-      args = args.map((arg) => {
-        return mavka.toCell(arg).asJsValue(context);
-      });
+      args = Object.values(args)
+        .map((arg) => mavka.toCell(arg).asJsValue(context));
     }
 
-    const result = fn(args, context);
+    const result = fn(args, context, callOptions);
 
     return mavka.toCell(result);
   });
@@ -17,29 +16,27 @@ export function makeFn(mavka, fn, options = {}) {
 export function makeAsyncFn(mavka, fn, options = {}) {
   options.jsArgs = options.jsArgs ?? true;
 
-  return new mavka.PortalFunctionCell(mavka, (args, context) => {
+  return new mavka.PortalFunctionCell(mavka, (args, context, callOptions = {}) => {
     if (options.jsArgs) {
-      args = args.map((arg) => {
-        return mavka.toCell(arg).asJsValue(context);
-      });
+      args = Object.values(args)
+        .map((arg) => mavka.toCell(arg).asJsValue(context));
     }
 
     return new mavka.AsyncCell(mavka, async () => {
-      const result = await fn(args, context);
+      const result = await fn(args, context, callOptions);
 
       return mavka.toCell(result);
     });
   });
 }
 
-export function makePortalFn(mavka, fn, options = {}) {
+export function makePureFn(mavka, fn, options = {}) {
   options.jsArgs = options.jsArgs ?? true;
 
   return new mavka.PortalFunctionCell(mavka, (args, context) => {
     if (options.jsArgs) {
-      args = args.map((arg) => {
-        return mavka.toCell(arg).asJsValue(context);
-      });
+      args = Object.values(args)
+        .map((arg) => mavka.toCell(arg).asJsValue(context));
     }
 
     let result;

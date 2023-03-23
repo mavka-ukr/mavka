@@ -11,12 +11,18 @@ class EachInstruction extends Instruction {
 
     let result = null;
 
-    for (const element of iterator) {
-      context.set(node.name.name, element);
+    for (const item of iterator) {
+      if (node.keyName) {
+        context.set(node.keyName.name, item.key);
+      }
+      context.set(node.name.name, item.value);
 
       result = this.mavka.run(context, node.body);
     }
 
+    if (node.keyName) {
+      context.delete(node.keyName.name);
+    }
     context.delete(node.name.name);
 
     return result;
@@ -32,12 +38,18 @@ class EachInstruction extends Instruction {
 
     let result = null;
 
-    for (const element of iterator) {
-      context.set(node.name.name, element);
+    for (const item of iterator) {
+      if (node.keyName) {
+        context.set(node.keyName.name, item.key);
+      }
+      context.set(node.name.name, item.value);
 
       result = await this.mavka.run(context, node.body);
     }
 
+    if (node.keyName) {
+      context.delete(node.keyName.name);
+    }
     context.delete(node.name.name);
 
     return result;

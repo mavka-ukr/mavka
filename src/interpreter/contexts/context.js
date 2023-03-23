@@ -3,10 +3,11 @@ class Context {
     this.mavka = mavka;
     this.parent = parent;
     this.vars = vars;
+    this.set("__тривалий__", false);
   }
 
   isAsync() {
-    return !!this.vars["__тривалий__"];
+    return !!this.vars["__тривалий__"].asJsValue(this);
   }
 
   setAsync(async) {
@@ -26,7 +27,9 @@ class Context {
   }
 
   set(name, value) {
-    this.vars[name] = value ?? this.mavka.emptyCellInstance;
+    this.vars[name] = value != null
+      ? this.mavka.toCell(value)
+      : this.mavka.emptyCellInstance;
   }
 
   // has(name) {
