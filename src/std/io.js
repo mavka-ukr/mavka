@@ -7,7 +7,6 @@ export const makePrintDiiaCell = (mavka) => mavka.tools.fn((args, context) => co
   jsArgs: false
 });
 
-export const makeReadDiiaCell = (mavka) => mavka.tools.fn((args, context) => new mavka.TextCell(
-  mavka,
+export const makeReadDiiaCell = (mavka) => mavka.tools.fn((args, context) => mavka.makeText(
   mavka.external.promptSync({ sigint: true })(mavka.toCell(args[0]).asText(context).asJsValue())
 ));

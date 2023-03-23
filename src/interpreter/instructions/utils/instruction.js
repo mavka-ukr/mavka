@@ -18,7 +18,7 @@ class Instruction {
   }
 
   run(context, node, options = {}) {
-    return context.isAsync() && !options.forceSync ?
+    return context.isAsync && !options.forceSync ?
       this.runAsync(context, node) :
       this.runSync(context, node);
   }

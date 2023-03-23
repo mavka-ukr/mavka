@@ -1,45 +1,44 @@
-import { Cell } from "./utils/cell.js";
+import StructureCell from "./common/structureCell.js";
+import { fillParameters } from "../../std/tools.js";
 
-class ObjectStructureCell extends Cell {
+class ObjectStructureCell extends StructureCell {
   /**
    * @param {Mavka} mavka
+   * @param {string} name
+   * @param {Record<string, Cell>} properties
+   * @param {StructureCell|null} parent
+   * @param {{ name: string, defaultValue: Cell|undefined }[]} parameters
+   * @param {Record<string, Cell>} methods
    */
-  constructor(mavka) {
-    super(mavka, `<структура обʼєкт>`);
+  constructor(mavka,
+              name,
+              properties = {},
+              parent = null,
+              parameters = [],
+              methods = {}) {
+    super(mavka, name, properties, parent, parameters, methods);
 
-    this.methods["виконати_виклик"] = this.mavka.tools.fn(
-      (args) => {
-        const properties = {};
+    this.properties["виконати_виклик"] = this.mavka.tools.fn(
+      (args, callContext) => {
+        const objectCell = new this.mavka.Cell(
+          this.mavka,
+          this.name,
+          {},
+          this
+        );
 
-        if (Array.isArray(args)) {
-          args.forEach((v, k) => {
-            properties[k] = v;
-          });
-        } else {
-          Object.entries(args).forEach(([k, v]) => {
-            properties[k] = v;
-          });
-        }
+        fillParameters(
+          this.mavka,
+          callContext,
+          objectCell,
+          this.getAllParameters(),
+          args
+        );
 
-        return new this.mavka.ObjectCell(this.mavka, properties);
+        return objectCell;
       },
       { jsArgs: false }
     );
-
-    this.methods["виконати_перетворення_на_текст"] = this.mavka.tools.fn(
-      (args, context, options) => {
-        const properties = Object.entries(options.meValue.properties)
-          .map(([k, v]) => `${k}=${v.asText(context).asJsValue(context)}`)
-          .join(", ");
-
-        return this.mavka.toCell(`обʼєкт(${properties})`);
-      },
-      { jsArgs: false }
-    );
-  }
-
-  getParams() {
-    return [];
   }
 }
 

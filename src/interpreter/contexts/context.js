@@ -3,15 +3,11 @@ class Context {
     this.mavka = mavka;
     this.parent = parent;
     this.vars = vars;
-    this.set("__тривалий__", false);
+    this.isAsync = false;
   }
 
-  isAsync() {
-    return !!this.vars["__тривалий__"].asJsValue(this);
-  }
-
-  setAsync(async) {
-    this.set("__тривалий__", async);
+  setAsync(isAsync) {
+    this.isAsync = isAsync;
   }
 
   get(name) {

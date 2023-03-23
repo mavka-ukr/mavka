@@ -1,6 +1,5 @@
 import Instruction from "./utils/instruction.js";
 import Context from "../contexts/context.js";
-import ModuleCell from "../cells/moduleCell.js";
 
 async function run(mavka, context, node) {
   const moduleContext = new Context(mavka, context);
@@ -11,9 +10,11 @@ async function run(mavka, context, node) {
   const giveContext = new Context(mavka);
   moduleContext.set("__give_context__", giveContext);
 
-  await mavka.run(moduleContext, moduleProgram.body);
+  if (moduleProgram) {
+    await mavka.run(moduleContext, moduleProgram.body);
+  }
 
-  return new ModuleCell(mavka, node.name.name, giveContext);
+  return mavka.makeModule(node.name.name, giveContext);
 }
 
 class ModuleInstruction extends Instruction {

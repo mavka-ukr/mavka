@@ -1,15 +1,15 @@
-import { Cell } from "./utils/cell.js";
+import StructureCell from "./common/structureCell.js";
 
-class ListStructureCell extends Cell {
+class ListStructureCell extends StructureCell {
   /**
    * @param {Mavka} mavka
    */
   constructor(mavka) {
-    super(mavka, "<структура список>");
+    super(mavka, "список");
 
-    this.methods["виконати_виклик"] = this.mavka.tools.fn(
+    this.properties["виконати_виклик"] = this.mavka.tools.fn(
       (args) => {
-        return new this.mavka.ListCell(this.mavka, Object.values(args));
+        return this.mavka.makeList(Object.values(args));
       },
       { jsArgs: false }
     );

@@ -1,4 +1,31 @@
 import Instruction from "./utils/instruction.js";
+import { convertParamNodes } from "./utils/params.js";
+
+function doOperation(mavka, context, node) {
+  const parentStructureCell = node.parent
+    ? mavka.runSync(context, node.parent, { forceSync: true })
+    : mavka.objectStructureCellInstance;
+
+  const parameters = convertParamNodes(mavka, context, node.params);
+
+  const methods = {};
+  for (const nodeMethod of node.methods) {
+    methods[nodeMethod.name.name] = mavka.runSync(context, nodeMethod, { forceSync: true });
+  }
+
+  const structureCell = new mavka.ObjectStructureCell(
+    mavka,
+    node.name.name,
+    {},
+    parentStructureCell,
+    parameters,
+    methods
+  );
+
+  context.set(node.name.name, structureCell);
+
+  return structureCell;
+}
 
 class StructureInstruction extends Instruction {
   /**
@@ -7,11 +34,7 @@ class StructureInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    const structureCell = new this.mavka.StructureCell(this.mavka, context, node);
-
-    context.set(node.name.name, structureCell);
-
-    return structureCell;
+    return doOperation(this.mavka, context, node);
   }
 
   /**
@@ -20,11 +43,7 @@ class StructureInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    const structureCell = new this.mavka.StructureCell(this.mavka, context, node);
-
-    context.set(node.name.name, structureCell);
-
-    return structureCell;
+    return doOperation(this.mavka, context, node);
   }
 }
 

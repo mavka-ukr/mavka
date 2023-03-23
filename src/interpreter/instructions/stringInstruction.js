@@ -1,6 +1,5 @@
 import Instruction from "./utils/instruction.js";
 import { parse } from "mavka-parser";
-import TextCell from "../cells/textCell.js";
 
 function interpolate(value) {
   const parts = [];
@@ -66,7 +65,7 @@ class StringInstruction extends Instruction {
       }
     }
 
-    return new TextCell(this.mavka, value);
+    return this.mavka.makeText(value);
   }
 
   /**
@@ -87,7 +86,7 @@ class StringInstruction extends Instruction {
       }
     }
 
-    return new TextCell(this.mavka, value);
+    return this.mavka.makeText(value);
   }
 }
 

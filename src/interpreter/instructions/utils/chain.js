@@ -1,15 +1,18 @@
 import IdentifierNode from "mavka-parser/src/ast/IdentifierNode.js";
 import IdentifiersChainNode from "mavka-parser/src/ast/IdentifiersChainNode.js";
 
-export function resolveIdentifier(mavka, main, id) {
+export function resolveIdentifier(mavka, context, main, id) {
   if (id instanceof IdentifierNode) {
-    return main.get(id.name);
+    if (main instanceof mavka.Context) {
+      return main.get(id.name);
+    }
+    return main.get(context, id.name);
   }
 
   if (id instanceof IdentifiersChainNode) {
-    const left = resolveIdentifier(mavka, main, id.left);
+    const left = resolveIdentifier(mavka, context, main, id.left);
 
-    return resolveIdentifier(mavka, left, id.right);
+    return resolveIdentifier(mavka, context, left, id.right);
   }
 
   return mavka.emptyCellInstance;

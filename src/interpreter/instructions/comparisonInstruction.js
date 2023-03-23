@@ -10,7 +10,7 @@ function doOperation(context, left, right, operation) {
     "<=": () => left.doCompareLesserThanOrEquals(context, right),
 
     "є": () => left.isInstanceOf(context, right), // instanceof
-    "не є": () => left.isInstanceOf(context, right).not(), // not instanceof
+    "не є": () => left.isInstanceOf(context, right).not(context), // not instanceof
 
     "рівно": () => left.doCompareEquals(context, right), // ==
     "не рівно": () => left.doCompareNotEquals(context, right), // !=
@@ -36,7 +36,7 @@ class ComparisonInstruction extends Instruction {
     const left = this.mavka.runSync(context, node.left);
     const right = this.mavka.runSync(context, node.right);
 
-    return doOperation(left, right, node.operation);
+    return doOperation(context, left, right, node.operation);
   }
 
   /**
@@ -48,7 +48,7 @@ class ComparisonInstruction extends Instruction {
     const left = await this.mavka.runAsync(context, node.left);
     const right = await this.mavka.runAsync(context, node.right);
 
-    return doOperation(left, right, node.operation);
+    return doOperation(context, left, right, node.operation);
   }
 }
 

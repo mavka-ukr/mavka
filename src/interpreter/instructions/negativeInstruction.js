@@ -9,7 +9,7 @@ class NegativeInstruction extends Instruction {
   runSync(context, node) {
     const value = this.mavka.runSync(context, node.value);
 
-    return value.asNumber(context).negative();
+    return value.asNumber(context).negative(context);
   }
 
   /**
@@ -20,7 +20,7 @@ class NegativeInstruction extends Instruction {
   async runAsync(context, node) {
     const value = await this.mavka.runAsync(context, node.value);
 
-    return value.asNumber(context).negative();
+    return value.asNumber(context).negative(context);
   }
 }
 

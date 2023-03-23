@@ -92,7 +92,7 @@ class FileLoader extends Loader {
         first = newPath.shift();
       }
     } else {
-      result = new this.mavka.ModuleCell(this.mavka, name, giveContext);
+      result = this.mavka.makeModule(name, giveContext);
     }
 
     return { name, result };
