@@ -1,19 +1,19 @@
-import { Cell } from "./utils/cell.js";
+import StructureCell from "./common/structureCell.js";
 
-class BooleanStructureCell extends Cell {
+class BooleanStructureCell extends StructureCell {
   /**
    * @param {Mavka} mavka
    */
   constructor(mavka) {
-    super(mavka, "<структура логічне>");
+    super(mavka, "логічне");
 
-    this.methods["виконати_виклик"] = this.mavka.tools.fn(
+    this.properties["виконати_виклик"] = this.mavka.tools.fn(
       (args, context) => {
         if (Array.isArray(args) && args.length) {
           return args[0].asBoolean(context);
         }
 
-        return this.mavka.falseCellInstance;
+        return this.mavka.noCellInstance;
       },
       { jsArgs: false }
     );

@@ -13,7 +13,7 @@ class ChainInstruction extends Instruction {
       value = this.mavka.emptyCellInstance;
     }
 
-    return value.get(node.right.name);
+    return value.get(context, node.right.name);
   }
 
   /**
@@ -29,7 +29,7 @@ class ChainInstruction extends Instruction {
     }
     // console.log(value);
 
-    return value.get(node.right.name);
+    return value.get(context, node.right.name);
   }
 }
 

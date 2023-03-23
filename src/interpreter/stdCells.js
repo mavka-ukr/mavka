@@ -1,5 +1,4 @@
-import { Cell } from "./cell.js";
-import DiiaCell from "../diiaCell.js";
+import { Cell } from "./cells/common/cell.js";
 
 export class RangeCell extends Cell {
   constructor(mavka, from, to, step) {
@@ -14,19 +13,19 @@ export class RangeCell extends Cell {
     let value = this.from;
 
     while (value <= this.to) {
-      yield new this.mavka.NumberCell(this.mavka, value);
+      yield this.mavka.makeNumber(value);
 
       value += this.step;
     }
   }
 }
 
-export class RangeDiiaCell extends DiiaCell {
+export class RangeDiiaCell extends Cell {
   doCall(context, args) {
     if (Array.isArray(args)) {
-      return new this.mavka.RangeCell(this.mavka, args[0], args[1], args[2] || new this.mavka.NumberCell(this.mavka, 1));
+      return new this.mavka.RangeCell(this.mavka, args[0], args[1], args[2] || this.mavka.makeNumber(1));
     } else {
-      return new this.mavka.RangeCell(this.mavka, args["від"], args["до"], args["крок"] || new this.mavka.NumberCell(this.mavka, 1));
+      return new this.mavka.RangeCell(this.mavka, args["від"], args["до"], args["крок"] || this.mavka.makeNumber(1));
     }
   }
 }

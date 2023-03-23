@@ -22,7 +22,7 @@ class CallInstruction extends Instruction {
         meValue = context.get("я");
       }
 
-      const diia = value.get(node.value.right.name);
+      const diia = value.get(context, node.value.right.name);
       return diia.doCall(context, args, { meValue });
     } else {
       const value = this.mavka.runSync(context, node.value);
@@ -48,7 +48,7 @@ class CallInstruction extends Instruction {
         meValue = context.get("я");
       }
 
-      const diia = value.get(node.value.right.name);
+      const diia = value.get(context, node.value.right.name);
       return diia.doCall(context, args, { meValue });
     } else {
       const value = await this.mavka.runAsync(context, node.value);

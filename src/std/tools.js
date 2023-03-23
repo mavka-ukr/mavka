@@ -1,7 +1,7 @@
 export function makeFn(mavka, fn, options = {}) {
   options.jsArgs = options.jsArgs ?? true;
 
-  return new mavka.PortalFunctionCell(mavka, (args, context, callOptions = {}) => {
+  return new mavka.ProxyFunctionCell(mavka, (args, context, callOptions = {}) => {
     if (options.jsArgs) {
       args = Object.values(args)
         .map((arg) => mavka.toCell(arg).asJsValue(context));
@@ -16,7 +16,7 @@ export function makeFn(mavka, fn, options = {}) {
 export function makeAsyncFn(mavka, fn, options = {}) {
   options.jsArgs = options.jsArgs ?? true;
 
-  return new mavka.PortalFunctionCell(mavka, (args, context, callOptions = {}) => {
+  return new mavka.ProxyFunctionCell(mavka, (args, context, callOptions = {}) => {
     if (options.jsArgs) {
       args = Object.values(args)
         .map((arg) => mavka.toCell(arg).asJsValue(context));
@@ -30,45 +30,31 @@ export function makeAsyncFn(mavka, fn, options = {}) {
   });
 }
 
-export function makePureFn(mavka, fn, options = {}) {
-  options.jsArgs = options.jsArgs ?? true;
-
-  return new mavka.PortalFunctionCell(mavka, (args, context) => {
-    if (options.jsArgs) {
-      args = Object.values(args)
-        .map((arg) => mavka.toCell(arg).asJsValue(context));
-    }
-
-    let result;
-
-    if (options.thisArg) {
-      result = fn.call(options.thisArg, args);
-    } else {
-      result = fn(...args);
-    }
-
-    return mavka.toCell(result);
-  });
-}
-
-export function runParams(mavka, context, cellOrContext, params, args, defaultValues = {}) {
-  const retrieveValue = (paramName, defaultValueNode) => {
+/**
+ * @param {Mavka} mavka
+ * @param {Context} callContext
+ * @param {Cell|Context} cellOrContext
+ * @param {{ name: string, defaultValue: Cell|undefined }[]} parameters
+ * @param {Record<string, Cell>|Cell[]} args
+ */
+export function fillParameters(mavka,
+                               callContext,
+                               cellOrContext,
+                               parameters,
+                               args) {
+  const retrieveValue = (paramName, defaultValue) => {
     let value;
 
     if (Array.isArray(args)) {
-      const paramIndex = params.map((param) => param.name.name).indexOf(paramName);
+      const paramIndex = parameters.map(({ name }) => name).indexOf(paramName);
       value = args[paramIndex];
     } else {
       value = args[paramName];
     }
 
     if (value == null) {
-      if (defaultValueNode) {
-        if (paramName in defaultValues) {
-          value = defaultValues[paramName];
-        } else {
-          value = defaultValues[paramName] = mavka.runSync(context, defaultValueNode, { forceSync: true });
-        }
+      if (defaultValue) {
+        value = defaultValue;
       } else {
         value = mavka.emptyCellInstance;
       }
@@ -77,13 +63,15 @@ export function runParams(mavka, context, cellOrContext, params, args, defaultVa
     return value;
   };
 
-  for (const param of params) {
-    const name = param.name.name;
-    const value = retrieveValue(name, param.defaultValue, true);
+  for (const { name, defaultValue } of parameters) {
+    const value = retrieveValue(name, defaultValue);
+
     if (cellOrContext instanceof mavka.LightContext) {
       cellOrContext.setLocal(name, value);
-    } else {
+    } else if (cellOrContext instanceof mavka.Context) {
       cellOrContext.set(name, value);
+    } else {
+      cellOrContext.set(callContext, name, value);
     }
   }
 }

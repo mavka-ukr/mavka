@@ -27,7 +27,7 @@ function runArgs(mavka, context, args) {
     }
   };
 
-  return context.isAsync() ? runAsync() : runSync();
+  return context.isAsync ? runAsync() : runSync();
 }
 
 export default runArgs;

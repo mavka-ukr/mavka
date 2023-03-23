@@ -1,15 +1,15 @@
-import { Cell } from "./utils/cell.js";
+import StructureCell from "./common/structureCell.js";
 
-class DictionaryStructureCell extends Cell {
+class DictionaryStructureCell extends StructureCell {
   /**
    * @param {Mavka} mavka
    */
   constructor(mavka) {
-    super(mavka, "<структура словник>");
+    super(mavka, "словник");
 
-    this.methods["виконати_виклик"] = this.mavka.tools.fn(
+    this.properties["виконати_виклик"] = this.mavka.tools.fn(
       (args) => {
-        return new this.mavka.DictionaryCell(this.mavka, args);
+        return new this.mavka.makeDictionary(args);
       },
       { jsArgs: false }
     );

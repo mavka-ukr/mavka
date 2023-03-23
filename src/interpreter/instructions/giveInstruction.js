@@ -13,7 +13,7 @@ class GiveInstruction extends Instruction {
     const giveContext = context.get("__give_context__");
 
     if (giveContext) {
-      giveContext.set(lastIdentifierName(node.as) || lastIdentifierName(id), resolveIdentifier(this.mavka, context, id));
+      giveContext.set(lastIdentifierName(node.as) || lastIdentifierName(id), resolveIdentifier(this.mavka, context, context, id));
     }
 
     return node;
@@ -30,7 +30,7 @@ class GiveInstruction extends Instruction {
     const giveContext = context.get("__give_context__");
 
     if (giveContext) {
-      giveContext.set(lastIdentifierName(node.as) || lastIdentifierName(id), resolveIdentifier(this.mavka, context, id));
+      giveContext.set(lastIdentifierName(node.as) || lastIdentifierName(id), resolveIdentifier(this.mavka, context, context, id));
     }
 
     return node;

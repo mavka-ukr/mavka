@@ -5,19 +5,27 @@ export class Cell {
   /**
    * @param {Mavka} mavka
    * @param {string} name
-   * @param {Object} properties
-   * @param {StructureCell} structure
+   * @param {Record<string, Cell>} properties
+   * @param {StructureCell|null} structure
+   * @param {function} asJsValue
+   * @param {function} iteratorFn
    */
   constructor(mavka,
               name = "<>",
               properties = {},
-              structure = null) {
+              structure = null,
+              asJsValue = (context) => null,
+              iteratorFn = () => null) {
     this.mavka = mavka;
 
     this.name = name;
     this.properties = properties;
 
     this.structure = structure;
+
+    this.asJsValue = asJsValue;
+
+    this[Symbol.iterator] = iteratorFn;
   }
 
   /**
@@ -30,22 +38,12 @@ export class Cell {
       return this.structure || this.mavka.emptyCellInstance;
     }
 
-    if (name === "__батько__") {
-      return this.parent || this.mavka.emptyCellInstance;
-    }
-
     if (name in this.properties) {
       return this.properties[name];
     }
 
-    if (this.parent) {
-      return this.parent.get(context, name);
-    }
-
-    if (this.structure) {
-      if (name in this.structure.methods) {
-        return this.structure.methods[name];
-      }
+    if (this.structure && this.structure.hasMethod && this.structure.hasMethod(name)) {
+      return this.structure.getMethod(name);
     }
 
     if (name !== "виконати_отримання") {
@@ -332,7 +330,7 @@ export class Cell {
   /**
    * @param {Context} context
    * @param {Cell} value
-   * @return {BooleanCell}
+   * @return {Cell}
    */
   isInstanceOf(context, value) {
     return this.mavka.toCell(
@@ -343,9 +341,11 @@ export class Cell {
   }
 
   /**
+   * @private
    * @param {Context} context
    * @param {StructureCell} structure
    * @param {Cell} value
+   * @return {boolean}
    */
   isInstanceOfThroughStructure(context, structure, value) {
     return structure.parent
@@ -355,7 +355,7 @@ export class Cell {
 
   /**
    * @param {Context} context
-   * @return {TextCell}
+   * @return {Cell}
    */
   asText(context) {
     const asTextDiiaResult = this.doAction(context, "виконати_перетворення_на_текст");
@@ -368,7 +368,7 @@ export class Cell {
 
   /**
    * @param {Context} context
-   * @return {NumberCell}
+   * @return {Cell}
    */
   asNumber(context) {
     const asNumberDiiaResult = this.doAction(context, "виконати_перетворення_на_число");
@@ -381,7 +381,7 @@ export class Cell {
 
   /**
    * @param {Context} context
-   * @return {BooleanCell}
+   * @return {Cell}
    */
   asBoolean(context) {
     const asBooleanDiiaResult = this.doAction(context, "виконати_перетворення_на_логічне");
@@ -394,32 +394,28 @@ export class Cell {
 
   /**
    * @param {Context} context
-   * @return {*}
+   * @return {Cell}
    */
-  asJsValue(context) {
-    return null;
+  not(context) {
+    return this.asBoolean(context).asJsValue(context)
+      ? this.mavka.noCellInstance
+      : this.mavka.yesCellInstance;
   }
 
   /**
-   * @param {Cell} value
-   * @param {function} fn
-   * @return {BooleanCell}
-   * @deprecated
+   * @param {Context} context
+   * @return {Cell}
    */
-  compare(value, fn) {
-    if (value instanceof Cell) {
-      return this.mavka.toCell(fn(this, value));
-    }
-
-    return this.mavka.falseCellInstance;
+  negative(context) {
+    return this.mavka.makeNumber(-this.asNumber(context).asJsValue(context));
   }
 
-  [Symbol.iterator]() {
-    return {
-      next() {
-        return { done: true };
-      }
-    };
+  /**
+   * @param {Context} context
+   * @return {Cell}
+   */
+  positive(context) {
+    return this.mavka.makeNumber(+this.asNumber(context).asJsValue(context));
   }
 
   /**

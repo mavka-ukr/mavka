@@ -1,4 +1,4 @@
-import { Cell } from "./utils/cell.js";
+import { Cell } from "../common/cell.js";
 
 class AsyncCell extends Cell {
   /**

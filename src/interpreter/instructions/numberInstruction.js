@@ -7,7 +7,7 @@ class NumberInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    return new this.mavka.NumberCell(this.mavka, node.value);
+    return this.mavka.makeNumber(node.value);
   }
 
   /**
@@ -16,7 +16,7 @@ class NumberInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    return new this.mavka.NumberCell(this.mavka, node.value);
+    return this.mavka.makeNumber(node.value);
   }
 }
 

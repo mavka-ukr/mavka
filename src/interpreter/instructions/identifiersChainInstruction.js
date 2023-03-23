@@ -12,7 +12,7 @@ class IdentifiersChainInstruction extends Instruction {
       value = this.mavka.emptyCellInstance;
     }
 
-    return value.get(node.right.name);
+    return value.get(context, node.right.name);
   }
 
   /**
@@ -26,7 +26,7 @@ class IdentifiersChainInstruction extends Instruction {
       value = this.mavka.emptyCellInstance;
     }
 
-    return value.get(node.right.name);
+    return value.get(context, node.right.name);
   }
 }
 
