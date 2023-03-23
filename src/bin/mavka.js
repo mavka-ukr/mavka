@@ -67,7 +67,7 @@ if (filename && filename !== "допомога") {
   context.set("__шлях_до_модуля__", `${cwdPath}/${filename}`);
 
   const binPath = getBinPathSync();
-  if (binPath) {
+  if (binPath && false) {
     const stdCode = fs.readFileSync(`${jsPath.dirname(jsPath.dirname(jsPath.dirname(binPath)))}/node_modules/mavka-teka/тека.м`).toString();
 
     mavka.context.setAsync(true);
@@ -80,13 +80,14 @@ if (filename && filename !== "допомога") {
   try {
     await mavka.loader.load(context, path, false);
   } catch (e) {
+    throw e;
     if (e instanceof Error) {
       console.error(e.message);
     } else if (typeof e === "string") {
       console.error(e);
     } else if (e instanceof mavka.ThrowValue) {
       const cell = mavka.toCell(e.value);
-      console.error(`Не вдалось зловити: ${cell.asText(context).asJsString()}`);
+      console.error(`Не вдалось зловити: ${cell.asText(context).asJsValue()}`);
     } else {
       console.log(e);
     }

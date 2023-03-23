@@ -53,7 +53,7 @@ import TryNode from "mavka-parser/src/ast/TryNode.js";
 import WhileNode from "mavka-parser/src/ast/WhileNode.js";
 import WhileInstruction from "./interpreter/instructions/whileInstruction.js";
 import ListCell from "./interpreter/cells/listCell.js";
-import { makeAsyncFn, makeFn, makePortalFn } from "./std/tools.js";
+import { makeAsyncFn, makeFn, makePureFn } from "./std/tools.js";
 import ModuleNode from "mavka-parser/src/ast/ModuleNode.js";
 import ModuleInstruction from "./interpreter/instructions/moduleInstruction.js";
 import ProgramNode from "mavka-parser/src/ast/ProgramNode.js";
@@ -200,6 +200,11 @@ class Mavka {
 
     this.ThrowValue = ThrowValue;
 
+    this.tools = {};
+    this.tools.fn = (fn, options = {}) => makeFn(this, fn, options);
+    this.tools.asyncFn = (fn, options = {}) => makeAsyncFn(this, fn, options);
+    this.tools.pureFn = (fn, options = {}) => makePureFn(this, fn, options);
+
     this.booleanStructureCellInstance = new this.BooleanStructureCell(this);
     this.dictionaryStructureCellInstance = new this.DictionaryStructureCell(this);
     this.listStructureCellInstance = new this.ListStructureCell(this);
@@ -210,11 +215,6 @@ class Mavka {
     this.emptyCellInstance = new this.EmptyCell(this);
     this.trueCellInstance = new this.BooleanCell(this, true);
     this.falseCellInstance = new this.BooleanCell(this, false);
-
-    this.tools = {};
-    this.tools.fn = (fn, options = {}) => makeFn(this, fn, options);
-    this.tools.asyncFn = (fn, options = {}) => makeAsyncFn(this, fn, options);
-    this.tools.proxyFn = (fn, options = {}) => makePortalFn(this, fn, options);
 
     this.loader = options.buildLoader(this);
 
@@ -265,7 +265,7 @@ class Mavka {
     }
 
     if (typeof value === "function") {
-      return this.tools.proxyFn(value);
+      return this.tools.pureFn(value);
     }
 
     return this.emptyCellInstance;
@@ -490,7 +490,7 @@ class Mavka {
       value = await value.value;
 
       if (value instanceof this.AsyncCell) {
-        value = value.getPromise();
+        value = value.promise;
 
         // handle AsyncFunction
         if (!(value instanceof Promise)) {
@@ -508,10 +508,6 @@ class Mavka {
     const ast = parse(code);
 
     return this.run(context || this.context, ast);
-  }
-
-  newCell(...args) {
-    return new Cell(this, ...args);
   }
 }
 

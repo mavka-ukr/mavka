@@ -14,8 +14,8 @@ class FileLoader extends Loader {
     const jsPath = (await import("path")).default;
 
     const currentModuleDirname = relative
-      ? context.get("__шлях_до_папки_модуля__")
-      : context.get("__шлях_до_папки_кореневого_модуля__");
+      ? context.get("__шлях_до_папки_модуля__").asJsValue(context)
+      : context.get("__шлях_до_папки_кореневого_модуля__").asJsValue(context);
 
     let newModulePath = pak
       ? `${currentModuleDirname}/.паки` // todo: handle paks properly
@@ -61,8 +61,8 @@ class FileLoader extends Loader {
     }
 
     const moduleContext = new Context(this.mavka, this.mavka.context);
-    moduleContext.set("__шлях_до_папки_кореневого_модуля__", context.get("__шлях_до_папки_кореневого_модуля__"));
-    moduleContext.set("__шлях_до_кореневого_модуля__", context.get("__шлях_до_кореневого_модуля__"));
+    moduleContext.set("__шлях_до_папки_кореневого_модуля__", context.get("__шлях_до_папки_кореневого_модуля__").asJsValue(context));
+    moduleContext.set("__шлях_до_кореневого_модуля__", context.get("__шлях_до_кореневого_модуля__").asJsValue(context));
     moduleContext.set("__шлях_до_папки_модуля__", newModuleDirname);
     moduleContext.set("__шлях_до_модуля__", newModulePath);
     moduleContext.setAsync(true);
@@ -71,8 +71,8 @@ class FileLoader extends Loader {
     const moduleProgram = parse(moduleCode);
 
     const giveContext = new Context(this.mavka);
-    giveContext.set("__шлях_до_папки_кореневого_модуля__", context.get("__шлях_до_папки_кореневого_модуля__"));
-    giveContext.set("__шлях_до_кореневого_модуля__", context.get("__шлях_до_кореневого_модуля__"));
+    giveContext.set("__шлях_до_папки_кореневого_модуля__", context.get("__шлях_до_папки_кореневого_модуля__").asJsValue(context));
+    giveContext.set("__шлях_до_кореневого_модуля__", context.get("__шлях_до_кореневого_модуля__").asJsValue(context));
     giveContext.set("__шлях_до_папки_модуля__", newModuleDirname);
     giveContext.set("__шлях_до_модуля__", newModulePath);
 

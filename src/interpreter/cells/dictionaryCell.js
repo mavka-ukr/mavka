@@ -1,40 +1,30 @@
 import { Cell } from "./utils/cell.js";
 
 class DictionaryCell extends Cell {
-  constructor(mavka, properties) {
-    super(mavka, "словник", properties, {}, null, mavka.dictionaryStructureCellInstance);
+  constructor(mavka, items) {
+    super(
+      mavka,
+      "<словник>",
+      {},
+      mavka.dictionaryStructureCellInstance
+    );
 
-    const getFn = this.mavka.tools.fn(([index]) => {
-      return this.properties[index];
-    });
-
-    this.set("отримати", getFn);
-
-    this.methods["виконати_отримання_елементу"] = getFn;
-  }
-
-  asText(context) {
-    const properties = Object.entries(this.properties)
-      .map(([k, v]) => `${this.mavka.toCell(k).asText(context).asJsString()}=${this.mavka.toCell(v).asText(context).asJsString()}`)
-      .join(", ");
-
-    return this.mavka.toCell(`(${properties})`);
+    this.items = items;
   }
 
   asJsValue(context) {
-    return this.values
-      .map((v) => {
-        if (v instanceof this.mavka.Cell) {
-          return v.asJsValue(context);
-        }
+    const obj = {};
 
-        return null;
-      });
+    for (const [k, v] of Object.entries(this.items)) {
+      obj[this.mavka.toCell(k).asJsValue(context)] = v.asJsValue(context);
+    }
+
+    return obj;
   }
 
   * [Symbol.iterator]() {
-    for (const value of this.values) {
-      yield value;
+    for (const [key, value] of Object.entries(this.items)) {
+      yield { key, value };
     }
   }
 }

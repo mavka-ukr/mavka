@@ -62,7 +62,7 @@ class StringInstruction extends Instruction {
       if (typeof el === "string") {
         value += el;
       } else {
-        value += this.mavka.runSync(context, el).asText(context).asJsString();
+        value += this.mavka.runSync(context, el).asText(context).asJsValue();
       }
     }
 
@@ -83,7 +83,7 @@ class StringInstruction extends Instruction {
       if (typeof el === "string") {
         value += el;
       } else {
-        value += (await this.mavka.runAsync(context, el)).asText(context).asJsString();
+        value += (await this.mavka.runAsync(context, el)).asText(context).asJsValue();
       }
     }
 

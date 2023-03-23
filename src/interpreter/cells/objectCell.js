@@ -10,18 +10,8 @@ class ObjectCell extends Cell {
       mavka,
       "<обʼєкт>",
       properties,
-      {},
-      null,
       mavka.objectStructureCellInstance
     );
-  }
-
-  asText(context) {
-    const properties = Object.entries(this.properties)
-      .map(([k, v]) => `${k}=${v.asText(context).asJsValue(context)}`)
-      .join(", ");
-
-    return this.mavka.toCell(`${this.name}(${properties})`);
   }
 
   asJsValue(context) {

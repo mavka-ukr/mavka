@@ -7,11 +7,11 @@ class EmptyCell extends Cell {
     this.structure = this;
   }
 
-  get(name) {
+  get(context, name) {
     throw new this.mavka.ThrowValue(this, this.mavka.toCell(`Неможливо отримати "${name}" з пустоти.`));
   }
 
-  set(name, value) {
+  set(context, name, value) {
     throw new this.mavka.ThrowValue(this, this.mavka.toCell(`Неможливо встановити "${name}" на пустоту.`));
   }
 

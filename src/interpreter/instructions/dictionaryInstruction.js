@@ -7,13 +7,13 @@ class DictionaryInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    const args = {};
+    const items = {};
 
     for (const [k, v] of Object.entries(node.args)) {
-      args[k] = this.mavka.runSync(context, v);
+      items[k] = this.mavka.runSync(context, v);
     }
 
-    return this.mavka.dictionaryStructureCellInstance.doCall(context, args);
+    return this.mavka.dictionaryStructureCellInstance.doCall(context, items);
   }
 
   /**
@@ -22,13 +22,13 @@ class DictionaryInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    const args = {};
+    const items = {};
 
     for (const [k, v] of Object.entries(node.args)) {
-      args[k] = await this.mavka.runAsync(context, v);
+      items[k] = await this.mavka.runAsync(context, v);
     }
 
-    return this.mavka.dictionaryStructureCellInstance.doCall(context, args);
+    return this.mavka.dictionaryStructureCellInstance.doCall(context, items);
   }
 }
 
