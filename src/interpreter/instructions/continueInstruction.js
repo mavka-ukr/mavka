@@ -7,7 +7,7 @@ class ContinueInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    //
+    this.mavka.throw(context, `"продовжити" наразі недоступно.`);
   }
 
   /**
@@ -16,7 +16,7 @@ class ContinueInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    //
+    this.mavka.throw(context, `"продовжити" наразі недоступно.`);
   }
 }
 

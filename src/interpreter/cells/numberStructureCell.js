@@ -7,217 +7,172 @@ class NumberStructureCell extends StructureCell {
   constructor(mavka) {
     super(mavka, "число");
 
-    this.properties["виконати_виклик"] = this.mavka.tools.fn(
-      (args, context) => {
+    this.properties["виконати_виклик"] = this.mavka.makeProxyFunction((args, context) => {
         if (Array.isArray(args) && args.length) {
           return args[0].asNumber(context);
         }
 
         return this.mavka.toCell(0);
-      },
-      { jsArgs: false }
+      }
     );
 
-    this.methods["виконати_додавання"] = this.mavka.tools.fn(
-      (args, context, options) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+    this.setMethod("виконати_додавання", (args, context, options) => {
+      if (!args[0]) {
+        throw "no value provided.";
+      }
 
-        return this.mavka.toCell(options.meValue.asJsValue(context) + args[0].asNumber(context).asJsValue(context));
-      },
-      { jsArgs: false }
-    );
-    this.methods["виконати_віднімання"] = this.mavka.tools.fn(
-      (args, context, options) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return this.mavka.toCell(options.meValue.asJsValue(context) + args[0].asNumber(context).asJsValue(context));
+    });
+    this.setMethod("виконати_віднімання", (args, context, options) => {
+      if (!args[0]) {
+        throw "no value provided.";
+      }
 
-        return this.mavka.toCell(options.meValue.asJsValue(context) - args[0].asNumber(context).asJsValue(context));
-      },
-      { jsArgs: false }
-    );
-    this.methods["виконати_множення"] = this.mavka.tools.fn(
-      (args, context, options) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return this.mavka.toCell(options.meValue.asJsValue(context) - args[0].asNumber(context).asJsValue(context));
+    });
+    this.setMethod("виконати_множення", (args, context, options) => {
+      if (!args[0]) {
+        throw "no value provided.";
+      }
 
-        return this.mavka.toCell(options.meValue.asJsValue(context) * args[0].asNumber(context).asJsValue(context));
-      },
-      { jsArgs: false }
-    );
-    this.methods["виконати_ділення"] = this.mavka.tools.fn(
-      (args, context, options) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return this.mavka.toCell(options.meValue.asJsValue(context) * args[0].asNumber(context).asJsValue(context));
+    });
+    this.setMethod("виконати_ділення", (args, context, options) => {
+      if (!args[0]) {
+        throw "no value provided.";
+      }
 
-        return this.mavka.toCell(options.meValue.asJsValue(context) / args[0].asNumber(context).asJsValue(context));
-      },
-      { jsArgs: false }
-    );
-    this.methods["виконати_ділення_за_модулем_остача"] = this.mavka.tools.fn(
-      (args, context, options) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return this.mavka.toCell(options.meValue.asJsValue(context) / args[0].asNumber(context).asJsValue(context));
+    });
+    this.setMethod("виконати_ділення_за_модулем_остача", (args, context, options) => {
+      if (!args[0]) {
+        throw "no value provided.";
+      }
 
-        return this.mavka.toCell(options.meValue.asJsValue(context) % args[0].asNumber(context).asJsValue(context));
-      },
-      { jsArgs: false }
-    );
-    this.methods["виконати_ділення_за_модулем_частка"] = this.mavka.tools.fn(
-      (args, context, options) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return this.mavka.toCell(options.meValue.asJsValue(context) % args[0].asNumber(context).asJsValue(context));
+    });
+    this.setMethod("виконати_ділення_за_модулем_частка", (args, context, options) => {
+      if (!args[0]) {
+        throw "no value provided.";
+      }
 
-        return this.mavka.toCell(Math.floor(options.meValue.asJsValue(context) / args[0].asNumber(context).asJsValue(context)));
-      },
-      { jsArgs: false }
-    );
-    this.methods["виконати_піднесення_до_степеня"] = this.mavka.tools.fn(
-      (args, context, options) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return this.mavka.toCell(Math.floor(options.meValue.asJsValue(context) / args[0].asNumber(context).asJsValue(context)));
+    });
+    this.setMethod("виконати_піднесення_до_степеня", (args, context, options) => {
+      if (!args[0]) {
+        throw "no value provided.";
+      }
 
-        return this.mavka.toCell(Math.pow(options.meValue.asJsValue(context), args[0].asNumber(context).asJsValue(context)));
-      },
-      { jsArgs: false }
-    );
-    this.methods["виконати_виняткову_дизʼюнкцію"] = this.mavka.tools.fn(
-      (args, context, options) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return this.mavka.toCell(Math.pow(options.meValue.asJsValue(context), args[0].asNumber(context).asJsValue(context)));
+    });
+    this.setMethod("виконати_виняткову_дизʼюнкцію", (args, context, options) => {
+      if (!args[0]) {
+        throw "no value provided.";
+      }
 
-        return this.mavka.toCell(options.meValue.asJsValue(context) ^ args[0].asNumber(context).asJsValue(context));
-      },
-      { jsArgs: false }
-    );
+      return this.mavka.toCell(options.meValue.asJsValue(context) ^ args[0].asNumber(context).asJsValue(context));
+    });
 
-    this.methods["виконати_перетворення_на_текст"] = this.mavka.tools.fn(
-      (args, context, options) =>
-        this.mavka.toCell(String(options.meValue.asJsValue(context))),
-      { jsArgs: false }
-    );
-    this.methods["виконати_перетворення_на_число"] = this.mavka.tools.fn(
-      (args, context, options) => options.meValue,
-      { jsArgs: false }
-    );
-    this.methods["виконати_перетворення_на_логічне"] = this.mavka.tools.fn(
-      (args, context, options) =>
-        options.meValue.asJsValue(context) ? this.mavka.yesCellInstance : this.mavka.noCellInstance,
-      { jsArgs: false }
-    );
+    this.setMethod("виконати_перетворення_на_текст", (args, context, options) => {
+      return this.mavka.toCell(String(options.meValue.asJsValue(context)));
+    });
+    this.setMethod("виконати_перетворення_на_число", (args, context, options) => {
+      return options.meValue;
+    });
+    this.setMethod("виконати_перетворення_на_логічне", (args, context, options) => {
+      return options.meValue.asJsValue(context) ? this.mavka.yesCellInstance : this.mavka.noCellInstance;
+    });
 
     // ==
-    this.methods["виконати_порівняння_чи_рівно"] = this.mavka.tools.fn(
-      (args, context, options) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+    this.setMethod("виконати_порівняння_чи_рівно", (args, context, options) => {
+      if (!args[0]) {
+        throw "no value provided.";
+      }
 
-        if (!args[0].isInstanceOf(context, options.meValue.structure).asJsValue(context)) {
-          return this.mavka.noCellInstance;
-        }
+      if (!args[0].isInstanceOf(context, options.meValue.structure).asJsValue(context)) {
+        return this.mavka.noCellInstance;
+      }
 
-        const meJsValue = options.meValue.asJsValue(context);
-        const compJsValue = args[0].asJsValue(context);
+      const meJsValue = options.meValue.asJsValue(context);
+      const compJsValue = args[0].asJsValue(context);
 
-        return meJsValue === compJsValue
-          ? this.mavka.yesCellInstance
-          : this.mavka.noCellInstance;
-      },
-      { jsArgs: false }
-    );
+      return meJsValue === compJsValue
+        ? this.mavka.yesCellInstance
+        : this.mavka.noCellInstance;
+    });
     // !=
-    this.methods["виконати_порівняння_чи_не_рівно"] = this.mavka.tools.fn(
-      (args, context, options) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+    this.setMethod("виконати_порівняння_чи_не_рівно", (args, context, options) => {
+      if (!args[0]) {
+        throw "no value provided.";
+      }
 
-        if (!args[0].isInstanceOf(context, options.meValue.structure).asJsValue(context)) {
-          return this.mavka.yesCellInstance;
-        }
+      if (!args[0].isInstanceOf(context, options.meValue.structure).asJsValue(context)) {
+        return this.mavka.yesCellInstance;
+      }
 
-        const meJsValue = options.meValue.asJsValue(context);
-        const compJsValue = args[0].asJsValue(context);
+      const meJsValue = options.meValue.asJsValue(context);
+      const compJsValue = args[0].asJsValue(context);
 
-        return meJsValue === compJsValue
-          ? this.mavka.noCellInstance
-          : this.mavka.yesCellInstance;
-      },
-      { jsArgs: false }
-    );
+      return meJsValue === compJsValue
+        ? this.mavka.noCellInstance
+        : this.mavka.yesCellInstance;
+    });
     // <
-    this.methods["виконати_порівняння_чи_менше"] = this.mavka.tools.fn(
-      (args, context, options) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+    this.setMethod("виконати_порівняння_чи_менше", (args, context, options) => {
+      if (!args[0]) {
+        throw "no value provided.";
+      }
 
-        const meJsValue = options.meValue.asJsValue(context);
-        const compJsValue = args[0].asNumber(context).asJsValue(context);
+      const meJsValue = options.meValue.asJsValue(context);
+      const compJsValue = args[0].asNumber(context).asJsValue(context);
 
-        return meJsValue < compJsValue
-          ? this.mavka.yesCellInstance
-          : this.mavka.noCellInstance;
-      },
-      { jsArgs: false }
-    );
+      return meJsValue < compJsValue
+        ? this.mavka.yesCellInstance
+        : this.mavka.noCellInstance;
+    });
     // >=
-    this.methods["виконати_порівняння_чи_не_менше"] = this.mavka.tools.fn(
-      (args, context, options) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+    this.setMethod("виконати_порівняння_чи_не_менше", (args, context, options) => {
+      if (!args[0]) {
+        throw "no value provided.";
+      }
 
-        const meJsValue = options.meValue.asJsValue(context);
-        const compJsValue = args[0].asNumber(context).asJsValue(context);
+      const meJsValue = options.meValue.asJsValue(context);
+      const compJsValue = args[0].asNumber(context).asJsValue(context);
 
-        return meJsValue >= compJsValue
-          ? this.mavka.yesCellInstance
-          : this.mavka.noCellInstance;
-      },
-      { jsArgs: false }
-    );
+      return meJsValue >= compJsValue
+        ? this.mavka.yesCellInstance
+        : this.mavka.noCellInstance;
+    });
     // >
-    this.methods["виконати_порівняння_чи_більше"] = this.mavka.tools.fn(
-      (args, context, options) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+    this.setMethod("виконати_порівняння_чи_більше", (args, context, options) => {
+      if (!args[0]) {
+        throw "no value provided.";
+      }
 
-        const meJsValue = options.meValue.asJsValue(context);
-        const compJsValue = args[0].asNumber(context).asJsValue(context);
+      const meJsValue = options.meValue.asJsValue(context);
+      const compJsValue = args[0].asNumber(context).asJsValue(context);
 
-        return meJsValue > compJsValue
-          ? this.mavka.yesCellInstance
-          : this.mavka.noCellInstance;
-      },
-      { jsArgs: false }
-    );
+      return meJsValue > compJsValue
+        ? this.mavka.yesCellInstance
+        : this.mavka.noCellInstance;
+    });
     // <=
-    this.methods["виконати_порівняння_чи_не_більше"] = this.mavka.tools.fn(
-      (args, context, options) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+    this.setMethod("виконати_порівняння_чи_не_більше", (args, context, options) => {
+      if (!args[0]) {
+        throw "no value provided.";
+      }
 
-        const meJsValue = options.meValue.asJsValue(context);
-        const compJsValue = args[0].asNumber(context).asJsValue(context);
+      const meJsValue = options.meValue.asJsValue(context);
+      const compJsValue = args[0].asNumber(context).asJsValue(context);
 
-        return meJsValue <= compJsValue
-          ? this.mavka.yesCellInstance
-          : this.mavka.noCellInstance;
-      },
-      { jsArgs: false }
-    );
+      return meJsValue <= compJsValue
+        ? this.mavka.yesCellInstance
+        : this.mavka.noCellInstance;
+    });
+  }
+
+  static createInstance(mavka) {
+    return new NumberStructureCell(mavka);
   }
 }
 

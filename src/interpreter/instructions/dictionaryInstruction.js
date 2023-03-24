@@ -13,7 +13,7 @@ class DictionaryInstruction extends Instruction {
       items[k] = this.mavka.runSync(context, v);
     }
 
-    return this.mavka.dictionaryStructureCellInstance.doCall(context, items);
+    return this.mavka.makeDictionary(items);
   }
 
   /**
@@ -28,7 +28,7 @@ class DictionaryInstruction extends Instruction {
       items[k] = await this.mavka.runAsync(context, v);
     }
 
-    return this.mavka.dictionaryStructureCellInstance.doCall(context, items);
+    return this.mavka.makeDictionary(items);
   }
 }
 

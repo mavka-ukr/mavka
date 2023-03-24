@@ -19,7 +19,7 @@ class Context {
       return this.parent.get(name);
     }
 
-    throw new this.mavka.ThrowValue(this, `"${name}" не знайдено в контексті.`);
+    this.mavka.throw(this, `"${name}" не знайдено в контексті.`);
   }
 
   set(name, value) {

@@ -43,7 +43,7 @@ import ThrowNode from "mavka-parser/src/ast/ThrowNode.js";
 import TryNode from "mavka-parser/src/ast/TryNode.js";
 import WhileNode from "mavka-parser/src/ast/WhileNode.js";
 import WhileInstruction from "./interpreter/instructions/whileInstruction.js";
-import { fillParameters, makeAsyncFn, makeFn } from "./std/tools.js";
+import { fillParameters } from "./std/tools.js";
 import ModuleNode from "mavka-parser/src/ast/ModuleNode.js";
 import ModuleInstruction from "./interpreter/instructions/moduleInstruction.js";
 import ProgramNode from "mavka-parser/src/ast/ProgramNode.js";
@@ -97,10 +97,10 @@ import DictionaryStructureCell from "./interpreter/cells/dictionaryStructureCell
 import ListStructureCell from "./interpreter/cells/listStructureCell.js";
 import ObjectStructureCell from "./interpreter/cells/objectStructureCell.js";
 import DiiaStructureCell from "./interpreter/cells/diiaStructureCell.js";
-import AnonymousDiiaStructureCell from "./interpreter/cells/anonymousDiiaStructureCell.js";
-import FunctionStructureCell from "./interpreter/cells/functionStructureCell.js";
 import ProxyFunctionCell from "./interpreter/cells/portal/proxyFunctionCell.js";
 import EmptyCell from "./interpreter/cells/common/emptyCell.js";
+import Method from "./interpreter/cells/common/method.js";
+import PortalListCell from "./interpreter/cells/portal/portalListCell.js";
 
 /**
  * @property {Context} context
@@ -166,11 +166,9 @@ class Mavka {
     this.AsyncCell = AsyncCell;
     this.WaitCell = WaitCell;
 
-    this.AnonymousDiiaStructureCell = AnonymousDiiaStructureCell;
     this.BooleanStructureCell = BooleanStructureCell;
     this.DictionaryStructureCell = DictionaryStructureCell;
     this.DiiaStructureCell = DiiaStructureCell;
-    this.FunctionStructureCell = FunctionStructureCell;
     this.ListStructureCell = ListStructureCell;
     this.NumberStructureCell = NumberStructureCell;
     this.ObjectStructureCell = ObjectStructureCell;
@@ -178,6 +176,7 @@ class Mavka {
 
     this.PortalCell = PortalCell;
     this.PortalFunctionCell = PortalFunctionCell;
+    this.PortalListCell = PortalListCell;
     this.ProxyFunctionCell = ProxyFunctionCell;
 
     this.Context = Context;
@@ -189,43 +188,13 @@ class Mavka {
 
     this.ThrowValue = ThrowValue;
 
-    this.tools = {};
-    this.tools.fn = (fn, options = {}) => makeFn(this, fn, options);
-    this.tools.asyncFn = (fn, options = {}) => makeAsyncFn(this, fn, options);
-
-    this.booleanStructureCellInstance = new this.BooleanStructureCell(this);
-    this.dictionaryStructureCellInstance = new this.DictionaryStructureCell(this);
-    this.diiaStructureCellInstance = new this.DiiaStructureCell(this);
-    this.anonymousDiiaStructureCellInstance = new this.AnonymousDiiaStructureCell(this);
-    this.functionStructureCellInstance = new this.FunctionStructureCell(this);
-    this.listStructureCellInstance = new this.ListStructureCell(this);
-    this.numberStructureCellInstance = new this.NumberStructureCell(this);
-    this.textStructureCellInstance = new this.TextStructureCell(this);
-    this.objectStructureCellInstance = new this.ObjectStructureCell(this, "обʼєкт", {}, null, [], {
-      "виконати_перетворення_на_текст": this.tools.fn(
-        (args, callContext, options) => {
-          const properties = options.meValue.structure.getAllParameters()
-            .map((p) => [p.name, options.meValue.get(callContext, p.name)])
-            .map(([k, v]) => `${k}=${v.asText(callContext).asJsValue(callContext)}`)
-            .join(", ");
-
-          return this.toCell(`${options.meValue.name}(${properties})`);
-        },
-        { jsArgs: false }
-      ),
-      "виконати_перетворення_на_число": this.tools.fn(
-        (args, callContext, options) => {
-          return options.meValue.asText(callContext).asNumber(callContext);
-        },
-        { jsArgs: false }
-      ),
-      "виконати_перетворення_на_логічне": this.tools.fn(
-        () => {
-          return this.yesCellInstance;
-        },
-        { jsArgs: false }
-      )
-    });
+    this.booleanStructureCellInstance = this.BooleanStructureCell.createInstance(this);
+    this.dictionaryStructureCellInstance = this.DictionaryStructureCell.createInstance(this);
+    this.diiaStructureCellInstance = this.DiiaStructureCell.createInstance(this);
+    this.listStructureCellInstance = this.ListStructureCell.createInstance(this);
+    this.numberStructureCellInstance = this.NumberStructureCell.createInstance(this);
+    this.textStructureCellInstance = this.TextStructureCell.createInstance(this);
+    this.objectStructureCellInstance = this.ObjectStructureCell.createInstance(this);
 
     this.emptyCellInstance = new this.EmptyCell(this);
 
@@ -285,8 +254,7 @@ class Mavka {
     }
 
     if (Array.isArray(value)) {
-      // todo: mb better make portal list now new list
-      return this.makeList(value.map((v) => this.toCell(v)));
+      return this.makePortalList(value);
     }
 
     if (typeof value === "object") {
@@ -300,6 +268,11 @@ class Mavka {
     return this.emptyCellInstance;
   }
 
+  /**
+   * @param {Node} context
+   * @param {ASTNode|ASTNode[]} ast
+   * @return {Promise<ReturnValue|Cell>|ReturnValue|Cell}
+   */
   run(context, ast) {
     if (ast instanceof ProgramNode) {
       ast = ast.body;
@@ -340,6 +313,12 @@ class Mavka {
     return context.isAsync ? runAsync() : runSync();
   }
 
+  /**
+   * @param {Context} context
+   * @param {ASTNode} node
+   * @param {Object} options
+   * @return {ReturnValue|Cell}
+   */
   runSync(context, node, options = {}) {
     options.forceSync ??= false;
 
@@ -512,6 +491,12 @@ class Mavka {
     }
   }
 
+  /**
+   * @param {Context} context
+   * @param {ASTNode} node
+   * @param {Object} options
+   * @return {Promise<Cell>}
+   */
   async runAsync(context, node, options = {}) {
     let value = await this.runSync(context, node, options);
 
@@ -531,6 +516,14 @@ class Mavka {
     }
 
     return value;
+  }
+
+  /**
+   * @param {Context} context
+   * @param {*} value
+   */
+  throw(context, value) {
+    throw new this.ThrowValue(context, this.toCell(value));
   }
 
   /**
@@ -584,7 +577,9 @@ class Mavka {
     return new this.Cell(
       this,
       "словник",
-      {},
+      {
+        items
+      },
       this.dictionaryStructureCellInstance,
       (context) => {
         const data = {};
@@ -611,7 +606,9 @@ class Mavka {
     return new this.Cell(
       this,
       "список",
-      {},
+      {
+        values
+      },
       this.listStructureCellInstance,
       (context) => {
         return values
@@ -626,71 +623,99 @@ class Mavka {
   }
 
   /**
-   * @param {string} name
+   * @param {string|null} name
    * @param {{ name: string, defaultValue: Cell|undefined }[]} parameters
    * @param {Class<Context>} contextClass
-   * @param {Context} outerContext
+   * @param {Context|null} outerContext
    * @param {boolean} isAsync
-   * @param {ASTNode[]} body
-   * @param {StructureCell} structure
+   * @param {ASTNode[]|function} body
+   * @param {StructureCell} diiaStructure
+   * @param {Cell|null|undefined} meValue
    * @return {Cell}
    */
   makeDiia(name,
-           parameters = {},
+           parameters = [],
            contextClass,
            outerContext,
            isAsync,
            body,
-           structure) {
+           diiaStructure,
+           meValue = null) {
     return new this.Cell(
       this,
       name,
       {
-        "виконати_виклик": this.tools.fn(
+        "виконати_виклик": this.makeProxyFunction(
           (args, context, options) => {
             const diiaContext = new contextClass(this, outerContext);
 
-            if (!this.isEmpty(options.meValue)) {
-              diiaContext.set("я", options.meValue);
+            if (meValue) {
+              diiaContext.set("я", meValue);
             }
 
             if (isAsync) {
               diiaContext.setAsync(true);
             }
 
-            fillParameters(
-              this,
-              context,
-              diiaContext,
-              parameters,
-              args
-            );
+            if (parameters) {
+              fillParameters(
+                this,
+                context,
+                diiaContext,
+                parameters,
+                args
+              );
+            }
 
-            let result = this.run(diiaContext, body);
+            let result;
+
+            if (typeof body === "function") {
+              result = body(args, context, { ...options, meValue });
+            } else {
+              result = this.run(diiaContext, body);
+            }
 
             if (result instanceof ReturnValue) {
               result = result.value;
             }
 
             return result;
-          },
-          { jsArgs: false }
+          }
         )
       },
-      structure,
+      diiaStructure,
       () => null
     );
   }
 
+  /**
+   * @param {string} name
+   * @param {Context} context
+   * @return {Cell}
+   */
   makeModule(name, context) {
     return new this.Cell(this, `<модуль ${name}>`, {
-      "виконати_отримання": this.tools.fn(
+      "виконати_отримання": this.makeProxyFunction(
         (args, callContext) => {
           return context.get(args[0].asText(callContext).asJsValue(callContext));
-        },
-        { jsArgs: false }
+        }
       )
     });
+  }
+
+  /**
+   * @param {string} name
+   * @param {function} fn
+   * @return {Method}
+   */
+  makeMethod(name, fn) {
+    return new Method(
+      name,
+      null,
+      fn,
+      false,
+      null
+    );
   }
 
   /**
@@ -710,10 +735,26 @@ class Mavka {
   }
 
   /**
+   * @param {Array} values
+   * @return {PortalListCell}
+   */
+  makePortalList(values) {
+    return new this.PortalListCell(this, values);
+  }
+
+  /**
    * @param {function} fn
    * @return {ProxyFunctionCell}
    */
   makeProxyFunction(fn) {
+    return new this.ProxyFunctionCell(this, fn);
+  }
+
+  /**
+   * @param {function} fn
+   * @return {ProxyFunctionCell}
+   */
+  makeAsyncProxyFunction(fn) {
     return new this.ProxyFunctionCell(this, fn);
   }
 }

@@ -1,12 +1,10 @@
-export const makePrintDiiaCell = (mavka) => mavka.tools.fn((args, context) => console.log(
+export const makePrintDiiaCell = (mavka) => mavka.makeProxyFunction((args, context) => console.log(
   ...args
     .map((arg) => {
       return arg.asText(context).asJsValue(context);
     })
-), {
-  jsArgs: false
-});
+));
 
-export const makeReadDiiaCell = (mavka) => mavka.tools.fn((args, context) => mavka.makeText(
-  mavka.external.promptSync({ sigint: true })(mavka.toCell(args[0]).asText(context).asJsValue())
+export const makeReadDiiaCell = (mavka) => mavka.makeProxyFunction((args, context) => mavka.makeText(
+  mavka.external.promptSync({ sigint: true })(args[0].asText(context).asJsValue())
 ));

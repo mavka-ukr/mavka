@@ -9,7 +9,7 @@ class PositiveInstruction extends Instruction {
   runSync(context, node) {
     const value = this.mavka.runSync(context, node.value);
 
-    return value.asNumber(context).positive();
+    return value.asNumber(context).positive(context);
   }
 
   /**
@@ -20,7 +20,7 @@ class PositiveInstruction extends Instruction {
   async runAsync(context, node) {
     const value = await this.mavka.runAsync(context, node.value);
 
-    return value.asNumber(context).positive();
+    return value.asNumber(context).positive(context);
   }
 }
 

@@ -7,7 +7,7 @@ class PostIncrementInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    //
+    this.mavka.throw(context, `Інкремент наразі недоступний.`);
   }
 
   /**
@@ -16,7 +16,7 @@ class PostIncrementInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    //
+    this.mavka.throw(context, `Інкремент наразі недоступний.`);
   }
 }
 

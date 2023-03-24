@@ -10,7 +10,6 @@ class TryInstruction extends Instruction {
     try {
       return this.mavka.run(context, node.tryBody);
     } catch (e) {
-      console.log(e);
       if (e instanceof this.mavka.ThrowValue) {
         if (node.catchName) {
           context.set(node.catchName.name, e.value);

@@ -7,7 +7,7 @@ class BreakInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    //
+    this.mavka.throw(context, `"зупинити" наразі недоступно.`);
   }
 
   /**
@@ -16,7 +16,7 @@ class BreakInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    //
+    this.mavka.throw(context, `"зупинити" наразі недоступно.`);
   }
 }
 

@@ -7,23 +7,23 @@ class ListStructureCell extends StructureCell {
   constructor(mavka) {
     super(mavka, "список");
 
-    this.properties["виконати_виклик"] = this.mavka.tools.fn(
+    this.properties["виконати_виклик"] = this.mavka.makeProxyFunction(
       (args) => {
         return this.mavka.makeList(Object.values(args));
-      },
-      { jsArgs: false }
+      }
     );
 
-    this.methods["виконати_перетворення_на_текст"] = this.mavka.tools.fn(
-      (args, context, options) => {
-        const values = options.meValue.values
-          .map((v) => v.asText(context).asJsValue(context))
-          .join(", ");
+    this.setMethod("виконати_перетворення_на_текст", (args, context, options) => {
+      const values = options.meValue.properties.values
+        .map((v) => v.asText(context).asJsValue(context))
+        .join(", ");
 
-        return this.mavka.toCell(`[${values}]`);
-      },
-      { jsArgs: false }
-    );
+      return this.mavka.toCell(`[${values}]`);
+    });
+  }
+
+  static createInstance(mavka) {
+    return new ListStructureCell(mavka);
   }
 }
 
