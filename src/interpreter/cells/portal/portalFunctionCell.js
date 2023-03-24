@@ -6,7 +6,13 @@ class PortalFunctionCell extends Cell {
    * @param {function} fn
    */
   constructor(mavka, fn) {
-    super(mavka, "<портал функція>");
+    super(
+      mavka,
+      "<портал функція>",
+      {},
+      null,
+      () => this.fn
+    );
 
     this.fn = fn;
   }

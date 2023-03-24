@@ -1,3 +1,5 @@
+import Context from "../../contexts/context.js";
+
 /**
  * Cell represents a value in Mavka.
  */
@@ -26,6 +28,8 @@ export class Cell {
     this.asJsValue = asJsValue;
 
     this[Symbol.iterator] = iteratorFn;
+
+    this.cachedMethods = new Map();
   }
 
   /**
@@ -43,7 +47,22 @@ export class Cell {
     }
 
     if (this.structure && this.structure.hasMethod && this.structure.hasMethod(name)) {
-      return this.structure.getMethod(name);
+      const method = this.structure.getMethod(name);
+
+      if (!this.cachedMethods.has(method)) {
+        this.cachedMethods.set(method, this.mavka.makeDiia(
+          method.name,
+          method.parameters,
+          Context,
+          method.outerContext,
+          method.isAsync,
+          method.body,
+          this.mavka.diiaStructureCellInstance,
+          this
+        ));
+      }
+
+      return this.cachedMethods.get(method);
     }
 
     if (name !== "виконати_отримання") {
@@ -422,6 +441,7 @@ export class Cell {
    * @param {Context} context
    * @param {string} name
    * @param {Record<string, Cell>|Cell[]} args
+   * @param {Object} options
    * @return {Cell|undefined}
    */
   doAction(context, name, args = []) {
@@ -431,9 +451,15 @@ export class Cell {
       return undefined;
     }
 
-    return actionDiia.doCall(context, args, {
+    const result = actionDiia.doCall(context, args, {
       meValue: this
     });
+
+    if (!result) {
+      return this.mavka.emptyCellInstance;
+    }
+
+    return result;
   }
 }
 

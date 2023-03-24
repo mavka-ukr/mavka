@@ -9,7 +9,7 @@ class ArrayInstruction extends Instruction {
   runSync(context, node) {
     const values = node.elements.map((el) => this.mavka.runSync(context, el));
 
-    return this.mavka.listStructureCellInstance.doCall(context, values);
+    return this.mavka.makeList(values);
   }
 
   /**
@@ -20,7 +20,7 @@ class ArrayInstruction extends Instruction {
   async runAsync(context, node) {
     const values = await Promise.all(node.elements.map((el) => this.mavka.runAsync(context, el)));
 
-    return this.mavka.listStructureCellInstance.doCall(context, values);
+    return this.mavka.makeList(values);
   }
 }
 

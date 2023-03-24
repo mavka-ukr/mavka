@@ -9,7 +9,7 @@ class NotInstruction extends Instruction {
   runSync(context, node) {
     const value = this.mavka.runSync(context, node.value);
 
-    return value.asBoolean(context).not();
+    return value.asBoolean(context).not(context);
   }
 
   /**
@@ -20,7 +20,7 @@ class NotInstruction extends Instruction {
   async runAsync(context, node) {
     const value = await this.mavka.runAsync(context, node.value);
 
-    return value.asBoolean(context).not();
+    return value.asBoolean(context).not(context);
   }
 }
 

@@ -7,28 +7,28 @@ class DictionaryStructureCell extends StructureCell {
   constructor(mavka) {
     super(mavka, "словник");
 
-    this.properties["виконати_виклик"] = this.mavka.tools.fn(
+    this.properties["виконати_виклик"] = this.mavka.makeProxyFunction(
       (args) => {
-        return new this.mavka.makeDictionary(args);
-      },
-      { jsArgs: false }
+        return this.mavka.makeDictionary(args);
+      }
     );
 
-    this.methods["виконати_перетворення_на_текст"] = this.mavka.tools.fn(
-      (args, context, options) => {
-        const items = Object.entries(options.meValue.items)
-          .map(([k, v]) => {
-            const kt = this.mavka.toCell(k).asText(context).asJsValue(context);
-            const vt = v.asText(context).asJsValue(context);
+    this.setMethod("виконати_перетворення_на_текст", (args, context, options) => {
+      const items = Object.entries(options.meValue.properties.items)
+        .map(([k, v]) => {
+          const kt = this.mavka.toCell(k).asText(context).asJsValue(context);
+          const vt = v.asText(context).asJsValue(context);
 
-            return `${kt}=${vt}`;
-          })
-          .join(", ");
+          return `${kt}=${vt}`;
+        })
+        .join(", ");
 
-        return this.mavka.toCell(`(${items})`);
-      },
-      { jsArgs: false }
-    );
+      return this.mavka.toCell(`(${items})`);
+    });
+  }
+
+  static createInstance(mavka) {
+    return new DictionaryStructureCell(mavka);
   }
 }
 

@@ -1,5 +1,6 @@
 import Instruction from "./utils/instruction.js";
 import { convertParamNodes } from "./utils/params.js";
+import Method from "../cells/common/method.js";
 
 function doOperation(mavka, context, node) {
   const parentStructureCell = node.parent
@@ -10,7 +11,15 @@ function doOperation(mavka, context, node) {
 
   const methods = {};
   for (const nodeMethod of node.methods) {
-    methods[nodeMethod.name.name] = mavka.runSync(context, nodeMethod, { forceSync: true });
+    const method = new Method(
+      nodeMethod.name.name,
+      parameters,
+      nodeMethod.body,
+      nodeMethod.async,
+      context
+    );
+
+    methods[method.name] = method;
   }
 
   const structureCell = new mavka.ObjectStructureCell(

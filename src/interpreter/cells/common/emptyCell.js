@@ -7,188 +7,153 @@ class EmptyCell extends Cell {
   constructor(mavka) {
     super(mavka, "пусто");
 
-    this.properties["виконати_додавання"] = this.mavka.tools.fn(
-      (args, context) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+    this.properties["виконати_додавання"] = this.mavka.makeProxyFunction((args, context) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.emptyCellInstance;
+      }
 
-        return args[0].asNumber(context);
-      },
-      { jsArgs: false }
-    );
-    this.properties["виконати_віднімання"] = this.mavka.tools.fn(
-      (args, context) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return value.asNumber(context);
+    });
+    this.properties["виконати_віднімання"] = this.mavka.makeProxyFunction((args, context) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.emptyCellInstance;
+      }
 
-        return args[0].asNumber(context).negative(context);
-      },
-      { jsArgs: false }
-    );
-    this.properties["виконати_множення"] = this.mavka.tools.fn(
-      (args) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return value.asNumber(context).negative(context);
+    });
+    this.properties["виконати_множення"] = this.mavka.makeProxyFunction((args) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.emptyCellInstance;
+      }
 
-        return this.mavka.makeNumber(0);
-      },
-      { jsArgs: false }
-    );
-    this.properties["виконати_ділення"] = this.mavka.tools.fn(
-      (args) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return this.mavka.makeNumber(0);
+    });
+    this.properties["виконати_ділення"] = this.mavka.makeProxyFunction((args) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.emptyCellInstance;
+      }
 
-        return this.mavka.makeNumber(0);
-      },
-      { jsArgs: false }
-    );
-    this.properties["виконати_ділення_за_модулем_остача"] = this.mavka.tools.fn(
-      (args) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return this.mavka.makeNumber(0);
+    });
+    this.properties["виконати_ділення_за_модулем_остача"] = this.mavka.makeProxyFunction((args) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.emptyCellInstance;
+      }
 
-        return this.mavka.makeNumber(0);
-      },
-      { jsArgs: false }
-    );
-    this.properties["виконати_ділення_за_модулем_частка"] = this.mavka.tools.fn(
-      (args) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return this.mavka.makeNumber(0);
+    });
+    this.properties["виконати_ділення_за_модулем_частка"] = this.mavka.makeProxyFunction((args) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.emptyCellInstance;
+      }
 
-        return this.mavka.makeNumber(0);
-      },
-      { jsArgs: false }
-    );
-    this.properties["виконати_піднесення_до_степеня"] = this.mavka.tools.fn(
-      (args) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return this.mavka.makeNumber(0);
+    });
+    this.properties["виконати_піднесення_до_степеня"] = this.mavka.makeProxyFunction((args) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.emptyCellInstance;
+      }
 
-        return this.mavka.makeNumber(0);
-      },
-      { jsArgs: false }
-    );
-    this.properties["виконати_виняткову_дизʼюнкцію"] = this.mavka.tools.fn(
-      (args, context) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return this.mavka.makeNumber(0);
+    });
+    this.properties["виконати_виняткову_дизʼюнкцію"] = this.mavka.makeProxyFunction((args, context) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.emptyCellInstance;
+      }
 
-        return args[0].asNumber(context);
-      },
-      { jsArgs: false }
-    );
+      return value.asNumber(context);
+    });
 
-    this.properties["виконати_перетворення_на_текст"] = this.mavka.tools.fn(
-      () => {
-        return this.mavka.makeText("пусто");
-      },
-      { jsArgs: false }
-    );
-    this.properties["виконати_перетворення_на_число"] = this.mavka.tools.fn(
-      () => this.mavka.makeNumber(0),
-      { jsArgs: false }
-    );
-    this.properties["виконати_перетворення_на_логічне"] = this.mavka.tools.fn(
-      () => this.mavka.noCellInstance,
-      { jsArgs: false }
-    );
+    this.properties["виконати_перетворення_на_текст"] = this.mavka.makeProxyFunction(() => {
+      return this.mavka.makeText("пусто");
+    });
+    this.properties["виконати_перетворення_на_число"] = this.mavka.makeProxyFunction(() => {
+      return this.mavka.makeNumber(0);
+    });
+    this.properties["виконати_перетворення_на_логічне"] = this.mavka.makeProxyFunction(() => {
+      return this.mavka.noCellInstance;
+    });
 
-    // ==
-    this.properties["виконати_порівняння_чи_рівно"] = this.mavka.tools.fn(
-      (args) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+    this.properties["виконати_порівняння_чи_рівно"] = this.mavka.makeProxyFunction((args) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.emptyCellInstance;
+      }
 
-        return args[0] === this.mavka.emptyCellInstance
-          ? this.mavka.yesCellInstance
-          : this.mavka.noCellInstance;
-      },
-      { jsArgs: false }
-    );
-    // !=
-    this.properties["виконати_порівняння_чи_не_рівно"] = this.mavka.tools.fn(
-      (args) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return value === this.mavka.emptyCellInstance
+        ? this.mavka.yesCellInstance
+        : this.mavka.noCellInstance;
+    });
+    this.properties["виконати_порівняння_чи_не_рівно"] = this.mavka.makeProxyFunction((args) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.emptyCellInstance;
+      }
 
-        return args[0] !== this.mavka.emptyCellInstance
-          ? this.mavka.yesCellInstance
-          : this.mavka.noCellInstance;
-      },
-      { jsArgs: false }
-    );
-    // <
-    this.properties["виконати_порівняння_чи_менше"] = this.mavka.tools.fn(
-      (args, context) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return value !== this.mavka.emptyCellInstance
+        ? this.mavka.yesCellInstance
+        : this.mavka.noCellInstance;
+    });
+    this.properties["виконати_порівняння_чи_менше"] = this.mavka.makeProxyFunction((args, context) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.emptyCellInstance;
+      }
 
-        const compJsValue = args[0].asNumber(context).asJsValue(context);
+      const compJsValue = value.asNumber(context).asJsValue(context);
 
-        return 0 < compJsValue
-          ? this.mavka.yesCellInstance
-          : this.mavka.noCellInstance;
-      },
-      { jsArgs: false }
-    );
-    // >=
-    this.properties["виконати_порівняння_чи_не_менше"] = this.mavka.tools.fn(
-      (args, context) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return 0 < compJsValue
+        ? this.mavka.yesCellInstance
+        : this.mavka.noCellInstance;
+    });
+    this.properties["виконати_порівняння_чи_не_менше"] = this.mavka.makeProxyFunction((args, context) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.emptyCellInstance;
+      }
 
-        const compJsValue = args[0].asNumber(context).asJsValue(context);
+      const compJsValue = value.asNumber(context).asJsValue(context);
 
-        return 0 >= compJsValue
-          ? this.mavka.yesCellInstance
-          : this.mavka.noCellInstance;
-      },
-      { jsArgs: false }
-    );
-    // >
-    this.properties["виконати_порівняння_чи_більше"] = this.mavka.tools.fn(
-      (args, context) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return 0 >= compJsValue
+        ? this.mavka.yesCellInstance
+        : this.mavka.noCellInstance;
+    });
+    this.properties["виконати_порівняння_чи_більше"] = this.mavka.makeProxyFunction((args, context) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.emptyCellInstance;
+      }
 
-        const compJsValue = args[0].asNumber(context).asJsValue(context);
+      const compJsValue = value.asNumber(context).asJsValue(context);
 
-        return 0 > compJsValue
-          ? this.mavka.yesCellInstance
-          : this.mavka.noCellInstance;
-      },
-      { jsArgs: false }
-    );
-    // <=
-    this.properties["виконати_порівняння_чи_не_більше"] = this.mavka.tools.fn(
-      (args, context) => {
-        if (!args[0]) {
-          throw "no value provided.";
-        }
+      return 0 > compJsValue
+        ? this.mavka.yesCellInstance
+        : this.mavka.noCellInstance;
+    });
+    this.properties["виконати_порівняння_чи_не_більше"] = this.mavka.makeProxyFunction((args, context) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.emptyCellInstance;
+      }
 
-        const compJsValue = args[0].asNumber(context).asJsValue(context);
+      const compJsValue = value.asNumber(context).asJsValue(context);
 
-        return 0 <= compJsValue
-          ? this.mavka.yesCellInstance
-          : this.mavka.noCellInstance;
-      },
-      { jsArgs: false }
-    );
+      return 0 <= compJsValue
+        ? this.mavka.yesCellInstance
+        : this.mavka.noCellInstance;
+    });
+  }
+
+  doCall(context, args, options = {}) {
+    return this.mavka.throw(context, "Неможливо викликати пустоту.");
   }
 
   asText(context) {

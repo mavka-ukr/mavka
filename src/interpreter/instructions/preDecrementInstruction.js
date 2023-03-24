@@ -7,7 +7,7 @@ class PreDecrementInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    //
+    this.mavka.throw(context, `Декремент наразі недоступний.`);
   }
 
   /**
@@ -16,7 +16,7 @@ class PreDecrementInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    //
+    this.mavka.throw(context, `Декремент наразі недоступний.`);
   }
 }
 

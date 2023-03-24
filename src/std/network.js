@@ -1,4 +1,4 @@
-export const makeGetJsonDiiaCell = (diia, context) => diia.tools.asyncFn(async ([url]) => {
+export const makeGetJsonDiiaCell = (diia) => diia.makeAsyncProxyFunction(async ([url]) => {
   const response = await fetch(url, {
     method: "get",
     headers: {

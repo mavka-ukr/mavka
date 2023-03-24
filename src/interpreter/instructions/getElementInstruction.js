@@ -10,7 +10,7 @@ class GetElementInstruction extends Instruction {
     let left = this.mavka.runSync(context, node.left);
     let element = this.mavka.runSync(context, node.element);
 
-    return left.getAt(context, element);
+    return left.doGetElement(context, element);
   }
 
   /**
@@ -22,7 +22,7 @@ class GetElementInstruction extends Instruction {
     let left = await this.mavka.runAsync(context, node.left);
     let element = await this.mavka.runAsync(context, node.element);
 
-    return left.getAt(context, element);
+    return left.doGetElement(context, element);
   }
 }
 

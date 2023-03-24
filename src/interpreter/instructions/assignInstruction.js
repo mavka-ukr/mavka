@@ -10,7 +10,11 @@ class AssignInstruction extends Instruction {
    */
   runSync(context, node) {
     if (node.wait) {
-      throw "Cannot wait in sync context";
+      this.mavka.throw(context, `"${node.symbol}" недоступно в нетривалому контексті.`);
+    }
+
+    if (node.symbol !== "=") {
+      this.mavka.throw(context, `Присвоєння через "${node.symbol}" наразі недоступне.`);
     }
 
     const value = this.mavka.runSync(context, node.value);
@@ -33,6 +37,10 @@ class AssignInstruction extends Instruction {
    */
   async runAsync(context, node) {
     const value = await this.mavka.runAsync(context, node.wait ? new WaitNode(context, { value: node.value }) : node.value);
+
+    if (node.symbol !== "=") {
+      this.mavka.throw(context, `Присвоєння через "${node.symbol}" наразі недоступне.`);
+    }
 
     if (node.id instanceof IdentifierNode) {
       context.set(node.id.name, value);

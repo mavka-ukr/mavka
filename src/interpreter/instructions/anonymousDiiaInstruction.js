@@ -5,13 +5,13 @@ function doOperation(mavka, context, node) {
   const parameters = convertParamNodes(mavka, context, node.params);
 
   return new mavka.makeDiia(
-    "",
+    null,
     parameters,
     mavka.Context,
     context,
     node.async,
     node.body,
-    mavka.anonymousDiiaStructureCellInstance
+    mavka.diiaStructureCellInstance
   );
 }
 

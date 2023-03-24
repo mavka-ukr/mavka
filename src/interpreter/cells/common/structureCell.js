@@ -7,7 +7,7 @@ class StructureCell extends Cell {
    * @param {Record<string, Cell>} properties
    * @param {StructureCell|null} parent
    * @param {{ name: string, defaultValue: Cell|undefined }[]} parameters
-   * @param {Record<string, Cell>} methods
+   * @param {Record<string, Method>} methods
    */
   constructor(mavka,
               name,
@@ -43,6 +43,10 @@ class StructureCell extends Cell {
 
   getMethod(name) {
     return this.getAllMethods()[name];
+  }
+
+  setMethod(name, fn) {
+    this.methods[name] = this.mavka.makeMethod(name, fn);
   }
 
   getAllMethods() {

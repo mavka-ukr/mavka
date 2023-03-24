@@ -6,7 +6,13 @@ class PortalCell extends Cell {
    * @param {Object} object
    */
   constructor(mavka, object) {
-    super(mavka, "<портал>");
+    super(
+      mavka,
+      "<портал>",
+      {},
+      null,
+      () => this.object
+    );
 
     this.object = object;
   }
@@ -28,27 +34,6 @@ class PortalCell extends Cell {
    */
   set(context, name, value) {
     this.object[name] = value ? value.asJsValue(context) : undefined;
-  }
-
-  /**
-   * @inheritDoc
-   */
-  doCall() {
-    throw new this.mavka.ThrowValue(this, this.mavka.makeText("Неможливо викликати портал."));
-  }
-
-  /**
-   * @inheritDoc
-   */
-  asJsValue() {
-    return this.object;
-  }
-
-  /**
-   * @inheritDoc
-   */
-  asBoolean() {
-    return this.mavka.toCell(true);
   }
 }
 

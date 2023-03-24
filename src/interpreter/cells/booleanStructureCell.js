@@ -7,35 +7,36 @@ class BooleanStructureCell extends StructureCell {
   constructor(mavka) {
     super(mavka, "логічне");
 
-    this.properties["виконати_виклик"] = this.mavka.tools.fn(
+    this.properties["виконати_виклик"] = this.mavka.makeProxyFunction(
       (args, context) => {
         if (Array.isArray(args) && args.length) {
           return args[0].asBoolean(context);
         }
 
         return this.mavka.noCellInstance;
-      },
-      { jsArgs: false }
+      }
     );
 
-    this.methods["виконати_перетворення_на_текст"] = this.mavka.tools.fn(
-      (args, context, options) =>
-        options.meValue.asJsValue(context)
+    this.setMethod("виконати_перетворення_на_текст", (args, context, options) => {
+        return options.meValue.asJsValue(context)
           ? this.mavka.toCell("так")
-          : this.mavka.toCell("ні"),
-      { jsArgs: false }
+          : this.mavka.toCell("ні");
+      }
     );
-    this.methods["виконати_перетворення_на_число"] = this.mavka.tools.fn(
-      (args, context, options) =>
-        options.meValue.asJsValue(context)
+    this.setMethod("виконати_перетворення_на_число", (args, context, options) => {
+        return options.meValue.asJsValue(context)
           ? this.mavka.toCell(1)
-          : this.mavka.toCell(0),
-      { jsArgs: false }
+          : this.mavka.toCell(0);
+      }
     );
-    this.methods["виконати_перетворення_на_логічне"] = this.mavka.tools.fn(
-      (args, context, options) => options.meValue,
-      { jsArgs: false }
+    this.setMethod("виконати_перетворення_на_логічне", (args, context, options) => {
+        return options.meValue;
+      }
     );
+  }
+
+  static createInstance(mavka) {
+    return new BooleanStructureCell(mavka);
   }
 }
 

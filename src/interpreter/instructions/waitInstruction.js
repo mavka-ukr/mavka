@@ -7,7 +7,7 @@ class WaitInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    throw new this.mavka.ThrowValue(context, "Не можна чекати в нетривалому контексті.");
+    this.mavka.throw(context, "Не можна чекати в нетривалому контексті.");
   }
 
   /**

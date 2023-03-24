@@ -80,16 +80,11 @@ if (filename && filename !== "допомога") {
   try {
     await mavka.loader.load(context, path, false);
   } catch (e) {
-    throw e;
-    if (e instanceof Error) {
-      console.error(e.message);
-    } else if (typeof e === "string") {
-      console.error(e);
-    } else if (e instanceof mavka.ThrowValue) {
-      const cell = mavka.toCell(e.value);
-      console.error(`Не вдалось зловити: ${cell.asText(context).asJsValue()}`);
+    if (e instanceof mavka.ThrowValue) {
+      const cell = e.value;
+      console.error(`Не вдалось зловити: ${cell.asText(context).asJsValue(context)}`);
     } else {
-      console.log(e);
+      throw e;
     }
   }
 } else {

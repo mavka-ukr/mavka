@@ -7,7 +7,7 @@ class ArrayDestructionInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    //
+    this.mavka.throw(context, `Деструкція наразі недоступна.`);
   }
 
   /**
@@ -16,7 +16,7 @@ class ArrayDestructionInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    //
+    this.mavka.throw(context, `Деструкція наразі недоступна.`);
   }
 }
 
