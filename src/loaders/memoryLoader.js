@@ -15,37 +15,41 @@ class MemoryLoader extends Loader {
     const newPath = path.slice(1);
 
     if (!(name in this.files)) {
-      throw `Не вдалось завантажити модуль "${name}"`;
+      throw `Не вдалось завантажити модуль "${name}."`;
     }
+
+    let module;
 
     if (this.loadedModules[name]) {
-      return { name, result: this.loadedModules[name] };
+      module = this.loadedModules[name];
+    } else {
+      const moduleContext = new Context(this.mavka, this.mavka.context);
+      moduleContext.setAsync(true);
+
+      const moduleCode = this.files[name];
+      const moduleProgram = parse(moduleCode);
+
+      module = this.mavka.makeModule(name);
+      moduleContext.setModule(module);
+
+      this.loadedModules[name] = module;
+
+      await this.mavka.run(moduleContext, moduleProgram.body);
     }
 
-    const moduleContext = new Context(this.mavka, this.mavka.context);
-    moduleContext.setAsync(true);
-
-    const moduleCode = this.files[name];
-    const moduleProgram = parse(moduleCode);
-
-    const giveContext = new Context(this.mavka);
-    moduleContext.set("__give_context__", giveContext);
-
-    this.loadedModules[name] = giveContext;
-
-    await this.mavka.run(moduleContext, moduleProgram.body);
-
-    let result = giveContext;
+    let result = module;
 
     if (newPath.length) {
       let first = newPath.shift();
       while (first) {
         name = first;
-        result = result.get(first);
+        if (result instanceof this.mavka.Context) {
+          result = result.get(first);
+        } else {
+          result = result.get(context, first);
+        }
         first = newPath.shift();
       }
-    } else {
-      result = this.mavka.makeModule(name, giveContext);
     }
 
     return { name, result };

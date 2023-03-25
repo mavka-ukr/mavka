@@ -3,9 +3,18 @@ import { Cell } from "./cell.js";
 class EmptyCell extends Cell {
   /**
    * @param {Mavka} mavka
+   * @param {*} jsValue
    */
-  constructor(mavka) {
-    super(mavka, "пусто");
+  constructor(mavka, jsValue) {
+    super(
+      mavka,
+      "пусто",
+      {},
+      null,
+      () => jsValue,
+      null,
+      {}
+    );
 
     this.properties["виконати_перетворення_на_текст"] = this.mavka.makeProxyFunction(() => {
       return this.mavka.makeText("пусто");
@@ -63,7 +72,7 @@ class EmptyCell extends Cell {
         value = this.mavka.empty;
       }
 
-      return value === this.mavka.empty
+      return this.mavka.isEmpty(value)
         ? this.mavka.yes
         : this.mavka.no;
     });
@@ -73,7 +82,7 @@ class EmptyCell extends Cell {
         value = this.mavka.empty;
       }
 
-      return value !== this.mavka.empty
+      return !this.mavka.isEmpty(value)
         ? this.mavka.yes
         : this.mavka.no;
     });
@@ -148,7 +157,7 @@ class EmptyCell extends Cell {
   }
 
   isInstanceOf(value) {
-    return value === this.mavka.empty;
+    return this.mavka.isEmpty(value);
   }
 }
 

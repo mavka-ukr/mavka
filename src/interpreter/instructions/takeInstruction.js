@@ -26,7 +26,7 @@ class TakeInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    return doOperation(context, node);
+    return doOperation(this.mavka, context, node);
   }
 
   /**
@@ -35,7 +35,7 @@ class TakeInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    return doOperation(context, node);
+    return doOperation(this.mavka, context, node);
   }
 }
 

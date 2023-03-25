@@ -8,13 +8,10 @@ class GiveInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    const id = node.id;
+    const name = lastIdentifierName(node.as) || lastIdentifierName(node.id);
+    const value = resolveIdentifier(this.mavka, context, context, node.id);
 
-    const giveContext = context.get("__give_context__");
-
-    if (giveContext) {
-      giveContext.set(lastIdentifierName(node.as) || lastIdentifierName(id), resolveIdentifier(this.mavka, context, context, id));
-    }
+    context.give(name, value);
 
     return node;
   }
@@ -25,13 +22,10 @@ class GiveInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    const id = node.id;
+    const name = lastIdentifierName(node.as) || lastIdentifierName(node.id);
+    const value = resolveIdentifier(this.mavka, context, context, node.id);
 
-    const giveContext = context.get("__give_context__");
-
-    if (giveContext) {
-      giveContext.set(lastIdentifierName(node.as) || lastIdentifierName(id), resolveIdentifier(this.mavka, context, context, id));
-    }
+    context.give(name, value);
 
     return node;
   }

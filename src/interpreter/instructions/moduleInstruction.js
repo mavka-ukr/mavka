@@ -7,14 +7,14 @@ async function run(mavka, context, node) {
 
   const moduleProgram = node.program;
 
-  const giveContext = new Context(mavka);
-  moduleContext.set("__give_context__", giveContext);
+  const module = mavka.makeModule(node.name.name);
+  moduleContext.setModule(module);
 
   if (moduleProgram) {
     await mavka.run(moduleContext, moduleProgram.body);
   }
 
-  return mavka.makeModule(node.name.name, giveContext);
+  return module;
 }
 
 class ModuleInstruction extends Instruction {
