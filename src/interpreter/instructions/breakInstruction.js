@@ -1,5 +1,8 @@
 import Instruction from "./utils/instruction.js";
 
+export class BreakSignal {
+}
+
 class BreakInstruction extends Instruction {
   /**
    * @param {Context} context
@@ -7,7 +10,7 @@ class BreakInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    this.mavka.throw(context, `"зупинити" наразі недоступно.`);
+    return new BreakSignal();
   }
 
   /**
@@ -16,7 +19,7 @@ class BreakInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    this.mavka.throw(context, `"зупинити" наразі недоступно.`);
+    return new BreakSignal();
   }
 }
 

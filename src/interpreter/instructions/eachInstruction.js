@@ -1,4 +1,7 @@
 import Instruction from "./utils/instruction.js";
+import { ContinueSignal } from "./continueInstruction.js";
+import { BreakSignal } from "./breakInstruction.js";
+import { ReturnSignal } from "./returnInstruction.js";
 
 class EachInstruction extends Instruction {
   /**
@@ -17,7 +20,20 @@ class EachInstruction extends Instruction {
       }
       context.set(node.name.name, item.value);
 
-      result = this.mavka.run(context, node.body);
+      const value = this.mavka.run(context, node.body);
+
+      if (value instanceof ContinueSignal) {
+        continue;
+      }
+
+      if (value instanceof BreakSignal) {
+        break;
+      }
+
+      if (value instanceof ReturnSignal) {
+        result = value;
+        break;
+      }
     }
 
     if (node.keyName) {
@@ -25,7 +41,7 @@ class EachInstruction extends Instruction {
     }
     context.delete(node.name.name);
 
-    return result;
+    return this.mavka.empty;
   }
 
   /**
@@ -44,7 +60,20 @@ class EachInstruction extends Instruction {
       }
       context.set(node.name.name, item.value);
 
-      result = await this.mavka.run(context, node.body);
+      const value = await this.mavka.run(context, node.body);
+
+      if (value instanceof ContinueSignal) {
+        continue;
+      }
+
+      if (value instanceof BreakSignal) {
+        break;
+      }
+
+      if (value instanceof ReturnSignal) {
+        result = value;
+        break;
+      }
     }
 
     if (node.keyName) {
@@ -52,7 +81,7 @@ class EachInstruction extends Instruction {
     }
     context.delete(node.name.name);
 
-    return result;
+    return this.mavka.empty;
   }
 }
 

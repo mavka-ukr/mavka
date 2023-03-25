@@ -61,22 +61,22 @@ class FileLoader extends Loader {
     }
 
     const moduleContext = new Context(this.mavka, this.mavka.context);
-    moduleContext.set("__шлях_до_папки_кореневого_модуля__", context.get("__шлях_до_папки_кореневого_модуля__").asJsValue(context));
-    moduleContext.set("__шлях_до_кореневого_модуля__", context.get("__шлях_до_кореневого_модуля__").asJsValue(context));
-    moduleContext.set("__шлях_до_папки_модуля__", newModuleDirname);
-    moduleContext.set("__шлях_до_модуля__", newModulePath);
+    moduleContext.set("__шлях_до_папки_кореневого_модуля__", context.get("__шлях_до_папки_кореневого_модуля__"));
+    moduleContext.set("__шлях_до_кореневого_модуля__", context.get("__шлях_до_кореневого_модуля__"));
+    moduleContext.set("__шлях_до_папки_модуля__", this.mavka.makeText(newModuleDirname));
+    moduleContext.set("__шлях_до_модуля__", this.mavka.makeText(newModulePath));
     moduleContext.setAsync(true);
 
     const moduleCode = fs.readFileSync(newModulePath).toString();
     const moduleProgram = parse(moduleCode);
 
     const giveContext = new Context(this.mavka);
-    giveContext.set("__шлях_до_папки_кореневого_модуля__", context.get("__шлях_до_папки_кореневого_модуля__").asJsValue(context));
-    giveContext.set("__шлях_до_кореневого_модуля__", context.get("__шлях_до_кореневого_модуля__").asJsValue(context));
-    giveContext.set("__шлях_до_папки_модуля__", newModuleDirname);
-    giveContext.set("__шлях_до_модуля__", newModulePath);
+    giveContext.set("__шлях_до_папки_кореневого_модуля__", context.get("__шлях_до_папки_кореневого_модуля__"));
+    giveContext.set("__шлях_до_кореневого_модуля__", context.get("__шлях_до_кореневого_модуля__"));
+    giveContext.set("__шлях_до_папки_модуля__", this.mavka.makeText(newModuleDirname));
+    giveContext.set("__шлях_до_модуля__", this.mavka.makeText(newModulePath));
 
-    moduleContext.set("__give_context__", giveContext);
+    // moduleContext.set("__give_context__", giveContext);
 
     this.loadedModules[newModulePath] = giveContext;
 

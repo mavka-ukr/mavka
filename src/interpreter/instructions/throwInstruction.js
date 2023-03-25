@@ -3,7 +3,7 @@ import Instruction from "./utils/instruction.js";
 export class ThrowValue {
   /**
    * @param {Context} context
-   * @param {*} value
+   * @param {Cell} value
    */
   constructor(context, value) {
     this.context = context;
@@ -18,7 +18,7 @@ class ThrowInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    return this.mavka.throw(context, this.mavka.runSync(context, node.value));
+    this.mavka.fall(context, this.mavka.runSync(context, node.value));
   }
 
   /**
@@ -27,7 +27,7 @@ class ThrowInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    return this.mavka.throw(context, await this.mavka.runAsync(context, node.value));
+    this.mavka.fall(context, await this.mavka.runAsync(context, node.value));
   }
 }
 

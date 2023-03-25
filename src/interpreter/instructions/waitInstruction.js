@@ -7,7 +7,7 @@ class WaitInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    this.mavka.throw(context, "Не можна чекати в нетривалому контексті.");
+    this.mavka.fall(context, this.mavka.makeText("Не можна чекати в нетривалому контексті."));
   }
 
   /**
@@ -16,7 +16,7 @@ class WaitInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    return new this.mavka.WaitCell(this.mavka, this.mavka.runSync(context, node.value));
+    return new this.mavka.AwaitCell(this.mavka, this.mavka.runSync(context, node.value));
   }
 }
 

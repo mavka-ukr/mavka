@@ -1,5 +1,5 @@
 import StructureCell from "./common/structureCell.js";
-import { fillParameters } from "../../std/tools.js";
+import { fillParameters } from "../instructions/utils/params.js";
 
 class ObjectStructureCell extends StructureCell {
   /**
@@ -47,7 +47,12 @@ class ObjectStructureCell extends StructureCell {
         (args, callContext, options) => {
           const properties = options.meValue.structure.getAllParameters()
             .map((p) => [p.name, options.meValue.get(callContext, p.name)])
-            .map(([k, v]) => `${k}=${v.asText(callContext).asJsValue(callContext)}`)
+            .map(([k, v]) => {
+              if (mavka.isText(v)) {
+                return `${k}="${v.asText(callContext).asJsValue(callContext)}"`;
+              }
+              return `${k}=${v.asText(callContext).asJsValue(callContext)}`;
+            })
             .join(", ");
 
           return mavka.toCell(`${options.meValue.name}(${properties})`);
@@ -62,7 +67,7 @@ class ObjectStructureCell extends StructureCell {
       "виконати_перетворення_на_логічне": mavka.makeMethod(
         "виконати_перетворення_на_логічне",
         () => {
-          return mavka.yesCellInstance;
+          return mavka.yes;
         }
       )
     });

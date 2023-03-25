@@ -11,20 +11,20 @@ class PortalCell extends Cell {
       "<портал>",
       {},
       null,
-      () => this.object
+      () => this.meta.object,
+      null,
+      { object }
     );
-
-    this.object = object;
   }
 
   /**
    * @inheritDoc
    */
   get(context, name) {
-    let value = this.object[name];
+    let value = this.meta.object[name];
     if (typeof value === "function") {
       // do not lose context on call
-      value = (...args) => this.object[name](...args);
+      value = (...args) => this.meta.object[name](...args);
     }
     return this.mavka.toCell(value);
   }
@@ -33,7 +33,7 @@ class PortalCell extends Cell {
    * @inheritDoc
    */
   set(context, name, value) {
-    this.object[name] = value ? value.asJsValue(context) : undefined;
+    this.meta.object[name] = value ? value.asJsValue(context) : undefined;
   }
 }
 

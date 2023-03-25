@@ -7,7 +7,7 @@ class BooleanInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    return node.value ? this.mavka.yesCellInstance : this.mavka.noCellInstance;
+    return node.value ? this.mavka.yes : this.mavka.no;
   }
 
   /**
@@ -16,7 +16,7 @@ class BooleanInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    return node.value ? this.mavka.yesCellInstance : this.mavka.noCellInstance;
+    return node.value ? this.mavka.yes : this.mavka.no;
   }
 }
 

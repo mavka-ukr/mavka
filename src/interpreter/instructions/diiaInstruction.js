@@ -19,7 +19,7 @@ function doOperation(mavka, context, node) {
     if (cell instanceof mavka.ObjectStructureCell) {
       cell.methods[node.name.name] = method;
     } else {
-      mavka.throw(context, `Не вдалось встановити дію "${node.structure.name}.${node.name.name}".`);
+      mavka.fall(context, mavka.makeText(`Не вдалось встановити дію "${node.structure.name}.${node.name.name}".`));
     }
   } else {
     const diia = mavka.makeDiia(
@@ -35,7 +35,7 @@ function doOperation(mavka, context, node) {
     context.set(node.name.name, diia);
   }
 
-  return mavka.emptyCellInstance;
+  return mavka.empty;
 }
 
 class DiiaInstruction extends Instruction {

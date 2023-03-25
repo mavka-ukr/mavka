@@ -9,7 +9,7 @@ class CallInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    let value = this.mavka.emptyCellInstance;
+    let value = this.mavka.empty;
 
     const args = runArgs(this.mavka, context, node.args);
 
@@ -30,7 +30,7 @@ class CallInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    let value = this.mavka.emptyCellInstance;
+    let value = this.mavka.empty;
 
     const args = await runArgs(this.mavka, context, node.args);
 

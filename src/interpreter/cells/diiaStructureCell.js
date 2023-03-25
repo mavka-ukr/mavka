@@ -5,15 +5,18 @@ class DiiaStructureCell extends StructureCell {
    * @param {Mavka} mavka
    */
   constructor(mavka) {
-    super(mavka, "дія");
-
+    super(mavka, "Дія");
 
     this.setMethod("виконати_перетворення_на_текст", (args, context, options) => {
       let value = "<";
-      if (options.meValue.isAsync) {
+      if (options.meValue.meta.isAsync) {
         value = `${value}тривала `;
       }
-      value = `${value}дія ${options.meValue.name}>`;
+      value = `${value}дія`;
+      if (options.meValue.meta.name) {
+        value = `${value} ${options.meValue.meta.name}`;
+      }
+      value = `${value}>`;
       return this.mavka.toCell(value);
     });
   }

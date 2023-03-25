@@ -19,13 +19,19 @@ class Context {
       return this.parent.get(name);
     }
 
-    this.mavka.throw(this, `"${name}" не знайдено в контексті.`);
+    this.mavka.fall(this, this.mavka.makeText(`"${name}" не знайдено в контексті.`));
   }
 
   set(name, value) {
-    this.vars[name] = value != null
-      ? this.mavka.toCell(value)
-      : this.mavka.emptyCellInstance;
+    if (value == null) {
+      console.trace(value);
+      throw "fyck";
+    }
+    if (!(value instanceof this.mavka.Cell)) {
+      console.trace(typeof value, name);
+      throw "not cell";
+    }
+    this.vars[name] = value;
   }
 
   // has(name) {

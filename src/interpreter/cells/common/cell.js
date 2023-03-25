@@ -11,13 +11,15 @@ export class Cell {
    * @param {StructureCell|null} structure
    * @param {function} asJsValue
    * @param {function} iteratorFn
+   * @param {Record<string, *>} meta
    */
   constructor(mavka,
               name = "<>",
               properties = {},
               structure = null,
               asJsValue = (context) => null,
-              iteratorFn = () => null) {
+              iteratorFn = () => null,
+              meta = {}) {
     this.mavka = mavka;
 
     this.name = name;
@@ -29,6 +31,8 @@ export class Cell {
 
     this[Symbol.iterator] = iteratorFn;
 
+    this.meta = meta;
+
     this.cachedMethods = new Map();
   }
 
@@ -39,7 +43,7 @@ export class Cell {
    */
   get(context, name) {
     if (name === "__структура__") {
-      return this.structure || this.mavka.emptyCellInstance;
+      return this.structure || this.mavka.empty;
     }
 
     if (name in this.properties) {
@@ -72,7 +76,7 @@ export class Cell {
       }
     }
 
-    return this.mavka.emptyCellInstance;
+    return this.mavka.empty;
   }
 
   /**
@@ -118,7 +122,11 @@ export class Cell {
       return callDiiaResult;
     }
 
-    throw "Не реалізовано.";
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_виклик" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_виклик" не реалізовано.`));
+    }
   }
 
   /**
@@ -132,7 +140,11 @@ export class Cell {
       return getElementDiiaResult;
     }
 
-    throw "Не реалізовано.";
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_отримання_елемента" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_отримання_елемента" не реалізовано.`));
+    }
   }
 
   /**
@@ -147,7 +159,58 @@ export class Cell {
       return setElementDiiaResult;
     }
 
-    throw "Не реалізовано.";
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_присвоєння_елемента" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_присвоєння_елемента" не реалізовано.`));
+    }
+  }
+
+  /**
+   * @param {Context} context
+   * @return {Cell}
+   */
+  asText(context) {
+    const asTextDiiaResult = this.doAction(context, "виконати_перетворення_на_текст");
+    if (asTextDiiaResult) {
+      return asTextDiiaResult;
+    }
+
+    return this.mavka.makeText(this.name);
+  }
+
+  /**
+   * @param {Context} context
+   * @return {Cell}
+   */
+  asNumber(context) {
+    const asNumberDiiaResult = this.doAction(context, "виконати_перетворення_на_число");
+    if (asNumberDiiaResult) {
+      return asNumberDiiaResult;
+    }
+
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_перетворення_на_число" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_перетворення_на_число" не реалізовано.`));
+    }
+  }
+
+  /**
+   * @param {Context} context
+   * @return {Cell}
+   */
+  asBoolean(context) {
+    const asBooleanDiiaResult = this.doAction(context, "виконати_перетворення_на_логічне");
+    if (asBooleanDiiaResult) {
+      return asBooleanDiiaResult;
+    }
+
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_перетворення_на_логічне" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_перетворення_на_логічне" не реалізовано.`));
+    }
   }
 
   /**
@@ -161,7 +224,11 @@ export class Cell {
       return addDiiaResult;
     }
 
-    throw "Не реалізовано.";
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_додавання" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_додавання" не реалізовано.`));
+    }
   }
 
   /**
@@ -175,7 +242,11 @@ export class Cell {
       return subDiiaResult;
     }
 
-    throw "Не реалізовано.";
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_віднімання" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_віднімання" не реалізовано.`));
+    }
   }
 
   /**
@@ -189,7 +260,11 @@ export class Cell {
       return mulDiiaResult;
     }
 
-    throw "Не реалізовано.";
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_множення" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_множення" не реалізовано.`));
+    }
   }
 
   /**
@@ -203,7 +278,11 @@ export class Cell {
       return divDiiaResult;
     }
 
-    throw "Не реалізовано.";
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_ділення" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_ділення" не реалізовано.`));
+    }
   }
 
   /**
@@ -217,7 +296,11 @@ export class Cell {
       return divModDiiaResult;
     }
 
-    throw "Не реалізовано.";
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_ділення_за_модулем_остача" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_ділення_за_модулем_остача" не реалізовано.`));
+    }
   }
 
   /**
@@ -231,7 +314,11 @@ export class Cell {
       return divFloorDiiaResult;
     }
 
-    throw "Не реалізовано.";
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_ділення_за_модулем_частка" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_ділення_за_модулем_частка" не реалізовано.`));
+    }
   }
 
   /**
@@ -245,7 +332,11 @@ export class Cell {
       return powDiiaResult;
     }
 
-    throw "Не реалізовано.";
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_піднесення_до_степеня" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_піднесення_до_степеня" не реалізовано.`));
+    }
   }
 
   /**
@@ -259,7 +350,11 @@ export class Cell {
       return xorDiiaResult;
     }
 
-    throw "Не реалізовано.";
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_виняткову_дизʼюнкцію" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_виняткову_дизʼюнкцію" не реалізовано.`));
+    }
   }
 
   /**
@@ -273,7 +368,11 @@ export class Cell {
       return eqDiiaResult;
     }
 
-    throw "Не реалізовано.";
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_порівняння_чи_рівно" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_порівняння_чи_рівно" не реалізовано.`));
+    }
   }
 
   /**
@@ -287,7 +386,11 @@ export class Cell {
       return notEqDiiaResult;
     }
 
-    throw "Не реалізовано.";
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_порівняння_чи_не_рівно" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_порівняння_чи_не_рівно" не реалізовано.`));
+    }
   }
 
   /**
@@ -301,7 +404,11 @@ export class Cell {
       return ltDiiaResult;
     }
 
-    throw "Не реалізовано.";
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_порівняння_чи_менше" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_порівняння_чи_менше" не реалізовано.`));
+    }
   }
 
   /**
@@ -315,7 +422,11 @@ export class Cell {
       return gteDiiaResult;
     }
 
-    throw "Не реалізовано.";
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_порівняння_чи_не_менше" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_порівняння_чи_не_менше" не реалізовано.`));
+    }
   }
 
   /**
@@ -329,7 +440,11 @@ export class Cell {
       return gtDiiaResult;
     }
 
-    throw "Не реалізовано.";
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_порівняння_чи_більше" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_порівняння_чи_більше" не реалізовано.`));
+    }
   }
 
   /**
@@ -343,72 +458,33 @@ export class Cell {
       return lteDiiaResult;
     }
 
-    throw "Не реалізовано.";
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_порівняння_чи_не_більше" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_порівняння_чи_не_більше" не реалізовано.`));
+    }
   }
 
   /**
-   * @param {Context} context
-   * @param {Cell} value
-   * @return {Cell}
-   */
-  isInstanceOf(context, value) {
-    return this.mavka.toCell(
-      this.structure
-        ? this.structure === value || this.isInstanceOfThroughStructure(context, this.structure, value)
-        : false
-    );
-  }
-
-  /**
-   * @private
-   * @param {Context} context
-   * @param {StructureCell} structure
    * @param {Cell} value
    * @return {boolean}
    */
-  isInstanceOfThroughStructure(context, structure, value) {
-    return structure.parent
-      ? structure.parent === value || structure.parent.isInstanceOfThroughStructure(context, structure.parent, value)
+  isInstanceOf(value) {
+    return this.structure
+      ? this.structure === value || this.isInstanceOfThroughStructure(this.structure, value)
       : false;
   }
 
   /**
-   * @param {Context} context
-   * @return {Cell}
+   * @private
+   * @param {StructureCell} structure
+   * @param {Cell} value
+   * @return {boolean}
    */
-  asText(context) {
-    const asTextDiiaResult = this.doAction(context, "виконати_перетворення_на_текст");
-    if (asTextDiiaResult) {
-      return asTextDiiaResult;
-    }
-
-    return this.mavka.toCell(this.name);
-  }
-
-  /**
-   * @param {Context} context
-   * @return {Cell}
-   */
-  asNumber(context) {
-    const asNumberDiiaResult = this.doAction(context, "виконати_перетворення_на_число");
-    if (asNumberDiiaResult) {
-      return asNumberDiiaResult;
-    }
-
-    throw "Не реалізовано.";
-  }
-
-  /**
-   * @param {Context} context
-   * @return {Cell}
-   */
-  asBoolean(context) {
-    const asBooleanDiiaResult = this.doAction(context, "виконати_перетворення_на_логічне");
-    if (asBooleanDiiaResult) {
-      return asBooleanDiiaResult;
-    }
-
-    return this.mavka.toCell(true);
+  isInstanceOfThroughStructure(structure, value) {
+    return structure.parent
+      ? structure.parent === value || structure.parent.isInstanceOfThroughStructure(structure.parent, value)
+      : false;
   }
 
   /**
@@ -417,8 +493,8 @@ export class Cell {
    */
   not(context) {
     return this.asBoolean(context).asJsValue(context)
-      ? this.mavka.noCellInstance
-      : this.mavka.yesCellInstance;
+      ? this.mavka.no
+      : this.mavka.yes;
   }
 
   /**
@@ -456,7 +532,7 @@ export class Cell {
     });
 
     if (!result) {
-      return this.mavka.emptyCellInstance;
+      return this.mavka.empty;
     }
 
     return result;

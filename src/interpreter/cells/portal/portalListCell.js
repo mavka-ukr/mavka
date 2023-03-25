@@ -11,10 +11,10 @@ class PortalListCell extends Cell {
       "<портал список>",
       {},
       null,
-      () => this.values
+      () => this.meta.values,
+      null,
+      { values }
     );
-
-    this.values = values;
   }
 }
 
