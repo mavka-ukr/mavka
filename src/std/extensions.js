@@ -1,67 +1,67 @@
-export const makeLoadExtensionFromFileDiiaCell = (mavka) => new mavka.PortalFunctionCell(mavka, (args, context) => {
+export const makeLoadExtensionFromFileDiiaCell = (mavka) => mavka.makeProxyFunction((args, context) => {
   const path = mavka.toCell(args[0]).asText(context).asJsValue(context);
   const moduleDirname = context.get("__шлях_до_папки_модуля__").asJsValue(context);
 
   mavka.global.getContext = () => context;
 
-  return new mavka.WaitCell(mavka, new mavka.AsyncCell(
-    mavka,
-    () => import(`${moduleDirname}/${path}`)
-  ));
+  const loadExtensionAsyncCell = new mavka.AsyncCell(mavka, async () => {
+    return mavka.toCell(await import(`${moduleDirname}/${path}`));
+  });
+
+  return new mavka.AwaitCell(mavka, loadExtensionAsyncCell);
 });
 
 let extId = 0;
 
-export const makeLoadExtensionFromNetworkDiiaCell = (mavka) => new mavka.PortalFunctionCell(mavka, (args, context) => {
+export const makeLoadExtensionFromNetworkDiiaCell = (mavka) => mavka.makeProxyFunction((args, context) => {
   const url = mavka.toCell(args[0]).asText(context).asJsValue(context);
 
   mavka.global.getContext = () => context;
 
-  return new mavka.WaitCell(mavka, new mavka.AsyncCell(
-    mavka,
-    async () => {
-      const body = await (await fetch(url)).text();
+  const loadExtensionAsyncCell = new mavka.AsyncCell(mavka, async () => {
+    const body = await (await fetch(url)).text();
 
-      extId++;
+    extId++;
 
-      const wrappedCode = `
-global.EXTENSION_EVAL_ASYNC_${extId} = async () => {
+    const wrappedCode = `
+mavka.global.EXTENSION_EVAL_ASYNC_${extId} = async () => {
   ${body}
 }
       `;
 
-      eval(wrappedCode);
+    eval(wrappedCode);
 
-      const result = await global[`EXTENSION_EVAL_ASYNC_${extId}`]();
-      delete global[`EXTENSION_EVAL_ASYNC_${extId}`];
-      return result;
-    }
-  ));
+    const result = await mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`]();
+    delete mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`];
+
+    return mavka.toCell(result);
+  });
+
+  return new mavka.AwaitCell(mavka, loadExtensionAsyncCell);
 });
 
 
-export const makeLoadExtensionDiiaCell = (mavka) => new mavka.PortalFunctionCell(mavka, (args, context) => {
+export const makeLoadExtensionDiiaCell = (mavka) => mavka.makeProxyFunction((args, context) => {
   const code = mavka.toCell(args[0]).asText(context).asJsValue(context);
 
   mavka.global.getContext = () => context;
 
-  return new mavka.WaitCell(mavka, new mavka.AsyncCell(
-    mavka,
-    async () => {
-      extId++;
+  const loadExtensionAsyncCell = new mavka.AsyncCell(mavka, async () => {
+    extId++;
 
-      const wrappedCode = `
-global.EXTENSION_EVAL_ASYNC_${extId} = async () => {
+    const wrappedCode = `
+mavka.global.EXTENSION_EVAL_ASYNC_${extId} = async () => {
   ${code}
 }
       `;
 
-      eval(wrappedCode);
+    eval(wrappedCode);
 
-      const result = await global[`EXTENSION_EVAL_ASYNC_${extId}`]();
-      delete global[`EXTENSION_EVAL_ASYNC_${extId}`];
-      return result;
-    }
-  ));
+    const result = await mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`]();
+    delete mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`];
+
+    return mavka.toCell(result);
+  });
+
+  return new mavka.AwaitCell(mavka, loadExtensionAsyncCell);
 });
-

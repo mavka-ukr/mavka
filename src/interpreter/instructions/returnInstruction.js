@@ -1,11 +1,10 @@
 import Instruction from "./utils/instruction.js";
 
-export class ReturnValue {
+export class ReturnSignal {
   constructor(value) {
     this.value = value;
   }
 }
-
 
 class ReturnInstruction extends Instruction {
   /**
@@ -14,7 +13,7 @@ class ReturnInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    return new ReturnValue(this.mavka.runSync(context, node.value));
+    return new ReturnSignal(this.mavka.runSync(context, node.value));
   }
 
   /**
@@ -23,7 +22,7 @@ class ReturnInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    return new ReturnValue(this.mavka.runSync(context, node.value));
+    return new ReturnSignal(this.mavka.runSync(context, node.value));
   }
 }
 

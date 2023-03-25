@@ -8,9 +8,8 @@ import {
   makeLoadExtensionFromFileDiiaCell,
   makeLoadExtensionFromNetworkDiiaCell
 } from "../std/extensions.js";
-import { makeRangeDiiaCell } from "../std/ranges.js";
-import { makeGetJsonDiiaCell } from "../std/network.js";
 import { getBinPathSync } from "get-bin-path";
+import { DiiaParserSyntaxError } from "mavka-parser/src/utils/errors.js";
 
 const fs = (await import("fs")).default;
 const jsPath = (await import("path")).default;
@@ -22,20 +21,14 @@ const cwdPath = process.cwd();
 let filename = process.argv[2];
 
 function buildGlobalContext(mavka) {
-  const context = new mavka.Context(mavka, null, {
+  return new mavka.Context(mavka, null, {
     "друк": makePrintDiiaCell(mavka),
     "читати": makeReadDiiaCell(mavka),
 
     "підключити_розширення_з_файлу": makeLoadExtensionFromFileDiiaCell(mavka),
     "підключити_розширення_з_мережі": makeLoadExtensionFromNetworkDiiaCell(mavka),
-    "підключити_розширення": makeLoadExtensionDiiaCell(mavka),
-
-    "діапазон": makeRangeDiiaCell(mavka),
-
-    "отримати_джсон": makeGetJsonDiiaCell(mavka, null)
+    "підключити_розширення": makeLoadExtensionDiiaCell(mavka)
   });
-
-  return context;
 }
 
 function buildLoader(mavka) {
@@ -61,10 +54,10 @@ if (filename && filename !== "допомога") {
   });
 
   const context = new mavka.Context(mavka);
-  context.set("__шлях_до_папки_кореневого_модуля__", cwdPath);
-  context.set("__шлях_до_кореневого_модуля__", `${cwdPath}/${filename}`);
-  context.set("__шлях_до_папки_модуля__", cwdPath);
-  context.set("__шлях_до_модуля__", `${cwdPath}/${filename}`);
+  context.set("__шлях_до_папки_кореневого_модуля__", mavka.makeText(cwdPath));
+  context.set("__шлях_до_кореневого_модуля__", mavka.makeText(`${cwdPath}/${filename}`));
+  context.set("__шлях_до_папки_модуля__", mavka.makeText(cwdPath));
+  context.set("__шлях_до_модуля__", mavka.makeText(`${cwdPath}/${filename}`));
 
   const binPath = getBinPathSync();
   if (binPath && false) {
@@ -80,9 +73,10 @@ if (filename && filename !== "допомога") {
   try {
     await mavka.loader.load(context, path, false);
   } catch (e) {
-    if (e instanceof mavka.ThrowValue) {
-      const cell = e.value;
-      console.error(`Не вдалось зловити: ${cell.asText(context).asJsValue(context)}`);
+    if (e instanceof DiiaParserSyntaxError) {
+      console.error(`Не вдалось зловити: ${e.message}`);
+    } else if (e instanceof mavka.ThrowValue) {
+      console.error(`Не вдалось зловити: ${e.value.asText(context).asJsValue(context)}`);
     } else {
       throw e;
     }

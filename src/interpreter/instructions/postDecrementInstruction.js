@@ -7,7 +7,7 @@ class PostDecrementInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    this.mavka.throw(context, `Декремент наразі недоступний.`);
+    this.mavka.fall(context, this.mavka.makeText(`Декремент наразі недоступний.`));
   }
 
   /**
@@ -16,7 +16,7 @@ class PostDecrementInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    this.mavka.throw(context, `Декремент наразі недоступний.`);
+    this.mavka.fall(context, this.mavka.makeText(`Декремент наразі недоступний.`));
   }
 }
 

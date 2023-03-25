@@ -7,7 +7,7 @@ import ArithmeticInstruction from "./interpreter/instructions/arithmeticInstruct
 import IfInstruction from "./interpreter/instructions/ifInstruction.js";
 import FunctionInstruction from "./interpreter/instructions/functionInstruction.js";
 import NumberInstruction from "./interpreter/instructions/numberInstruction.js";
-import ReturnInstruction, { ReturnValue } from "./interpreter/instructions/returnInstruction.js";
+import ReturnInstruction, { ReturnSignal } from "./interpreter/instructions/returnInstruction.js";
 import StringInstruction from "./interpreter/instructions/stringInstruction.js";
 import StructureInstruction from "./interpreter/instructions/structureInstruction.js";
 import ComparisonInstruction from "./interpreter/instructions/comparisonInstruction.js";
@@ -29,8 +29,7 @@ import StructureNode from "mavka-parser/src/ast/StructureNode.js";
 import WaitNode from "mavka-parser/src/ast/WaitNode.js";
 import TakeNode from "mavka-parser/src/ast/TakeNode.js";
 import GiveNode from "mavka-parser/src/ast/GiveNode.js";
-import AsyncCell from "./interpreter/cells/async/asyncCell.js";
-import WaitCell from "./interpreter/cells/async/waitCell.js";
+import AwaitCell from "./interpreter/cells/async/awaitCell.js";
 import { parse } from "mavka-parser";
 import BooleanInstruction from "./interpreter/instructions/booleanInstruction.js";
 import LightContext from "./interpreter/contexts/lightContext.js";
@@ -43,7 +42,6 @@ import ThrowNode from "mavka-parser/src/ast/ThrowNode.js";
 import TryNode from "mavka-parser/src/ast/TryNode.js";
 import WhileNode from "mavka-parser/src/ast/WhileNode.js";
 import WhileInstruction from "./interpreter/instructions/whileInstruction.js";
-import { fillParameters } from "./std/tools.js";
 import ModuleNode from "mavka-parser/src/ast/ModuleNode.js";
 import ModuleInstruction from "./interpreter/instructions/moduleInstruction.js";
 import ProgramNode from "mavka-parser/src/ast/ProgramNode.js";
@@ -68,8 +66,8 @@ import ArrayInstruction from "./interpreter/instructions/arrayInstruction.js";
 import ArrayNode from "mavka-parser/src/ast/ArrayNode.js";
 import DictionaryInstruction from "./interpreter/instructions/dictionaryInstruction.js";
 import ArrayDestructionInstruction from "./interpreter/instructions/arrayDestructionInstruction.js";
-import BreakInstruction from "./interpreter/instructions/breakInstruction.js";
-import ContinueInstruction from "./interpreter/instructions/continueInstruction.js";
+import BreakInstruction, { BreakSignal } from "./interpreter/instructions/breakInstruction.js";
+import ContinueInstruction, { ContinueSignal } from "./interpreter/instructions/continueInstruction.js";
 import NotInstruction from "./interpreter/instructions/notInstruction.js";
 import ObjectDestructionInstruction from "./interpreter/instructions/objectDestructionInstruction.js";
 import PositiveInstruction from "./interpreter/instructions/positiveInstruction.js";
@@ -101,6 +99,12 @@ import ProxyFunctionCell from "./interpreter/cells/portal/proxyFunctionCell.js";
 import EmptyCell from "./interpreter/cells/common/emptyCell.js";
 import Method from "./interpreter/cells/common/method.js";
 import PortalListCell from "./interpreter/cells/portal/portalListCell.js";
+import PreIncrementNode from "mavka-parser/src/ast/PreIncrementNode.js";
+import RangeStructureCell from "./interpreter/cells/std/rangeStructureCell.js";
+import { fillParameters } from "./interpreter/instructions/utils/params.js";
+import AsyncCell from "./interpreter/cells/async/asyncCell.js";
+import ContinueNode from "mavka-parser/src/ast/ContinueNode.js";
+import GetElementNode from "mavka-parser/src/ast/GetElementNode.js";
 
 /**
  * @property {Context} context
@@ -164,7 +168,7 @@ class Mavka {
     this.EmptyCell = EmptyCell;
 
     this.AsyncCell = AsyncCell;
-    this.WaitCell = WaitCell;
+    this.AwaitCell = AwaitCell;
 
     this.BooleanStructureCell = BooleanStructureCell;
     this.DictionaryStructureCell = DictionaryStructureCell;
@@ -173,6 +177,7 @@ class Mavka {
     this.NumberStructureCell = NumberStructureCell;
     this.ObjectStructureCell = ObjectStructureCell;
     this.TextStructureCell = TextStructureCell;
+    this.RangeStructureCell = RangeStructureCell;
 
     this.PortalCell = PortalCell;
     this.PortalFunctionCell = PortalFunctionCell;
@@ -195,17 +200,18 @@ class Mavka {
     this.numberStructureCellInstance = this.NumberStructureCell.createInstance(this);
     this.textStructureCellInstance = this.TextStructureCell.createInstance(this);
     this.objectStructureCellInstance = this.ObjectStructureCell.createInstance(this);
+    this.rangeStructureCellInstance = this.RangeStructureCell.createInstance(this);
 
-    this.emptyCellInstance = new this.EmptyCell(this);
+    this.empty = new this.EmptyCell(this);
 
-    this.yesCellInstance = new this.Cell(
+    this.yes = new this.Cell(
       this,
       "логічне",
       {},
       this.booleanStructureCellInstance,
       () => true
     );
-    this.noCellInstance = new this.Cell(
+    this.no = new this.Cell(
       this,
       "логічне",
       {},
@@ -216,62 +222,28 @@ class Mavka {
     this.loader = options.buildLoader(this);
 
     this.context = options.buildGlobalContext(this);
-    this.context.set("пусто", this.emptyCellInstance);
-    this.context.set("обʼєкт", this.objectStructureCellInstance);
-    this.context.set("список", this.listStructureCellInstance);
-    this.context.set("словник", this.dictionaryStructureCellInstance);
     this.context.set("число", this.numberStructureCellInstance);
     this.context.set("текст", this.textStructureCellInstance);
     this.context.set("логічне", this.booleanStructureCellInstance);
+    this.context.set("список", this.listStructureCellInstance);
+    this.context.set("словник", this.dictionaryStructureCellInstance);
+    this.context.set("пусто", this.empty);
+    this.context.set("обʼєкт", this.objectStructureCellInstance);
+    this.context.set("Дія", this.diiaStructureCellInstance);
     this.context.set("global", this.makePortal(this.global));
+    this.context.set("діапазон", this.rangeStructureCellInstance);
 
     this.external = options.buildExternal ? options.buildExternal(this) : {};
-  }
 
-  isEmpty(value) {
-    return this.toCell(value) === this.emptyCellInstance;
-  }
-
-  toCell(value) {
-    if (value == null) {
-      return this.emptyCellInstance;
-    }
-
-    if (value instanceof this.Cell) {
-      return value;
-    }
-
-    if (typeof value === "string") {
-      return this.makeText(value);
-    }
-
-    if (typeof value === "number") {
-      return this.makeNumber(value);
-    }
-
-    if (typeof value === "boolean") {
-      return value ? this.yesCellInstance : this.noCellInstance;
-    }
-
-    if (Array.isArray(value)) {
-      return this.makePortalList(value);
-    }
-
-    if (typeof value === "object") {
-      return this.makePortal(value);
-    }
-
-    if (typeof value === "function") {
-      return this.makePortalFunction(value);
-    }
-
-    return this.emptyCellInstance;
+    // @deprecated
+    this.tools = {};
+    this.tools.asyncFn = (fn) => this.makeWrappedAsyncProxyFunction(fn);
   }
 
   /**
    * @param {Node} context
    * @param {ASTNode|ASTNode[]} ast
-   * @return {Promise<ReturnValue|Cell>|ReturnValue|Cell}
+   * @return {Promise<ReturnSignal|Cell>|ReturnSignal|Cell}
    */
   run(context, ast) {
     if (ast instanceof ProgramNode) {
@@ -288,7 +260,7 @@ class Mavka {
       for (const node of ast) {
         result = this.runSync(context, node);
 
-        if (result instanceof ReturnValue) {
+        if (result instanceof ReturnSignal || result instanceof BreakSignal || result instanceof ContinueSignal) {
           return result;
         }
       }
@@ -302,7 +274,7 @@ class Mavka {
       for (const node of ast) {
         result = await this.runAsync(context, node);
 
-        if (result instanceof ReturnValue) {
+        if (result instanceof ReturnSignal || result instanceof BreakSignal || result instanceof ContinueSignal) {
           return result;
         }
       }
@@ -317,7 +289,7 @@ class Mavka {
    * @param {Context} context
    * @param {ASTNode} node
    * @param {Object} options
-   * @return {ReturnValue|Cell}
+   * @return {ReturnSignal|Cell}
    */
   runSync(context, node, options = {}) {
     options.forceSync ??= false;
@@ -362,7 +334,7 @@ class Mavka {
       return this.comparisonInstruction.run(context, node, options);
     }
 
-    if (node instanceof ContinueInstruction) {
+    if (node instanceof ContinueNode) {
       return this.continueInstruction.run(context, node, options);
     }
 
@@ -378,7 +350,7 @@ class Mavka {
       return this.functionInstruction.run(context, node, options);
     }
 
-    if (node instanceof GetElementInstruction) {
+    if (node instanceof GetElementNode) {
       return this.getElementInstruction.run(context, node, options);
     }
 
@@ -438,7 +410,7 @@ class Mavka {
       return this.preDecrementInstruction.run(context, node, options);
     }
 
-    if (node instanceof PreIncrementInstruction) {
+    if (node instanceof PreIncrementNode) {
       return this.preIncrementInstruction.run(context, node, options);
     }
 
@@ -500,13 +472,13 @@ class Mavka {
   async runAsync(context, node, options = {}) {
     let value = await this.runSync(context, node, options);
 
-    if (value instanceof this.WaitCell) {
-      value = await value.value;
+    if (value instanceof this.AwaitCell) {
+      value = await value.meta.cellToAwait;
 
       if (value instanceof this.AsyncCell) {
-        value = value.promise;
+        value = value.meta.asyncOperation;
 
-        // handle AsyncFunction
+        // handle async functions
         if (!(value instanceof Promise)) {
           value = value();
         }
@@ -519,22 +491,154 @@ class Mavka {
   }
 
   /**
-   * @param {Context} context
-   * @param {*} value
-   */
-  throw(context, value) {
-    throw new this.ThrowValue(context, this.toCell(value));
-  }
-
-  /**
    * @param {string} code
    * @param {Context|undefined|null} context
-   * @return {Promise<ReturnValue|*>|ReturnValue|*}
+   * @return {Promise<ReturnSignal|*>|ReturnSignal|*}
    */
   eval(code, context = null) {
     const ast = parse(code);
 
     return this.run(context || this.context, ast);
+  }
+
+  /**
+   * @param {Cell} value
+   * @return {boolean}
+   */
+  isText(value) {
+    return value.isInstanceOf(this.textStructureCellInstance);
+  }
+
+  /**
+   * @param {Cell} value
+   * @return {boolean}
+   */
+  isNumber(value) {
+    return value.isInstanceOf(this.numberStructureCellInstance);
+  }
+
+  /**
+   * @param {Cell} value
+   * @return {boolean}
+   */
+  isBoolean(value) {
+    return value.isInstanceOf(this.booleanStructureCellInstance);
+  }
+
+  /**
+   * @param {Cell} value
+   * @return {boolean}
+   */
+  isList(value) {
+    return value.isInstanceOf(this.listStructureCellInstance);
+  }
+
+  /**
+   * @param {Cell} value
+   * @return {boolean}
+   */
+  isDictionary(value) {
+    return value.isInstanceOf(this.dictionaryStructureCellInstance);
+  }
+
+  /**
+   * @param {Cell} value
+   * @return {boolean}
+   */
+  isObject(value) {
+    return value.isInstanceOf(this.objectStructureCellInstance);
+  }
+
+  /**
+   * @param {Cell} value
+   * @return {boolean}
+   */
+  isDiia(value) {
+    return value.isInstanceOf(this.diiaStructureCellInstance);
+  }
+
+  /**
+   * @param {Cell} value
+   * @return {boolean}
+   */
+  isEmpty(value) {
+    return value === this.empty;
+  }
+
+  toCell(value) {
+    if (value == null) {
+      return this.empty;
+    }
+
+    if (value instanceof this.Cell) {
+      return value;
+    }
+
+    if (typeof value === "string") {
+      return this.makeText(value);
+    }
+
+    if (typeof value === "number") {
+      return this.makeNumber(value);
+    }
+
+    if (typeof value === "boolean") {
+      return value ? this.yes : this.no;
+    }
+
+    if (Array.isArray(value)) {
+      return this.makePortalList(value);
+    }
+
+    if (typeof value === "object") {
+      return this.makePortal(value);
+    }
+
+    if (typeof value === "function") {
+      return this.makePortalFunction(value);
+    }
+
+    return this.empty;
+  }
+
+  /**
+   * @param {Context} context
+   * @param {Cell} value
+   */
+  fall(context, value) {
+    throw new this.ThrowValue(context, value);
+  }
+
+  /**
+   * @param {function} fn
+   * @return {ProxyFunctionCell}
+   */
+  makeProxyFunction(fn) {
+    return new this.ProxyFunctionCell(this, fn);
+  }
+
+  /**
+   * @param {function} fn
+   * @return {ProxyFunctionCell}
+   */
+  makeAsyncProxyFunction(fn) {
+    return new this.ProxyFunctionCell(this, fn, true);
+  }
+
+  /**
+   * @param {function} fn
+   * @return {ProxyFunctionCell}
+   */
+  makeWrappedProxyFunction(fn) {
+    return new this.ProxyFunctionCell(this, fn, false, true);
+  }
+
+  /**
+   * @param {function} fn
+   * @return {ProxyFunctionCell}
+   */
+  makeWrappedAsyncProxyFunction(fn) {
+    return new this.ProxyFunctionCell(this, fn, true, true);
   }
 
   /**
@@ -547,7 +651,9 @@ class Mavka {
     return new this.Cell(
       this,
       "текст",
-      {},
+      {
+        value
+      },
       this.textStructureCellInstance,
       () => value
     );
@@ -566,6 +672,30 @@ class Mavka {
       {},
       this.numberStructureCellInstance,
       () => value
+    );
+  }
+
+  /**
+   * @param {Cell[]} values
+   * @return {Cell}
+   */
+  makeList(values) {
+    return new this.Cell(
+      this,
+      "список",
+      {
+        values
+      },
+      this.listStructureCellInstance,
+      (context) => {
+        return values
+          .map((v) => v.asJsValue(context));
+      },
+      function* () {
+        for (const [key, value] of Object.entries(values)) {
+          yield { key, value };
+        }
+      }
     );
   }
 
@@ -599,30 +729,6 @@ class Mavka {
   }
 
   /**
-   * @param {Cell[]} values
-   * @return {Cell}
-   */
-  makeList(values) {
-    return new this.Cell(
-      this,
-      "список",
-      {
-        values
-      },
-      this.listStructureCellInstance,
-      (context) => {
-        return values
-          .map((v) => v.asJsValue(context));
-      },
-      function* () {
-        for (const [key, value] of Object.entries(values)) {
-          yield { key, value };
-        }
-      }
-    );
-  }
-
-  /**
    * @param {string|null} name
    * @param {{ name: string, defaultValue: Cell|undefined }[]} parameters
    * @param {Class<Context>} contextClass
@@ -643,7 +749,7 @@ class Mavka {
            meValue = null) {
     return new this.Cell(
       this,
-      name,
+      "дія",
       {
         "виконати_виклик": this.makeProxyFunction(
           (args, context, options) => {
@@ -675,7 +781,19 @@ class Mavka {
               result = this.run(diiaContext, body);
             }
 
-            if (result instanceof ReturnValue) {
+            if (isAsync) {
+              return new this.AsyncCell(this, async () => {
+                result = await result;
+
+                if (result instanceof ReturnSignal) {
+                  result = result.value;
+                }
+
+                return result;
+              });
+            }
+
+            if (result instanceof ReturnSignal) {
               result = result.value;
             }
 
@@ -684,7 +802,12 @@ class Mavka {
         )
       },
       diiaStructure,
-      () => null
+      () => null,
+      null,
+      {
+        isAsync,
+        name
+      }
     );
   }
 
@@ -701,21 +824,6 @@ class Mavka {
         }
       )
     });
-  }
-
-  /**
-   * @param {string} name
-   * @param {function} fn
-   * @return {Method}
-   */
-  makeMethod(name, fn) {
-    return new Method(
-      name,
-      null,
-      fn,
-      false,
-      null
-    );
   }
 
   /**
@@ -743,19 +851,18 @@ class Mavka {
   }
 
   /**
+   * @param {string} name
    * @param {function} fn
-   * @return {ProxyFunctionCell}
+   * @return {Method}
    */
-  makeProxyFunction(fn) {
-    return new this.ProxyFunctionCell(this, fn);
-  }
-
-  /**
-   * @param {function} fn
-   * @return {ProxyFunctionCell}
-   */
-  makeAsyncProxyFunction(fn) {
-    return new this.ProxyFunctionCell(this, fn);
+  makeMethod(name, fn) {
+    return new Method(
+      name,
+      null,
+      fn,
+      false,
+      null
+    );
   }
 }
 

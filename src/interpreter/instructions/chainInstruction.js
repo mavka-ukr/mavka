@@ -9,8 +9,8 @@ class ChainInstruction extends Instruction {
   runSync(context, node) {
     let value = this.mavka.runSync(context, node.left);
     if (!value) {
-      // todo: throw
-      value = this.mavka.emptyCellInstance;
+      // todo: fall
+      value = this.mavka.empty;
     }
 
     return value.get(context, node.right.name);
@@ -24,8 +24,8 @@ class ChainInstruction extends Instruction {
   async runAsync(context, node) {
     let value = await this.mavka.runAsync(context, node.left);
     if (!value) {
-      // todo: throw
-      value = this.mavka.emptyCellInstance;
+      // todo: fall
+      value = this.mavka.empty;
     }
     // console.log(value);
 

@@ -9,7 +9,7 @@ class IdentifiersChainInstruction extends Instruction {
   runSync(context, node) {
     let value = this.mavka.runSync(context, node.left);
     if (!value) {
-      value = this.mavka.emptyCellInstance;
+      value = this.mavka.empty;
     }
 
     return value.get(context, node.right.name);
@@ -23,7 +23,7 @@ class IdentifiersChainInstruction extends Instruction {
   async runAsync(context, node) {
     let value = await this.mavka.runAsync(context, node.left);
     if (!value) {
-      value = this.mavka.emptyCellInstance;
+      value = this.mavka.empty;
     }
 
     return value.get(context, node.right.name);

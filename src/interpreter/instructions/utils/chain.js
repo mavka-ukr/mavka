@@ -15,7 +15,7 @@ export function resolveIdentifier(mavka, context, main, id) {
     return resolveIdentifier(mavka, context, left, id.right);
   }
 
-  return mavka.emptyCellInstance;
+  return mavka.empty;
 }
 
 export function lastIdentifierName(id) {

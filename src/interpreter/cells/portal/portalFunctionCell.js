@@ -10,11 +10,11 @@ class PortalFunctionCell extends Cell {
       mavka,
       "<портал функція>",
       {},
+      mavka.diiaStructureCellInstance,
+      () => this.meta.fn,
       null,
-      () => this.fn
+      { fn }
     );
-
-    this.fn = fn;
   }
 
   /**
@@ -23,7 +23,7 @@ class PortalFunctionCell extends Cell {
   doCall(context, args, options = {}) {
     const jsArgs = Object.values(args).map((v) => v.asJsValue(context));
 
-    return this.mavka.toCell(this.fn(...jsArgs));
+    return this.mavka.toCell(this.meta.fn(...jsArgs));
   }
 }
 

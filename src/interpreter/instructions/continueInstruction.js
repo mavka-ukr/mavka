@@ -1,5 +1,8 @@
 import Instruction from "./utils/instruction.js";
 
+export class ContinueSignal {
+}
+
 class ContinueInstruction extends Instruction {
   /**
    * @param {Context} context
@@ -7,7 +10,7 @@ class ContinueInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    this.mavka.throw(context, `"продовжити" наразі недоступно.`);
+    return new ContinueSignal();
   }
 
   /**
@@ -16,7 +19,7 @@ class ContinueInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    this.mavka.throw(context, `"продовжити" наразі недоступно.`);
+    return new ContinueSignal();
   }
 }
 

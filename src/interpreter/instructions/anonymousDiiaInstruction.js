@@ -4,7 +4,7 @@ import { convertParamNodes } from "./utils/params.js";
 function doOperation(mavka, context, node) {
   const parameters = convertParamNodes(mavka, context, node.params);
 
-  return new mavka.makeDiia(
+  return mavka.makeDiia(
     null,
     parameters,
     mavka.Context,

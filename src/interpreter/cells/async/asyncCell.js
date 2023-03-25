@@ -3,12 +3,18 @@ import { Cell } from "../common/cell.js";
 class AsyncCell extends Cell {
   /**
    * @param {Mavka} mavka
-   * @param {Promise} promise
+   * @param {Promise|function} asyncOperation
    */
-  constructor(mavka, promise) {
-    super(mavka, "<тривала операція>");
-
-    this.promise = promise;
+  constructor(mavka, asyncOperation) {
+    super(
+      mavka,
+      "<триваюча операція>",
+      {},
+      null,
+      () => this.meta.asyncOperation,
+      null,
+      { asyncOperation }
+    );
   }
 }
 

@@ -1,6 +1,8 @@
 import Instruction from "./utils/instruction.js";
 import WaitNode from "mavka-parser/src/ast/WaitNode.js";
 import IdentifierNode from "mavka-parser/src/ast/IdentifierNode.js";
+import ObjectDestructionNode from "mavka-parser/src/ast/ObjectDestructionNode.js";
+import ArrayDestructionNode from "mavka-parser/src/ast/ArrayDestructionNode.js";
 
 class AssignInstruction extends Instruction {
   /**
@@ -9,22 +11,33 @@ class AssignInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    if (node.wait) {
-      this.mavka.throw(context, `"${node.symbol}" недоступно в нетривалому контексті.`);
+    if (node.symbol !== "=") {
+      this.mavka.fall(context, this.mavka.makeText(`Присвоєння через "${node.symbol}" наразі недоступне.`));
+    }
+    if (node.id instanceof ObjectDestructionNode) {
+      this.mavka.fall(context, this.mavka.makeText(`Деструкція обʼєкта наразі недоступна.`));
+    }
+    if (node.id instanceof ArrayDestructionNode) {
+      this.mavka.fall(context, this.mavka.makeText(`Деструкція списку наразі недоступна.`));
     }
 
-    if (node.symbol !== "=") {
-      this.mavka.throw(context, `Присвоєння через "${node.symbol}" наразі недоступне.`);
+    if (node.wait) {
+      this.mavka.fall(context, this.mavka.makeText(`"${node.symbol}" недоступно в нетривалому контексті.`));
     }
 
     const value = this.mavka.runSync(context, node.value);
 
-    if (node.id instanceof IdentifierNode) {
+    if (node.setElement) {
+      const val = this.mavka.runSync(context, node.id);
+      const element = this.mavka.runSync(context, node.setElement);
+
+      val.doSetElement(context, element, value);
+    } else if (node.id instanceof IdentifierNode) {
       context.set(node.id.name, value);
     } else {
       const val = this.mavka.runSync(context, node.id.left);
 
-      val.set(node.id.right.name, value);
+      val.set(context, node.id.right.name, value);
     }
 
     return value;
@@ -36,18 +49,29 @@ class AssignInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    const value = await this.mavka.runAsync(context, node.wait ? new WaitNode(context, { value: node.value }) : node.value);
-
     if (node.symbol !== "=") {
-      this.mavka.throw(context, `Присвоєння через "${node.symbol}" наразі недоступне.`);
+      this.mavka.fall(context, this.mavka.makeText(`Присвоєння через "${node.symbol}" наразі недоступне.`));
+    }
+    if (node.id instanceof ObjectDestructionNode) {
+      this.mavka.fall(context, this.mavka.makeText(`Деструкція обʼєкта наразі недоступна.`));
+    }
+    if (node.id instanceof ArrayDestructionNode) {
+      this.mavka.fall(context, this.mavka.makeText(`Деструкція списку наразі недоступна.`));
     }
 
-    if (node.id instanceof IdentifierNode) {
+    const value = await this.mavka.runAsync(context, node.wait ? new WaitNode(context, { value: node.value }) : node.value);
+
+    if (node.setElement) {
+      const val = await this.mavka.runAsync(context, node.id);
+      const element = await this.mavka.runAsync(context, node.setElement);
+
+      val.doSetElement(context, element, value);
+    } else if (node.id instanceof IdentifierNode) {
       context.set(node.id.name, value);
     } else {
       const val = await this.mavka.runAsync(context, node.id.left);
 
-      val.set(node.id.right.name, value);
+      val.set(context, node.id.right.name, value);
     }
 
     return value;
