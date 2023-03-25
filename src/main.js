@@ -111,7 +111,7 @@ import GetElementNode from "mavka-parser/src/ast/GetElementNode.js";
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.9.31";
+  static VERSION = "0.10.1";
 
   constructor(options = {}) {
     if (!options.global) {
