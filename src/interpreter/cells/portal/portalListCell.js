@@ -12,7 +12,11 @@ class PortalListCell extends Cell {
       {},
       null,
       () => this.meta.values,
-      null,
+      function* () {
+        for (const [key, value] of Object.entries(values)) {
+          yield { key, value: mavka.toCell(value) };
+        }
+      },
       { values }
     );
   }

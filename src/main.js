@@ -202,7 +202,8 @@ class Mavka {
     this.objectStructureCellInstance = this.ObjectStructureCell.createInstance(this);
     this.rangeStructureCellInstance = this.RangeStructureCell.createInstance(this);
 
-    this.empty = new this.EmptyCell(this);
+    this.empty = new this.EmptyCell(this, null);
+    this.undefined = new this.EmptyCell(this, undefined);
 
     this.yes = new this.Cell(
       this,
@@ -228,6 +229,7 @@ class Mavka {
     this.context.set("список", this.listStructureCellInstance);
     this.context.set("словник", this.dictionaryStructureCellInstance);
     this.context.set("пусто", this.empty);
+    this.context.set("undefined", this.undefined);
     this.context.set("обʼєкт", this.objectStructureCellInstance);
     this.context.set("Дія", this.diiaStructureCellInstance);
     this.context.set("global", this.makePortal(this.global));
@@ -562,7 +564,15 @@ class Mavka {
    * @return {boolean}
    */
   isEmpty(value) {
-    return value === this.empty;
+    return value === this.empty || value === this.undefined;
+  }
+
+  /**
+   * @param {Cell} value
+   * @return {boolean}
+   */
+  isUndefined(value) {
+    return value === this.undefined;
   }
 
   toCell(value) {
@@ -813,17 +823,15 @@ class Mavka {
 
   /**
    * @param {string} name
-   * @param {Context} context
+   * @param {Record<string, Cell>} properties
    * @return {Cell}
    */
-  makeModule(name, context) {
-    return new this.Cell(this, `<модуль ${name}>`, {
-      "виконати_отримання": this.makeProxyFunction(
-        (args, callContext) => {
-          return context.get(args[0].asText(callContext).asJsValue(callContext));
-        }
-      )
-    });
+  makeModule(name, properties = {}) {
+    return new this.Cell(
+      this,
+      `<модуль ${name}>`,
+      properties
+    );
   }
 
   /**

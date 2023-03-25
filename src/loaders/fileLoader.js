@@ -34,12 +34,12 @@ class FileLoader extends Loader {
           newModulePath = elPath;
           newPath.shift();
           if (!newPath.length) {
-            throw `Не вдалось завантажити модуль "${moduleStr}"`;
+            throw `Не вдалось завантажити модуль "${moduleStr}."`;
           }
           continue;
         }
         if (elStat.isFile()) {
-          throw `Не вдалось завантажити модуль "${moduleStr}"`;
+          throw `Не вдалось завантажити модуль "${moduleStr}."`;
         }
       }
 
@@ -49,50 +49,49 @@ class FileLoader extends Loader {
         break;
       }
 
-      throw `Не вдалось завантажити модуль "${moduleStr}"`;
+      throw `Не вдалось завантажити модуль "${moduleStr}."`;
     }
 
     const newModuleDirname = jsPath.dirname(newModulePath);
 
     let name = path[path.length - newPath.length - 1];
 
+    let module;
+
     if (this.loadedModules[newModulePath]) {
-      return { name, result: this.loadedModules[newModulePath] };
+      module = this.loadedModules[newModulePath];
+    } else {
+      const moduleContext = new Context(this.mavka, this.mavka.context);
+      moduleContext.set("__шлях_до_папки_кореневого_модуля__", context.get("__шлях_до_папки_кореневого_модуля__"));
+      moduleContext.set("__шлях_до_кореневого_модуля__", context.get("__шлях_до_кореневого_модуля__"));
+      moduleContext.set("__шлях_до_папки_модуля__", this.mavka.makeText(newModuleDirname));
+      moduleContext.set("__шлях_до_модуля__", this.mavka.makeText(newModulePath));
+      moduleContext.setAsync(true);
+
+      const moduleCode = fs.readFileSync(newModulePath).toString();
+      const moduleProgram = parse(moduleCode);
+
+      module = this.mavka.makeModule(name);
+      moduleContext.setModule(module);
+
+      this.loadedModules[newModulePath] = module;
+
+      await this.mavka.run(moduleContext, moduleProgram.body);
     }
 
-    const moduleContext = new Context(this.mavka, this.mavka.context);
-    moduleContext.set("__шлях_до_папки_кореневого_модуля__", context.get("__шлях_до_папки_кореневого_модуля__"));
-    moduleContext.set("__шлях_до_кореневого_модуля__", context.get("__шлях_до_кореневого_модуля__"));
-    moduleContext.set("__шлях_до_папки_модуля__", this.mavka.makeText(newModuleDirname));
-    moduleContext.set("__шлях_до_модуля__", this.mavka.makeText(newModulePath));
-    moduleContext.setAsync(true);
-
-    const moduleCode = fs.readFileSync(newModulePath).toString();
-    const moduleProgram = parse(moduleCode);
-
-    const giveContext = new Context(this.mavka);
-    giveContext.set("__шлях_до_папки_кореневого_модуля__", context.get("__шлях_до_папки_кореневого_модуля__"));
-    giveContext.set("__шлях_до_кореневого_модуля__", context.get("__шлях_до_кореневого_модуля__"));
-    giveContext.set("__шлях_до_папки_модуля__", this.mavka.makeText(newModuleDirname));
-    giveContext.set("__шлях_до_модуля__", this.mavka.makeText(newModulePath));
-
-    // moduleContext.set("__give_context__", giveContext);
-
-    this.loadedModules[newModulePath] = giveContext;
-
-    await this.mavka.run(moduleContext, moduleProgram.body);
-
-    let result = giveContext;
+    let result = module;
 
     if (newPath.length) {
       let first = newPath.shift();
       while (first) {
         name = first;
-        result = result.get(first);
+        if (result instanceof this.mavka.Context) {
+          result = result.get(first);
+        } else {
+          result = result.get(context, first);
+        }
         first = newPath.shift();
       }
-    } else {
-      result = this.mavka.makeModule(name, giveContext);
     }
 
     return { name, result };

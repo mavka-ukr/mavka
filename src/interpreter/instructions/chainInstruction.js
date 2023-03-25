@@ -27,7 +27,6 @@ class ChainInstruction extends Instruction {
       // todo: fall
       value = this.mavka.empty;
     }
-    // console.log(value);
 
     return value.get(context, node.right.name);
   }
