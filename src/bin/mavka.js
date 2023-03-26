@@ -1,15 +1,10 @@
 #!/usr/bin/env node
 
 import Mavka from "../main.js";
-import { makePrintDiiaCell, makeReadDiiaCell } from "../std/io.js";
 import promptSync from "prompt-sync";
-import {
-  makeLoadExtensionDiiaCell,
-  makeLoadExtensionFromFileDiiaCell,
-  makeLoadExtensionFromNetworkDiiaCell
-} from "../std/extensions.js";
 import { getBinPathSync } from "get-bin-path";
 import { DiiaParserSyntaxError } from "mavka-parser/src/utils/errors.js";
+import RangeStructureCell from "../library/rangeStructureCell.js";
 
 const fs = (await import("fs")).default;
 const jsPath = (await import("path")).default;
@@ -21,13 +16,87 @@ const cwdPath = process.cwd();
 let filename = process.argv[2];
 
 function buildGlobalContext(mavka) {
-  return new mavka.Context(mavka, null, {
-    "друк": makePrintDiiaCell(mavka),
-    "читати": makeReadDiiaCell(mavka),
+  let extId = 0;
 
-    "підключити_розширення_з_файлу": makeLoadExtensionFromFileDiiaCell(mavka),
-    "підключити_розширення_з_мережі": makeLoadExtensionFromNetworkDiiaCell(mavka),
-    "підключити_розширення": makeLoadExtensionDiiaCell(mavka)
+  return new mavka.Context(mavka, null, {
+    "друк": mavka.makeProxyFunction((args, context) => {
+      console.log(
+        ...args
+          .map((arg) => {
+            return arg.asText(context).asJsValue(context);
+          })
+      );
+
+      return mavka.empty;
+    }),
+    "читати": mavka.makeProxyFunction((args, context) => {
+      const ask = Object.values(args).length ? args[0].asText(context).asJsValue() : undefined;
+
+      return mavka.makeText(mavka.external.promptSync({ sigint: true })(ask));
+    }),
+
+    "підключити_розширення_з_файлу": mavka.makeProxyFunction((args, context) => {
+      const path = mavka.toCell(args[0]).asText(context).asJsValue(context);
+      const moduleDirname = context.get("__шлях_до_папки_модуля__").asJsValue(context);
+
+      mavka.global.getContext = () => context;
+
+      const loadExtensionAsyncCell = new mavka.AsyncCell(mavka, async () => {
+        return mavka.toCell(await import(`${moduleDirname}/${path}`));
+      });
+
+      return new mavka.AwaitCell(mavka, loadExtensionAsyncCell);
+    }),
+    "підключити_розширення_з_мережі": mavka.makeProxyFunction((args, context) => {
+      const url = mavka.toCell(args[0]).asText(context).asJsValue(context);
+
+      mavka.global.getContext = () => context;
+
+      const loadExtensionAsyncCell = new mavka.AsyncCell(mavka, async () => {
+        const body = await (await fetch(url)).text();
+
+        extId++;
+
+        const wrappedCode = `
+mavka.global.EXTENSION_EVAL_ASYNC_${extId} = async () => {
+  ${body}
+}
+      `;
+
+        eval(wrappedCode);
+
+        const result = await mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`]();
+        delete mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`];
+
+        return mavka.toCell(result);
+      });
+
+      return new mavka.AwaitCell(mavka, loadExtensionAsyncCell);
+    }),
+    "підключити_розширення": mavka.makeProxyFunction((args, context) => {
+      const code = mavka.toCell(args[0]).asText(context).asJsValue(context);
+
+      mavka.global.getContext = () => context;
+
+      const loadExtensionAsyncCell = new mavka.AsyncCell(mavka, async () => {
+        extId++;
+
+        const wrappedCode = `
+mavka.global.EXTENSION_EVAL_ASYNC_${extId} = async () => {
+  ${code}
+}
+      `;
+
+        eval(wrappedCode);
+
+        const result = await mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`]();
+        delete mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`];
+
+        return mavka.toCell(result);
+      });
+
+      return new mavka.AwaitCell(mavka, loadExtensionAsyncCell);
+    }),
   });
 }
 

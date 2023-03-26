@@ -1,6 +1,8 @@
-import StructureCell from "../common/structureCell.js";
+import StructureCell from "../interpreter/cells/common/structureCell.js";
 
 class RangeStructureCell extends StructureCell {
+  static instance = null;
+
   /**
    * @param {Mavka} mavka
    */
@@ -32,7 +34,7 @@ class RangeStructureCell extends StructureCell {
           this.mavka,
           `діапазон(${from}, ${to}, ${step})`,
           {},
-          this.mavka.rangeStructureCellInstance,
+          RangeStructureCell.getInstance(mavka),
           () => {
             return null;
           },
@@ -46,8 +48,11 @@ class RangeStructureCell extends StructureCell {
     );
   }
 
-  static createInstance(mavka) {
-    return new RangeStructureCell(mavka);
+  static getInstance(mavka) {
+    if (!RangeStructureCell.instance) {
+      RangeStructureCell.instance = new RangeStructureCell(mavka);
+    }
+    return RangeStructureCell.instance;
   }
 }
 

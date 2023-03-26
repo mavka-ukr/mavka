@@ -16,7 +16,7 @@ function doOperation(mavka, context, node) {
 
     const cell = mavka.runSync(context, node.structure, { forceSync: true });
 
-    if (cell instanceof mavka.ObjectStructureCell) {
+    if (cell instanceof mavka.StructureCell) {
       cell.methods[node.name.name] = method;
     } else {
       mavka.fall(context, mavka.makeText(`Не вдалось встановити дію "${node.structure.name}.${node.name.name}".`));

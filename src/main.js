@@ -100,11 +100,12 @@ import EmptyCell from "./interpreter/cells/common/emptyCell.js";
 import Method from "./interpreter/cells/common/method.js";
 import PortalListCell from "./interpreter/cells/portal/portalListCell.js";
 import PreIncrementNode from "mavka-parser/src/ast/PreIncrementNode.js";
-import RangeStructureCell from "./interpreter/cells/std/rangeStructureCell.js";
 import { fillParameters } from "./interpreter/instructions/utils/params.js";
 import AsyncCell from "./interpreter/cells/async/asyncCell.js";
 import ContinueNode from "mavka-parser/src/ast/ContinueNode.js";
 import GetElementNode from "mavka-parser/src/ast/GetElementNode.js";
+import StructureCell from "./interpreter/cells/common/structureCell.js";
+import RangeStructureCell from "./library/rangeStructureCell.js";
 
 /**
  * @property {Context} context
@@ -170,6 +171,7 @@ class Mavka {
     this.AsyncCell = AsyncCell;
     this.AwaitCell = AwaitCell;
 
+    this.StructureCell = StructureCell;
     this.BooleanStructureCell = BooleanStructureCell;
     this.DictionaryStructureCell = DictionaryStructureCell;
     this.DiiaStructureCell = DiiaStructureCell;
@@ -177,7 +179,6 @@ class Mavka {
     this.NumberStructureCell = NumberStructureCell;
     this.ObjectStructureCell = ObjectStructureCell;
     this.TextStructureCell = TextStructureCell;
-    this.RangeStructureCell = RangeStructureCell;
 
     this.PortalCell = PortalCell;
     this.PortalFunctionCell = PortalFunctionCell;
@@ -200,7 +201,6 @@ class Mavka {
     this.numberStructureCellInstance = this.NumberStructureCell.createInstance(this);
     this.textStructureCellInstance = this.TextStructureCell.createInstance(this);
     this.objectStructureCellInstance = this.ObjectStructureCell.createInstance(this);
-    this.rangeStructureCellInstance = this.RangeStructureCell.createInstance(this);
 
     this.empty = new this.EmptyCell(this, null);
     this.undefined = new this.EmptyCell(this, undefined);
@@ -233,7 +233,7 @@ class Mavka {
     this.context.set("обʼєкт", this.objectStructureCellInstance);
     this.context.set("Дія", this.diiaStructureCellInstance);
     this.context.set("global", this.makePortal(this.global));
-    this.context.set("діапазон", this.rangeStructureCellInstance);
+    this.context.set("діапазон", RangeStructureCell.getInstance(this));
 
     this.external = options.buildExternal ? options.buildExternal(this) : {};
 
