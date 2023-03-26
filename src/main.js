@@ -112,7 +112,7 @@ import RangeStructureCell from "./library/rangeStructureCell.js";
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.10.1";
+  static VERSION = "0.10.3";
 
   constructor(options = {}) {
     if (!options.global) {
