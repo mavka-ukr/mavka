@@ -44,15 +44,23 @@ class Context {
    * @param {Cell} value
    */
   set(name, value) {
-    if (value == null) {
-      console.trace(value);
-      throw "fyck";
-    }
-    if (!(value instanceof this.mavka.Cell)) {
-      console.trace(typeof value, name);
-      throw "not cell";
-    }
     this.vars[name] = value;
+  }
+
+  /**
+   * @param {string} name
+   * @param {Cell} value
+   */
+  setHigher(name, value) {
+    const higherContext = this.getHigherContextForVar(name);
+
+    if (higherContext) {
+      higherContext.set(name, value);
+    } else if (this.parent) {
+      this.parent.set(name, value);
+    } else {
+      this.vars[name] = value;
+    }
   }
 
   /**
@@ -90,23 +98,35 @@ class Context {
     }
   }
 
-  // has(name) {
-  //   if (name in this.vars) {
-  //     return true;
-  //   }
-  //
-  //   if (this.parent) {
-  //     return this.parent.has(name);
-  //   }
-  //
-  //   return false;
-  // }
+  has(name) {
+    if (name in this.vars) {
+      return true;
+    }
+
+    if (this.parent) {
+      return this.parent.has(name);
+    }
+
+    return false;
+  }
 
   /**
    * @param {string} name
    */
   delete(name) {
     delete this.vars[name];
+  }
+
+  getHigherContextForVar(name) {
+    if (this.parent) {
+      if (name in this.parent.vars) {
+        return this.parent;
+      }
+
+      return this.parent.getHigherContextForVar(name)
+    }
+
+    return null;
   }
 }
 
