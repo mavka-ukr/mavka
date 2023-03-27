@@ -2,12 +2,29 @@ import Instruction from "./utils/instruction.js";
 
 function doOperation(mavka, context, node) {
   const takeAsyncCell = new mavka.AsyncCell(mavka, async () => {
-    let { name, result } = await mavka.loader.loadRemote(context, node.url);
+    mavka.events.emit("module::load::remote::start", {
+      url: node.url,
+      progress: 0
+    });
+    await mavka.loader.loadRemote(context, node.url, {
+      onProgress: (progress) => {
+        mavka.events.emit("module::load::remote::progress", {
+          url: node.url,
+          progress
+        });
+      },
+      onFailed: () => {
+        mavka.events.emit("module::load::remote::failed", {
+          url: node.url
+        });
+      }
+    });
+    mavka.events.emit("module::load::remote::stop", {
+      url: node.url,
+      progress: 100
+    });
 
-    // todo: handle as prop
-    context.set(node.as ? node.as.name : name, result);
-
-    return result;
+    return mavka.empty;
   });
 
   return new mavka.AwaitCell(mavka, takeAsyncCell);

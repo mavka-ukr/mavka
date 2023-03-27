@@ -109,13 +109,14 @@ import TakeModuleInstruction from "./interpreter/instructions/takeModuleInstruct
 import TakePakInstruction from "./interpreter/instructions/takePakInstruction.js";
 import TakeRemoteInstruction from "./interpreter/instructions/takeRemoteInstruction.js";
 import ModuleStructureCell from "./interpreter/cells/moduleStructureCell.js";
+import mitt from "mitt";
 
 /**
  * @property {Context} context
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.10.4";
+  static VERSION = "0.10.5";
 
   constructor(options = {}) {
     if (!options.global) {
@@ -245,6 +246,8 @@ class Mavka {
     // @deprecated
     this.tools = {};
     this.tools.asyncFn = (fn) => this.makeWrappedAsyncProxyFunction(fn);
+
+    this.events = mitt();
   }
 
   /**
