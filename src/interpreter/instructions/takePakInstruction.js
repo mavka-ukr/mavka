@@ -5,13 +5,9 @@ function doOperation(mavka, context, node) {
   const takeAsyncCell = new mavka.AsyncCell(mavka, async () => {
     const path = node.id instanceof IdentifierNode ? [node.id.name] : node.id.toFlatArray();
 
-    let { name, result } = await mavka.loader.load(context, path, node.pak, node.relative);
+    let { name, result } = await mavka.loader.loadPak(context, path);
 
-    if (node.star && !node.as) {
-      console.log("not implemented");
-    } else {
-      context.set(node.as ? node.as.name : name, result);
-    }
+    context.set(node.as ? node.as.name : name, result);
 
     return result;
   });
@@ -19,7 +15,7 @@ function doOperation(mavka, context, node) {
   return new mavka.AwaitCell(mavka, takeAsyncCell);
 }
 
-class TakeInstruction extends Instruction {
+class TakePakInstruction extends Instruction {
   /**
    * @param {Context} context
    * @param {TakeNode} node
@@ -39,4 +35,4 @@ class TakeInstruction extends Instruction {
   }
 }
 
-export default TakeInstruction;
+export default TakePakInstruction;

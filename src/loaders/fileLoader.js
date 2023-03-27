@@ -1,6 +1,8 @@
 import Loader from "./loader.js";
-import Context from "../interpreter/contexts/context.js";
 import { parse } from "mavka-parser";
+
+import fs from "fs";
+import path from "path";
 
 class FileLoader extends Loader {
   constructor(mavka) {
@@ -9,80 +11,70 @@ class FileLoader extends Loader {
     this.loadedModules = {};
   }
 
-  async load(context, path, pak = false, relative = false) {
-    const fs = (await import("fs")).default;
-    const jsPath = (await import("path")).default;
+  async loadFile(context, modulePath) {
+    if (this.loadedModules[modulePath]) {
+      return this.loadedModules[modulePath];
+    }
 
-    const currentModuleDirname = relative
-      ? context.get("__шлях_до_папки_модуля__").asJsValue(context)
-      : context.get("__шлях_до_папки_кореневого_модуля__").asJsValue(context);
+    const modulePathDirname = path.dirname(modulePath);
 
-    let newModulePath = pak
-      ? `${currentModuleDirname}/.паки` // todo: handle paks properly
-      : `${currentModuleDirname}`;
+    const fileName = modulePath.split("/").pop();
+    const name = fileName.substring(0, fileName.length - 2);
 
-    const newPath = [...path];
+    const moduleContext = new this.mavka.Context(this.mavka, this.mavka.context);
+    moduleContext.set("__шлях_до_папки_модуля__", this.mavka.makeText(modulePathDirname));
+    moduleContext.setAsync(true);
 
-    const moduleStr = (relative ? "." : "") + path.join(".");
+    const moduleCode = fs.readFileSync(modulePath).toString();
+    const moduleProgram = parse(moduleCode);
 
-    for (const el of path) {
-      const elPath = `${newModulePath}/${el}`;
+    const module = this.mavka.makeModule(name);
+    moduleContext.setModule(module);
 
-      if (fs.existsSync(elPath)) {
-        const elStat = fs.lstatSync(elPath);
-        if (elStat.isDirectory()) {
-          newModulePath = elPath;
-          newPath.shift();
-          if (!newPath.length) {
-            throw `Не вдалось завантажити модуль "${moduleStr}."`;
-          }
-          continue;
+    this.loadedModules[modulePath] = module;
+
+    await this.mavka.run(moduleContext, moduleProgram.body);
+
+    return module;
+  }
+
+  async loadModule(context,
+                   pathElements,
+                   absolute = false) {
+    const prettyModulePath = `${absolute ? "." : ""}${pathElements.join(".")}`;
+
+    let moduleToLoad = absolute
+      ? context.get("__шлях_до_папки_кореневого_модуля__").asJsValue(context)
+      : context.get("__шлях_до_папки_модуля__").asJsValue(context);
+    let tailPath = [...pathElements];
+
+    for (const fileOrFolder of pathElements) {
+      const fileOrFolderPath = `${moduleToLoad}/${fileOrFolder}`;
+
+      if (fs.existsSync(fileOrFolderPath)) {
+        if (tailPath.length <= 1) {
+          this.mavka.fall(context, this.mavka.makeText(`Не вдалось завантажити модуль "${prettyModulePath}".`));
         }
-        if (elStat.isFile()) {
-          throw `Не вдалось завантажити модуль "${moduleStr}."`;
-        }
+
+        moduleToLoad = fileOrFolderPath;
+        tailPath.shift();
       }
 
-      if (fs.existsSync(`${elPath}.м`)) {
-        newModulePath = `${elPath}.м`;
-        newPath.shift();
+      if (fs.existsSync(`${fileOrFolderPath}.м`)) {
+        moduleToLoad = `${fileOrFolderPath}.м`;
+        tailPath.shift();
         break;
       }
-
-      throw `Не вдалось завантажити модуль "${moduleStr}."`;
     }
 
-    const newModuleDirname = jsPath.dirname(newModulePath);
+    let module = await this.loadFile(context, moduleToLoad);
 
-    let name = path[path.length - newPath.length - 1];
-
-    let module;
-
-    if (this.loadedModules[newModulePath]) {
-      module = this.loadedModules[newModulePath];
-    } else {
-      const moduleContext = new Context(this.mavka, this.mavka.context);
-      moduleContext.set("__шлях_до_папки_кореневого_модуля__", context.get("__шлях_до_папки_кореневого_модуля__"));
-      moduleContext.set("__шлях_до_кореневого_модуля__", context.get("__шлях_до_кореневого_модуля__"));
-      moduleContext.set("__шлях_до_папки_модуля__", this.mavka.makeText(newModuleDirname));
-      moduleContext.set("__шлях_до_модуля__", this.mavka.makeText(newModulePath));
-      moduleContext.setAsync(true);
-
-      const moduleCode = fs.readFileSync(newModulePath).toString();
-      const moduleProgram = parse(moduleCode);
-
-      module = this.mavka.makeModule(name);
-      moduleContext.setModule(module);
-
-      this.loadedModules[newModulePath] = module;
-
-      await this.mavka.run(moduleContext, moduleProgram.body);
-    }
+    let name = pathElements[pathElements.length - tailPath.length - 1];
 
     let result = module;
 
-    if (newPath.length) {
-      let first = newPath.shift();
+    if (tailPath.length) {
+      let first = tailPath.shift();
       while (first) {
         name = first;
         if (result instanceof this.mavka.Context) {
@@ -90,11 +82,54 @@ class FileLoader extends Loader {
         } else {
           result = result.get(context, first);
         }
-        first = newPath.shift();
+        first = tailPath.shift();
       }
     }
 
     return { name, result };
+  }
+
+  async loadPak(context, pathElements) {
+    let name = pathElements[0];
+    pathElements = pathElements.slice(1);
+
+    const pathToPak = `${context.get("__шлях_до_папки_паків__").asJsValue(context)}/${name}`;
+
+    const pakModuleContext = new this.mavka.Context(this.mavka, context);
+    pakModuleContext.set("__шлях_до_папки_кореневого_модуля__", this.mavka.makeText(pathToPak));
+    pakModuleContext.set("__шлях_до_папки_модуля__", this.mavka.makeText(pathToPak));
+    pakModuleContext.setAsync(true);
+
+    let module;
+
+    if (fs.existsSync(`${pathToPak}/${name}.м`)) {
+      // load file with same name as main module
+      const { name: resultName, result } = await this.loadModule(pakModuleContext, [name, ...pathElements]);
+      name = resultName;
+      module = result;
+    } else if (pathElements.length) {
+      // load file module
+      const { name: resultName, result } = await this.loadModule(pakModuleContext, [...pathElements]);
+      name = resultName;
+      module = result;
+    } else {
+      // load all files
+      module = this.mavka.makeModule(name);
+
+      for (const file of fs.readdirSync(pathToPak)) {
+        if (file.endsWith(".м")) {
+          const loadedModule = await this.loadFile(pakModuleContext, `${pathToPak}/${file}`);
+
+          module.set(context, loadedModule.meta.name, loadedModule);
+        }
+      }
+    }
+
+    return { name, result: module };
+  }
+
+  async loadRemote(context, url) {
+    this.mavka.fall(context, this.mavka.makeText("Завантаження модулів з інтернету ще не підтримується."));
   }
 }
 

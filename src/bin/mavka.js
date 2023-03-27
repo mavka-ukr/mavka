@@ -2,9 +2,8 @@
 
 import Mavka from "../main.js";
 import promptSync from "prompt-sync";
-import { getBinPathSync } from "get-bin-path";
 import { DiiaParserSyntaxError } from "mavka-parser/src/utils/errors.js";
-import RangeStructureCell from "../library/rangeStructureCell.js";
+import FileLoader from "../loaders/fileLoader.js";
 
 const fs = (await import("fs")).default;
 const jsPath = (await import("path")).default;
@@ -96,12 +95,12 @@ mavka.global.EXTENSION_EVAL_ASYNC_${extId} = async () => {
       });
 
       return new mavka.AwaitCell(mavka, loadExtensionAsyncCell);
-    }),
+    })
   });
 }
 
 function buildLoader(mavka) {
-  return new mavka.FileLoader(mavka);
+  return new FileLoader(mavka);
 }
 
 function buildExternal(mavka) {
@@ -124,23 +123,13 @@ if (filename && filename !== "допомога") {
 
   const context = new mavka.Context(mavka);
   context.set("__шлях_до_папки_кореневого_модуля__", mavka.makeText(cwdPath));
-  context.set("__шлях_до_кореневого_модуля__", mavka.makeText(`${cwdPath}/${filename}`));
   context.set("__шлях_до_папки_модуля__", mavka.makeText(cwdPath));
-  context.set("__шлях_до_модуля__", mavka.makeText(`${cwdPath}/${filename}`));
-
-  const binPath = getBinPathSync();
-  if (binPath && false) {
-    const stdCode = fs.readFileSync(`${jsPath.dirname(jsPath.dirname(jsPath.dirname(binPath)))}/node_modules/mavka-teka/тека.м`).toString();
-
-    mavka.context.setAsync(true);
-    await mavka.eval(stdCode);
-    mavka.context.setAsync(false);
-  }
+  context.set("__шлях_до_папки_паків__", mavka.makeText(`${cwdPath}/.паки`));
 
   const path = filename.substring(0, filename.length - 2).split(".");
 
   try {
-    await mavka.loader.load(context, path, false);
+    await mavka.loader.loadModule(context, path, false);
   } catch (e) {
     if (e instanceof DiiaParserSyntaxError) {
       console.error(`Не вдалось зловити: ${e.message}`);
@@ -151,5 +140,5 @@ if (filename && filename !== "допомога") {
     }
   }
 } else {
-  console.log("мавка :файл");
+  console.log("мавка <модуль>");
 }

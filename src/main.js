@@ -13,7 +13,6 @@ import StructureInstruction from "./interpreter/instructions/structureInstructio
 import ComparisonInstruction from "./interpreter/instructions/comparisonInstruction.js";
 import WaitInstruction from "./interpreter/instructions/waitInstruction.js";
 import GiveInstruction from "./interpreter/instructions/giveInstruction.js";
-import TakeInstruction from "./interpreter/instructions/takeInstruction.js";
 import ChainNode from "mavka-parser/src/ast/ChainNode.js";
 import ArithmeticNode from "mavka-parser/src/ast/ArithmeticNode.js";
 import NumberNode from "mavka-parser/src/ast/NumberNode.js";
@@ -27,7 +26,6 @@ import ReturnNode from "mavka-parser/src/ast/ReturnNode.js";
 import EachNode from "mavka-parser/src/ast/EachNode.js";
 import StructureNode from "mavka-parser/src/ast/StructureNode.js";
 import WaitNode from "mavka-parser/src/ast/WaitNode.js";
-import TakeNode from "mavka-parser/src/ast/TakeNode.js";
 import GiveNode from "mavka-parser/src/ast/GiveNode.js";
 import AwaitCell from "./interpreter/cells/async/awaitCell.js";
 import { parse } from "mavka-parser";
@@ -58,8 +56,6 @@ import TernaryInstruction from "./interpreter/instructions/ternaryInstruction.js
 import IdentifiersChainNode from "mavka-parser/src/ast/IdentifiersChainNode.js";
 import PortalCell from "./interpreter/cells/portal/portalCell.js";
 import Loader from "./loaders/loader.js";
-import FileLoader from "./loaders/fileLoader.js";
-import MemoryLoader from "./loaders/memoryLoader.js";
 import NegativeInstruction from "./interpreter/instructions/negativeInstruction.js";
 import NegativeNode from "mavka-parser/src/ast/NegativeNode.js";
 import ArrayInstruction from "./interpreter/instructions/arrayInstruction.js";
@@ -106,13 +102,20 @@ import ContinueNode from "mavka-parser/src/ast/ContinueNode.js";
 import GetElementNode from "mavka-parser/src/ast/GetElementNode.js";
 import StructureCell from "./interpreter/cells/common/structureCell.js";
 import RangeStructureCell from "./library/rangeStructureCell.js";
+import TakeRemoteNode from "mavka-parser/src/ast/TakeRemoteNode.js";
+import TakePakNode from "mavka-parser/src/ast/TakePakNode.js";
+import TakeModuleNode from "mavka-parser/src/ast/TakeModuleNode.js";
+import TakeModuleInstruction from "./interpreter/instructions/takeModuleInstruction.js";
+import TakePakInstruction from "./interpreter/instructions/takePakInstruction.js";
+import TakeRemoteInstruction from "./interpreter/instructions/takeRemoteInstruction.js";
+import ModuleStructureCell from "./interpreter/cells/moduleStructureCell.js";
 
 /**
  * @property {Context} context
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.10.3";
+  static VERSION = "0.10.4";
 
   constructor(options = {}) {
     if (!options.global) {
@@ -155,7 +158,9 @@ class Mavka {
     this.returnInstruction = new ReturnInstruction(this);
     this.stringInstruction = new StringInstruction(this);
     this.structureInstruction = new StructureInstruction(this);
-    this.takeInstruction = new TakeInstruction(this);
+    this.takeModuleInstruction = new TakeModuleInstruction(this);
+    this.takePakInstruction = new TakePakInstruction(this);
+    this.takeRemoteInstruction = new TakeRemoteInstruction(this);
     this.ternaryInstruction = new TernaryInstruction(this);
     this.testInstruction = new TestInstruction(this);
     this.throwInstruction = new ThrowInstruction(this);
@@ -176,6 +181,7 @@ class Mavka {
     this.DictionaryStructureCell = DictionaryStructureCell;
     this.DiiaStructureCell = DiiaStructureCell;
     this.ListStructureCell = ListStructureCell;
+    this.ModuleStructureCell = ModuleStructureCell;
     this.NumberStructureCell = NumberStructureCell;
     this.ObjectStructureCell = ObjectStructureCell;
     this.TextStructureCell = TextStructureCell;
@@ -189,8 +195,6 @@ class Mavka {
     this.LightContext = LightContext;
 
     this.Loader = Loader;
-    this.FileLoader = FileLoader;
-    this.MemoryLoader = MemoryLoader;
 
     this.ThrowValue = ThrowValue;
 
@@ -198,6 +202,7 @@ class Mavka {
     this.dictionaryStructureCellInstance = this.DictionaryStructureCell.createInstance(this);
     this.diiaStructureCellInstance = this.DiiaStructureCell.createInstance(this);
     this.listStructureCellInstance = this.ListStructureCell.createInstance(this);
+    this.moduleStructureCellInstance = this.ModuleStructureCell.createInstance(this);
     this.numberStructureCellInstance = this.NumberStructureCell.createInstance(this);
     this.textStructureCellInstance = this.TextStructureCell.createInstance(this);
     this.objectStructureCellInstance = this.ObjectStructureCell.createInstance(this);
@@ -428,8 +433,16 @@ class Mavka {
       return this.structureInstruction.run(context, node, options);
     }
 
-    if (node instanceof TakeNode) {
-      return this.takeInstruction.run(context, node, options);
+    if (node instanceof TakeModuleNode) {
+      return this.takeModuleInstruction.run(context, node, options);
+    }
+
+    if (node instanceof TakePakNode) {
+      return this.takePakInstruction.run(context, node, options);
+    }
+
+    if (node instanceof TakeRemoteNode) {
+      return this.takeRemoteInstruction.run(context, node, options);
     }
 
     if (node instanceof TernaryNode) {
@@ -829,8 +842,12 @@ class Mavka {
   makeModule(name, properties = {}) {
     return new this.Cell(
       this,
-      `<модуль ${name}>`,
-      properties
+      "модуль",
+      properties,
+      this.moduleStructureCellInstance,
+      () => properties,
+      null,
+      { name }
     );
   }
 
