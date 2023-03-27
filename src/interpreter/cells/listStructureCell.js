@@ -60,6 +60,13 @@ class ListStructureCell extends StructureCell {
       }
       return this.mavka.makeText(options.meValue.properties.values.map((element) => element.asJsValue(context)).join(dlm));
     });
+    this.setMethod("індекс", (args, context, options) => {
+      if (args[0]==undefined) {
+        return this.mavka.makeNumber(-1);
+      } else {
+        return this.mavka.makeNumber(options.meValue.properties.values.map((element) => element.asJsValue(context)).indexOf(args[0].asJsValue(context)));
+      }
+    });
   }
 
   static createInstance(mavka) {
