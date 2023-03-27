@@ -44,6 +44,22 @@ class ListStructureCell extends StructureCell {
     this.setMethod("додати", (args, context, options) => {
       return this.mavka.makeNumber(options.meValue.properties.values.push(Object.values(args)[0]));
     });
+    this.setMethod("сортувати", (args, context, options) => {
+      return this.mavka.makeList(options.meValue.properties.values.sort(function(a, b) {
+        return a.asJsValue(context) - b.asJsValue(context);
+      }));
+    });
+    this.setMethod("розвернути", (args, context, options) => {
+      return this.mavka.makeList(options.meValue.properties.values.reverse());
+    });
+    this.setMethod("поєднати", (args, context, options) => {
+      if (args[0]==undefined) {
+        var dlm = "";
+      } else {
+        var dlm = args[0].asJsValue(context);
+      }
+      return this.mavka.makeText(options.meValue.properties.values.map((element) => element.asJsValue(context)).join(dlm));
+    });
   }
 
   static createInstance(mavka) {
