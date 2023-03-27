@@ -127,10 +127,6 @@ class FileLoader extends Loader {
 
     return { name, result: module };
   }
-
-  async loadRemote(context, url) {
-    this.mavka.fall(context, this.mavka.makeText("Завантаження модулів з інтернету ще не підтримується."));
-  }
 }
 
 export default FileLoader;

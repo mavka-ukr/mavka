@@ -128,6 +128,30 @@ if (filename && filename !== "допомога") {
 
   const path = filename.substring(0, filename.length - 2).split(".");
 
+  function printProgress(name, progress) {
+    process.stdout.clearLine();
+    process.stdout.cursorTo(0);
+    process.stdout.write(`[ ${progress}% ] ${name}`);
+  }
+
+  function clearProgress() {
+    process.stdout.clearLine();
+    process.stdout.cursorTo(0);
+  }
+
+  mavka.events.on("module::load::remote::start", ({ url }) => {
+    printProgress(url, 1);
+  });
+  mavka.events.on("module::load::remote::progress", ({ url, progress }) => {
+    printProgress(url, progress);
+  });
+  mavka.events.on("module::load::remote::stop", () => {
+    clearProgress();
+  });
+  mavka.events.on("module::load::remote::failed", () => {
+    clearProgress();
+  });
+
   try {
     await mavka.loader.loadModule(context, path, false);
   } catch (e) {
