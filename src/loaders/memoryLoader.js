@@ -10,7 +10,7 @@ class MemoryLoader extends Loader {
     this.loadedModules = {};
   }
 
-  async load(context, path, pak = false, relative = false) {
+  async loadModule(context, path, absolute = false) {
     let name = path[0];
     const newPath = path.slice(1);
 
@@ -53,6 +53,14 @@ class MemoryLoader extends Loader {
     }
 
     return { name, result };
+  }
+
+  async loadPak(context, pathElements) {
+    this.mavka.fall(context, this.mavka.makeText("Завантаження паків ще не підтримується."));
+  }
+
+  async loadRemote(context, url) {
+    this.mavka.fall(context, this.mavka.makeText("Завантаження модулів з інтернету ще не підтримується."));
   }
 }
 

@@ -98,6 +98,10 @@ class Context {
     }
   }
 
+  /**
+   * @param {string} name
+   * @return {boolean}
+   */
   has(name) {
     if (name in this.vars) {
       return true;
@@ -117,13 +121,17 @@ class Context {
     delete this.vars[name];
   }
 
+  /**
+   * @param {String} name
+   * @return {Context|null}
+   */
   getHigherContextForVar(name) {
     if (this.parent) {
       if (name in this.parent.vars) {
         return this.parent;
       }
 
-      return this.parent.getHigherContextForVar(name)
+      return this.parent.getHigherContextForVar(name);
     }
 
     return null;
