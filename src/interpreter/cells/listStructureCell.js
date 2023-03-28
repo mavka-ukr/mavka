@@ -52,7 +52,7 @@ class ListStructureCell extends StructureCell {
     this.setMethod("розвернути", (args, context, options) => {
       return this.mavka.makeList(options.meValue.properties.values.reverse());
     });
-    this.setMethod("поєднати", (args, context, options) => {
+    this.setMethod("зʼєднати", (args, context, options) => {
       if (args[0]==undefined) {
         var dlm = "";
       } else {
@@ -60,7 +60,7 @@ class ListStructureCell extends StructureCell {
       }
       return this.mavka.makeText(options.meValue.properties.values.map((element) => element.asJsValue(context)).join(dlm));
     });
-    this.setMethod("індекс", (args, context, options) => {
+    this.setMethod("позиція", (args, context, options) => {
       if (args[0]==undefined) {
         return this.mavka.makeNumber(-1);
       } else {
