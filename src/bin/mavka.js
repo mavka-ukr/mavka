@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import Mavka from "../main.js";
-import promptSync from "prompt-sync";
+import promptSync from "@kant2002/prompt-sync";
 import { DiiaParserSyntaxError } from "mavka-parser/src/utils/errors.js";
 import FileLoader from "../loaders/fileLoader.js";
 
@@ -31,7 +31,7 @@ function buildGlobalContext(mavka) {
     "читати": mavka.makeProxyFunction((args, context) => {
       const ask = Object.values(args).length ? args[0].asText(context).asJsValue() : undefined;
 
-      return mavka.makeText(mavka.external.promptSync({ sigint: true })(ask));
+      return mavka.makeText(mavka.external.promptSync({ sigint: true, encoding: 'windows-1251' })(ask));
     }),
 
     "підключити_розширення_з_файлу": mavka.makeProxyFunction((args, context) => {
