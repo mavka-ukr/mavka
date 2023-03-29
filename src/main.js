@@ -116,7 +116,7 @@ import mitt from "mitt";
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.10.7";
+  static VERSION = "0.10.8";
 
   constructor(options = {}) {
     if (!options.global) {
@@ -539,6 +539,17 @@ class Mavka {
    * @param {Cell} value
    * @return {boolean}
    */
+  isBasic(value) {
+    return this.isEmpty(value)
+      || this.isText(value)
+      || this.isNumber(value)
+      || this.isBoolean(value);
+  }
+
+  /**
+   * @param {Cell} value
+   * @return {boolean}
+   */
   isBoolean(value) {
     return value.isInstanceOf(this.booleanStructureCellInstance);
   }
@@ -726,30 +737,33 @@ class Mavka {
   }
 
   /**
-   * @param {Record<string, Cell>} items
+   * @param {Map<string|number|boolean|Cell, Cell>} items
    * @return {Cell}
    */
   makeDictionary(items) {
+    const mavka = this;
+
     return new this.Cell(
       this,
       "словник",
-      {
-        items
-      },
+      {},
       this.dictionaryStructureCellInstance,
       (context) => {
         const data = {};
 
-        for (const [k, v] of Object.entries(items)) {
+        for (const [k, v] of items.entries()) {
           data[this.toCell(k).asJsValue(context)] = v.asJsValue(context);
         }
 
         return data;
       },
       function* () {
-        for (const [key, value] of Object.entries(items)) {
-          yield { key, value };
+        for (const [key, value] of items.entries()) {
+          yield { key: mavka.toCell(key), value };
         }
+      },
+      {
+        items
       }
     );
   }
