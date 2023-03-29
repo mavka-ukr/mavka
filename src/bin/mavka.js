@@ -17,7 +17,7 @@ let filename = process.argv[2];
 function buildGlobalContext(mavka) {
   let extId = 0;
 
-  return new mavka.Context(mavka, null, {
+  const context = new mavka.Context(mavka, null, {
     "друк": mavka.makeProxyFunction((args, context) => {
       console.log(
         ...args
@@ -31,7 +31,7 @@ function buildGlobalContext(mavka) {
     "читати": mavka.makeProxyFunction((args, context) => {
       const ask = Object.values(args).length ? args[0].asText(context).asJsValue() : undefined;
 
-      return mavka.makeText(mavka.external.promptSync({ sigint: true, encoding: 'windows-1251' })(ask));
+      return mavka.makeText(mavka.external.promptSync({ sigint: true, encoding: "windows-1251" })(ask));
     }),
 
     "підключити_розширення_з_файлу": mavka.makeProxyFunction((args, context) => {
@@ -97,6 +97,12 @@ mavka.global.EXTENSION_EVAL_ASYNC_${extId} = async () => {
       return new mavka.AwaitCell(mavka, loadExtensionAsyncCell);
     })
   });
+
+  context.set("__шлях_до_папки_кореневого_модуля__", mavka.makeText(cwdPath));
+  context.set("__шлях_до_папки_модуля__", mavka.makeText(cwdPath));
+  context.set("__шлях_до_папки_паків__", mavka.makeText(`${cwdPath}/.паки`));
+
+  return context;
 }
 
 function buildLoader(mavka) {
@@ -121,10 +127,7 @@ if (filename && filename !== "допомога") {
     buildExternal
   });
 
-  const context = new mavka.Context(mavka);
-  context.set("__шлях_до_папки_кореневого_модуля__", mavka.makeText(cwdPath));
-  context.set("__шлях_до_папки_модуля__", mavka.makeText(cwdPath));
-  context.set("__шлях_до_папки_паків__", mavka.makeText(`${cwdPath}/.паки`));
+  const context = new mavka.Context(mavka, mavka.context);
 
   const path = filename.substring(0, filename.length - 2).split(".");
 
@@ -140,7 +143,7 @@ if (filename && filename !== "допомога") {
   }
 
   mavka.events.on("module::load::remote::start", ({ url }) => {
-    printProgress(url, 1);
+    printProgress(url, 0);
   });
   mavka.events.on("module::load::remote::progress", ({ url, progress }) => {
     printProgress(url, progress);
