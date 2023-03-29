@@ -18,7 +18,9 @@ class EachInstruction extends Instruction {
       if (node.keyName) {
         context.set(node.keyName.name, item.key);
       }
-      context.set(node.name.name, item.value);
+      if (node.name) {
+        context.set(node.name.name, item.value);
+      }
 
       const value = this.mavka.run(context, node.body);
 
@@ -39,7 +41,9 @@ class EachInstruction extends Instruction {
     if (node.keyName) {
       context.delete(node.keyName.name);
     }
-    context.delete(node.name.name);
+    if (node.name) {
+      context.delete(node.name.name);
+    }
 
     return this.mavka.empty;
   }
@@ -58,7 +62,9 @@ class EachInstruction extends Instruction {
       if (node.keyName) {
         context.set(node.keyName.name, item.key);
       }
-      context.set(node.name.name, item.value);
+      if (node.name) {
+        context.set(node.name.name, item.value);
+      }
 
       const value = await this.mavka.run(context, node.body);
 
@@ -79,7 +85,9 @@ class EachInstruction extends Instruction {
     if (node.keyName) {
       context.delete(node.keyName.name);
     }
-    context.delete(node.name.name);
+    if (node.name) {
+      context.delete(node.name.name);
+    }
 
     return this.mavka.empty;
   }

@@ -8,10 +8,12 @@ class GiveInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    const name = lastIdentifierName(node.as) || lastIdentifierName(node.id);
-    const value = resolveIdentifier(this.mavka, context, context, node.id);
+    for (const nodeElement of node.elements) {
+      const name = lastIdentifierName(nodeElement.as) || lastIdentifierName(nodeElement.id);
+      const value = resolveIdentifier(this.mavka, context, context, nodeElement.id);
 
-    context.give(name, value);
+      context.give(name, value);
+    }
 
     return node;
   }
@@ -22,10 +24,12 @@ class GiveInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    const name = lastIdentifierName(node.as) || lastIdentifierName(node.id);
-    const value = resolveIdentifier(this.mavka, context, context, node.id);
+    for (const nodeElement of node.elements) {
+      const name = lastIdentifierName(nodeElement.as) || lastIdentifierName(nodeElement.id);
+      const value = resolveIdentifier(this.mavka, context, context, nodeElement.id);
 
-    context.give(name, value);
+      context.give(name, value);
+    }
 
     return node;
   }
