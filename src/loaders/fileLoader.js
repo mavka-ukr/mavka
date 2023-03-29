@@ -3,6 +3,7 @@ import { parse } from "mavka-parser";
 
 import fs from "fs";
 import path from "path";
+import axios from "axios";
 
 class FileLoader extends Loader {
   constructor(mavka) {
@@ -95,7 +96,7 @@ class FileLoader extends Loader {
 
     const pathToPak = `${context.get("__шлях_до_папки_паків__").asJsValue(context)}/${name}`;
 
-    const pakModuleContext = new this.mavka.Context(this.mavka, context);
+    const pakModuleContext = new this.mavka.Context(this.mavka, this.mavka.context);
     pakModuleContext.set("__шлях_до_папки_кореневого_модуля__", this.mavka.makeText(pathToPak));
     pakModuleContext.set("__шлях_до_папки_модуля__", this.mavka.makeText(pathToPak));
     pakModuleContext.setAsync(true);
@@ -126,6 +127,69 @@ class FileLoader extends Loader {
     }
 
     return { name, result: module };
+  }
+
+  async loadRemote(context, url, options = {}) {
+    const rawUrl = url;
+
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      url = `https://${url}`;
+    }
+
+    let module = this.loadedRemoteModules[rawUrl];
+
+    if (!this.loadedRemoteModules[rawUrl]) {
+      const moduleContext = new this.mavka.Context(this.mavka, this.mavka.context);
+      moduleContext.setAsync(true);
+
+      let moduleCode;
+
+      const rootPath = context.get("__шлях_до_папки_кореневого_модуля__").asJsValue(context);
+      const cleanUrl = rawUrl.replaceAll("/", "__").replaceAll(".", "_");
+      const cloudPaksPath = `${rootPath}/.хмарні_паки`;
+      const modulePath = `${cloudPaksPath}/${cleanUrl}.м`;
+
+      if (!fs.existsSync(cloudPaksPath)) {
+        fs.mkdirSync(cloudPaksPath);
+      }
+
+      if (fs.existsSync(modulePath)) {
+        moduleCode = fs.readFileSync(modulePath).toString();
+      } else {
+        moduleCode = await axios
+          .get(url, {
+            onDownloadProgress: (progressEvent) => {
+              if (options.onProgress) {
+                options.onProgress(Math.floor(progressEvent.progress * 100));
+              }
+            },
+            responseType: "text"
+          })
+          .then((r) => String(r.data))
+          .catch((e) => {
+            if (options.onFailed) {
+              options.onFailed(e);
+            }
+
+            this.mavka.fall(context, this.mavka.makeText(`Не вдалось завантажити "${rawUrl}".`));
+          });
+
+        fs.writeFileSync(modulePath, moduleCode);
+      }
+
+      const moduleProgram = parse(moduleCode);
+
+      module = this.mavka.makeModule("");
+      moduleContext.setModule(module);
+
+      this.loadedRemoteModules[rawUrl] = module;
+
+      await this.mavka.run(moduleContext, moduleProgram.body);
+    }
+
+    Object.entries(module.properties).forEach(([key, value]) => {
+      context.set(key, value);
+    });
   }
 }
 
