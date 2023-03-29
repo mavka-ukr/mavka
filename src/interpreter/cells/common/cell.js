@@ -466,6 +466,42 @@ export class Cell {
   }
 
   /**
+   * @param {Context} context
+   * @param {Cell} value
+   * @return {Cell}
+   */
+  doCompareHas(context, value) {
+    const hasDiiaResult = this.doAction(context, "виконати_порівняння_чи_містить", [value]);
+    if (hasDiiaResult) {
+      return hasDiiaResult;
+    }
+
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_порівняння_чи_містить" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_порівняння_чи_містить" не реалізовано.`));
+    }
+  }
+
+  /**
+   * @param {Context} context
+   * @param {Cell} value
+   * @return {Cell}
+   */
+  doCompareHasNot(context, value) {
+    const hasNotDiiaResult = this.doAction(context, "виконати_порівняння_чи_не_містить", [value]);
+    if (hasNotDiiaResult) {
+      return hasNotDiiaResult;
+    }
+
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_порівняння_чи_не_містить" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_порівняння_чи_не_містить" не реалізовано.`));
+    }
+  }
+
+  /**
    * @param {Cell} value
    * @return {boolean}
    */

@@ -20,6 +20,26 @@ class StructureCell extends Cell {
     this.parent = parent;
     this.parameters = parameters;
     this.methods = methods;
+
+    if (!("виконати_порівняння_чи_рівно" in this.methods)) {
+      this.setMethod("виконати_порівняння_чи_рівно", (args, context, options) => {
+        let left = options.meValue;
+        let right = Object.values(args)[0];
+
+        if (mavka.isBasic(left)) {
+          left = left.asJsValue(context);
+        }
+        if (mavka.isBasic(right)) {
+          right = right.asJsValue(context);
+        }
+
+        if (left === right) {
+          return this.mavka.yes;
+        }
+
+        return this.mavka.no;
+      });
+    }
   }
 
   getAllParameters() {

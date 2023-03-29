@@ -21,8 +21,8 @@ function doOperation(mavka, context, left, right, operation) {
 
     "не": () => left.doCompareNotEquals(context, right), // не рівно
 
-    "містить": () => left.has(context, right), // in
-    "не містить": () => left.has(context, right).not() // not in
+    "містить": () => left.doCompareHas(context, right), // in
+    "не містить": () => left.doCompareHasNot(context, right) // not in
   }[operation])();
 }
 

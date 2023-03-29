@@ -7,10 +7,10 @@ class DictionaryInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    const items = {};
+    const items = new Map();
 
     for (const [k, v] of Object.entries(node.args)) {
-      items[k] = this.mavka.runSync(context, v);
+      items.set(k, this.mavka.runSync(context, v));
     }
 
     return this.mavka.makeDictionary(items);
@@ -22,10 +22,10 @@ class DictionaryInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    const items = {};
+    const items = new Map();
 
     for (const [k, v] of Object.entries(node.args)) {
-      items[k] = await this.mavka.runAsync(context, v);
+      items.set(k, await this.mavka.runAsync(context, v));
     }
 
     return this.mavka.makeDictionary(items);
