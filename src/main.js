@@ -116,7 +116,7 @@ import mitt from "mitt";
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.10.5";
+  static VERSION = "0.10.7";
 
   constructor(options = {}) {
     if (!options.global) {
