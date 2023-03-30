@@ -90,7 +90,7 @@ class DictionaryStructureCell extends StructureCell {
       return this.mavka.toCell(options.meValue.meta.items.delete(key));
     });
     this.setMethod("розмір", (args, context, options) => {
-      return this.mavka.makeNumber(options.meValue.meta.items.size());
+      return this.mavka.makeNumber(options.meValue.meta.items.size);
     });
     this.setMethod("очистити", (args, context, options) => {
       options.meValue.meta.items.clear();
