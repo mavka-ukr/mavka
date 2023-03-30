@@ -116,7 +116,7 @@ import mitt from "mitt";
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.10.9";
+  static VERSION = "0.10.10";
 
   constructor(options = {}) {
     if (!options.global) {
@@ -720,9 +720,7 @@ class Mavka {
     return new this.Cell(
       this,
       "список",
-      {
-        values
-      },
+      {},
       this.listStructureCellInstance,
       (context) => {
         return values
@@ -732,6 +730,9 @@ class Mavka {
         for (const [key, value] of Object.entries(values)) {
           yield { key, value };
         }
+      },
+      {
+        values
       }
     );
   }
