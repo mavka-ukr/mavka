@@ -110,13 +110,18 @@ import TakePakInstruction from "./interpreter/instructions/takePakInstruction.js
 import TakeRemoteInstruction from "./interpreter/instructions/takeRemoteInstruction.js";
 import ModuleStructureCell from "./interpreter/cells/moduleStructureCell.js";
 import mitt from "mitt";
+import TakeFileInstruction from "./interpreter/instructions/takeFileInstruction.js";
+import TakeFileNode from "mavka-parser/src/ast/TakeFileNode.js";
+import EvalInstruction from "./interpreter/instructions/evalInstruction.js";
+import EvalNode from "mavka-parser/src/ast/EvalNode.js";
+import FileStructureCell from "./library/fileStructureCell.js";
 
 /**
  * @property {Context} context
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.10.10";
+  static VERSION = "0.10.11";
 
   constructor(options = {}) {
     if (!options.global) {
@@ -139,6 +144,7 @@ class Mavka {
     this.continueInstruction = new ContinueInstruction(this);
     this.diiaInstruction = new DiiaInstruction(this);
     this.eachInstruction = new EachInstruction(this);
+    this.evalInstruction = new EvalInstruction(this);
     this.functionInstruction = new FunctionInstruction(this);
     this.getElementInstruction = new GetElementInstruction(this);
     this.giveInstruction = new GiveInstruction(this);
@@ -159,6 +165,7 @@ class Mavka {
     this.returnInstruction = new ReturnInstruction(this);
     this.stringInstruction = new StringInstruction(this);
     this.structureInstruction = new StructureInstruction(this);
+    this.takeFileInstruction = new TakeFileInstruction(this);
     this.takeModuleInstruction = new TakeModuleInstruction(this);
     this.takePakInstruction = new TakePakInstruction(this);
     this.takeRemoteInstruction = new TakeRemoteInstruction(this);
@@ -240,6 +247,7 @@ class Mavka {
     this.context.set("Дія", this.diiaStructureCellInstance);
     this.context.set("global", this.makePortal(this.global));
     this.context.set("діапазон", RangeStructureCell.getInstance(this));
+    this.context.set("Файл", FileStructureCell.getInstance(this));
 
     this.external = options.buildExternal ? options.buildExternal(this) : {};
 
@@ -356,6 +364,10 @@ class Mavka {
       return this.eachInstruction.run(context, node, options);
     }
 
+    if (node instanceof EvalNode) {
+      return this.evalInstruction.run(context, node, options);
+    }
+
     if (node instanceof FunctionNode) {
       return this.functionInstruction.run(context, node, options);
     }
@@ -434,6 +446,10 @@ class Mavka {
 
     if (node instanceof StructureNode) {
       return this.structureInstruction.run(context, node, options);
+    }
+
+    if (node instanceof TakeFileNode) {
+      return this.takeFileInstruction.run(context, node, options);
     }
 
     if (node instanceof TakeModuleNode) {
@@ -692,7 +708,11 @@ class Mavka {
         value
       },
       this.textStructureCellInstance,
-      () => value
+      () => value,
+      null,
+      {
+        value
+      }
     );
   }
 

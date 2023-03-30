@@ -6,6 +6,14 @@ class Loader {
   }
 
   /**
+   * @param {Context} context
+   * @param {string} path
+   * @return {Promise<Buffer>}
+   */
+  async loadFile(context, path) {
+  }
+
+  /**
    * Load a module.
    *
    * @param {Context} context

@@ -12,7 +12,18 @@ class FileLoader extends Loader {
     this.loadedModules = {};
   }
 
-  async loadFile(context, modulePath) {
+  async loadFile(context, path) {
+    const pathPrefix = context.get("__шлях_до_папки_модуля__").asJsValue(context) + "/";
+    const filePath = pathPrefix + path;
+
+    if (fs.existsSync(filePath) === false) {
+      this.mavka.fall(context, this.mavka.makeText(`Файл "${filePath}" не знайдено.`));
+    }
+
+    return fs.readFileSync(filePath);
+  }
+
+  async loadModuleFromFile(context, modulePath) {
     if (this.loadedModules[modulePath]) {
       return this.loadedModules[modulePath];
     }
@@ -68,7 +79,7 @@ class FileLoader extends Loader {
       }
     }
 
-    let module = await this.loadFile(context, moduleToLoad);
+    let module = await this.loadModuleFromFile(context, moduleToLoad);
 
     let name = pathElements[pathElements.length - tailPath.length - 1];
 
@@ -119,7 +130,7 @@ class FileLoader extends Loader {
 
       for (const file of fs.readdirSync(pathToPak)) {
         if (file.endsWith(".м")) {
-          const loadedModule = await this.loadFile(pakModuleContext, `${pathToPak}/${file}`);
+          const loadedModule = await this.loadModuleFromFile(pakModuleContext, `${pathToPak}/${file}`);
 
           module.set(context, loadedModule.meta.name, loadedModule);
         }

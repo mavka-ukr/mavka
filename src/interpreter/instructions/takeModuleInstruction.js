@@ -26,7 +26,7 @@ class TakeModuleInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    return doOperation(this.mavka, context, node);
+    this.mavka.fall(context, this.mavka.makeText("Не можна брати модулі в звичайному контексті."));
   }
 
   /**

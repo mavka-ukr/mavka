@@ -33,16 +33,16 @@ function doOperation(mavka, context, node) {
 class TakeRemoteInstruction extends Instruction {
   /**
    * @param {Context} context
-   * @param {TakeNode} node
+   * @param {TakeRemoteNode} node
    * @returns {*}
    */
   runSync(context, node) {
-    return doOperation(this.mavka, context, node);
+    this.mavka.fall(context, this.mavka.makeText("Не можна брати модулі в звичайному контексті."));
   }
 
   /**
    * @param {Context} context
-   * @param {TakeNode} node
+   * @param {TakeRemoteNode} node
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {

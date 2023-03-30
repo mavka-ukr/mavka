@@ -18,16 +18,16 @@ function doOperation(mavka, context, node) {
 class TakePakInstruction extends Instruction {
   /**
    * @param {Context} context
-   * @param {TakeNode} node
+   * @param {TakePakNode} node
    * @returns {*}
    */
   runSync(context, node) {
-    return doOperation(this.mavka, context, node);
+    this.mavka.fall(context, this.mavka.makeText("Не можна брати паки в звичайному контексті."));
   }
 
   /**
    * @param {Context} context
-   * @param {TakeNode} node
+   * @param {TakePakNode} node
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
