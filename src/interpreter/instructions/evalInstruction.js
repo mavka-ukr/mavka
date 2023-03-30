@@ -1,6 +1,13 @@
 import Instruction from "./utils/instruction.js";
 import FileStructureCell from "../../library/fileStructureCell.js";
 
+function doEval(code, mavka, context) {
+  const getMavka = () => mavka;
+  const getContext = () => context;
+
+  eval(code);
+}
+
 let extId = 0;
 
 class EvalInstruction extends Instruction {
@@ -10,7 +17,7 @@ class EvalInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    this.mavka.fall(context, this.mavka.makeText("Не можна виконувати \"eval\" в звичайному контексті."));
+    this.mavka.fall(context, this.mavka.makeText("Не можна виконувати \"js\" в звичайному контексті."));
   }
 
   /**
@@ -26,14 +33,8 @@ class EvalInstruction extends Instruction {
     } else if (value.isInstanceOf(FileStructureCell.getInstance(this.mavka))) {
       value = value.meta.buffer.toString();
     } else {
-      this.mavka.fall(context, this.mavka.makeText("\"eval\" приймає лише текст або файл."));
+      this.mavka.fall(context, this.mavka.makeText("\"js\" приймає лише текст або файл."));
     }
-
-
-    const mavka = this.mavka;
-
-    const getContext = () => context;
-    const getMavka = () => this.mavka;
 
     const loadExtensionAsyncCell = new this.mavka.AsyncCell(this.mavka, async () => {
       extId++;
@@ -44,7 +45,7 @@ mavka.global.EXTENSION_EVAL_ASYNC_${extId} = async function() {
 }
       `;
 
-      eval(wrappedCode);
+      doEval(wrappedCode, this.mavka, context);
 
       const result = await this.mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`]();
       delete this.mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`];
