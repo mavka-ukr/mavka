@@ -8,14 +8,7 @@ class GiveInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    for (const nodeElement of node.elements) {
-      const name = lastIdentifierName(nodeElement.as) || lastIdentifierName(nodeElement.id);
-      const value = resolveIdentifier(this.mavka, context, context, nodeElement.id);
-
-      context.give(name, value);
-    }
-
-    return node;
+    this.mavka.fall(context, this.mavka.makeText("Не можна давати в звичайному контексті."));
   }
 
   /**

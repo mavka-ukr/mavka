@@ -1,22 +1,17 @@
 #!/usr/bin/env node
 
-import clone from "git-clone/promise.js";
-import fs from "fs";
+import { pakAddFromRepoUrl } from "mavka-pak";
 
 const command = process.argv[2];
 
 if (command === "додати") {
   const name = process.argv[3];
-  const repo = process.argv[4];
+  const repoUrl = process.argv[4];
 
-  if (repo) {
-    console.log(`Додаємо "${name}" з ${repo}...`);
+  if (repoUrl) {
+    console.log(`Додаємо "${name}" з ${repoUrl}...`);
 
-    const path = `.паки/${name}`;
-
-    fs.rmSync(path, { recursive: true, force: true });
-
-    await clone(repo, path);
+    await pakAddFromRepoUrl(name, repoUrl, process.cwd());
 
     console.log(`"${name}" додано.`);
   } else {
