@@ -12,7 +12,7 @@ process.removeAllListeners("warning");
 
 const cwdPath = process.cwd();
 
-let filename = process.argv[2];
+let command = process.argv[2];
 
 function buildGlobalContext(mavka) {
   let extId = 0;
@@ -115,10 +115,27 @@ function buildExternal(mavka) {
   };
 }
 
+if (command === "версія") {
+  console.log(Mavka.VERSION);
+} else if (command === "допомога" || !command) {
+  console.log(`
+Використання:
+  мавка <модуль> [...аргументи]
+  мавка <команда> [...аргументи]
 
-if (filename && filename !== "допомога") {
-  if (!filename.endsWith(".м")) {
-    filename = `${filename}.м`;
+Доступні команди:
+  мавка <модуль> — виконує модуль
+  мавка виконати <модуль> — виконує модуль
+  мавка версія — показує версію Мавки
+  мавка допомога — друкує це повідолення
+  `.trim());
+} else {
+  if (command === "запустити") {
+    command = process.argv[3];
+  }
+
+  if (!command.endsWith(".м")) {
+    command = `${command}.м`;
   }
 
   const mavka = new Mavka({
@@ -129,7 +146,7 @@ if (filename && filename !== "допомога") {
 
   const context = new mavka.Context(mavka, mavka.context);
 
-  const path = filename.substring(0, filename.length - 2).split(".");
+  const path = command.substring(0, command.length - 2).split(".");
 
   function printProgress(name, progress) {
     process.stdout.clearLine();
@@ -156,7 +173,7 @@ if (filename && filename !== "допомога") {
   });
 
   try {
-    await mavka.loader.loadModule(context, path, false);
+    await mavka.loader.loadModuleFromFile(context, command);
   } catch (e) {
     if (e instanceof DiiaParserSyntaxError) {
       console.error(`Не вдалось зловити: ${e.message}`);
@@ -166,6 +183,4 @@ if (filename && filename !== "допомога") {
       throw e;
     }
   }
-} else {
-  console.log("мавка <модуль>");
 }
