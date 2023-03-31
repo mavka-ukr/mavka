@@ -4,7 +4,7 @@ function doOperation(mavka, context, node) {
   const takeAsyncCell = new mavka.AsyncCell(mavka, async () => {
     const buffer = await mavka.loader.loadFile(context, node.name);
 
-    const value = this.mavka.makeText(buffer.toString());
+    const value = mavka.makeText(buffer.toString());
 
     context.set(node.as.name, value);
 
