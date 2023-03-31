@@ -56,6 +56,24 @@ class DictionaryStructureCell extends StructureCell {
 
       return this.mavka.toCell(options.meValue.meta.items.get(index));
     });
+    this.setMethod("виконати_присвоєння_елемента", (args, context, options) => {
+      let key = args[0];
+      let value = args[1];
+      if (!key) {
+        key = this.mavka.empty;
+      }
+      if (!value) {
+        value = this.mavka.empty;
+      }
+
+      if (this.mavka.isBasic(key)) {
+        key = key.asJsValue(context);
+      }
+
+      options.meValue.meta.items.set(key, value);
+
+      return value;
+    });
 
     this.setMethod("покласти", (args, context, options) => {
       let key = args[0];
@@ -65,6 +83,10 @@ class DictionaryStructureCell extends StructureCell {
       }
       if (!value) {
         value = this.mavka.empty;
+      }
+
+      if (this.mavka.isBasic(key)) {
+        key = key.asJsValue(context);
       }
 
       options.meValue.meta.items.set(key, value);
