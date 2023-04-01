@@ -5,6 +5,9 @@ function doEval(code, mavka, context) {
   const getMavka = () => mavka;
   const getContext = () => context;
 
+  getMavka;
+  getContext;
+
   eval(code);
 }
 
