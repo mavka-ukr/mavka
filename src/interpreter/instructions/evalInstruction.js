@@ -2,12 +2,6 @@ import Instruction from "./utils/instruction.js";
 import FileStructureCell from "../../library/fileStructureCell.js";
 
 function doEval(code, mavka, context) {
-  const getMavka = () => mavka;
-  const getContext = () => context;
-
-  getMavka;
-  getContext;
-
   eval(code);
 }
 
@@ -39,6 +33,12 @@ class EvalInstruction extends Instruction {
       this.mavka.fall(context, this.mavka.makeText("\"js\" приймає лише текст або файл."));
     }
 
+    const prevGetMavka = this.mavka.global.getMavka;
+    const prevGetContext = this.mavka.global.getContext;
+
+    this.mavka.global.getMavka = () => this.mavka;
+    this.mavka.global.getContext = () => context;
+
     const loadExtensionAsyncCell = new this.mavka.AsyncCell(this.mavka, async () => {
       extId++;
 
@@ -52,6 +52,9 @@ mavka.global.EXTENSION_EVAL_ASYNC_${extId} = async function() {
 
       const result = await this.mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`]();
       delete this.mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`];
+
+      this.mavka.global.getMavka = prevGetMavka;
+      this.mavka.global.getContext = prevGetContext;
 
       return this.mavka.toCell(result);
     });
