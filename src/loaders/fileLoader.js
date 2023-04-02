@@ -50,6 +50,37 @@ class FileLoader extends Loader {
     return module;
   }
 
+  async loadRuntimeModule(context, modulePath) {
+    if (this.loadedModules[modulePath]) {
+      return this.loadedModules[modulePath];
+    }
+
+    const modulePathDirname = path.dirname(modulePath);
+
+    const fileName = modulePath.split("/").pop();
+    const name = fileName.substring(0, fileName.length - 2);
+
+    const moduleContext = new this.mavka.Context(this.mavka, this.mavka.context);
+    moduleContext.set("__шлях_до_папки_модуля__", this.mavka.makeText(modulePathDirname));
+    moduleContext.setAsync(true);
+
+    const moduleCode = fs.readFileSync(modulePath).toString();
+    const moduleProgram = parse(moduleCode);
+
+    const module = this.mavka.makeModule(name);
+    moduleContext.setModule(module);
+
+    this.loadedModules[modulePath] = module;
+
+    await this.mavka.run(moduleContext, moduleProgram.body);
+
+    for (const varName of Object.keys(moduleContext.vars)) {
+      context.set(varName, moduleContext.vars[varName]);
+    }
+
+    return context;
+  }
+
   async loadModule(context,
                    pathElements,
                    absolute = false) {
