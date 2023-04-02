@@ -7,6 +7,22 @@ function interpolate(value) {
   let part = "";
   let interpolation = false;
   for (let i = 0; i < value.length; i++) {
+    if (value[i] === "\\" && value[i + 1] === "\\" && value[i + 2] === "\"") {
+      i += 1;
+      continue;
+    }
+
+    if (value[i] === "\\" && value[i + 1] === "\\" && value[i + 2] === "n") {
+      part += "\\n";
+      i += 2;
+      continue;
+    }
+
+    if (value[i] === "\\" && value[i + 1] === "\\" && value[i + 2] === "r") {
+      i += 2;
+      continue;
+    }
+
     if (value[i] === "\\" && value[i + 1] === "\"") {
       continue;
     }
