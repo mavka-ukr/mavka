@@ -5,9 +5,6 @@ import promptSync from "@kant2002/prompt-sync";
 import { DiiaParserSyntaxError } from "mavka-parser/src/utils/errors.js";
 import FileLoader from "../loaders/fileLoader.js";
 
-const fs = (await import("fs")).default;
-const jsPath = (await import("path")).default;
-
 process.removeAllListeners("warning");
 
 const cwdPath = process.cwd();
@@ -24,6 +21,16 @@ function buildGlobalContext(mavka) {
           .map((arg) => {
             return arg.asText(context).asJsValue(context);
           })
+      );
+
+      return mavka.empty;
+    }),
+    "вивести": mavka.makeProxyFunction((args, context) => {
+      process.stdout.write(
+        args
+          .map((arg) => {
+            return arg.asText(context).asJsValue(context);
+          }).join('')
       );
 
       return mavka.empty;
