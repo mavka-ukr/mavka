@@ -30,7 +30,7 @@ function buildGlobalContext(mavka) {
         args
           .map((arg) => {
             return arg.asText(context).asJsValue(context);
-          }).join('')
+          }).join("")
       );
 
       return mavka.empty;
