@@ -179,7 +179,7 @@ if (command === "версія") {
       .map(filename => jsPath.join(runtimeModulePath, filename));
 
     for (const modulePath of runtimeModuleFiles) {
-      mavka.context = await mavka.loader.loadRuntimeModule(context, modulePath);
+      mavka.context = await mavka.loader.loadStartupModule(context, modulePath);
     }
 
     await mavka.loader.loadModuleFromFile(mavka.context, command);
