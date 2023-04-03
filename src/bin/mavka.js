@@ -174,7 +174,7 @@ if (command === "версія") {
   });
 
   try {
-    const runtimeModulePath = new URL('../runtime-modules/', import.meta.url).pathname.substring(1);
+    const runtimeModulePath = new URL('../startup-modules/', import.meta.url).pathname.substring(1);
     const runtimeModuleFiles = fs.readdirSync(runtimeModulePath)
       .map(filename => jsPath.join(runtimeModulePath, filename));
 
