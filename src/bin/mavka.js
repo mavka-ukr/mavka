@@ -174,11 +174,11 @@ if (command === "версія") {
   });
 
   try {
-    const runtimeModulePath = new URL('../startup-modules/', import.meta.url).pathname.substring(1);
-    const runtimeModuleFiles = fs.readdirSync(runtimeModulePath)
-      .map(filename => jsPath.join(runtimeModulePath, filename));
+    const startupModulePath = new URL('../startup-modules/', import.meta.url).pathname.substring(1);
+    const startupModuleFiles = fs.readdirSync(startupModulePath)
+      .map(filename => jsPath.join(startupModulePath, filename));
 
-    for (const modulePath of runtimeModuleFiles) {
+    for (const modulePath of startupModuleFiles) {
       mavka.context = await mavka.loader.loadStartupModule(context, modulePath);
     }
 
