@@ -174,7 +174,14 @@ if (command === "версія") {
   });
 
   try {
-    const startupModulePath = new URL('../startup-modules/', import.meta.url).pathname.substring(1);
+    const driveLetterPattern = /^\/[A-Z]:\//;
+
+    let startupModulePath = new URL('../startup-modules/', import.meta.url).pathname;
+
+    if (driveLetterPattern.test(startupModulePath)) {
+      startupModulePath = startupModulePath.substring(1);
+    }
+
     const startupModuleFiles = fs.readdirSync(startupModulePath)
       .map(filename => jsPath.join(startupModulePath, filename));
 
