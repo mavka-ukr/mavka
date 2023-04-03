@@ -50,7 +50,7 @@ class FileLoader extends Loader {
     return module;
   }
 
-  async loadRuntimeModule(context, modulePath) {
+  async loadStartupModule(context, modulePath) {
     if (this.loadedModules[modulePath]) {
       return this.loadedModules[modulePath];
     }
