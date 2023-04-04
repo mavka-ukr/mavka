@@ -8,7 +8,8 @@
     ".": "./src/main.js",
     "./interpreter/*.js": "./src/interpreter/*.js",
     "./loaders/*.js": "./src/loaders/*.js",
-    "./std/*.js": "./src/std/*.js"
+    "./std/*.js": "./src/std/*.js",
+    "./startup-modules": "./src/startup-modules/index.js"
   },
   "scripts": {
     "start": "node src/bin/mavka.js",
