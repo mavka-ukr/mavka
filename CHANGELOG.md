@@ -1,5 +1,9 @@
 # Список змін Мавки
 
+## [0.10.24]
+
+- https://github.com/mavka-ukr/mavka/pull/30
+
 ## [0.10.23]
 
 - https://github.com/mavka-ukr/mavka/pull/29
