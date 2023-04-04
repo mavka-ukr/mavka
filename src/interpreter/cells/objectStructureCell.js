@@ -27,13 +27,39 @@ class ObjectStructureCell extends StructureCell {
           this
         );
 
-        fillParameters(
-          this.mavka,
-          callContext,
-          objectCell,
-          this.getAllParameters(),
-          args
-        );
+        if (objectCell.structure.hasMethod("виконати_створення")) {
+          const createMethod = objectCell.getMethodInstance(callContext, "виконати_створення");
+
+          createMethod.doCall(
+            callContext,
+            args,
+            {
+              meValue: objectCell
+              // todo: add parent cell
+            }
+          );
+        } else {
+          fillParameters(
+            this.mavka,
+            callContext,
+            objectCell,
+            this.getAllParameters(),
+            args
+          );
+        }
+
+        if (objectCell.structure.hasMethod("виконати_після_створення")) {
+          const createMethod = objectCell.getMethodInstance(callContext, "виконати_після_створення");
+
+          createMethod.doCall(
+            callContext,
+            [],
+            {
+              meValue: objectCell
+              // todo: add parent cell
+            }
+          );
+        }
 
         return objectCell;
       }
