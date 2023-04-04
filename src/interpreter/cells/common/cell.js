@@ -51,22 +51,7 @@ export class Cell {
     }
 
     if (this.structure && this.structure.hasMethod && this.structure.hasMethod(name)) {
-      const method = this.structure.getMethod(name);
-
-      if (!this.cachedMethods.has(method)) {
-        this.cachedMethods.set(method, this.mavka.makeDiia(
-          method.name,
-          method.parameters,
-          Context,
-          method.outerContext,
-          method.isAsync,
-          method.body,
-          this.mavka.diiaStructureCellInstance,
-          this
-        ));
-      }
-
-      return this.cachedMethods.get(method);
+      return this.getMethodInstance(context, name);
     }
 
     if (name !== "виконати_отримання") {
@@ -77,6 +62,25 @@ export class Cell {
     }
 
     return this.mavka.empty;
+  }
+
+  getMethodInstance(context, name) {
+    const method = this.structure.getMethod(name);
+
+    if (!this.cachedMethods.has(method)) {
+      this.cachedMethods.set(method, this.mavka.makeDiia(
+        method.name,
+        method.parameters,
+        Context,
+        method.outerContext,
+        method.isAsync,
+        method.body,
+        this.mavka.diiaStructureCellInstance,
+        this
+      ));
+    }
+
+    return this.cachedMethods.get(method);
   }
 
   /**
