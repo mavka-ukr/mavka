@@ -5,6 +5,8 @@ import fs from "fs";
 import path from "path";
 import axios from "axios";
 
+import startupModuleDirectory from "../startup-modules/config.js";
+
 class FileLoader extends Loader {
   constructor(mavka) {
     super(mavka);
@@ -62,15 +64,6 @@ class FileLoader extends Loader {
 
     let moduleFound = false;
 
-    const driveLetterPattern = /^\/[A-Z]:\//;
-    let startupModulePath = new URL('../startup-modules/', import.meta.url).pathname;
-    
-    if (driveLetterPattern.test(startupModulePath)) {
-      startupModulePath = startupModulePath.substring(1);
-    }
-
-    startupModulePath = startupModulePath.replaceAll("\\", "/");
-
     for (const fileOrFolder of pathElements) {
       const fileOrFolderPath = `${moduleToLoad}/${fileOrFolder}`;
 
@@ -93,7 +86,7 @@ class FileLoader extends Loader {
 
     if (!moduleFound) {
       for (const fileOrFolder of pathElements) {
-        const startupFileOrFolderPath = path.join(startupModulePath, fileOrFolder).replaceAll("\\", "/");
+        const startupFileOrFolderPath = path.join(startupModuleDirectory, fileOrFolder).replaceAll("\\", "/");
   
         if (fs.existsSync(startupFileOrFolderPath)) {
           if (tailPath.length <= 1) {
