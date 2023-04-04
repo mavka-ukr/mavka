@@ -174,23 +174,7 @@ if (command === "версія") {
   });
 
   try {
-    const driveLetterPattern = /^\/[A-Z]:\//;
-
-    let startupModulePath = new URL('../startup-modules/', import.meta.url).pathname;
-
-    if (driveLetterPattern.test(startupModulePath)) {
-      startupModulePath = startupModulePath.substring(1);
-    }
-
-    const startupModuleFiles = fs.readdirSync(startupModulePath)
-      .map(filename => jsPath.join(startupModulePath, filename));
-
-    for (const modulePath of startupModuleFiles) {
-      mavka.context = await mavka.loader.loadStartupModule(context, modulePath);
-    }
-
-    await mavka.loader.loadModuleFromFile(mavka.context, command);
-
+    await mavka.loader.loadModuleFromFile(context, command);
   } catch (e) {
     if (e instanceof DiiaParserSyntaxError) {
       console.error(`Не вдалось зловити: ${e.message}`);

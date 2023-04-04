@@ -50,37 +50,6 @@ class FileLoader extends Loader {
     return module;
   }
 
-  async loadStartupModule(context, modulePath) {
-    if (this.loadedModules[modulePath]) {
-      return this.loadedModules[modulePath];
-    }
-
-    const modulePathDirname = path.dirname(modulePath);
-
-    const fileName = modulePath.split("/").pop();
-    const name = fileName.substring(0, fileName.length - 2);
-
-    const moduleContext = new this.mavka.Context(this.mavka, this.mavka.context);
-    moduleContext.set("__шлях_до_папки_модуля__", this.mavka.makeText(modulePathDirname));
-    moduleContext.setAsync(true);
-
-    const moduleCode = fs.readFileSync(modulePath).toString();
-    const moduleProgram = parse(moduleCode);
-
-    const module = this.mavka.makeModule(name);
-    moduleContext.setModule(module);
-
-    this.loadedModules[modulePath] = module;
-
-    await this.mavka.run(moduleContext, moduleProgram.body);
-
-    for (const varName of Object.keys(moduleContext.vars)) {
-      context.set(varName, moduleContext.vars[varName]);
-    }
-
-    return context;
-  }
-
   async loadModule(context,
                    pathElements,
                    absolute = false) {
@@ -90,6 +59,17 @@ class FileLoader extends Loader {
       ? context.get("__шлях_до_папки_кореневого_модуля__").asJsValue(context)
       : context.get("__шлях_до_папки_модуля__").asJsValue(context);
     let tailPath = [...pathElements];
+
+    let moduleFound = false;
+
+    const driveLetterPattern = /^\/[A-Z]:\//;
+    let startupModulePath = new URL('../startup-modules/', import.meta.url).pathname;
+    
+    if (driveLetterPattern.test(startupModulePath)) {
+      startupModulePath = startupModulePath.substring(1);
+    }
+
+    startupModulePath = startupModulePath.replaceAll("\\", "/");
 
     for (const fileOrFolder of pathElements) {
       const fileOrFolderPath = `${moduleToLoad}/${fileOrFolder}`;
@@ -105,9 +85,36 @@ class FileLoader extends Loader {
 
       if (fs.existsSync(`${fileOrFolderPath}.м`)) {
         moduleToLoad = `${fileOrFolderPath}.м`;
+        moduleFound = true;
         tailPath.shift();
         break;
       }
+    }
+
+    if (!moduleFound) {
+      for (const fileOrFolder of pathElements) {
+        const startupFileOrFolderPath = path.join(startupModulePath, fileOrFolder).replaceAll("\\", "/");
+  
+        if (fs.existsSync(startupFileOrFolderPath)) {
+          if (tailPath.length <= 1) {
+            this.mavka.fall(context, this.mavka.makeText(`Не вдалось завантажити модуль "${prettyModulePath}".`));
+          }
+  
+          moduleToLoad = startupFileOrFolderPath;
+          tailPath.shift();
+        }
+  
+        if (fs.existsSync(`${startupFileOrFolderPath}.м`)) {
+          moduleToLoad = `${startupFileOrFolderPath}.м`;
+          moduleFound = true;
+          tailPath.shift();
+          break;
+        }
+      }
+    }
+    
+    if (!moduleFound) {
+      this.mavka.fall(context, this.mavka.makeText(`Не вдалось завантажити модуль "${prettyModulePath}".`));
     }
 
     let module = await this.loadModuleFromFile(context, moduleToLoad);
