@@ -7,6 +7,9 @@ import FileLoader from "../loaders/fileLoader.js";
 
 process.removeAllListeners("warning");
 
+const fs = (await import("fs")).default;
+const jsPath = (await import("path")).default;
+
 const cwdPath = process.cwd();
 
 let command = process.argv[2];

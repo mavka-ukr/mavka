@@ -1,5 +1,9 @@
 # Список змін Мавки
 
+## [0.10.21]
+
+- виправлення main.js
+
 ## [0.10.20]
 
 - https://github.com/mavka-ukr/mavka/pull/28
