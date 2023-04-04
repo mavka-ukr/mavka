@@ -1,8 +1,7 @@
 import fs from "fs";
 import path from "path";
-import getStartupModuleDirectory from "./config.js";
+import startupModuleDir from "./config.js";
 
-const startupModuleDir = getStartupModuleDirectory();
 const startupModuleFiles = fs.readdirSync(startupModuleDir);
 
 const startupModules = [];
