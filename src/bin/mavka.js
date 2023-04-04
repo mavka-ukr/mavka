@@ -125,6 +125,7 @@ function buildExternal(mavka) {
 if (command === "версія") {
   console.log(Mavka.VERSION);
 } else if (command === "допомога" || !command) {
+
   console.log(`
 Використання:
   мавка <модуль> [...аргументи]
@@ -180,7 +181,23 @@ if (command === "версія") {
   });
 
   try {
-    await mavka.loader.loadModuleFromFile(context, command);
+    const driveLetterPattern = /^\/[A-Z]:\//;
+
+    let startupModulePath = new URL('../startup-modules/', import.meta.url).pathname;
+
+    if (driveLetterPattern.test(startupModulePath)) {
+      startupModulePath = startupModulePath.substring(1);
+    }
+
+    const startupModuleFiles = fs.readdirSync(startupModulePath)
+      .map(filename => jsPath.join(startupModulePath, filename));
+
+    for (const modulePath of startupModuleFiles) {
+      mavka.context = await mavka.loader.loadStartupModule(context, modulePath);
+    }
+
+    await mavka.loader.loadModuleFromFile(mavka.context, command);
+
   } catch (e) {
     if (e instanceof DiiaParserSyntaxError) {
       console.error(`Не вдалось зловити: ${e.message}`);
