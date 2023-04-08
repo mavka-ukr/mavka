@@ -24,13 +24,6 @@ class AssignInstruction extends Instruction {
    * @returns {*}
    */
   runSync(context, node) {
-    if (node.id instanceof ObjectDestructionNode) {
-      this.mavka.fall(context, this.mavka.makeText(`Деструкція обʼєкта наразі недоступна.`));
-    }
-    if (node.id instanceof ArrayDestructionNode) {
-      this.mavka.fall(context, this.mavka.makeText(`Деструкція списку наразі недоступна.`));
-    }
-
     if (node.wait) {
       this.mavka.fall(context, this.mavka.makeText(`"${node.symbol}" недоступно в нетривалому контексті.`));
     }
@@ -62,6 +55,16 @@ class AssignInstruction extends Instruction {
         value = context.get(node.id.name)[doName](context, value);
         context.set(node.id.name, value);
       }
+    } else if (node.id instanceof ObjectDestructionNode) {
+      for (const element of node.id.elements) {
+        context.set(element.name, value.get(context, element.name));
+      }
+    } else if (node.id instanceof ArrayDestructionNode) {
+      for (let i = 0; i < node.id.elements.length; i++) {
+        const element = node.id.elements[i];
+
+        context.set(element.name, value.doGetElement(context, this.mavka.makeNumber(i)));
+      }
     } else {
       if (node.symbol === ":=") {
         this.mavka.fall(context, this.mavka.makeText(`Неможливо використати ":=" для властивостей обʼєктів.`));
@@ -86,13 +89,6 @@ class AssignInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    if (node.id instanceof ObjectDestructionNode) {
-      this.mavka.fall(context, this.mavka.makeText(`Деструкція обʼєкта наразі недоступна.`));
-    }
-    if (node.id instanceof ArrayDestructionNode) {
-      this.mavka.fall(context, this.mavka.makeText(`Деструкція списку наразі недоступна.`));
-    }
-
     let value = await this.mavka.runAsync(context, node.wait ? new WaitNode(context, { value: node.value }) : node.value);
 
     const doName = getDoName(node.symbol);
@@ -119,6 +115,16 @@ class AssignInstruction extends Instruction {
       } else {
         value = context.get(node.id.name)[doName](context, value);
         context.set(node.id.name, value);
+      }
+    } else if (node.id instanceof ObjectDestructionNode) {
+      for (const element of node.id.elements) {
+        context.set(element.name, value.get(context, element.name));
+      }
+    } else if (node.id instanceof ArrayDestructionNode) {
+      for (let i = 0; i < node.id.elements.length; i++) {
+        const element = node.id.elements[i];
+
+        context.set(element.name, value.doGetElement(context, this.mavka.makeNumber(i)));
       }
     } else {
       if (node.symbol === ":=") {

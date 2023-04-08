@@ -27,6 +27,34 @@ class DictionaryStructureCell extends StructureCell {
       return this.mavka.makeDictionary(items);
     });
 
+    this.setMethod("виконати_отримання", (args, context, options) => {
+      let index = Object.values(args)[0];
+
+      if (this.mavka.isBasic(index)) {
+        index = index.asJsValue(context);
+      }
+
+      return this.mavka.toCell(options.meValue.meta.items.get(index));
+    });
+    this.setMethod("виконати_присвоєння", (args, context, options) => {
+      let key = args[0];
+      let value = args[1];
+      if (!key) {
+        key = this.mavka.empty;
+      }
+      if (!value) {
+        value = this.mavka.empty;
+      }
+
+      if (this.mavka.isBasic(key)) {
+        key = key.asJsValue(context);
+      }
+
+      options.meValue.meta.items.set(key, value);
+
+      return value;
+    });
+
     this.setMethod("виконати_перетворення_на_текст", (args, context, options) => {
       const items = [...options.meValue.meta.items.entries()]
         .map(([k, v]) => {
