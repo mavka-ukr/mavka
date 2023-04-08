@@ -7,7 +7,7 @@ async function run(mavka, context, node) {
 
   const moduleProgram = node.program;
 
-  const module = mavka.makeModule(node.name.name);
+  const module = mavka.makeModule(node.name ? node.name.name : "");
   moduleContext.setModule(module);
 
   if (moduleProgram) {
@@ -35,7 +35,9 @@ class ModuleInstruction extends Instruction {
   async runAsync(context, node) {
     const moduleCell = await run(this.mavka, context, node);
 
-    context.set(node.name.name, moduleCell);
+    if (node.name) {
+      context.set(node.name.name, moduleCell);
+    }
 
     return moduleCell;
   }

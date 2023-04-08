@@ -121,7 +121,7 @@ import FileStructureCell from "./library/fileStructureCell.js";
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.10.22";
+  static VERSION = "0.10.29";
 
   constructor(options = {}) {
     if (!options.global) {
@@ -808,7 +808,7 @@ class Mavka {
            body,
            diiaStructure,
            meValue = null) {
-    return new this.Cell(
+    const cell = new this.Cell(
       this,
       "дія",
       {
@@ -863,13 +863,15 @@ class Mavka {
         )
       },
       diiaStructure,
-      () => null,
+      (context) => (...args) => cell.doCall(context, args),
       null,
       {
         isAsync,
         name
       }
     );
+
+    return cell;
   }
 
   /**
