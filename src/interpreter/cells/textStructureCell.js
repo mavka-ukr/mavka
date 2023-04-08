@@ -162,17 +162,17 @@ class TextStructureCell extends StructureCell {
 
       try {
         if (this.mavka.isEmpty(index) || typeof index === "undefined") {
-          this.mavka.fall(context, this.mavka.makeText("Очікується, що ʼпозиціяʼ не є пусто."));
+          this.mavka.fall(context, this.mavka.makeText("Очікується, що \"позиція\" не є пусто."));
         }
 
         index = index.asNumber(context).asJsValue(context);
 
         if (index < 0) {
-          this.mavka.fall(context, this.mavka.makeText("Очікується, що ʼпозиціяʼ є не менше 0."));
+          this.mavka.fall(context, this.mavka.makeText("Очікується, що \"позиція\" є не менше 0."));
         }
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр ʼпозиціяʼ у число."));
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр \"позиція\" у число."));
         } else {
           throw e;
         }
@@ -185,17 +185,17 @@ class TextStructureCell extends StructureCell {
 
       try {
         if (this.mavka.isEmpty(index) || typeof index === "undefined") {
-          this.mavka.fall(context, this.mavka.makeText("Очікується, що ʼпозиціяʼ не є пусто."));
+          this.mavka.fall(context, this.mavka.makeText("Очікується, що \"позиція\" не є пусто."));
         }
 
         index = index.asNumber(context).asJsValue(context);
 
         if (index < 0) {
-          this.mavka.fall(context, this.mavka.makeText("Очікується, що ʼпозиціяʼ є не менше 0."));
+          this.mavka.fall(context, this.mavka.makeText("Очікується, що \"позиція\" є не менше 0."));
         }
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр ʼпозиціяʼ у число."));
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр \"позиція\" у число."));
         } else {
           throw e;
         }
@@ -208,17 +208,17 @@ class TextStructureCell extends StructureCell {
 
       try {
         if (this.mavka.isEmpty(index) || typeof index === "undefined") {
-          this.mavka.fall(context, this.mavka.makeText("Очікується, що ʼпозиціяʼ не є пусто."));
+          this.mavka.fall(context, this.mavka.makeText("Очікується, що \"позиція\" не є пусто."));
         }
 
         index = index.asNumber(context).asJsValue(context);
 
         if (index < 0) {
-          this.mavka.fall(context, this.mavka.makeText("Очікується, що ʼпозиціяʼ є не менше 0."));
+          this.mavka.fall(context, this.mavka.makeText("Очікується, що \"позиція\" є не менше 0."));
         }
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр ʼпозиціяʼ у число."));
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр \"позиція\" у число."));
         } else {
           throw e;
         }
@@ -231,13 +231,13 @@ class TextStructureCell extends StructureCell {
 
       try {
         if (this.mavka.isEmpty(searchString) || typeof searchString === "undefined") {
-          this.mavka.fall(context, this.mavka.makeText("Очікується, що ʼзначенняʼ не є пусто."));
+          this.mavka.fall(context, this.mavka.makeText("Очікується, що \"значення\" не є пусто."));
         }
 
         searchString = searchString.asText(context).asJsValue(context);
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр ʼзначенняʼ у текст."));
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр \"значення\" у текст."));
         } else {
           throw e;
         }
@@ -251,7 +251,7 @@ class TextStructureCell extends StructureCell {
 
       try {
         if (this.mavka.isEmpty(count) || typeof count === "undefined") {
-          this.mavka.fall(context, this.mavka.makeText("Очікується, що ʼкількістьʼ не є пусто."));
+          this.mavka.fall(context, this.mavka.makeText("Очікується, що \"кількість\" не є пусто."));
         }
 
         count = count.asNumber(context).asJsValue(context);
@@ -261,11 +261,11 @@ class TextStructureCell extends StructureCell {
         }
 
         if (count < 0) {
-          this.mavka.fall(context, this.mavka.makeText("Очікується, що ʼкількістьʼ є не менше 0."));
+          this.mavka.fall(context, this.mavka.makeText("Очікується, що \"кількість\" є не менше 0."));
         }
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр ʼкількістьʼ у число."));
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр \"кількість\" у число."));
         } else {
           throw e;
         }
@@ -282,13 +282,13 @@ class TextStructureCell extends StructureCell {
 
       try {
         if (this.mavka.isEmpty(pattern) || typeof pattern === "undefined") {
-          this.mavka.fall(context, this.mavka.makeText("Очікується, що ʼстаре_значенняʼ не є пусто."));
+          this.mavka.fall(context, this.mavka.makeText("Очікується, що \"старе_значення\" не є пусто."));
         }
 
         pattern = pattern.asText(context).asJsValue(context);
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр ʼстаре_значенняʼ у текст."));
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр \"старе_значення\" у текст."));
         } else {
           throw e;
         }
@@ -296,13 +296,13 @@ class TextStructureCell extends StructureCell {
 
       try {
         if (this.mavka.isEmpty(replacement) || typeof replacement === "undefined") {
-          this.mavka.fall(context, this.mavka.makeText("Очікується, що ʼнове_значенняʼ не є пусто."));
+          this.mavka.fall(context, this.mavka.makeText("Очікується, що \"нове_значення\" не є пусто."));
         }
 
         replacement = replacement.asText(context).asJsValue(context);
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр ʼнове_значенняʼ у текст."));
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр \"нове_значення\" у текст."));
         } else {
           throw e;
         }
@@ -315,13 +315,13 @@ class TextStructureCell extends StructureCell {
 
       try {
         if (this.mavka.isEmpty(pattern) || typeof pattern === "undefined") {
-          this.mavka.fall(context, this.mavka.makeText("Очікується, що ʼстаре_значенняʼ не є пусто."));
+          this.mavka.fall(context, this.mavka.makeText("Очікується, що \"старе_значення\" не є пусто."));
         }
 
         pattern = pattern.asText(context).asJsValue(context);
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр ʼстаре_значенняʼ у текст."));
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр \"старе_значення\" у текст."));
         } else {
           throw e;
         }
@@ -329,13 +329,13 @@ class TextStructureCell extends StructureCell {
 
       try {
         if (this.mavka.isEmpty(replacement) || typeof replacement === "undefined") {
-          this.mavka.fall(context, this.mavka.makeText("Очікується, що ʼнове_значенняʼ не є пусто."));
+          this.mavka.fall(context, this.mavka.makeText("Очікується, що \"нове_значення\" не є пусто."));
         }
 
         replacement = replacement.asText(context).asJsValue(context);
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр ʼнове_значенняʼ у текст."));
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр \"нове_значення\" у текст."));
         } else {
           throw e;
         }
@@ -348,13 +348,13 @@ class TextStructureCell extends StructureCell {
 
       try {
         if (this.mavka.isEmpty(indexStart) || typeof indexStart === "undefined") {
-          this.mavka.fall(context, this.mavka.makeText("Очікується, що ʼпозиція_відʼ не є пусто."));
+          this.mavka.fall(context, this.mavka.makeText("Очікується, що \"позиція_від\" не є пусто."));
         }
 
         indexStart = indexStart.asNumber(context).asJsValue(context);
 
         if (indexStart < 0) {
-          this.mavka.fall(context, this.mavka.makeText("Очікується, що ʼпозиція_відʼ є не менше 0."));
+          this.mavka.fall(context, this.mavka.makeText("Очікується, що \"позиція_від\" є не менше 0."));
         }
 
         if (Number.isNaN(indexStart)) {
@@ -362,7 +362,7 @@ class TextStructureCell extends StructureCell {
         }
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр ʼпозиція_відʼ у число."));
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр \"позиція_від\" у число."));
         } else {
           throw e;
         }
@@ -377,14 +377,14 @@ class TextStructureCell extends StructureCell {
           }
 
           if (indexEnd < indexStart) {
-            this.mavka.fall(context, this.mavka.makeText(`Очікується, що ʼпозиція_доʼ є не менше від ʼпозиція_відʼ (${indexStart}).`));
+            this.mavka.fall(context, this.mavka.makeText(`Очікується, що \"позиція_до\" є не менше від \"позиція_від\" (${indexStart}).`));
           }
         } else {
           indexEnd = undefined;
         }
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр ʼпозиція_доʼ у число."));
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр \"позиція_до\" у число."));
         } else {
           throw e;
         }
@@ -400,7 +400,7 @@ class TextStructureCell extends StructureCell {
         args = args.map(v => v.asText(context).asJsValue(context));
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити деякі параметри ʼінші_текстиʼ у текст."))
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити деякі параметри \"інші_тексти\" у текст."))
         } else {
           throw e;
         }
@@ -415,7 +415,7 @@ class TextStructureCell extends StructureCell {
         separator = separator.asText(context).asJsValue(context);
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр ʼроздільникʼ у текст."));
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр \"роздільник\" у текст."));
         } else {
           throw e;
         }
@@ -432,7 +432,7 @@ class TextStructureCell extends StructureCell {
         searchString = searchString.asText(context).asJsValue(context);
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр ʼзначенняʼ у текст."));
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр \"значення\" у текст."));
         } else {
           throw e;
         }
@@ -447,7 +447,7 @@ class TextStructureCell extends StructureCell {
         searchString = searchString.asText(context).asJsValue(context);
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр ʼзначенняʼ у текст."));
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити параметр \"значення\" у текст."));
         } else {
           throw e;
         }
@@ -465,7 +465,7 @@ class TextStructureCell extends StructureCell {
         searchString = searchString.asText(context).asJsValue(context);
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити значення після ʼміститьʼ у текст."));
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити значення після \"містить\" у текст."));
         } else {
           throw e;
         }
@@ -480,7 +480,7 @@ class TextStructureCell extends StructureCell {
         searchString = searchString.asText(context).asJsValue(context);
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити значення після ʼміститьʼ у текст."));
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити значення після \"містить\" у текст."));
         } else {
           throw e;
         }
