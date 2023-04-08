@@ -181,7 +181,13 @@ class TextStructureCell extends StructureCell {
       return this.mavka.toCell(options.meValue.meta.value[index]);
     });
     this.setMethod("символ", (args, context, options) => {
-      let index = args[0];
+      let index;
+
+      if (Array.isArray(args)) {
+        index = args[0];
+      } else {
+        index = args["позиція"];
+      }
 
       try {
         if (this.mavka.isEmpty(index) || typeof index === "undefined") {
@@ -204,7 +210,13 @@ class TextStructureCell extends StructureCell {
       return this.mavka.toCell(options.meValue.meta.value.charAt(index));
     });
     this.setMethod("код_символу", (args, context, options) => {
-      let index = args[0];
+      let index;
+
+      if (Array.isArray(args)) {
+        index = args[0];
+      } else {
+        index = args["позиція"];
+      }
 
       try {
         if (this.mavka.isEmpty(index) || typeof index === "undefined") {
@@ -227,7 +239,13 @@ class TextStructureCell extends StructureCell {
       return this.mavka.toCell(options.meValue.meta.value.charCodeAt(index));
     });
     this.setMethod("позиція", (args, context, options) => {
-      let searchString = args[0];
+      let searchString;
+
+      if (Array.isArray(args)) {
+        searchString = args[0];
+      } else {
+        searchString = args["значення"];
+      }
 
       try {
         if (this.mavka.isEmpty(searchString) || typeof searchString === "undefined") {
@@ -246,8 +264,13 @@ class TextStructureCell extends StructureCell {
       return this.mavka.toCell(options.meValue.meta.value.indexOf(searchString));
     });
     this.setMethod("повторити", (args, context, options) => {
-      let count = args[0];
+      let count;
 
+      if (Array.isArray(args)) {
+        count = args[0];
+      } else {
+        count = args["кількість"];
+      }
 
       try {
         if (this.mavka.isEmpty(count) || typeof count === "undefined") {
@@ -278,7 +301,15 @@ class TextStructureCell extends StructureCell {
       return this.mavka.toCell(options.meValue.meta.value.repeat(count));
     });
     this.setMethod("замінити_перше", (args, context, options) => {
-      let [pattern, replacement] = args;
+      let pattern, replacement;
+
+      if (Array.isArray(args)) {
+        pattern = args[0];
+        replacement = args[1];
+      } else {
+        pattern = args["старе_значення"];
+        replacement = args["нове_значення"]
+      }
 
       try {
         if (this.mavka.isEmpty(pattern) || typeof pattern === "undefined") {
@@ -311,7 +342,15 @@ class TextStructureCell extends StructureCell {
       return this.mavka.toCell(options.meValue.meta.value.replace(pattern, replacement));
     });
     this.setMethod("замінити", (args, context, options) => {
-      let [pattern, replacement] = args;
+      let pattern, replacement;
+
+      if (Array.isArray(args)) {
+        pattern = args[0];
+        replacement = args[1];
+      } else {
+        pattern = args["старе_значення"];
+        replacement = args["нове_значення"]
+      }
 
       try {
         if (this.mavka.isEmpty(pattern) || typeof pattern === "undefined") {
@@ -344,7 +383,15 @@ class TextStructureCell extends StructureCell {
       return this.mavka.toCell(options.meValue.meta.value.replaceAll(pattern, replacement));
     });
     this.setMethod("зрізати", (args, context, options) => {
-      let [indexStart, indexEnd] = args;
+      let indexStart, indexEnd;
+
+      if (Array.isArray(args)) {
+        indexStart = args[0];
+        indexEnd = args[1];
+      } else {
+        indexStart = args["позиція_від"];
+        indexEnd = args["позиція_до"]
+      }
 
       try {
         if (this.mavka.isEmpty(indexStart) || typeof indexStart === "undefined") {
@@ -377,7 +424,7 @@ class TextStructureCell extends StructureCell {
           }
 
           if (indexEnd < indexStart) {
-            this.mavka.fall(context, this.mavka.makeText(`Очікується, що \"позиція_до\" є не менше від \"позиція_від\" (${indexStart}).`));
+            this.mavka.fall(context, this.mavka.makeText(`Очікується, що "позиція_до" є не менше від "позиція_від" (${indexStart}).`));
           }
         } else {
           indexEnd = undefined;
@@ -393,6 +440,8 @@ class TextStructureCell extends StructureCell {
       return this.mavka.toCell(options.meValue.meta.value.substring(indexStart, indexEnd));
     });
     this.setMethod("приєднати", (args, context, options) => {
+      args = Object.values(args);
+
       if (args.length === 0) {
         return options.meValue;
       }
@@ -409,7 +458,13 @@ class TextStructureCell extends StructureCell {
       return this.mavka.toCell(options.meValue.meta.value.concat(...args));
     });
     this.setMethod("розділити", (args, context, options) => {
-      let separator = args[0];
+      let separator;
+
+      if (Array.isArray(args)) {
+        separator = args[0];
+      } else {
+        separator = args["роздільник"]
+      }
 
       try {
         separator = separator.asText(context).asJsValue(context);
@@ -426,7 +481,13 @@ class TextStructureCell extends StructureCell {
           this.mavka.makeText(v)));
     });
     this.setMethod("починається_з", (args, context, options) => {
-      let searchString = args[0];
+      let searchString;
+
+      if (Array.isArray(args)) {
+        searchString = args[0];
+      } else {
+        searchString = args["значення"]
+      }
 
       try {
         searchString = searchString.asText(context).asJsValue(context);
@@ -441,7 +502,13 @@ class TextStructureCell extends StructureCell {
       return this.mavka.toCell(options.meValue.meta.value.startsWith(searchString));
     });
     this.setMethod("закінчується_на", (args, context, options) => {
-      let searchString = args[0];
+      let searchString;
+
+      if (Array.isArray(args)) {
+        searchString = args[0];
+      } else {
+        searchString = args["значення"]
+      }
 
       try {
         searchString = searchString.asText(context).asJsValue(context);
@@ -459,7 +526,7 @@ class TextStructureCell extends StructureCell {
       return this.mavka.toCell(options.meValue.meta.value.trim());
     });
     this.setMethod("виконати_порівняння_чи_містить", (args, context, options) => {
-      let searchString = args[0];
+      let searchString = Object.values(args)[0];
 
       try {
         searchString = searchString.asText(context).asJsValue(context);
@@ -474,7 +541,7 @@ class TextStructureCell extends StructureCell {
       return this.mavka.toCell(options.meValue.meta.value.includes(searchString));
     });
     this.setMethod("виконати_порівняння_чи_не_містить", (args, context, options) => {
-      let searchString = args[0];
+      let searchString = Object.values(args)[0];
 
       try {
         searchString = searchString.asText(context).asJsValue(context);
