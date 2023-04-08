@@ -121,7 +121,7 @@ import FileStructureCell from "./library/fileStructureCell.js";
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.10.29";
+  static VERSION = "0.10.31";
 
   constructor(options = {}) {
     if (!options.global) {
