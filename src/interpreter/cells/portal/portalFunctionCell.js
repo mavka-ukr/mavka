@@ -1,5 +1,8 @@
 import { Cell } from "../common/cell.js";
 
+/**
+ * Portal to JS-function.
+ */
 class PortalFunctionCell extends Cell {
   /**
    * @param {Mavka} mavka
@@ -21,7 +24,8 @@ class PortalFunctionCell extends Cell {
    * @inheritDoc
    */
   doCall(context, args, options = {}) {
-    const jsArgs = Object.values(args).map((v) => v.asJsValue(context));
+    const jsArgs = Object.values(args)
+      .map((v) => v.asJsValue(context));
 
     return this.mavka.toCell(this.meta.fn(...jsArgs));
   }

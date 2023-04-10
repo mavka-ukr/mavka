@@ -42,6 +42,9 @@ class StructureCell extends Cell {
     }
   }
 
+  /**
+   * @return {ASTNode[]}
+   */
   getAllParameters() {
     let parameters = [];
     if (this.parent) {
@@ -57,18 +60,33 @@ class StructureCell extends Cell {
     return parameters;
   }
 
+  /**
+   * @param {string} name
+   * @return {boolean}
+   */
   hasMethod(name) {
     return name in this.getAllMethods();
   }
 
+  /**
+   * @param {string} name
+   * @return {Method|null}
+   */
   getMethod(name) {
     return this.getAllMethods()[name];
   }
 
+  /**
+   * @param {string} name
+   * @param {function} fn
+   */
   setMethod(name, fn) {
     this.methods[name] = this.mavka.makeMethod(name, fn);
   }
 
+  /**
+   * @return {Record<string, Method>}
+   */
   getAllMethods() {
     let methods = this.methods;
     if (this.parent) {
@@ -77,8 +95,11 @@ class StructureCell extends Cell {
     return methods;
   }
 
+  /**
+   * @inheritDoc
+   */
   asText(context) {
-    return this.mavka.toCell(`<структура ${this.name}>`);
+    return this.mavka.makeText(`<структура ${this.name}>`);
   }
 }
 

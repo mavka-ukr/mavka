@@ -1,11 +1,4 @@
 import Instruction from "./utils/instruction.js";
-import FileStructureCell from "../../library/fileStructureCell.js";
-
-function doEval(code, mavka, context) {
-  eval(code);
-}
-
-let extId = 0;
 
 class EvalInstruction extends Instruction {
   /**
@@ -27,10 +20,8 @@ class EvalInstruction extends Instruction {
 
     if (this.mavka.isText(value)) {
       value = value.meta.value;
-    } else if (value.isInstanceOf(FileStructureCell.getInstance(this.mavka))) {
-      value = value.meta.buffer.toString();
     } else {
-      this.mavka.fall(context, this.mavka.makeText("\"js\" приймає лише текст або файл."));
+      this.mavka.fall(context, this.mavka.makeText("\"js\" приймає лише текст."));
     }
 
     const prevGetMavka = this.mavka.global.getMavka;
@@ -40,23 +31,12 @@ class EvalInstruction extends Instruction {
     this.mavka.global.getContext = () => context;
 
     const loadExtensionAsyncCell = new this.mavka.AsyncCell(this.mavka, async () => {
-      extId++;
-
-      const wrappedCode = `
-mavka.global.EXTENSION_EVAL_ASYNC_${extId} = async function() {
-  ${value}
-}
-      `;
-
-      doEval(wrappedCode, this.mavka, context);
-
-      const result = await this.mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`]();
-      delete this.mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`];
+      await this.mavka.import(context, value);
 
       this.mavka.global.getMavka = prevGetMavka;
       this.mavka.global.getContext = prevGetContext;
 
-      return this.mavka.toCell(result);
+      return this.mavka.empty;
     });
 
     return new this.mavka.AwaitCell(this.mavka, loadExtensionAsyncCell);

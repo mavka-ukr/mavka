@@ -1,5 +1,8 @@
 import { Cell } from "../common/cell.js";
 
+/**
+ * Portal to JS-object.
+ */
 class PortalCell extends Cell {
   /**
    * @param {Mavka} mavka
@@ -23,8 +26,10 @@ class PortalCell extends Cell {
   get(context, name) {
     let value = this.meta.object[name];
     if (typeof value === "function") {
+      const fn = value;
+      const that = this.meta.object;
       // do not lose context on call
-      value = (...args) => this.meta.object[name](...args);
+      value = (...args) => fn.call(that, ...args);
     }
     return this.mavka.toCell(value);
   }

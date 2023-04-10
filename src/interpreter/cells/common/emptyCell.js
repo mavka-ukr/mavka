@@ -1,5 +1,8 @@
 import { Cell } from "./cell.js";
 
+/**
+ * Empty cell.
+ */
 class EmptyCell extends Cell {
   /**
    * @param {Mavka} mavka

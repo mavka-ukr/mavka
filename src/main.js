@@ -114,14 +114,15 @@ import TakeFileInstruction from "./interpreter/instructions/takeFileInstruction.
 import TakeFileNode from "mavka-parser/src/ast/TakeFileNode.js";
 import EvalInstruction from "./interpreter/instructions/evalInstruction.js";
 import EvalNode from "mavka-parser/src/ast/EvalNode.js";
-import FileStructureCell from "./library/fileStructureCell.js";
+import MockupStructureCell from "./interpreter/cells/mockupStructureCell.js";
+import md5 from "js-md5";
 
 /**
  * @property {Context} context
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.10.32";
+  static VERSION = "0.10.33";
 
   constructor(options = {}) {
     if (!options.global) {
@@ -189,6 +190,7 @@ class Mavka {
     this.DictionaryStructureCell = DictionaryStructureCell;
     this.DiiaStructureCell = DiiaStructureCell;
     this.ListStructureCell = ListStructureCell;
+    this.MockupStructureCell = MockupStructureCell;
     this.ModuleStructureCell = ModuleStructureCell;
     this.NumberStructureCell = NumberStructureCell;
     this.ObjectStructureCell = ObjectStructureCell;
@@ -210,6 +212,7 @@ class Mavka {
     this.dictionaryStructureCellInstance = this.DictionaryStructureCell.createInstance(this);
     this.diiaStructureCellInstance = this.DiiaStructureCell.createInstance(this);
     this.listStructureCellInstance = this.ListStructureCell.createInstance(this);
+    this.mockupStructureCellInstance = this.MockupStructureCell.createInstance(this);
     this.moduleStructureCellInstance = this.ModuleStructureCell.createInstance(this);
     this.numberStructureCellInstance = this.NumberStructureCell.createInstance(this);
     this.textStructureCellInstance = this.TextStructureCell.createInstance(this);
@@ -242,12 +245,11 @@ class Mavka {
     this.context.set("список", this.listStructureCellInstance);
     this.context.set("словник", this.dictionaryStructureCellInstance);
     this.context.set("пусто", this.empty);
-    this.context.set("undefined", this.undefined);
+    this.context.set("undefined", this.undefined); // js fallback
     this.context.set("обʼєкт", this.objectStructureCellInstance);
     this.context.set("Дія", this.diiaStructureCellInstance);
     this.context.set("global", this.makePortal(this.global));
     this.context.set("діапазон", RangeStructureCell.getInstance(this));
-    this.context.set("Файл", FileStructureCell.getInstance(this));
 
     this.external = options.buildExternal ? options.buildExternal(this) : {};
 
@@ -790,6 +792,26 @@ class Mavka {
   }
 
   /**
+   * @param {string} name
+   * @param {MockupMethod[]} methods
+   * @return {Cell}
+   */
+  makeMockup(name, methods) {
+    return new this.Cell(
+      this,
+      "макет",
+      {},
+      this.mockupStructureCellInstance,
+      () => null,
+      null,
+      {
+        name,
+        methods
+      }
+    );
+  }
+
+  /**
    * @param {string|null} name
    * @param {{ name: string, defaultValue: Cell|undefined }[]} parameters
    * @param {Class<Context>} contextClass
@@ -917,17 +939,40 @@ class Mavka {
 
   /**
    * @param {string} name
-   * @param {function} fn
+   * @param {function|ASTNode[]} body
    * @return {Method}
    */
-  makeMethod(name, fn) {
+  makeMethod(name, body) {
     return new Method(
       name,
       null,
-      fn,
+      body,
       false,
       null
     );
+  }
+
+  /**
+   * @param {Context} context
+   * @param {string} code
+   * @return {Promise<void>}
+   */
+  async import(context, code) {
+    const hash = md5(code);
+
+    const { default: fs } = await import("fs");
+    const moduleRootPath = context.get("__шлях_до_папки_кореневого_модуля__").asJsValue(context);
+    const extensionsPath = `${moduleRootPath}/.розширення`;
+    const extensionPath = `${extensionsPath}/${hash}.js`;
+
+    if (!fs.existsSync(extensionsPath)) {
+      fs.mkdirSync(extensionsPath);
+    }
+    if (!fs.existsSync(extensionPath)) {
+      fs.writeFileSync(extensionPath, code);
+    }
+
+    await import(extensionPath);
   }
 }
 

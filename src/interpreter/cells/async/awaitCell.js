@@ -1,5 +1,8 @@
 import { Cell } from "../common/cell.js";
 
+/**
+ * "чекати". Can be used only in async context.
+ */
 class AwaitCell extends Cell {
   /**
    * @param {Mavka} mavka

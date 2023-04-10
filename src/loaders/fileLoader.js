@@ -87,16 +87,16 @@ class FileLoader extends Loader {
     if (!moduleFound) {
       for (const fileOrFolder of pathElements) {
         const startupFileOrFolderPath = path.join(startupModuleDirectory, fileOrFolder).replaceAll("\\", "/");
-  
+
         if (fs.existsSync(startupFileOrFolderPath)) {
           if (tailPath.length <= 1) {
             this.mavka.fall(context, this.mavka.makeText(`Не вдалось завантажити модуль "${prettyModulePath}".`));
           }
-  
+
           moduleToLoad = startupFileOrFolderPath;
           tailPath.shift();
         }
-  
+
         if (fs.existsSync(`${startupFileOrFolderPath}.м`)) {
           moduleToLoad = `${startupFileOrFolderPath}.м`;
           moduleFound = true;
@@ -105,7 +105,7 @@ class FileLoader extends Loader {
         }
       }
     }
-    
+
     if (!moduleFound) {
       this.mavka.fall(context, this.mavka.makeText(`Не вдалось завантажити модуль "${prettyModulePath}".`));
     }
