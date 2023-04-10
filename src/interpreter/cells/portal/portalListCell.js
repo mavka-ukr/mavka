@@ -1,5 +1,9 @@
 import { Cell } from "../common/cell.js";
+import context from "../../contexts/context.js";
 
+/**
+ * Portal to JS-array.
+ */
 class PortalListCell extends Cell {
   /**
    * @param {Mavka} mavka
@@ -19,6 +23,10 @@ class PortalListCell extends Cell {
       },
       { values }
     );
+
+    this.set(context, "перетворити_на_список", mavka.makeProxyFunction(() => {
+      return this.mavka.makeList(this.meta.values.map((v) => mavka.toCell(v)));
+    }));
   }
 }
 

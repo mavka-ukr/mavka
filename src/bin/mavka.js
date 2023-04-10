@@ -7,16 +7,11 @@ import FileLoader from "../loaders/fileLoader.js";
 
 process.removeAllListeners("warning");
 
-const fs = (await import("fs")).default;
-const jsPath = (await import("path")).default;
-
 const cwdPath = process.cwd();
 
 let command = process.argv[2];
 
 function buildGlobalContext(mavka) {
-  let extId = 0;
-
   const context = new mavka.Context(mavka, null, {
     "друк": mavka.makeProxyFunction((args, context) => {
       console.log(
@@ -42,69 +37,6 @@ function buildGlobalContext(mavka) {
       const ask = Object.values(args).length ? args[0].asText(context).asJsValue(context) : undefined;
 
       return mavka.makeText(mavka.external.promptSync({ sigint: true, encoding: "windows-1251" })(ask));
-    }),
-
-    "підключити_розширення_з_файлу": mavka.makeProxyFunction((args, context) => {
-      const path = mavka.toCell(args[0]).asText(context).asJsValue(context);
-      const moduleDirname = context.get("__шлях_до_папки_модуля__").asJsValue(context);
-
-      mavka.global.getContext = () => context;
-
-      const loadExtensionAsyncCell = new mavka.AsyncCell(mavka, async () => {
-        return mavka.toCell(await import(`${moduleDirname}/${path}`));
-      });
-
-      return new mavka.AwaitCell(mavka, loadExtensionAsyncCell);
-    }),
-    "підключити_розширення_з_мережі": mavka.makeProxyFunction((args, context) => {
-      const url = mavka.toCell(args[0]).asText(context).asJsValue(context);
-
-      mavka.global.getContext = () => context;
-
-      const loadExtensionAsyncCell = new mavka.AsyncCell(mavka, async () => {
-        const body = await (await fetch(url)).text();
-
-        extId++;
-
-        const wrappedCode = `
-mavka.global.EXTENSION_EVAL_ASYNC_${extId} = async () => {
-  ${body}
-}
-      `;
-
-        eval(wrappedCode);
-
-        const result = await mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`]();
-        delete mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`];
-
-        return mavka.toCell(result);
-      });
-
-      return new mavka.AwaitCell(mavka, loadExtensionAsyncCell);
-    }),
-    "підключити_розширення": mavka.makeProxyFunction((args, context) => {
-      const code = mavka.toCell(args[0]).asText(context).asJsValue(context);
-
-      mavka.global.getContext = () => context;
-
-      const loadExtensionAsyncCell = new mavka.AsyncCell(mavka, async () => {
-        extId++;
-
-        const wrappedCode = `
-mavka.global.EXTENSION_EVAL_ASYNC_${extId} = async () => {
-  ${code}
-}
-      `;
-
-        eval(wrappedCode);
-
-        const result = await mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`]();
-        delete mavka.global[`EXTENSION_EVAL_ASYNC_${extId}`];
-
-        return mavka.toCell(result);
-      });
-
-      return new mavka.AwaitCell(mavka, loadExtensionAsyncCell);
     })
   });
 

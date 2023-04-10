@@ -1,5 +1,8 @@
 import { Cell } from "../common/cell.js";
 
+/**
+ * Convert JS-function to diia-cell.
+ */
 class ProxyFunctionCell extends Cell {
   /**
    * @param {Mavka} mavka
