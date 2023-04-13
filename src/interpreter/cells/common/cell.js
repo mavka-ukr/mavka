@@ -366,6 +366,78 @@ export class Cell {
    * @param {Cell} value
    * @return {Cell}
    */
+  doBitLeft(context, value) {
+    const bitLeftDiiaResult = this.doAction(context, "виконати_зсув_вліво", [value]);
+    if (bitLeftDiiaResult) {
+      return bitLeftDiiaResult;
+    }
+
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_зсув_вліво" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_зсув_вліво" не реалізовано.`));
+    }
+  }
+
+  /**
+   * @param {Context} context
+   * @param {Cell} value
+   * @return {Cell}
+   */
+  doBitRight(context, value) {
+    const bitRightDiiaResult = this.doAction(context, "виконати_зсув_вправо", [value]);
+    if (bitRightDiiaResult) {
+      return bitRightDiiaResult;
+    }
+
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_зсув_вправо" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_зсув_вправо" не реалізовано.`));
+    }
+  }
+
+  /**
+   * @param {Context} context
+   * @param {Cell} value
+   * @return {Cell}
+   */
+  doBitAnd(context, value) {
+    const bitAndDiiaResult = this.doAction(context, "виконати_побітове_і", [value]);
+    if (bitAndDiiaResult) {
+      return bitAndDiiaResult;
+    }
+
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_побітове_і" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_побітове_і" не реалізовано.`));
+    }
+  }
+
+  /**
+   * @param {Context} context
+   * @param {Cell} value
+   * @return {Cell}
+   */
+  doBitOr(context, value) {
+    const bitOrDiiaResult = this.doAction(context, "виконати_побітове_або", [value]);
+    if (bitOrDiiaResult) {
+      return bitOrDiiaResult;
+    }
+
+    if (this.structure) {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_побітове_або" не реалізовано для "${this.structure.asText(context).asJsValue(context)}".`));
+    } else {
+      this.mavka.fall(context, this.mavka.makeText(`Дію "виконати_побітове_або" не реалізовано.`));
+    }
+  }
+
+  /**
+   * @param {Context} context
+   * @param {Cell} value
+   * @return {Cell}
+   */
   doCompareEquals(context, value) {
     const eqDiiaResult = this.doAction(context, "виконати_порівняння_чи_рівно", [value]);
     if (eqDiiaResult) {
