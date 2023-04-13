@@ -116,6 +116,8 @@ import EvalInstruction from "./interpreter/instructions/evalInstruction.js";
 import EvalNode from "mavka-parser/src/ast/EvalNode.js";
 import MockupStructureCell from "./interpreter/cells/mockupStructureCell.js";
 import md5 from "js-md5";
+import BitwiseInstruction from "./interpreter/instructions/bitwiseInstruction.js";
+import BitwiseNode from "mavka-parser/src/ast/BitwiseNode.js";
 
 /**
  * @property {Context} context
@@ -137,6 +139,7 @@ class Mavka {
     this.arrayDestructionInstruction = new ArrayDestructionInstruction(this);
     this.arrayInstruction = new ArrayInstruction(this);
     this.assignInstruction = new AssignInstruction(this);
+    this.bitwiseInstruction = new BitwiseInstruction(this);
     this.booleanInstruction = new BooleanInstruction(this);
     this.breakInstruction = new BreakInstruction(this);
     this.callInstruction = new CallInstruction(this);
@@ -332,6 +335,10 @@ class Mavka {
 
     if (node instanceof AssignNode) {
       return this.assignInstruction.run(context, node, options);
+    }
+
+    if (node instanceof BitwiseNode) {
+      return this.bitwiseInstruction.run(context, node, options);
     }
 
     if (node instanceof BooleanNode) {
