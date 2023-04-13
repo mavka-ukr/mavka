@@ -13,7 +13,11 @@ function getDoName(symbol) {
     "%=": "doDivMod",
     "//=": "doDivFloor",
     "**=": "doPow",
-    "^=": "doXor"
+    "<<=": "doBitLeft",
+    ">>=": "doBitRight",
+    "&=": "doBitAnd",
+    "|=": "doBitOr",
+    "^=": "doXor",
   }[symbol];
 }
 
