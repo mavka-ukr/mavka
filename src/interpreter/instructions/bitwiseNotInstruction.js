@@ -3,7 +3,7 @@ import Instruction from "./utils/instruction.js";
 class BitwiseNotInstruction extends Instruction {
   /**
    * @param {Context} context
-   * @param {NotNode} node
+   * @param {BitwiseNotNode} node
    * @returns {*}
    */
   runSync(context, node) {
@@ -14,7 +14,7 @@ class BitwiseNotInstruction extends Instruction {
 
   /**
    * @param {Context} context
-   * @param {NotNode} node
+   * @param {BitwiseNotNode} node
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {

@@ -122,13 +122,14 @@ import BitwiseNotInstruction from "./interpreter/instructions/bitwiseNotInstruct
 import makeMathModule from "./library/mathModule.js";
 import NanCell from "./interpreter/cells/common/nanCell.js";
 import InfinityCell from "./interpreter/cells/common/infinityCell.js";
+import BitwiseNotNode from "mavka-parser/src/ast/BitwiseNotNode.js";
 
 /**
  * @property {Context} context
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.10.38";
+  static VERSION = "0.10.39";
 
   constructor(options = {}) {
     if (!options.global) {
@@ -353,7 +354,7 @@ class Mavka {
       return this.bitwiseInstruction.run(context, node, options);
     }
 
-    if (node instanceof BitwiseNotInstruction) {
+    if (node instanceof BitwiseNotNode) {
       return this.bitwiseNotInstruction.run(context, node, options);
     }
 
