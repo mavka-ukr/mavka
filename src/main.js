@@ -119,13 +119,16 @@ import md5 from "js-md5";
 import BitwiseInstruction from "./interpreter/instructions/bitwiseInstruction.js";
 import BitwiseNode from "mavka-parser/src/ast/BitwiseNode.js";
 import BitwiseNotInstruction from "./interpreter/instructions/bitwiseNotInstruction.js";
+import makeMathModule from "./library/mathModule.js";
+import NanCell from "./interpreter/cells/common/nanCell.js";
+import InfinityCell from "./interpreter/cells/common/infinityCell.js";
 
 /**
  * @property {Context} context
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.10.37";
+  static VERSION = "0.10.38";
 
   constructor(options = {}) {
     if (!options.global) {
@@ -186,6 +189,8 @@ class Mavka {
     this.Cell = Cell;
 
     this.EmptyCell = EmptyCell;
+    this.NanCell = NanCell;
+    this.InfinityCell = InfinityCell;
 
     this.AsyncCell = AsyncCell;
     this.AwaitCell = AwaitCell;
@@ -225,6 +230,8 @@ class Mavka {
 
     this.empty = new this.EmptyCell(this, null);
     this.undefined = new this.EmptyCell(this, undefined);
+    this.nan = new this.NanCell(this, undefined);
+    this.infinity = new this.InfinityCell(this, undefined);
 
     this.yes = new this.Cell(
       this,
@@ -250,11 +257,14 @@ class Mavka {
     this.context.set("список", this.listStructureCellInstance);
     this.context.set("словник", this.dictionaryStructureCellInstance);
     this.context.set("пусто", this.empty);
+    // this.context.set("НеЧ", this.nan);
+    // this.context.set("Нескінченність", this.infinity);
     this.context.set("undefined", this.undefined); // js fallback
     this.context.set("обʼєкт", this.objectStructureCellInstance);
     this.context.set("Дія", this.diiaStructureCellInstance);
     this.context.set("global", this.makePortal(this.global));
     this.context.set("діапазон", RangeStructureCell.getInstance(this));
+    this.context.set("М", makeMathModule(this));
 
     this.external = options.buildExternal ? options.buildExternal(this) : {};
 
