@@ -613,6 +613,14 @@ export class Cell {
    * @param {Context} context
    * @return {Cell}
    */
+  bitNot(context) {
+    return this.mavka.makeNumber(~this.asNumber(context).asJsValue(context));
+  }
+
+  /**
+   * @param {Context} context
+   * @return {Cell}
+   */
   negative(context) {
     return this.mavka.makeNumber(-this.asNumber(context).asJsValue(context));
   }

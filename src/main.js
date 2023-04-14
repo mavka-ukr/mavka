@@ -118,13 +118,14 @@ import MockupStructureCell from "./interpreter/cells/mockupStructureCell.js";
 import md5 from "js-md5";
 import BitwiseInstruction from "./interpreter/instructions/bitwiseInstruction.js";
 import BitwiseNode from "mavka-parser/src/ast/BitwiseNode.js";
+import BitwiseNotInstruction from "./interpreter/instructions/bitwiseNotInstruction.js";
 
 /**
  * @property {Context} context
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.10.36";
+  static VERSION = "0.10.37";
 
   constructor(options = {}) {
     if (!options.global) {
@@ -140,6 +141,7 @@ class Mavka {
     this.arrayInstruction = new ArrayInstruction(this);
     this.assignInstruction = new AssignInstruction(this);
     this.bitwiseInstruction = new BitwiseInstruction(this);
+    this.bitwiseNotInstruction = new BitwiseNotInstruction(this);
     this.booleanInstruction = new BooleanInstruction(this);
     this.breakInstruction = new BreakInstruction(this);
     this.callInstruction = new CallInstruction(this);
@@ -339,6 +341,10 @@ class Mavka {
 
     if (node instanceof BitwiseNode) {
       return this.bitwiseInstruction.run(context, node, options);
+    }
+
+    if (node instanceof BitwiseNotInstruction) {
+      return this.bitwiseNotInstruction.run(context, node, options);
     }
 
     if (node instanceof BooleanNode) {
