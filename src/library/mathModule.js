@@ -24,7 +24,7 @@ const makeMathModule = (mavka) => {
     "арктан2": mavka.makeProxyFunction((args, context, { arg }) => mavka.makeNumber(
       Math.atan2(arg(0, "х").asJsValue(context), arg(0, "y").asJsValue(context)))
     ),
-    "небо": mavka.makeProxyFunction((args, context, { arg }) => mavka.makeNumber(
+    "стеля": mavka.makeProxyFunction((args, context, { arg }) => mavka.makeNumber(
       Math.ceil(arg(0, "значення").asJsValue(context)))
     ),
     "кос": mavka.makeProxyFunction((args, context, { arg }) => mavka.makeNumber(
@@ -33,7 +33,7 @@ const makeMathModule = (mavka) => {
     "експ": mavka.makeProxyFunction((args, context, { arg }) => mavka.makeNumber(
       Math.exp(arg(0, "значення").asJsValue(context)))
     ),
-    "земля": mavka.makeProxyFunction((args, context, { arg }) => mavka.makeNumber(
+    "підлога": mavka.makeProxyFunction((args, context, { arg }) => mavka.makeNumber(
       Math.floor(arg(0, "значення").asJsValue(context)))
     ),
     "найбільше": mavka.makeProxyFunction((args, context) => mavka.makeNumber(
