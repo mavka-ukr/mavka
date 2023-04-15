@@ -30,25 +30,25 @@ class EmptyCell extends Cell {
     });
 
     this.properties["виконати_додавання"] = this.mavka.makeProxyFunction((args, context) => {
-      this.mavka.fall(context, this.mavka.makeText('Неможливо виоперацію "+" з типом "пусто"'));
+      this.mavka.fall(context, this.mavka.makeText('Неможливо виконати операцію "+" з типом "пусто"'));
     });
     this.properties["виконати_віднімання"] = this.mavka.makeProxyFunction((args, context) => {
-      this.mavka.fall(context, this.mavka.makeText('Неможливо виоперацію "-" з типом "пусто"'));
+      this.mavka.fall(context, this.mavka.makeText('Неможливо виконати операцію "-" з типом "пусто"'));
     });
     this.properties["виконати_множення"] = this.mavka.makeProxyFunction((args) => {
-      this.mavka.fall(context, this.mavka.makeText('Неможливо виоперацію "*" з типом "пусто"'));
+      this.mavka.fall(context, this.mavka.makeText('Неможливо виконати операцію "*" з типом "пусто"'));
     });
     this.properties["виконати_ділення"] = this.mavka.makeProxyFunction((args) => {
-      this.mavka.fall(context, this.mavka.makeText('Неможливо виоперацію "/" з типом "пусто"'));
+      this.mavka.fall(context, this.mavka.makeText('Неможливо виконати операцію "/" з типом "пусто"'));
     });
     this.properties["виконати_ділення_за_модулем_остача"] = this.mavka.makeProxyFunction((args) => {
-      this.mavka.fall(context, this.mavka.makeText('Неможливо виоперацію "%" з типом "пусто"'));
+      this.mavka.fall(context, this.mavka.makeText('Неможливо виконати операцію "%" з типом "пусто"'));
     });
     this.properties["виконати_ділення_за_модулем_частка"] = this.mavka.makeProxyFunction((args) => {
-      this.mavka.fall(context, this.mavka.makeText('Неможливо виоперацію "//" з типом "пусто"'));
+      this.mavka.fall(context, this.mavka.makeText('Неможливо виконати операцію "//" з типом "пусто"'));
     });
     this.properties["виконати_піднесення_до_степеня"] = this.mavka.makeProxyFunction((args) => {
-      this.mavka.fall(context, this.mavka.makeText('Неможливо виоперацію "**" з типом "пусто"'));
+      this.mavka.fall(context, this.mavka.makeText('Неможливо виконати операцію "**" з типом "пусто"'));
     });
     this.properties["виконати_виняткову_дизʼюнкцію"] = this.mavka.makeProxyFunction((args, context) => {
       let value = args[0];
