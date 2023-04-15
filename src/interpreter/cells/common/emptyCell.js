@@ -23,7 +23,7 @@ class EmptyCell extends Cell {
       return this.mavka.makeText("пусто");
     });
     this.properties["виконати_перетворення_на_число"] = this.mavka.makeProxyFunction(() => {
-      return this.mavka.makeNumber(0);
+      this.mavka.fall(context, this.mavka.makeText('Неможливо перетворити "пусто" в число'));
     });
     this.properties["виконати_перетворення_на_логічне"] = this.mavka.makeProxyFunction(() => {
       return this.mavka.no;
