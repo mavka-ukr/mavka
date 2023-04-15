@@ -129,7 +129,7 @@ import BitwiseNotNode from "mavka-parser/src/ast/BitwiseNotNode.js";
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.10.40";
+  static VERSION = "0.10.41";
 
   constructor(options = {}) {
     if (!options.global) {
