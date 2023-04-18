@@ -10,7 +10,7 @@ function doOperation(mavka, context, node) {
       onProgress: (progress) => {
         mavka.events.emit("module::load::remote::progress", {
           url: node.url,
-          progress
+          progress: progress ? progress : "~"
         });
       },
       onFailed: () => {

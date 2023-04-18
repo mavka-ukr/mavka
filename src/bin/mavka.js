@@ -88,9 +88,7 @@ if (command === "версія") {
   });
 
   const context = new mavka.Context(mavka, mavka.context);
-
-  const path = command.substring(0, command.length - 2).split(".");
-
+  
   function printProgress(name, progress) {
     process.stdout.clearLine();
     process.stdout.cursorTo(0);
