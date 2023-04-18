@@ -87,6 +87,38 @@ class BooleanStructureCell extends StructureCell {
 
       return options.meValue.asNumber(context).doPow(context, value);
     });
+    this.setMethod("виконати_зсув_вліво", (args, context, options) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.empty;
+      }
+
+      return this.mavka.makeNumber(options.meValue.asJsValue(context) << value.asNumber(context).asJsValue(context));
+    });
+    this.setMethod("виконати_зсув_вправо", (args, context, options) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.empty;
+      }
+
+      return this.mavka.makeNumber(options.meValue.asJsValue(context) >> value.asNumber(context).asJsValue(context));
+    });
+    this.setMethod("виконати_побітове_і", (args, context, options) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.empty;
+      }
+
+      return this.mavka.makeNumber(options.meValue.asJsValue(context) & value.asNumber(context).asJsValue(context));
+    });
+    this.setMethod("виконати_побітове_або", (args, context, options) => {
+      let value = args[0];
+      if (!value) {
+        value = this.mavka.empty;
+      }
+
+      return this.mavka.makeNumber(options.meValue.asJsValue(context) | value.asNumber(context).asJsValue(context));
+    });
     this.setMethod("виконати_виняткову_дизʼюнкцію", (args, context, options) => {
       let value = args[0];
       if (!value) {
