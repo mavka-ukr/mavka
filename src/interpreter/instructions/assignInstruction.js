@@ -93,7 +93,7 @@ class AssignInstruction extends Instruction {
    * @returns {Promise<*>}
    */
   async runAsync(context, node) {
-    let value = await this.mavka.runAsync(context, node.wait ? new WaitNode(context, { value: node.value }) : node.value);
+    let value = await this.mavka.runAsync(context, node.wait ? new WaitNode(node.context, { value: node.value }) : node.value);
 
     const doName = getDoName(node.symbol);
 
