@@ -39,6 +39,23 @@ class StructureCell extends Cell {
 
         return this.mavka.no;
       });
+      this.setMethod("виконати_порівняння_чи_не_рівно", (args, context, options) => {
+        let left = options.meValue;
+        let right = Object.values(args)[0];
+
+        if (mavka.isBasic(left)) {
+          left = left.asJsValue(context);
+        }
+        if (mavka.isBasic(right)) {
+          right = right.asJsValue(context);
+        }
+
+        if (left !== right) {
+          return this.mavka.yes;
+        }
+
+        return this.mavka.no;
+      });
     }
   }
 

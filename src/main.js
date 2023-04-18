@@ -129,7 +129,7 @@ import BitwiseNotNode from "mavka-parser/src/ast/BitwiseNotNode.js";
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.10.41";
+  static VERSION = "0.10.42";
 
   constructor(options = {}) {
     if (!options.global) {
@@ -266,6 +266,7 @@ class Mavka {
     this.context.set("global", this.makePortal(this.global));
     this.context.set("діапазон", RangeStructureCell.getInstance(this));
     this.context.set("М", makeMathModule(this));
+    this.context.set("is_undefined", this.makeProxyFunction(([value]) => this.toCell(value === this.undefined)));
 
     this.external = options.buildExternal ? options.buildExternal(this) : {};
 

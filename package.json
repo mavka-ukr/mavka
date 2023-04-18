@@ -1,6 +1,6 @@
 {
   "name": "mavka",
-  "version": "0.10.41",
+  "version": "0.10.42",
   "description": "Сучасна українська мова програмування",
   "main": "src/main.js",
   "type": "module",
@@ -48,7 +48,7 @@
     "import-meta-resolve": "^2.1.0",
     "js-md5": "^0.7.3",
     "mavka-pak": "^0.0.2",
-    "mavka-parser": "^0.10.20",
+    "mavka-parser": "^0.10.22",
     "mavka-teka": "^0.0.1",
     "mitt": "^3.0.0",
     "path": "^0.12.7"

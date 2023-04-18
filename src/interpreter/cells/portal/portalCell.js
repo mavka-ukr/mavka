@@ -20,6 +20,10 @@ class PortalCell extends Cell {
     );
   }
 
+  asBoolean(context) {
+    return this.mavka.toCell(!!this.meta.object);
+  }
+
   /**
    * @inheritDoc
    */
