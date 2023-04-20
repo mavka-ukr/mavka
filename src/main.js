@@ -124,6 +124,8 @@ import NanCell from "./interpreter/cells/common/nanCell.js";
 import InfinityCell from "./interpreter/cells/common/infinityCell.js";
 import BitwiseNotNode from "mavka-parser/src/ast/BitwiseNotNode.js";
 
+let extId = 0;
+
 /**
  * @property {Context} context
  * @property {Loader} loader
@@ -983,21 +985,27 @@ class Mavka {
    * @return {Promise<void>}
    */
   async import(context, code) {
-    const hash = md5(code);
+    extId++;
 
-    const { default: fs } = await import("fs");
-    const moduleRootPath = context.get("__шлях_до_папки_кореневого_модуля__").asJsValue(context);
-    const extensionsPath = `${moduleRootPath}/.розширення`;
-    const extensionPath = `${extensionsPath}/${hash}.js`;
+    const wrappedCode = `
+getMavka().global.EXTENSION_EVAL_ASYNC_${extId} = async function() {
+  ${code}
+}
+      `;
 
-    if (!fs.existsSync(extensionsPath)) {
-      fs.mkdirSync(extensionsPath);
-    }
-    if (!fs.existsSync(extensionPath)) {
-      fs.writeFileSync(extensionPath, code);
-    }
+    const prevGetMavka = this.global.getMavka;
+    const prevGetContext = this.global.getContext;
 
-    await import(extensionPath);
+    this.global.getMavka = () => this;
+    this.global.getContext = () => context;
+
+    eval(wrappedCode);
+
+    await this.global[`EXTENSION_EVAL_ASYNC_${extId}`]();
+    delete this.global[`EXTENSION_EVAL_ASYNC_${extId}`];
+
+    this.global.getMavka = prevGetMavka;
+    this.global.getContext = prevGetContext;
   }
 }
 
