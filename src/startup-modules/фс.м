@@ -40,7 +40,7 @@ function isStats (path) {
 
 
 context.set('чи_існує_шлях', mavka.makeWrappedProxyFunction(([path]) => {
-	if (!(typeof path == 'string'))
+	if (!(typeof path === 'string'))
 		return mavka.fall(context, mavka.makeText('шлях не є текстом'));
 
 	try {
@@ -53,11 +53,11 @@ context.set('чи_існує_шлях', mavka.makeWrappedProxyFunction(([path]) 
 
 context.set('створити_директорію', mavka.makeWrappedProxyFunction(([path]) => {
 	try {
-		if (!(typeof path == 'string'))
+		if (!(typeof path === 'string'))
 			return mavka.fall(context, mavka.makeText('шлях не є текстом'));
 
 		if (isExists(path))
-			return mavka.fall(context, mavka.makeText('тека вже існує'));
+			return mavka.fall(context, mavka.makeText(`тека ${path}  вже існує`));
 
 		fs.mkdirSync(path);
 
@@ -68,14 +68,14 @@ context.set('створити_директорію', mavka.makeWrappedProxyFunct
 
 context.set('читати_директорію', mavka.makeWrappedProxyFunction(([path]) => {
 	try {	
-		if (!(typeof path == 'string'))
+		if (!(typeof path === 'string'))
 			return mavka.fall(context, mavka.makeText('шлях не є текстом'));
 
 		if (!isExists(path))
-			return mavka.fall(context, mavka.makeText('теки за данним шляхом не існує'));
+			return mavka.fall(context, mavka.makeText(`теки ${path} не існує`));
 
 		if (!isStats(path).isDirectory)
-			return mavka.fall(context, mavka.makeText('за вказаним шляхом знаходиться не тека'));
+			return mavka.fall(context, mavka.makeText('за шляхом ${path} знаходиться не тека'));
 
 		return mavka.makePortalList(fs.readdirSync(path));
 
@@ -86,17 +86,17 @@ context.set('читати_директорію', mavka.makeWrappedProxyFunction(
 
 context.set('видалити_директорію', mavka.makeWrappedProxyFunction(([path, recursive]) => {
 	try {
-		if (!(typeof path == 'string'))
+		if (!(typeof path === 'string'))
 			return mavka.fall(context, mavka.makeText('шлях не є текстом'));
 
-		if (!(typeof recursive == 'boolean'))
+		if (!(typeof recursive === 'boolean'))
 			return mavka.fall(context, mavka.makeText('значення рекурсивно не є булевим'))
 
 		if (!isExists(path))
-			return mavka.fall(context, mavka.makeText('теки за данним шляхом не існує'));
+			return mavka.fall(context, mavka.makeText('теки ${path} не існує'));
 
 		if (!isStats(path).isDirectory)
-			return mavka.fall(context, mavka.makeText('за вказаним шляхом знаходиться не тека'));
+			return mavka.fall(context, mavka.makeText('за шляхом ${path} знаходиться не тека'));
 
 		fs.rmdirSync(path, {recursive: recursive})
 	}
@@ -107,11 +107,11 @@ context.set('видалити_директорію', mavka.makeWrappedProxyFunct
 
 context.set('повернути_властивості', mavka.makeWrappedProxyFunction(([path]) => {
 	try {
-		if (!(typeof path == 'string'))
+		if (!(typeof path === 'string'))
 			return mavka.fall(context, mavka.makeText('шлях не є текстом'));
 
 		if (!isExists(path))
-			return mavka.fall(context, mavka.makeText('за данним шляхом нічого немає'));
+			return mavka.fall(context, mavka.makeText('за шляхом ${path} нічого немає'));
 
 		const stats = isStats(path);
 
@@ -123,11 +123,11 @@ context.set('повернути_властивості', mavka.makeWrappedProxyF
 
 context.set('створити_файл', mavka.makeWrappedProxyFunction(([path, data]) => {
 	try {
-		if (!(typeof path == 'string'))
+		if (!(typeof path === 'string'))
 			return mavka.fall(context, mavka.makeText('шлях не є текстом'));
 
 		if (isExists(path))
-			return mavka.fall(context, mavka.makeText('такий файл уже існує'));
+			return mavka.fall(context, mavka.makeText('файл ${path} уже існує'));
 
 		fs.appendFileSync(path, Buffer.from(data));
 	} catch (error) {
@@ -137,14 +137,14 @@ context.set('створити_файл', mavka.makeWrappedProxyFunction(([path, 
 
 context.set('записати_в_файл', mavka.makeWrappedProxyFunction(([path, data]) => {
 	try {
-		if (!(typeof path == 'string'))
+		if (!(typeof path === 'string'))
 			return mavka.fall(context, mavka.makeText('шлях не є текстом'));
 
 		if (!isExists(path))
-			return mavka.fall(context, mavka.makeText('такого файлу не існує'));
+			return mavka.fall(context, mavka.makeText('файлу ${path} не існує'));
 
 		if (!isStats(path).isFile)
-			return mavka.fall(context, mavka.makeText('за вказаним шляхом знаходиться не файл'));
+			return mavka.fall(context, mavka.makeText('за шляхом ${path} знаходиться не файл'));
 
 		fs.writeFileSync(path, Buffer.from(data));
 	} catch (error) {
@@ -154,14 +154,14 @@ context.set('записати_в_файл', mavka.makeWrappedProxyFunction(([pat
 
 context.set('зчитати_данні_з_файлу', mavka.makeWrappedProxyFunction(([path]) => {
 	try {
-		if (!(typeof path == 'string'))
+		if (!(typeof path === 'string'))
 			return mavka.fall(context, mavka.makeText('шлях не є текстом'));
 
 		if (!isExists(path))
-			return mavka.fall(context, mavka.makeText('такого файлу не існує'));
+			return mavka.fall(context, mavka.makeText('файлу ${path} не існує'));
 
 		if (!isStats(path).isFile)
-			return mavka.fall(context, mavka.makeText('за вказаним шляхом знаходиться не файл'));
+			return mavka.fall(context, mavka.makeText('за шляхом ${path} знаходиться не файл'));
 
 		const buff = fs.readFileSync(path);
 
@@ -174,14 +174,14 @@ context.set('зчитати_данні_з_файлу', mavka.makeWrappedProxyFun
 
 context.set('видалити_файл', mavka.makeWrappedProxyFunction(([path]) => {
 	try {
-		if (!(typeof path == 'string'))
+		if (!(typeof path === 'string'))
 			return mavka.fall(context, mavka.makeText('шлях не є текстом'));
 
 		if (!isExists(path))
-			return mavka.fall(context, mavka.makeText('такого файлу не існує'));
+			return mavka.fall(context, mavka.makeText('файлу ${path} не існує'));
 		
 		if (!isStats(path).isFile)
-			return mavka.fall(context, mavka.makeText('за вказаним шляхом знаходиться не файл'));
+			return mavka.fall(context, mavka.makeText('за шляхом ${path} знаходиться не файл'));
 
 		fs.rmSync(path);
 	}
