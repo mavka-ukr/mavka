@@ -57,7 +57,7 @@ context.set('створити_директорію', mavka.makeWrappedProxyFunct
 			return mavka.fall(context, mavka.makeText('шлях не є текстом'));
 
 		if (isExists(path))
-			return mavka.fall(context, mavka.makeText(`тека ${path}  вже існує`));
+			return mavka.fall(context, mavka.makeText(`тека ${path} вже існує`));
 
 		fs.mkdirSync(path);
 
