@@ -131,7 +131,7 @@ let extId = 0;
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.10.45";
+  static VERSION = "0.10.46";
 
   constructor(options = {}) {
     if (!options.global) {
