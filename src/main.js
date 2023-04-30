@@ -115,7 +115,6 @@ import TakeFileNode from "mavka-parser/src/ast/TakeFileNode.js";
 import EvalInstruction from "./interpreter/instructions/evalInstruction.js";
 import EvalNode from "mavka-parser/src/ast/EvalNode.js";
 import MockupStructureCell from "./interpreter/cells/mockupStructureCell.js";
-import md5 from "js-md5";
 import BitwiseInstruction from "./interpreter/instructions/bitwiseInstruction.js";
 import BitwiseNode from "mavka-parser/src/ast/BitwiseNode.js";
 import BitwiseNotInstruction from "./interpreter/instructions/bitwiseNotInstruction.js";
@@ -123,6 +122,7 @@ import makeMathModule from "./library/mathModule.js";
 import NanCell from "./interpreter/cells/common/nanCell.js";
 import InfinityCell from "./interpreter/cells/common/infinityCell.js";
 import BitwiseNotNode from "mavka-parser/src/ast/BitwiseNotNode.js";
+import makeDidModule from "./library/didModule.js";
 
 let extId = 0;
 
@@ -268,6 +268,7 @@ class Mavka {
     this.context.set("global", this.makePortal(this.global));
     this.context.set("діапазон", RangeStructureCell.getInstance(this));
     this.context.set("М", makeMathModule(this));
+    this.context.set("Дід", makeDidModule(this));
     this.context.set("is_undefined", this.makeProxyFunction(([value]) => this.toCell(value === this.undefined)));
 
     this.external = options.buildExternal ? options.buildExternal(this) : {};

@@ -308,7 +308,7 @@ class TextStructureCell extends StructureCell {
         replacement = args[1];
       } else {
         pattern = args["старе_значення"];
-        replacement = args["нове_значення"]
+        replacement = args["нове_значення"];
       }
 
       try {
@@ -349,7 +349,7 @@ class TextStructureCell extends StructureCell {
         replacement = args[1];
       } else {
         pattern = args["старе_значення"];
-        replacement = args["нове_значення"]
+        replacement = args["нове_значення"];
       }
 
       try {
@@ -390,7 +390,7 @@ class TextStructureCell extends StructureCell {
         indexEnd = args[1];
       } else {
         indexStart = args["позиція_від"];
-        indexEnd = args["позиція_до"]
+        indexEnd = args["позиція_до"];
       }
 
       try {
@@ -418,7 +418,7 @@ class TextStructureCell extends StructureCell {
       try {
         if (!(this.mavka.isEmpty(indexEnd) || typeof indexEnd === "undefined")) {
           indexEnd = indexEnd.asNumber(indexEnd).asJsValue(context);
-          
+
           if (Number.isNaN(indexEnd)) {
             throw new TypeError("Expected `indexEnd` to not be NaN");
           }
@@ -449,7 +449,7 @@ class TextStructureCell extends StructureCell {
         args = args.map(v => v.asText(context).asJsValue(context));
       } catch (e) {
         if (e instanceof TypeError) {
-          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити деякі параметри \"інші_тексти\" у текст."))
+          this.mavka.fall(context, this.mavka.makeText("Не вдалось перетворити деякі параметри \"інші_тексти\" у текст."));
         } else {
           throw e;
         }
@@ -463,7 +463,7 @@ class TextStructureCell extends StructureCell {
       if (Array.isArray(args)) {
         separator = args[0];
       } else {
-        separator = args["роздільник"]
+        separator = args["роздільник"];
       }
 
       try {
@@ -477,7 +477,7 @@ class TextStructureCell extends StructureCell {
       }
 
       return this.mavka.makeList(
-        options.meValue.meta.value.split(separator).map(v => 
+        options.meValue.meta.value.split(separator).map(v =>
           this.mavka.makeText(v)));
     });
     this.setMethod("починається_з", (args, context, options) => {
@@ -486,7 +486,7 @@ class TextStructureCell extends StructureCell {
       if (Array.isArray(args)) {
         searchString = args[0];
       } else {
-        searchString = args["значення"]
+        searchString = args["значення"];
       }
 
       try {
@@ -507,7 +507,7 @@ class TextStructureCell extends StructureCell {
       if (Array.isArray(args)) {
         searchString = args[0];
       } else {
-        searchString = args["значення"]
+        searchString = args["значення"];
       }
 
       try {

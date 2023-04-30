@@ -61,7 +61,7 @@ class DictionaryStructureCell extends StructureCell {
           let kt = this.mavka.toCell(k).asText(context).asJsValue(context);
           let vt = v.asText(context).asJsValue(context);
 
-          if (this.mavka.isText(this.mavka.toCell(kt))) {
+          if (this.mavka.isText(this.mavka.toCell(k))) {
             kt = `"${kt}"`;
           }
           if (this.mavka.isText(v)) {
