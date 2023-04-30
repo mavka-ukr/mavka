@@ -17,7 +17,7 @@ function getDoName(symbol) {
     ">>=": "doBitRight",
     "&=": "doBitAnd",
     "|=": "doBitOr",
-    "^=": "doXor",
+    "^=": "doXor"
   }[symbol];
 }
 

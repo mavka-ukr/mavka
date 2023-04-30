@@ -7,7 +7,7 @@ const startupModuleFiles = fs.readdirSync(startupModuleDir);
 const startupModules = [];
 
 for (const moduleFileName of startupModuleFiles) {
-  if (!moduleFileName.includes('.м')) {
+  if (!moduleFileName.includes(".м")) {
     continue;
   }
 
