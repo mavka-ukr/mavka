@@ -1,5 +1,9 @@
 # Список змін Мавки
 
+## [0.10.47]
+
+- виправлення https://github.com/mavka-ukr/mavka/pull/49
+
 ## [0.10.46]
 
 - додано вбудований модуль `фс`: https://github.com/mavka-ukr/mavka/pull/44
