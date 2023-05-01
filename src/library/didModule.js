@@ -6,6 +6,7 @@ import {
   NumberNode,
   ObjectNode,
   parse as parseDid,
+  ParserError,
   TextNode
 } from "mavka-did";
 
@@ -18,7 +19,17 @@ const makeDidModule = (mavka) => {
       }
       text = text.asJsValue(context);
 
-      const ast = parseDid(text);
+      let ast;
+
+      try {
+        ast = parseDid(text);
+      } catch (e) {
+        if (e && e instanceof ParserError) {
+          mavka.fall(context, mavka.makeText(e.message));
+        } else {
+          throw e;
+        }
+      }
 
       const makeCell = (node) => {
         if (node instanceof NumberNode) {
