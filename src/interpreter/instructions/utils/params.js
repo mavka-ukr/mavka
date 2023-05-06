@@ -6,9 +6,16 @@
 export function convertParamNodes(mavka, context, paramNodes) {
   const parameters = [];
   for (const nodeParam of paramNodes) {
+    if (nodeParam.spread && nodeParam.defaultValue) {
+      mavka.fall(nodeParam, mavka.makeText("Параметр не може бути збірним і мати значення за замовчуванням."));
+    }
+    if (nodeParam.spread && paramNodes.indexOf(nodeParam) !== paramNodes.length - 1) {
+      mavka.fall(nodeParam, mavka.makeText("Збірний параметр повинен бути останнім."));
+    }
     parameters.push({
       name: nodeParam.name.name,
-      defaultValue: nodeParam.defaultValue ? mavka.runSync(context, nodeParam.defaultValue, { forceSync: true }) : undefined
+      defaultValue: nodeParam.defaultValue ? mavka.runSync(context, nodeParam.defaultValue, { forceSync: true }) : undefined,
+      spread: nodeParam.spread
     });
   }
   return parameters;
@@ -18,7 +25,7 @@ export function convertParamNodes(mavka, context, paramNodes) {
  * @param {Mavka} mavka
  * @param {Context} callContext
  * @param {Cell|Context} cellOrContext
- * @param {{ name: string, defaultValue: Cell|undefined }[]} parameters
+ * @param {{ name: string, defaultValue: Cell|undefined, spread: boolean }[]} parameters
  * @param {Record<string, Cell>|Cell[]} args
  */
 export function fillParameters(mavka,
@@ -31,7 +38,12 @@ export function fillParameters(mavka,
 
     if (Array.isArray(args)) {
       const paramIndex = parameters.map(({ name }) => name).indexOf(paramName);
-      value = args[paramIndex];
+      const param = parameters[paramIndex];
+      if (param.spread) {
+        value = mavka.makeList(args.slice(paramIndex));
+      } else {
+        value = args[paramIndex];
+      }
     } else {
       value = args[paramName];
     }

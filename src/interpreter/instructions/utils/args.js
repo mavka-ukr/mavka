@@ -1,29 +1,60 @@
+/**
+ * @param {Mavka} mavka
+ * @param {Context} context
+ * @param {Record<string, ArgNode>|ArgNode[]} args
+ * @returns {Promise<Awaited<unknown>[]|{}>|*|{}}
+ */
 function runArgs(mavka, context, args) {
   const runSync = () => {
     if (Array.isArray(args)) {
-      return args.map((node) => mavka.runSync(context, node.value));
+      return args.flatMap((node) => {
+        if (node.spread) {
+          const value = mavka.runSync(context, node.value);
+
+          if (mavka.isList(value)) {
+            return value.meta.values;
+          } else {
+            return value;
+          }
+        } else {
+          return mavka.runSync(context, node.value);
+        }
+      });
     } else {
-      args = { ...args };
+      const newArgs = {};
 
       for (const [k, v] of Object.entries(args)) {
-        args[k] = mavka.runSync(context, v.value);
+        newArgs[k] = mavka.runSync(context, v.value);
       }
 
-      return args;
+      return newArgs;
     }
   };
 
   const runAsync = async () => {
     if (Array.isArray(args)) {
-      return await Promise.all(args.map((node) => mavka.runAsync(context, node.value)));
+      return (await Promise.all(args.map(async (node) => {
+        return {
+          value: await mavka.runAsync(context, node.value),
+          node
+        };
+      }))).flatMap(({ value, node }) => {
+        if (node.spread) {
+          if (mavka.isList(value)) {
+            return value.meta.values;
+          }
+        }
+
+        return value;
+      });
     } else {
-      args = { ...args };
+      const newArgs = {};
 
       for (const [k, v] of Object.entries(args)) {
-        args[k] = await mavka.runAsync(context, v.value);
+        newArgs[k] = await mavka.runAsync(context, v.value);
       }
 
-      return args;
+      return newArgs;
     }
   };
 

@@ -270,6 +270,7 @@ class Mavka {
     this.context.set("М", makeMathModule(this));
     this.context.set("Дід", makeDidModule(this));
     this.context.set("is_undefined", this.makeProxyFunction(([value]) => this.toCell(value === this.undefined)));
+    this.context.set("отримати_тип", this.makeProxyFunction((args, context, { arg }) => arg(0, "значення")));
 
     this.external = options.buildExternal ? options.buildExternal(this) : {};
 
@@ -841,7 +842,7 @@ class Mavka {
 
   /**
    * @param {string|null} name
-   * @param {{ name: string, defaultValue: Cell|undefined }[]} parameters
+   * @param {{ name: string, defaultValue: Cell|undefined, spread: boolean }[]} parameters
    * @param {Class<Context>} contextClass
    * @param {Context|null} outerContext
    * @param {boolean} isAsync
