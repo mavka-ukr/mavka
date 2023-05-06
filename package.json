@@ -55,6 +55,7 @@
     "path": "^0.12.7"
   },
   "devDependencies": {
+    "all-contributors-cli": "^6.25.0",
     "eslint": "^8.33.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.6.0",
