@@ -120,6 +120,7 @@ export class Cell {
    * @param {Object} options
    * @return {Cell}
    */
+
   doCall(context, args, options = {}) {
     const callDiiaResult = this.doAction(context, "виконати_виклик", args);
     if (callDiiaResult) {
