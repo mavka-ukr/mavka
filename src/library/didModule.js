@@ -110,7 +110,14 @@ const makeDidModule = (mavka) => {
         }
 
         if (value instanceof ObjectNode) {
-          throw new Error("ObjectNode is not supported");
+          const values = [];
+          for (const [k, v] of value.meta.contents.entries()) {
+            const kk = makeDidValue(mavka.toCell(k));
+            const vv = makeDidValue(v);
+
+            values.push(`${kk}=${vv}`);
+          }
+          return `(${values.join(",")})`;
         }
 
         return "пусто";
