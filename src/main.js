@@ -123,6 +123,8 @@ import NanCell from "./interpreter/cells/common/nanCell.js";
 import InfinityCell from "./interpreter/cells/common/infinityCell.js";
 import BitwiseNotNode from "mavka-parser/src/ast/BitwiseNotNode.js";
 import makeDidModule from "./library/didModule.js";
+import FromtoInstruction from "./interpreter/instructions/fromtoInstruction.js";
+import FromtoNode from "mavka-parser/src/ast/FromtoNode.js";
 
 let extId = 0;
 
@@ -131,7 +133,7 @@ let extId = 0;
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.11.2";
+  static VERSION = "0.11.3";
 
   constructor(options = {}) {
     if (!options.global) {
@@ -157,6 +159,7 @@ class Mavka {
     this.diiaInstruction = new DiiaInstruction(this);
     this.eachInstruction = new EachInstruction(this);
     this.evalInstruction = new EvalInstruction(this);
+    this.fromtoInstruction = new FromtoInstruction(this);
     this.functionInstruction = new FunctionInstruction(this);
     this.getElementInstruction = new GetElementInstruction(this);
     this.giveInstruction = new GiveInstruction(this);
@@ -397,6 +400,10 @@ class Mavka {
 
     if (node instanceof EvalNode) {
       return this.evalInstruction.run(context, node, options);
+    }
+
+    if (node instanceof FromtoNode) {
+      return this.fromtoInstruction.run(context, node, options);
     }
 
     if (node instanceof FunctionNode) {
