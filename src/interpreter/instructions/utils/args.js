@@ -1,7 +1,7 @@
 /**
  * @param {Mavka} mavka
  * @param {Context} context
- * @param {Record<string, ArgNode>|ArgNode[]} args
+ * @param {Record<string, ASTNode>|ArgNode[]} args
  * @returns {Promise<Awaited<unknown>[]|{}>|*|{}}
  */
 function runArgs(mavka, context, args) {
@@ -24,7 +24,7 @@ function runArgs(mavka, context, args) {
       const newArgs = {};
 
       for (const [k, v] of Object.entries(args)) {
-        newArgs[k] = mavka.runSync(context, v.value);
+        newArgs[k] = mavka.runSync(context, v);
       }
 
       return newArgs;
@@ -51,7 +51,7 @@ function runArgs(mavka, context, args) {
       const newArgs = {};
 
       for (const [k, v] of Object.entries(args)) {
-        newArgs[k] = await mavka.runAsync(context, v.value);
+        newArgs[k] = await mavka.runAsync(context, v);
       }
 
       return newArgs;
