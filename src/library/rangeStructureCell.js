@@ -14,6 +14,7 @@ class RangeStructureCell extends StructureCell {
         let from = 0;
         let to = 0;
         let step = 1;
+        let include = false;
 
         if (Array.isArray(args) && args.length) {
           if (args.length === 1) {
@@ -21,10 +22,15 @@ class RangeStructureCell extends StructureCell {
           } else if (args.length === 2) {
             from = args[0].asNumber(context).asJsValue(context);
             to = args[1].asNumber(context).asJsValue(context);
-          } else if (args.length >= 3) {
+          } else if (args.length === 3) {
             from = args[0].asNumber(context).asJsValue(context);
             to = args[1].asNumber(context).asJsValue(context);
             step = args[2].asNumber(context).asJsValue(context);
+          } else if (args.length >= 4) {
+            from = args[0].asNumber(context).asJsValue(context);
+            to = args[1].asNumber(context).asJsValue(context);
+            step = args[2].asNumber(context).asJsValue(context);
+            include = args[3].asBoolean(context).asJsValue(context);
           }
         }
 
@@ -39,8 +45,14 @@ class RangeStructureCell extends StructureCell {
             return null;
           },
           function* () {
-            for (let i = from, key = 0; i < to; i += step, key++) {
-              yield { key, value: mavka.makeNumber(i) };
+            if (include) {
+              for (let i = from, key = 0; i <= to; i += step, key++) {
+                yield { key, value: mavka.makeNumber(i) };
+              }
+            } else {
+              for (let i = from, key = 0; i < to; i += step, key++) {
+                yield { key, value: mavka.makeNumber(i) };
+              }
             }
           }
         );
