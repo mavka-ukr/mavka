@@ -12,6 +12,12 @@ class EachInstruction extends Instruction {
   runSync(context, node) {
     const iterator = this.mavka.runSync(context, node.iterator);
 
+    if (typeof iterator[Symbol.iterator] !== "function") {
+      const linestr = node.context.fileinfo.code.split("\n")[node.context.start.line - 1];
+      const arrow = " ".repeat((node.context.start.column || 1) - 1) + "^";
+      this.mavka.fall(context, this.mavka.toCell(`Неможливо виконати перебір на ${node.context.start.line}:${node.context.start.column}\n${linestr}\n${arrow}`));
+    }
+
     let result = null;
 
     for (const item of iterator) {
@@ -55,6 +61,12 @@ class EachInstruction extends Instruction {
    */
   async runAsync(context, node) {
     const iterator = await this.mavka.runAsync(context, node.iterator);
+
+    if (typeof iterator[Symbol.iterator] !== "function") {
+      const linestr = node.context.fileinfo.code.split("\n")[node.context.start.line - 1];
+      const arrow = " ".repeat((node.context.start.column || 1) - 1) + "^";
+      this.mavka.fall(context, this.mavka.toCell(`Неможливо виконати перебір на ${node.context.start.line}:${node.context.start.column}\n${linestr}\n${arrow}`));
+    }
 
     let result = null;
 

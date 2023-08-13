@@ -18,7 +18,7 @@ export class Cell {
               properties = {},
               structure = null,
               asJsValue = (context) => null,
-              iteratorFn = () => null,
+              iteratorFn = null,
               meta = {}) {
     this.mavka = mavka;
 
