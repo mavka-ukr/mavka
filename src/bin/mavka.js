@@ -10,10 +10,6 @@ process.removeAllListeners("warning");
 const cwdPath = process.cwd();
 
 let command = process.argv[2];
-if (command?.startsWith("--")) {
-  command = null;
-}
-let hideBanner = process.argv.includes("--приховати-банер");
 
 function buildGlobalContext(mavka) {
   const context = new mavka.Context(mavka, null, {
@@ -64,23 +60,6 @@ function buildExternal(mavka) {
 if (command === "версія") {
   console.log(Mavka.VERSION);
 } else if (command === "допомога" || !command) {
-
-  if (!hideBanner) {
-    console.log(`
-               ////
-            //////            
-         //////      /        
-         ////      /////      
-  ///                //////   
-  //////               ////// 
-    //////                /// 
-       /////      /////        
-         /      //////        
-             //////           
-            ////      Мавка ${Mavka.VERSION}
-`);
-  }
-
   console.log(`
 Використання:
   мавка <модуль> [...аргументи]
