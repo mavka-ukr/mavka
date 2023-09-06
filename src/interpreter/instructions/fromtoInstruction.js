@@ -1,6 +1,48 @@
 import Instruction from "./utils/instruction.js";
 import RangeStructureCell from "../../library/rangeStructureCell.js";
 
+const makeRangeCell = (mavka, context, from, to, symbol) => {
+  from = from.asNumber(context).asJsValue(context);
+  to = to.asNumber(context).asJsValue(context);
+
+  return new mavka.Cell(
+    mavka,
+    `діапазон(${from}, ${to}, 1)`,
+    {},
+    RangeStructureCell.getInstance(mavka),
+    () => {
+      return null;
+    },
+    function* () {
+      if (symbol === "<=" || symbol === null) {
+        for (let i = from, key = 0; i <= to; i += 1, key++) {
+          yield { key, value: mavka.makeNumber(i) };
+        }
+      } else if (symbol === "<") {
+        for (let i = from, key = 0; i < to; i += 1, key++) {
+          yield { key, value: mavka.makeNumber(i) };
+        }
+      } else if (symbol === ">=") {
+        for (let i = from, key = 0; i >= to; i += 1, key++) {
+          yield { key, value: mavka.makeNumber(i) };
+        }
+      } else if (symbol === ">") {
+        for (let i = from, key = 0; i > to; i += 1, key++) {
+          yield { key, value: mavka.makeNumber(i) };
+        }
+      } else if (symbol === "==") {
+        for (let i = from, key = 0; i === to; i += 1, key++) {
+          yield { key, value: mavka.makeNumber(i) };
+        }
+      } else {
+        for (let i = from, key = 0; i !== to; i += 1, key++) {
+          yield { key, value: mavka.makeNumber(i) };
+        }
+      }
+    }
+  );
+};
+
 class FromtoInstruction extends Instruction {
   /**
    * @param {Context} context
@@ -10,13 +52,9 @@ class FromtoInstruction extends Instruction {
   runSync(context, node) {
     const from = this.mavka.runSync(context, node.from);
     const to = this.mavka.runSync(context, node.to);
-    const include = node.include;
+    const symbol = node.symbol;
 
-    return RangeStructureCell.getInstance(this.mavka).doCall(context, [
-      from,
-      to,
-      this.mavka.makeNumber(1), include ? this.mavka.yes : this.mavka.no
-    ]);
+    return makeRangeCell(this.mavka, context, from, to, symbol);
   }
 
   /**
@@ -27,13 +65,9 @@ class FromtoInstruction extends Instruction {
   async runAsync(context, node) {
     const from = await this.mavka.runAsync(context, node.from);
     const to = await this.mavka.runAsync(context, node.to);
-    const include = node.include;
+    const symbol = node.symbol;
 
-    return RangeStructureCell.getInstance(this.mavka).doCall(context, [
-      from,
-      to,
-      this.mavka.makeNumber(1), include ? this.mavka.yes : this.mavka.no
-    ]);
+    return makeRangeCell(this.mavka, context, from, to, symbol);
   }
 }
 
