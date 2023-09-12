@@ -125,6 +125,8 @@ import BitwiseNotNode from "mavka-parser/src/ast/BitwiseNotNode.js";
 import makeDidModule from "./library/didModule.js";
 import FromtoInstruction from "./interpreter/instructions/fromtoInstruction.js";
 import FromtoNode from "mavka-parser/src/ast/FromtoNode.js";
+import TypeValueSingleInstruction from "./interpreter/instructions/typeValueSingleInstruction.js";
+import TypeValueSingleNode from "mavka-parser/src/ast/TypeValueSingleNode.js";
 
 let extId = 0;
 
@@ -133,7 +135,7 @@ let extId = 0;
  * @property {Loader} loader
  */
 class Mavka {
-  static VERSION = "0.12.0";
+  static VERSION = "0.12.1";
 
   constructor(options = {}) {
     if (!options.global) {
@@ -189,6 +191,7 @@ class Mavka {
     this.throwInstruction = new ThrowInstruction(this);
     this.tryInstruction = new TryInstruction(this);
     this.typeValueInstruction = new TypeValueInstruction(this);
+    this.typeValueSingleInstruction = new TypeValueSingleInstruction(this);
     this.waitInstruction = new WaitInstruction(this);
     this.whileInstruction = new WhileInstruction(this);
 
@@ -520,6 +523,10 @@ class Mavka {
 
     if (node instanceof TypeValueNode) {
       return this.typeValueInstruction.run(context, node, options);
+    }
+
+    if (node instanceof TypeValueSingleNode) {
+      return this.typeValueSingleInstruction.run(context, node, options);
     }
 
     if (node instanceof WaitNode) {
