@@ -19,6 +19,7 @@ function interpolate(value) {
     }
 
     if (value[i] === "\\" && value[i + 1] === "\\" && value[i + 2] === "r") {
+      part += "\\r";
       i += 2;
       continue;
     }
@@ -34,6 +35,7 @@ function interpolate(value) {
     }
 
     if (value[i] === "\\" && value[i + 1] === "r") {
+      part += "\r";
       i += 1;
       continue;
     }
