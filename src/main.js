@@ -96,6 +96,8 @@ import md5 from "md5";
 import fs from "fs";
 import { parse } from "mavka-parser";
 import { MavkaCompilationError } from "./error.js";
+import TernaryInstruction from "./instructions/ternaryInstruction.js";
+import TernaryNode from "mavka-parser/src/ast/TernaryNode.js";
 
 function printProgress(name, progress) {
   process.stdout.clearLine();
@@ -111,7 +113,7 @@ function clearProgress() {
 let DEBUG_ID = 0;
 
 class Mavka {
-  static VERSION = "0.50.0";
+  static VERSION = "0.50.1";
 
   constructor(options = {}) {
     this.debugInfoVarNames = new Map();
@@ -189,7 +191,7 @@ class Mavka {
     this.takeModuleInstruction = new TakeModuleInstruction(this);
     // this.takePakInstruction = new TakePakInstruction(this);
     this.takeRemoteInstruction = new TakeRemoteInstruction(this);
-    // this.ternaryInstruction = new TernaryInstruction(this);
+    this.ternaryInstruction = new TernaryInstruction(this);
     this.testInstruction = new TestInstruction(this);
     this.throwInstruction = new ThrowInstruction(this);
     this.tryInstruction = new TryInstruction(this);
@@ -362,6 +364,10 @@ class Mavka {
 
     if (node instanceof TakeRemoteNode) {
       return await this.takeRemoteInstruction.compile(scope, node, options);
+    }
+
+    if (node instanceof TernaryNode) {
+      return await this.ternaryInstruction.compile(scope, node, options);
     }
 
     if (node instanceof TestNode) {
