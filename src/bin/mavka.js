@@ -1,61 +1,24 @@
 #!/usr/bin/env node
 
 import Mavka from "../main.js";
-import promptSync from "@kant2002/prompt-sync";
 import { DiiaParserSyntaxError } from "mavka-parser/src/utils/errors.js";
-import FileLoader from "../loaders/fileLoader.js";
+import process from "process";
+import Scope from "../scope.js";
+import { parse } from "mavka-parser";
+import { processBody } from "../utils.js";
+import { getBinPath } from "get-bin-path";
+import fs from "fs";
+import path from "path";
+import { MavkaCompilationError } from "../error.js";
 
 process.removeAllListeners("warning");
 
 const cwdPath = process.cwd();
+const binPath = await getBinPath();
 
 let command = process.argv[2];
 
-function buildGlobalContext(mavka) {
-  const context = new mavka.Context(mavka, null, {
-    "друк": mavka.makeProxyFunction((args, context) => {
-      console.log(
-        ...args
-          .map((arg) => {
-            return arg.asText(context).asJsValue(context);
-          })
-      );
-
-      return mavka.empty;
-    }),
-    "вивести": mavka.makeProxyFunction((args, context) => {
-      process.stdout.write(
-        args
-          .map((arg) => {
-            return arg.asText(context).asJsValue(context);
-          }).join("")
-      );
-
-      return mavka.empty;
-    }),
-    "читати": mavka.makeProxyFunction((args, context) => {
-      const ask = Object.values(args).length ? args[0].asText(context).asJsValue(context) : undefined;
-
-      return mavka.makeText(mavka.external.promptSync({ sigint: true, encoding: "windows-1251" })(ask));
-    })
-  });
-
-  context.set("__шлях_до_папки_кореневого_модуля__", mavka.makeText(cwdPath));
-  context.set("__шлях_до_папки_модуля__", mavka.makeText(cwdPath));
-  context.set("__шлях_до_папки_паків__", mavka.makeText(`${cwdPath}/.паки`));
-
-  return context;
-}
-
-function buildLoader(mavka) {
-  return new FileLoader(mavka);
-}
-
-function buildExternal(mavka) {
-  return {
-    promptSync
-  };
-}
+let doCompile = false;
 
 if (command === "версія") {
   console.log(Mavka.VERSION);
@@ -75,50 +38,72 @@ if (command === "версія") {
   if (command === "запустити") {
     command = process.argv[3];
   }
-
-  if (!command.endsWith(".м")) {
-    command = `${command}.м`;
+  if (!fs.existsSync(`${cwdPath}/${command}`)) {
+    console.error(`Модуль "${command}" не знайдено.`);
+    process.exit(1);
   }
-
-  const mavka = new Mavka({
-    buildGlobalContext,
-    buildLoader,
-    buildExternal
-  });
-
-  const context = new mavka.Context(mavka, mavka.context);
-
-  function printProgress(name, progress) {
-    process.stdout.clearLine();
-    process.stdout.cursorTo(0);
-    process.stdout.write(`[ ${progress}% ] ${name}`);
-  }
-
-  function clearProgress() {
-    process.stdout.clearLine();
-    process.stdout.cursorTo(0);
-  }
-
-  mavka.events.on("module::load::remote::start", ({ url }) => {
-    printProgress(url, 0);
-  });
-  mavka.events.on("module::load::remote::progress", ({ url, progress }) => {
-    printProgress(url, progress);
-  });
-  mavka.events.on("module::load::remote::stop", () => {
-    clearProgress();
-  });
-  mavka.events.on("module::load::remote::failed", () => {
-    clearProgress();
-  });
 
   try {
-    await mavka.loader.loadModuleFromFile(context, command);
+    const headLib = fs.readFileSync(`${path.dirname(binPath)}/../lib/head.js`, "utf8");
+    const stdLib = fs.readFileSync(`${path.dirname(binPath)}/../lib/std.js`, "utf8");
+
+    const mavka = new Mavka();
+
+    const scope = new Scope(mavka.globalScope);
+    const code = fs.readFileSync(`${cwdPath}/${command}`, "utf8");
+    if (code) {
+      const programNode = parse(code, {
+        path: `${cwdPath}/${command}`
+      });
+
+      const result = await mavka.compileProgramBody(scope, processBody(mavka, scope, programNode.body), {
+        rootModuleDirname: cwdPath,
+        currentModuleDirname: cwdPath
+      });
+
+      // console.log(result);
+      // console.log("---------");
+
+      const compiled = `
+  ((async function () {
+${headLib}
+${stdLib}
+
+try {
+  ${result}
+} catch (e) {
+  if (e instanceof MavkaError) {
+    if (e.di) {
+      console.error(e.di[0] + ":" + e.di[1] + ":" + e.di[2] + ": " + to_pretty_string(e.value));
+    } else {
+      console.error(to_pretty_string(e.value));
+    }
+  } else {
+    throw e;
+  }
+}
+  })());
+    `.trim();
+
+      if (doCompile) {
+        if (process.argv[4]) {
+          fs.writeFileSync(process.argv[4], compiled);
+        } else {
+          fs.writeFileSync(`${cwdPath}/${command}.js`, compiled);
+        }
+      } else {
+        eval(compiled);
+      }
+    }
   } catch (e) {
     if (e instanceof DiiaParserSyntaxError) {
-      console.error(`Не вдалось зловити: ${e.message}`);
-    } else if (e instanceof mavka.ThrowValue) {
-      console.error(`Не вдалось зловити: ${e.value.asText(context).asJsValue(context)}`);
+      console.error(`${e.fileinfo.path}:${e.line}:${e.column}: ${e.msg}`);
+    } else if (e instanceof MavkaCompilationError) {
+      if (e.di) {
+        console.error(`${e.di[0]}:${e.di[1]}:${e.di[2]}: ${e.message}`);
+      } else {
+        console.error(e.message);
+      }
     } else {
       throw e;
     }
