@@ -113,7 +113,7 @@ function clearProgress() {
 let DEBUG_ID = 0;
 
 class Mavka {
-  static VERSION = "0.50.1";
+  static VERSION = "0.50.2";
 
   constructor(options = {}) {
     this.debugInfoVarNames = new Map();
