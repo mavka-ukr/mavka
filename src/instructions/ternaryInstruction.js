@@ -7,7 +7,11 @@ class TernaryInstruction extends Instruction {
    * @returns {*}
    */
   async compile(scope, node) {
+    const value = await this.mavka.compileNode(scope, node.value);
+    const positiveValue = await this.mavka.compileNode(scope, node.positiveValue);
+    const negativeValue = await this.mavka.compileNode(scope, node.negativeValue);
 
+    return `((${value}) ? (${positiveValue}) : (${negativeValue}))`;
   }
 }
 
