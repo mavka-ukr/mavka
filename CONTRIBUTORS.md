@@ -2,7 +2,6 @@
 
 ## Подяка
 
-- JoterGlem
 - [Mark](https://github.com/harnyk)
 - [Artemii Kravchuk](https://github.com/ArtemiiKravchuk)
 - [Andrii Kurdiumov](https://github.com/kant2002)
