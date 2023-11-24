@@ -99,21 +99,10 @@ import { MavkaCompilationError } from "./error.js";
 import TernaryInstruction from "./instructions/ternaryInstruction.js";
 import TernaryNode from "mavka-parser/src/ast/TernaryNode.js";
 
-function printProgress(name, progress) {
-  process.stdout.clearLine();
-  process.stdout.cursorTo(0);
-  process.stdout.write(`[ ${progress}% ] ${name}`);
-}
-
-function clearProgress() {
-  process.stdout.clearLine();
-  process.stdout.cursorTo(0);
-}
-
 let DEBUG_ID = 0;
 
 class Mavka {
-  static VERSION = "0.50.2";
+  static VERSION = "0.50.3";
 
   constructor(options = {}) {
     this.debugInfoVarNames = new Map();
@@ -123,6 +112,7 @@ class Mavka {
       return debugInfoVarName;
     };
 
+    this.options = options;
 
     this.globalScope = new Scope(null, new Set([
       // head
@@ -199,8 +189,6 @@ class Mavka {
     this.typeValueSingleInstruction = new TypeValueSingleInstruction(this);
     this.waitInstruction = new WaitInstruction(this);
     this.whileInstruction = new WhileInstruction(this);
-
-    this.code = [];
   }
 
   /**
@@ -549,22 +537,58 @@ var init_${tempModuleName} = async function() {
     }
   }
 
+  async loadBuiltinModule(name, di, options) {
+    const tempModuleName = `${name}_${md5(name)}`;
+
+    const initModuleCode = `
+await init_${tempModuleName}();
+${varname(name)} = ${tempModuleName};
+`.trim();
+
+    if (this.modules.has(tempModuleName)) {
+      return initModuleCode;
+    }
+
+    this.modules.set(tempModuleName, "");
+
+    if (this.options.hasBuiltinModuleCode(name)) {
+      const moduleCode = await this.options.getBuiltinModuleCode(name);
+
+      const compiledModuleCode = `
+var ${tempModuleName};
+var init_${tempModuleName} = async function() {
+  if (${tempModuleName}) {
+    return;
+  }
+  var moduleValue = await ${moduleCode};
+  ${tempModuleName} = moduleValue;
+};
+`.trim();
+
+      this.modules.set(tempModuleName, compiledModuleCode);
+
+      return initModuleCode;
+    } else {
+      throw new MavkaCompilationError(`Модуль "${name}" не знайдено.`, di);
+    }
+  }
+
   onPakStarted(url) {
-    printProgress(url, 0);
+    this.options.printProgress(url, 0);
   }
 
   onPakProgress(url, progress) {
-    printProgress(url, progress);
+    this.options.printProgress(url, progress);
   }
 
   onPakFailed(url, error) {
-    clearProgress();
+    this.options.clearProgress();
     console.error(`Помилка завантаження модуля "${url}".`);
     console.error(error);
   }
 
   onPakDone(url) {
-    clearProgress();
+    this.options.clearProgress();
   }
 }
 

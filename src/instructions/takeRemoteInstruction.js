@@ -15,7 +15,11 @@ class TakeRemoteInstruction extends Instruction {
   async compile(scope, node, options) {
     const diName = this.mavka.putDebugInfoVarName(node);
     const di = this.mavka.debugInfoVarNames.get(diName);
-    let { url, dirUrl, name, version } = unpackPackName(node.url);
+    let { url, dirUrl, name, version, local } = unpackPackName(node.url);
+
+    if (local) {
+      return await this.mavka.loadBuiltinModule(name, di, options);
+    }
 
     const userHomeDir = os.homedir();
     const paksDir = `${userHomeDir}/.паки`;

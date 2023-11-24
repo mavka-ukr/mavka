@@ -1,4 +1,4 @@
-const $Дід = ((function() {
+((async function() {
   // Parent class for all of the AST nodes, "column" and "line" is a list with a first column or line that element
 // occupies (inclusive) and the last one (exclusive). Because column counter resets to zero with each new line,
 // it might be hard to access a particular splice, so you can use "char" counter, which never resets.
@@ -524,16 +524,16 @@ const $Дід = ((function() {
 
   return {
     __m_type__: "module",
-    __m_name__: "Дід",
+    __m_name__: "дід",
     __m_props__: {
       "розібрати": ((function() {
         const diiaValue = function(params, context) {
-          let text = mapParam(Array.isArray(params) ? params[0] : params["значення"], $текст, undefined, context);
+          let value = mapParam(Array.isArray(params) ? params[0] : params["значення"], $текст, undefined, context);
 
           let ast;
 
           try {
-            ast = parseDid(text);
+            ast = parseDid(value);
           } catch (e) {
             if (e && e instanceof ParserError) {
               throw new Error(e.message);
@@ -602,11 +602,6 @@ const $Дід = ((function() {
         };
 
         return diiaValue;
-      })()),
-      "чародія_перетворення_на_текст": ((function() {
-        return function() {
-          return `<модуль Дід[розібрати, зібрати]>`;
-        };
       })())
     }
   };
