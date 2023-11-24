@@ -10,7 +10,7 @@ class ArrayInstruction extends Instruction {
     const elements = await Promise.all(node.elements.map(async (element) => {
       return await this.mavka.compileNode(scope, element);
     }));
-    return `[${elements.join(", ")}]`;
+    return `[${elements.join(",")}]`;
   }
 }
 

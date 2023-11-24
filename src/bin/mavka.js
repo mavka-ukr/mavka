@@ -47,7 +47,23 @@ if (command === "версія") {
     const headLib = fs.readFileSync(`${path.dirname(binPath)}/../lib/head.js`, "utf8");
     const stdLib = fs.readFileSync(`${path.dirname(binPath)}/../lib/std.js`, "utf8");
 
-    const mavka = new Mavka();
+    const mavka = new Mavka({
+      hasBuiltinModuleCode: (name) => {
+        return fs.existsSync(`${path.dirname(binPath)}/../modules/${name}.js`);
+      },
+      getBuiltinModuleCode: (name) => {
+        return fs.readFileSync(`${path.dirname(binPath)}/../modules/${name}.js`, "utf8");
+      },
+      printProgress(name, progress) {
+        process.stdout.clearLine();
+        process.stdout.cursorTo(0);
+        process.stdout.write(`[ ${progress}% ] ${name}`);
+      },
+      clearProgress() {
+        process.stdout.clearLine();
+        process.stdout.cursorTo(0);
+      }
+    });
 
     const scope = new Scope(mavka.globalScope);
     const code = fs.readFileSync(`${cwdPath}/${command}`, "utf8");

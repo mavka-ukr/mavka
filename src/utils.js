@@ -25,7 +25,7 @@ export const varname = (name) => `$${name}`;
 
 /**
  * @param {string} pak
- * @returns {{name: string, version: string, url: string}}
+ * @returns {{name: string, version: string, url: string}|{name: string, local: boolean}}
  */
 export function unpackPackName(pak) {
   if (pak.startsWith("https://")) {
@@ -70,7 +70,10 @@ export function unpackPackName(pak) {
   } else {
     const parts = pak.split("/");
     if (parts.length === 1) {
-      throw new MavkaCompilationError("Неправильний URL паку.");
+      return {
+        name: parts[0],
+        local: true
+      };
     } else if (parts.length === 2 && semver.valid(parts[1]) !== null) {
       return {
         url: `https://хмарний.пак.укр/${parts[0]}/${parts[1]}/${parts[0]}.м`,
