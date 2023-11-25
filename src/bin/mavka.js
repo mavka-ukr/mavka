@@ -6,15 +6,15 @@ import process from "process";
 import Scope from "../scope.js";
 import { parse } from "mavka-parser";
 import { processBody } from "../utils.js";
-import { getBinPath } from "get-bin-path";
 import fs from "fs";
 import path from "path";
 import { MavkaCompilationError } from "../error.js";
+import { fileURLToPath } from "url";
 
 process.removeAllListeners("warning");
 
 const cwdPath = process.cwd();
-const binPath = await getBinPath();
+const binPath = path.dirname(fileURLToPath(import.meta.url));
 
 let command = process.argv[2];
 
@@ -44,15 +44,15 @@ if (command === "версія") {
   }
 
   try {
-    const headLib = fs.readFileSync(`${path.dirname(binPath)}/../lib/head.js`, "utf8");
-    const stdLib = fs.readFileSync(`${path.dirname(binPath)}/../lib/std.js`, "utf8");
+    const headLib = fs.readFileSync(`${binPath}/../lib/head.js`, "utf8");
+    const stdLib = fs.readFileSync(`${binPath}/../lib/std.js`, "utf8");
 
     const mavka = new Mavka({
       hasBuiltinModuleCode: (name) => {
-        return fs.existsSync(`${path.dirname(binPath)}/../modules/${name}.js`);
+        return fs.existsSync(`${binPath}/../modules/${name}.js`);
       },
       getBuiltinModuleCode: (name) => {
-        return fs.readFileSync(`${path.dirname(binPath)}/../modules/${name}.js`, "utf8");
+        return fs.readFileSync(`${binPath}/../modules/${name}.js`, "utf8");
       },
       printProgress(name, progress) {
         process.stdout.clearLine();
@@ -62,7 +62,7 @@ if (command === "версія") {
       clearProgress() {
         process.stdout.clearLine();
         process.stdout.cursorTo(0);
-      },
+      }
     });
 
     const scope = new Scope(mavka.globalScope);
