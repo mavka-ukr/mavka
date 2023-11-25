@@ -1,12 +1,17 @@
 import Instruction from "./instruction.js";
 import { parse } from "mavka-parser";
+import { MavkaCompilationError } from "../error.js";
 
-function interpolate(value) {
+function interpolate(value, di) {
   const parts = [];
 
   let part = "";
   let interpolation = false;
   for (let i = 0; i < value.length; i++) {
+    if (!interpolation && value[i].match(/[0-9]/) && value[i - 1] === "\\" && value[i - 2] !== "\\") {
+      throw new MavkaCompilationError("Помилка в стрічці.", di);
+    }
+
     if (!interpolation && value[i] === "%" && value[i + 1] === "(" && value[i - 1] !== "\\") {
       interpolation = true;
       parts.push(part);
@@ -39,7 +44,8 @@ class StringInstruction extends Instruction {
    */
   async compile(scope, node) {
     const debugInfoVarName = this.mavka.putDebugInfoVarName(node);
-    const interpolated = interpolate(node.value);
+    const di = this.mavka.debugInfoVarNames.get(debugInfoVarName);
+    const interpolated = interpolate(node.value, di);
 
     const inner = [];
 

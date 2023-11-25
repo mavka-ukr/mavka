@@ -414,6 +414,12 @@ var mavka_to_string = (value, context) => {
       return value.__m_props__["чародія_перетворення_на_текст"]();
     }
   }
+  if (value == null) {
+    return "пусто";
+  }
+  if (Array.isArray(value)) {
+    return value.map((v) => mavka_to_string(v, false)).join(",");
+  }
   // todo: handle all mavka types and not just cast it to boolean
   return String(value);
 };
