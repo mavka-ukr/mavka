@@ -5,12 +5,13 @@ class TryInstruction extends Instruction {
   /**
    * @param {Scope} scope
    * @param {TryNode} node
+   * @param {object} options
    * @returns {*}
    */
-  async compile(scope, node) {
-    const body = await this.mavka.compileBody(scope, processBody(this.mavka, scope, node.tryBody));
+  async compile(scope, node, options) {
+    const body = await this.mavka.compileBody(scope, processBody(this.mavka, scope, node.tryBody, options), options);
     const catchName = node.catchName ? node.catchName : null;
-    const catchBody = await this.mavka.compileBody(scope, processBody(this.mavka, scope, node.catchBody));
+    const catchBody = await this.mavka.compileBody(scope, processBody(this.mavka, scope, node.catchBody, options), options);
 
     return `try {
   ${body}

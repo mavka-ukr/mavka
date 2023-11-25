@@ -100,7 +100,7 @@ import TernaryNode from "mavka-parser/src/ast/TernaryNode.js";
 let DEBUG_ID = 0;
 
 class Mavka {
-  static VERSION = "0.50.10";
+  static VERSION = "0.50.11";
 
   constructor(options = {}) {
     this.debugInfoVarNames = new Map();
@@ -410,7 +410,7 @@ class Mavka {
     for (let i = 0; i < body.length; i++) {
       const node = body[i];
       const value = await this.compileNode(scope, node, options);
-      if (i === body.length - 1 && !(node instanceof ReturnNode) && !(node instanceof EachNode) && !(node instanceof WhileNode) && !(node instanceof IfNode)) {
+      if (i === body.length - 1 && !(node instanceof ReturnNode) && !(node instanceof EachNode) && !(node instanceof WhileNode) && !(node instanceof IfNode) && !(node instanceof BreakNode) && !(node instanceof ContinueNode)) {
         lines.push(`return ${value}`);
       } else {
         lines.push(value);

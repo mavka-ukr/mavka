@@ -8,9 +8,10 @@ class EachInstruction extends Instruction {
   /**
    * @param {Scope} scope
    * @param {EachNode} node
+   * @param {object} options
    * @returns {*}
    */
-  async compile(scope, node) {
+  async compile(scope, node, options) {
     const iterator = node.iterator;
     const keyName = node.keyName;
     const name = node.name;
@@ -20,7 +21,13 @@ class EachInstruction extends Instruction {
 
     const iteratordebugInfoVarName = this.mavka.putDebugInfoVarName(iterator);
 
-    const compiledBody = await this.mavka.compileBody(scope, processBody(this.mavka, scope, body));
+    const compiledBody = await this.mavka.compileBody(scope, processBody(this.mavka, scope, body, {
+      ...options,
+      loop: true
+    }), {
+      ...options,
+      loop: true
+    });
 
     if (iterator instanceof FromtoNode) {
       const compiledFrom = await this.mavka.compileNode(scope, iterator.from);
