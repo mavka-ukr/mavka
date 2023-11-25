@@ -1,5 +1,6 @@
 import { processBody, varname } from "./utils.js";
 import TypeValueSingleNode from "mavka-parser/src/ast/TypeValueSingleNode.js";
+import IdentifierNode from "mavka-parser/src/ast/IdentifierNode.js";
 
 export async function buildParamsExtracting(mavka, scope, params) {
   if (params.length) {
@@ -8,8 +9,12 @@ export async function buildParamsExtracting(mavka, scope, params) {
       const defaultValue = param.defaultValue && !Array.isArray(param.defaultValue) ? await mavka.compileNode(scope, param.defaultValue) : "undefined";
       if (param.type) {
         if (param.type instanceof TypeValueSingleNode) {
-          const compiledTypeIdentifier = await mavka.compileNode(scope, param.type.value);
-          return `var ${varname(name)} = mavka_mapParam(params.${name}, ${compiledTypeIdentifier}, ${defaultValue}, callDi);`;
+          if (param.type.value instanceof IdentifierNode) {
+            if (!["щось", "ніщо"].includes(param.type.value.name)) {
+              const compiledTypeIdentifier = await mavka.compileNode(scope, param.type.value);
+              return `var ${varname(name)} = mavka_mapParam(params.${name}, ${compiledTypeIdentifier}, ${defaultValue}, callDi);`;
+            }
+          }
         }
       }
       return `var ${varname(name)} = params.${name};`;
@@ -19,8 +24,12 @@ export async function buildParamsExtracting(mavka, scope, params) {
       const defaultValue = param.defaultValue && !Array.isArray(param.defaultValue) ? await mavka.compileNode(scope, param.defaultValue) : "undefined";
       if (param.type) {
         if (param.type instanceof TypeValueSingleNode) {
-          const compiledTypeIdentifier = await mavka.compileNode(scope, param.type.value);
-          return `var ${varname(name)} = mavka_mapParam(params[${i}], ${compiledTypeIdentifier}, ${defaultValue}, callDi);`;
+          if (param.type.value instanceof IdentifierNode) {
+            if (!["щось", "ніщо"].includes(param.type.value.name)) {
+              const compiledTypeIdentifier = await mavka.compileNode(scope, param.type.value);
+              return `var ${varname(name)} = mavka_mapParam(params[${i}], ${compiledTypeIdentifier}, ${defaultValue}, callDi);`;
+            }
+          }
         }
       }
       return `var ${varname(name)} = params[${i}];`;
