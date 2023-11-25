@@ -494,6 +494,9 @@ var mavka_to_pretty_string = (value, root = true) => {
   if (value.__m_props__ && value.__m_props__["чародія_перетворення_на_текст"]) {
     return value.__m_props__["чародія_перетворення_на_текст"]();
   }
+  if (value.__m_type__ === "object") {
+    return `<обʼєкт>`;
+  }
   return "<невідоме значення>";
 };
 
@@ -703,10 +706,28 @@ var mavka_make = (value) => {
         return value;
       }
 
-      var object = Object.create(null);
-      object.__m_type__ = "object";
-      object.__m_props__ = value;
-      object.constructor = Object;
-      return object;
+      var objectProxy = function(obj) {
+        var object = Object.create(null);
+        object.__m_type__ = "object";
+        object.__m_props__ = new Proxy(obj, {
+          get(target, prop, receiver) {
+            if (prop in target) {
+              return mavka_make(target[prop]);
+            }
+            return null;
+          },
+          set(target, prop, value, receiver) {
+            if (value != null && value.__m_type__ === "object") {
+              target[prop] = value.__m_props__;
+            } else {
+              target[prop] = value;
+            }
+            return true;
+          }
+        });
+        return object;
+      };
+
+      return objectProxy(value);
   }
 };

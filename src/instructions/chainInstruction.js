@@ -19,7 +19,7 @@ class ChainInstruction extends Instruction {
       right = await this.mavka.compileNode(scope, node.right);
     }
 
-    return `get(${left}, "${right}", ${debugInfoVarName})`;
+    return `mavka_get(${left}, "${right}", ${debugInfoVarName})`;
   }
 }
 
