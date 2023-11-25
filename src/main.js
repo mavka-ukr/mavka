@@ -100,7 +100,7 @@ import TernaryNode from "mavka-parser/src/ast/TernaryNode.js";
 let DEBUG_ID = 0;
 
 class Mavka {
-  static VERSION = "0.50.5";
+  static VERSION = "0.50.6";
 
   constructor(options = {}) {
     this.debugInfoVarNames = new Map();
@@ -572,11 +572,6 @@ var init_${tempModuleName} = async function() {
 
   onPakProgress(url, progress) {
     this.options.printProgress(url, progress);
-  }
-
-  onPakFailed(url, error) {
-    this.options.clearProgress();
-    this.options.renderPakError(url, error);
   }
 
   onPakDone(url) {

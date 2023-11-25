@@ -5,6 +5,7 @@ import os from "os";
 import fs from "fs";
 import md5 from "md5";
 import axios from "axios";
+import { MavkaCompilationError } from "../error.js";
 
 class TakeModuleInstruction extends Instruction {
   /**
@@ -44,7 +45,8 @@ class TakeModuleInstruction extends Instruction {
             })
             .then((r) => String(r.data))
             .catch((e) => {
-              this.mavka.onPakFailed(url, e);
+              this.mavka.onPakDone(url);
+              throw new MavkaCompilationError(`Помилка завантаження модуля "${url}": ${e.message}`, di);
             });
           this.mavka.onPakDone(url);
           fs.writeFileSync(file, result);
@@ -92,7 +94,8 @@ class TakeModuleInstruction extends Instruction {
             })
             .then((r) => String(r.data))
             .catch((e) => {
-              this.mavka.onPakFailed(url, e);
+              this.mavka.onPakDone(url);
+              throw new MavkaCompilationError(`Помилка завантаження модуля "${url}": ${e.message}`, di);
             });
           this.mavka.onPakDone(url);
           fs.writeFileSync(file, result);

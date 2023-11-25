@@ -4,6 +4,7 @@ import * as os from "os";
 import md5 from "md5";
 import fs from "fs";
 import axios from "axios";
+import { MavkaCompilationError } from "../error.js";
 
 class TakeRemoteInstruction extends Instruction {
   /**
@@ -45,7 +46,8 @@ class TakeRemoteInstruction extends Instruction {
         })
         .then((r) => String(r.data))
         .catch((e) => {
-          this.mavka.onPakFailed(url, e);
+          this.mavka.onPakDone(url);
+          throw new MavkaCompilationError(`Помилка завантаження модуля "${url}": ${e.message}`, di);
         });
       this.mavka.onPakDone(url);
       fs.writeFileSync(file, result);

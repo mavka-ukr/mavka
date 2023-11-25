@@ -1,6 +1,6 @@
 {
   "name": "mavka",
-  "version": "0.50.5",
+  "version": "0.50.6",
   "description": "Сучасна українська мова програмування",
   "main": "src/main.js",
   "type": "module",
