@@ -18,31 +18,38 @@ var $Структура;
 var $Модуль;
 
 Object.__m_type__ = "structure";
+Object.__m_name__ = "обʼєкт";
 Object.__m_props__ = Object.create(null);
 Object.prototype.__m_type__ = "object";
 
 Boolean.__m_type__ = "structure";
+Boolean.__m_name__ = "логічне";
 Boolean.__m_props__ = Object.create(null);
 Boolean.prototype.__m_type__ = "logical";
 
 Number.__m_type__ = "structure";
+Number.__m_name__ = "число";
 Number.__m_props__ = Object.create(null);
 Number.prototype.__m_type__ = "number";
 
 String.__m_type__ = "structure";
+String.__m_name__ = "текст";
 String.__m_props__ = Object.create(null);
 String.prototype.__m_type__ = "text";
 
 Array.__m_type__ = "structure";
+Array.__m_name__ = "список";
 Array.__m_props__ = Object.create(null);
 Array.prototype.__m_type__ = "list";
 
 Function.__m_type__ = "structure";
+Function.__m_name__ = "Дія";
 Function.__m_props__ = Object.create(null);
 Function.prototype.__m_type__ = "diia";
 
 $словник = Object.create(null);
 $словник.__m_type__ = "structure";
+$словник.__m_name__ = "словник";
 $словник.__m_props__ = Object.create(null);
 $словник.__m_props__["розмір"] = (params, di) => {
   const value = param(params, 0, "значення", undefined, $словник, di);
@@ -51,7 +58,32 @@ $словник.__m_props__["розмір"] = (params, di) => {
 
 $Структура = Object.create(null);
 $Структура.__m_type__ = "structure";
+$Структура.__m_name__ = "Структура";
 $Структура.__m_props__ = Object.create(null);
+$Структура.__m_props__["дізнатись"] = (params, di) => {
+  const value = param(params, 0, "значення", undefined, undefined, di);
+  if (value == null) {
+    return null;
+  }
+  switch (value.__m_type__) {
+    case "logical":
+      return $логічне;
+    case "number":
+      return $число;
+    case "text":
+      return $текст;
+    case "list":
+      return $список;
+    case "diia":
+      return $Дія;
+    case "dictionary":
+      return $словник;
+    case "object":
+      return value.constructor;
+    default:
+      return null;
+  }
+};
 
 $Модуль = Object.create(null);
 $Модуль.__m_type__ = "structure";
@@ -449,6 +481,9 @@ var to_pretty_string = (value, root = true) => {
     var moduleKeys = Object.keys(value.__m_props__);
     return `<модуль ${value.__m_name__}[${moduleKeys.join(", ")}]>`;
   }
+  if (value.__m_type__ === "structure") {
+    return `<структура ${value.__m_name__}>`;
+  }
   if (value.__m_type__ === "dictionary") {
     const entries = [];
     for (const [k, v] of value.__m_map__) {
@@ -463,7 +498,7 @@ var to_pretty_string = (value, root = true) => {
 };
 
 var param = (params, index, name, defaultValue, type, di) => {
-  if (type) {
+  if (type !== undefined) {
     return mapParam(Array.isArray(params) ? params[index] : params[name], type, defaultValue, di);
   }
   return Array.isArray(params) ? params[index] : params[name];

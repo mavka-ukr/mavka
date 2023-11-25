@@ -100,7 +100,7 @@ import TernaryNode from "mavka-parser/src/ast/TernaryNode.js";
 let DEBUG_ID = 0;
 
 class Mavka {
-  static VERSION = "0.50.6";
+  static VERSION = "0.50.7";
 
   constructor(options = {}) {
     this.debugInfoVarNames = new Map();
