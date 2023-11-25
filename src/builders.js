@@ -3,7 +3,7 @@ import TypeValueSingleNode from "mavka-parser/src/ast/TypeValueSingleNode.js";
 
 export async function buildParamsExtracting(mavka, scope, params) {
   if (params.length) {
-    const paramsExtractionFromObject = await Promise.all(params.map(async (param) => {
+    const paramsExtractionFromObject = (await Promise.all(params.map(async (param) => {
       const name = param.name;
       const defaultValue = param.defaultValue && !Array.isArray(param.defaultValue) ? await mavka.compileNode(scope, param.defaultValue) : "undefined";
       if (param.type) {
@@ -13,8 +13,8 @@ export async function buildParamsExtracting(mavka, scope, params) {
         }
       }
       return `var ${varname(name)} = params.${name};`;
-    }).join("\n"));
-    const paramsExtractionFromArray = await Promise.all(params.map(async (param, i) => {
+    }))).join("\n");
+    const paramsExtractionFromArray = (await Promise.all(params.map(async (param, i) => {
       const name = param.name;
       const defaultValue = param.defaultValue && !Array.isArray(param.defaultValue) ? await mavka.compileNode(scope, param.defaultValue) : "undefined";
       if (param.type) {
@@ -24,7 +24,7 @@ export async function buildParamsExtracting(mavka, scope, params) {
         }
       }
       return `var ${varname(name)} = params[${i}];`;
-    }).join("\n"));
+    }))).join("\n");
 
     return `
 if (Array.isArray(params)) {
@@ -94,10 +94,10 @@ export async function buildStructureMethod(mavka, name, scope, async, params, bo
 }
 
 export async function buildDictionary(mavka, scope, args) {
-  const compiledArgs = await Promise.all(Object.entries(args).map(async ([name, value]) => {
+  const compiledArgs = (await Promise.all(Object.entries(args).map(async ([name, value]) => {
     value = await mavka.compileNode(scope, value);
     return `dictionaryValue.__m_map__.set("${name}", ${value});`;
-  }).join("\n"));
+  }))).join("\n");
 
   return `
 ((function() {
