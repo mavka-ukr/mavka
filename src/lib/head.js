@@ -5,6 +5,7 @@ class MavkaError {
   }
 }
 
+var $обʼєкт = Object;
 var $пусто = null;
 var $так = true;
 var $ні = false;
@@ -20,7 +21,6 @@ var $Модуль;
 Object.__m_type__ = "structure";
 Object.__m_name__ = "обʼєкт";
 Object.__m_props__ = Object.create(null);
-Object.prototype.__m_type__ = "object";
 
 Boolean.__m_type__ = "structure";
 Boolean.__m_name__ = "логічне";
@@ -52,7 +52,7 @@ $словник.__m_type__ = "structure";
 $словник.__m_name__ = "словник";
 $словник.__m_props__ = Object.create(null);
 $словник.__m_props__["розмір"] = (params, di) => {
-  const value = param(params, 0, "значення", undefined, $словник, di);
+  const value = mavka_param(params, 0, "значення", undefined, $словник, di);
   return value.__m_map__.size;
 };
 
@@ -61,7 +61,7 @@ $Структура.__m_type__ = "structure";
 $Структура.__m_name__ = "Структура";
 $Структура.__m_props__ = Object.create(null);
 $Структура.__m_props__["дізнатись"] = (params, di) => {
-  const value = param(params, 0, "значення", undefined, undefined, di);
+  const value = mavka_param(params, 0, "значення", undefined, undefined, di);
   if (value == null) {
     return null;
   }
@@ -90,7 +90,7 @@ $Модуль.__m_type__ = "structure";
 $Модуль.__m_props__ = Object.create(null);
 
 // comparison
-var compare_eq = (a, b, context) => {
+var mavka_compare_eq = (a, b, context) => {
   if (a == null && b == null) {
     return true;
   }
@@ -103,7 +103,7 @@ var compare_eq = (a, b, context) => {
   return false;
 };
 
-var compare_lt = (a, b, context) => {
+var mavka_compare_lt = (a, b, context) => {
   if (a == null || b == null) {
     throw new MavkaError("Неможливо порівняти з пустим значенням: ", context);
   }
@@ -113,7 +113,7 @@ var compare_lt = (a, b, context) => {
   return a < b;
 };
 
-var compare_gt = (a, b, context) => {
+var mavka_compare_gt = (a, b, context) => {
   if (a == null || b == null) {
     throw new MavkaError("Неможливо порівняти з пустим значенням: ", context);
   }
@@ -123,7 +123,7 @@ var compare_gt = (a, b, context) => {
   return a > b;
 };
 
-var compare_le = (a, b, context) => {
+var mavka_compare_le = (a, b, context) => {
   if (a == null || b == null) {
     throw new MavkaError("Неможливо порівняти з пустим значенням: ", context);
   }
@@ -133,7 +133,7 @@ var compare_le = (a, b, context) => {
   return a <= b;
 };
 
-var compare_ge = (a, b, context) => {
+var mavka_compare_ge = (a, b, context) => {
   if (a == null || b == null) {
     throw new MavkaError("Неможливо порівняти з пустим значенням: ", context);
   }
@@ -143,7 +143,7 @@ var compare_ge = (a, b, context) => {
   return a >= b;
 };
 
-var compare_is = (a, b, context) => {
+var mavka_compare_is = (a, b, context) => {
   if (a == null && b == null) {
     return true;
   }
@@ -179,17 +179,17 @@ var compare_is = (a, b, context) => {
       }
       return false;
     case "god":
-      return a.__m_elements__.some((el) => compare_is(el, b, context));
+      return a.__m_elements__.some((el) => mavka_compare_is(el, b, context));
     default:
       throw new MavkaError("[BUG] невідоме значення для порівняння: " + a.__m_type__, context);
   }
 };
 
-var compare_is_not = (a, b) => {
-  return !compare_is(a, b);
+var mavka_compare_is_not = (a, b) => {
+  return !mavka_compare_is(a, b);
 };
 
-var compare_contains = (a, b) => {
+var mavka_compare_contains = (a, b) => {
   if (typeof a === "string" && typeof b === "string") {
     return a.includes(b);
   }
@@ -202,12 +202,12 @@ var compare_contains = (a, b) => {
   return false;
 };
 
-var compare_not_contains = (a, b) => {
-  return !compare_contains(a, b);
+var mavka_compare_not_contains = (a, b) => {
+  return !mavka_compare_contains(a, b);
 };
 
 // arithmetic
-var add = (a, b, context) => {
+var mavka_add = (a, b, context) => {
   if (a == null || b == null) {
     throw new MavkaError("Неможливо виконати додавання з \"пусто\".", context);
   }
@@ -222,7 +222,7 @@ var add = (a, b, context) => {
   }
   throw new MavkaError("Неможливо виконати додавання.", context);
 };
-var sub = (a, b, context) => {
+var mavka_sub = (a, b, context) => {
   if (a == null || b == null) {
     throw new MavkaError("Неможливо виконати віднімання з \"пусто\".", context);
   }
@@ -234,7 +234,7 @@ var sub = (a, b, context) => {
   }
   throw new MavkaError("Неможливо виконати віднімання.", context);
 };
-var mul = (a, b, context) => {
+var mavka_mul = (a, b, context) => {
   if (a == null || b == null) {
     throw new MavkaError("Неможливо виконати множення з \"пусто\".", context);
   }
@@ -246,7 +246,7 @@ var mul = (a, b, context) => {
   }
   throw new MavkaError("Неможливо виконати множення.", context);
 };
-var div = (a, b, context) => {
+var mavka_div = (a, b, context) => {
   if (a == null || b == null) {
     throw new MavkaError("Неможливо виконати ділення з \"пусто\".", context);
   }
@@ -258,7 +258,7 @@ var div = (a, b, context) => {
   }
   throw new MavkaError("Неможливо виконати ділення: ", context);
 };
-var mod = (a, b, context) => {
+var mavka_mod = (a, b, context) => {
   if (a == null || b == null) {
     throw new MavkaError("Неможливо виконати ділення за модулем остача з \"пусто\".", context);
   }
@@ -270,7 +270,7 @@ var mod = (a, b, context) => {
   }
   throw new MavkaError("Неможливо виконати ділення за модулем остача.", context);
 };
-var divDiv = (a, b, context) => {
+var mavka_divDiv = (a, b, context) => {
   if (a == null || b == null) {
     throw new MavkaError("Неможливо виконати ділення за модулем частка з \"пусто\".", context);
   }
@@ -282,7 +282,7 @@ var divDiv = (a, b, context) => {
   }
   throw new MavkaError("Неможливо виконати ділення за модулем частка.", context);
 };
-var pow = (a, b, context) => {
+var mavka_pow = (a, b, context) => {
   if (a == null || b == null) {
     throw new MavkaError("Неможливо виконати піднесення до степеня з \"пусто\".", context);
   }
@@ -294,7 +294,7 @@ var pow = (a, b, context) => {
   }
   throw new MavkaError("Неможливо виконати піднесення до степеня.", context);
 };
-var shiftLeft = (a, b, context) => {
+var mavka_shiftLeft = (a, b, context) => {
   if (a == null || b == null) {
     throw new MavkaError("Неможливо виконати зсув вліво з \"пусто\".", context);
   }
@@ -306,7 +306,7 @@ var shiftLeft = (a, b, context) => {
   }
   throw new MavkaError("Неможливо виконати зсув вліво.", context);
 };
-var shiftRight = (a, b, context) => {
+var mavka_shiftRight = (a, b, context) => {
   if (a == null || b == null) {
     throw new MavkaError("Неможливо виконати зсув вправо з \"пусто\".", context);
   }
@@ -318,7 +318,7 @@ var shiftRight = (a, b, context) => {
   }
   throw new MavkaError("Неможливо виконати зсув вправо.", context);
 };
-var bitAnd = (a, b, context) => {
+var mavka_bitAnd = (a, b, context) => {
   if (a == null || b == null) {
     throw new MavkaError("Неможливо виконати побітове і з \"пусто\".", context);
   }
@@ -330,7 +330,7 @@ var bitAnd = (a, b, context) => {
   }
   throw new MavkaError("Неможливо виконати побітове і.", context);
 };
-var bitOr = (a, b, context) => {
+var mavka_bitOr = (a, b, context) => {
   if (a == null || b == null) {
     throw new MavkaError("Неможливо виконати побітове або з \"пусто\".", context);
   }
@@ -342,7 +342,7 @@ var bitOr = (a, b, context) => {
   }
   throw new MavkaError("Неможливо виконати побітове або.", context);
 };
-var bitNot = (a, context) => {
+var mavka_bitNot = (a, context) => {
   if (a == null) {
     throw new MavkaError("Неможливо виконати побітове не з \"пусто\".", context);
   }
@@ -354,7 +354,7 @@ var bitNot = (a, context) => {
   }
   throw new MavkaError("Неможливо виконати побітове не.", context);
 };
-var bitXor = (a, b, context) => {
+var mavka_bitXor = (a, b, context) => {
   if (a == null || b == null) {
     throw new MavkaError("Неможливо виконати побітове виключне або з \"пусто\".", context);
   }
@@ -366,7 +366,7 @@ var bitXor = (a, b, context) => {
   }
   throw new MavkaError("Неможливо виконати побітове виключне або.", context);
 };
-var positive = (a, context) => {
+var mavka_positive = (a, context) => {
   if (a == null) {
     throw new MavkaError("Неможливо отримати позитивне значення з \"пусто\".", context);
   }
@@ -375,7 +375,7 @@ var positive = (a, context) => {
   }
   throw new MavkaError("Неможливо отримати позитивне значення.", context);
 };
-var negative = (a, context) => {
+var mavka_negative = (a, context) => {
   if (a == null) {
     throw new MavkaError("Неможливо отримати відʼємне значення з \"пусто\".", context);
   }
@@ -385,10 +385,10 @@ var negative = (a, context) => {
   throw new MavkaError("Неможливо отримати відʼємне значення.", context);
 };
 var not = (a, context) => {
-  return !to_boolean(a, context);
+  return !mavka_to_boolean(a, context);
 };
 
-var to_boolean = (value, context) => {
+var mavka_to_boolean = (value, context) => {
   if (value && typeof value === "object") {
     if (value.__m_props__ && value.__m_props__["чародія_перетворення_на_логічне"]) {
       return value.__m_props__["чародія_перетворення_на_логічне"]();
@@ -398,7 +398,7 @@ var to_boolean = (value, context) => {
   return Boolean(value);
 };
 
-var to_number = (value, context) => {
+var mavka_to_number = (value, context) => {
   if (value && typeof value === "object") {
     if (value.__m_props__ && value.__m_props__["чародія_перетворення_на_число"]) {
       return value.__m_props__["чародія_перетворення_на_число"]();
@@ -408,7 +408,7 @@ var to_number = (value, context) => {
   return Number(value);
 };
 
-var to_string = (value, context) => {
+var mavka_to_string = (value, context) => {
   if (value && typeof value === "object") {
     if (value.__m_props__ && value.__m_props__["чародія_перетворення_на_текст"]) {
       return value.__m_props__["чародія_перетворення_на_текст"]();
@@ -418,7 +418,7 @@ var to_string = (value, context) => {
   return String(value);
 };
 
-var to_pretty_string = (value, root = true) => {
+var mavka_to_pretty_string = (value, root = true) => {
   if (value == null) {
     return "пусто";
   }
@@ -442,7 +442,7 @@ var to_pretty_string = (value, root = true) => {
     }
   }
   if (value.__m_type__ === "list") {
-    return "[" + value.map((v) => to_pretty_string(v, false)).join(", ") + "]";
+    return "[" + value.map((v) => mavka_to_pretty_string(v, false)).join(", ") + "]";
   }
   if (value.__m_type__ === "god") {
     const elementConstructors = value.__m_elements__.map((el) => {
@@ -487,7 +487,7 @@ var to_pretty_string = (value, root = true) => {
   if (value.__m_type__ === "dictionary") {
     const entries = [];
     for (const [k, v] of value.__m_map__) {
-      entries.push(`${to_pretty_string(k)}=${to_pretty_string(v, false)}`);
+      entries.push(`${mavka_to_pretty_string(k)}=${mavka_to_pretty_string(v, false)}`);
     }
     return "(" + entries.join(", ") + ")";
   }
@@ -497,26 +497,26 @@ var to_pretty_string = (value, root = true) => {
   return "<невідоме значення>";
 };
 
-var param = (params, index, name, defaultValue, type, di) => {
+var mavka_param = (params, index, name, defaultValue, type, di) => {
   if (type !== undefined) {
-    return mapParam(Array.isArray(params) ? params[index] : params[name], type, defaultValue, di);
+    return mavka_mapParam(Array.isArray(params) ? params[index] : params[name], type, defaultValue, di);
   }
   return Array.isArray(params) ? params[index] : params[name];
 };
 
 // calls
-var call = (a, params, context = {}) => {
+var mavka_call = (a, params, context = {}) => {
   if (!a) {
     throw new MavkaError("Неможливо виконати \"пусто\".", context);
   }
   if (a === $логічне) {
-    return to_boolean(param(params, 0, "значення"), context);
+    return mavka_to_boolean(mavka_param(params, 0, "значення"), context);
   }
   if (a === $число) {
-    return to_number(param(params, 0, "значення"), context);
+    return mavka_to_number(mavka_param(params, 0, "значення"), context);
   }
   if (a === $текст) {
-    return to_string(param(params, 0, "значення"), context);
+    return mavka_to_string(mavka_param(params, 0, "значення"), context);
   }
   if (a === $список) {
     return [];
@@ -558,7 +558,7 @@ var call = (a, params, context = {}) => {
 };
 
 // get/set
-var get = (a, b, context) => {
+var mavka_get = (a, b, context) => {
   if (!a) {
     throw new MavkaError("Неможливо отримати властивість з \"пусто\".", context);
   }
@@ -568,7 +568,7 @@ var get = (a, b, context) => {
     } else {
       if (b === "додати") {
         return (params) => {
-          var value = param(params, 0, "значення");
+          var value = mavka_param(params, 0, "значення");
           a.push(value);
           return a;
         };
@@ -583,12 +583,12 @@ var get = (a, b, context) => {
     return a.__m_map__.get(b);
   }
   if (!a.__m_props__) {
-    throw new MavkaError(`Неможливо отримати властивість ${to_pretty_string(b, false)}.`, context);
+    throw new MavkaError(`Неможливо отримати властивість ${mavka_to_pretty_string(b, false)}.`, context);
   }
   return a.__m_props__[b];
 };
 
-var getSpecial = (a, b, context) => {
+var mavka_getSpecial = (a, b, context) => {
   if (!a) {
     throw new MavkaError("Неможливо отримати спеціальну властивість з \"пусто\".", context);
   }
@@ -598,7 +598,7 @@ var getSpecial = (a, b, context) => {
     } else {
       if (b === "додати") {
         return (params) => {
-          var value = param(params, 0, "значення");
+          var value = mavka_param(params, 0, "значення");
           a.push(value);
           return a;
         };
@@ -613,14 +613,14 @@ var getSpecial = (a, b, context) => {
     return a.__m_map__.get(b);
   }
   if (!a.__m_props__) {
-    throw new MavkaError(`Неможливо отримати спеціальну властивість ${to_pretty_string(b, false)}.`, context);
+    throw new MavkaError(`Неможливо отримати спеціальну властивість ${mavka_to_pretty_string(b, false)}.`, context);
   }
   if (a.__m_props__["чародія_отримати_спеціальну_властивість"]) {
     return a.__m_props__["чародія_отримати_спеціальну_властивість"]([b], context);
   }
   return a.__m_props__[b];
 };
-var set = (a, b, c, context) => {
+var mavka_set = (a, b, c, context) => {
   if (a.__m_type__ === "list" && b.__m_type__ === "number") {
     a[b] = c;
   } else if (a.__m_type__ === "dictionary") {
@@ -631,7 +631,7 @@ var set = (a, b, c, context) => {
     throw new MavkaError("Неможливо встановити властивість.", context);
   }
 };
-var setSpecial = (a, b, c, context) => {
+var mavka_setSpecial = (a, b, c, context) => {
   if (a.__m_type__ === "list" && b.__m_type__ === "number") {
     a[b] = c;
   } else if (a.__m_type__ === "dictionary") {
@@ -648,9 +648,9 @@ var setSpecial = (a, b, c, context) => {
 };
 
 // params
-var mapParam = (value, type, defaultValue, di) => {
+var mavka_mapParam = (value, type, defaultValue, di) => {
   if (value) {
-    if (compare_is_not(value, type, di)) {
+    if (mavka_compare_is_not(value, type, di)) {
       throw new MavkaError("Передано невідповідний обʼєкт.", di);
     }
   } else {
@@ -661,21 +661,52 @@ var mapParam = (value, type, defaultValue, di) => {
   return value;
 };
 
-var mapReturn = (value, type, di) => {
-  if (compare_is_not(value, type, di)) {
+var mavka_mapReturn = (value, type, di) => {
+  if (mavka_compare_is_not(value, type, di)) {
     throw new MavkaError("Невірний тип результату.", di);
   }
   return value;
 };
 
 // as
-var as = (value, type, di) => {
+var mavka_as = (value, type, di) => {
   if (value && value.__m_type__ === "god") {
-    const el = value.__m_elements__.find((el) => compare_is(el, type, di));
+    const el = value.__m_elements__.find((el) => mavka_compare_is(el, type, di));
     if (el) {
       return el;
     }
     throw new MavkaError("Неможливо отримати бога як todo.", di);
   }
   throw new MavkaError("Неможливо перетворити значення.", di);
+};
+
+var mavka_make = (value) => {
+  if (value == null) {
+    return null;
+  }
+
+  switch (typeof value) {
+    case "string":
+      return value;
+    case "number":
+      return value;
+    case "boolean":
+      return value;
+    case "function":
+      return value;
+    default:
+      if (Array.isArray(value)) {
+        return value;
+      }
+
+      if (value.__m_type__) {
+        return value;
+      }
+
+      var object = Object.create(null);
+      object.__m_type__ = "object";
+      object.__m_props__ = value;
+      object.constructor = Object;
+      return object;
+  }
 };

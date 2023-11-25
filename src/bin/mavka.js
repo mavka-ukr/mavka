@@ -90,9 +90,9 @@ try {
 } catch (e) {
   if (e instanceof MavkaError) {
     if (e.di) {
-      console.error(e.di[0] + ":" + e.di[1] + ":" + e.di[2] + ": " + to_pretty_string(e.value));
+      console.error(e.di[0] + ":" + e.di[1] + ":" + e.di[2] + ": " + mavka_to_pretty_string(e.value));
     } else {
-      console.error(to_pretty_string(e.value));
+      console.error(mavka_to_pretty_string(e.value));
     }
   } else {
     throw e;

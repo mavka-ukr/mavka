@@ -1,6 +1,6 @@
 // std
 var $друк = function(params, di) {
-  console.log(...params.map((v) => to_pretty_string(v)));
+  console.log(...params.map((v) => mavka_to_pretty_string(v)));
 };
 
 // deprecated. use 0..n instead

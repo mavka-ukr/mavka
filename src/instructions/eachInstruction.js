@@ -33,28 +33,28 @@ class EachInstruction extends Instruction {
 
         switch (iterator.middleSymbol || "+") {
           case "+":
-            compiledMiddleSymbol = "add";
+            compiledMiddleSymbol = "mavka_add";
             break;
           case "-":
-            compiledMiddleSymbol = "sub";
+            compiledMiddleSymbol = "mavka_sub";
             break;
           case "*":
-            compiledMiddleSymbol = "mul";
+            compiledMiddleSymbol = "mavka_mul";
             break;
           case "/":
-            compiledMiddleSymbol = "div";
+            compiledMiddleSymbol = "mavka_div";
             break;
           case "%":
-            compiledMiddleSymbol = "mod";
+            compiledMiddleSymbol = "mavka_mod";
             break;
           case "//":
-            compiledMiddleSymbol = "divDiv";
+            compiledMiddleSymbol = "mavka_divDiv";
             break;
           case "**":
-            compiledMiddleSymbol = "pow";
+            compiledMiddleSymbol = "mavka_pow";
             break;
           case "^":
-            compiledMiddleSymbol = "bitXor";
+            compiledMiddleSymbol = "mavka_bitXor";
             break;
           default:
             throw new Error(`BUG: Unknown operation ${node.operation}`);
@@ -69,7 +69,7 @@ for (${varname(name)} = compiledFrom_${i}; ${varname(name)} ${compiledSymbol} co
       } else {
         return `
 var compiledFrom_${i} = ${compiledFrom};var compiledTo_${i} = ${compiledTo};
-for (${varname(name)} = compiledFrom_${i}; ${varname(name)} ${compiledSymbol} compiledTo_${i}; ${varname(name)} = add(${varname(name)}, 1, ${iteratordebugInfoVarName})) {
+for (${varname(name)} = compiledFrom_${i}; ${varname(name)} ${compiledSymbol} compiledTo_${i}; ${varname(name)} = mavka_add(${varname(name)}, 1, ${iteratordebugInfoVarName})) {
   ${compiledBody}
 }
 `.trim();

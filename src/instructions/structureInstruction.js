@@ -67,7 +67,7 @@ ${varname(name)} = class {
       let value = "${name}(";
       let entries = [];
       Object.entries(${varname(name)}.__m_prop_definitions__).forEach(([k]) => {
-        entries.push(k + "=" + to_pretty_string(this.__m_props__[k], di));
+        entries.push(k + "=" + mavka_to_pretty_string(this.__m_props__[k], di));
       });
       value += entries.join(", ") + ")";
       return value;

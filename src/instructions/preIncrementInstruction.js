@@ -20,7 +20,7 @@ class PreIncrementInstruction extends Instruction {
 
       return `
 ((function() {
-  ${value} = add(${value}, 1, ${debugInfoVarName});
+  ${value} = mavka_add(${value}, 1, ${debugInfoVarName});
   return ${value};
 })())
 `.trim();
@@ -31,7 +31,7 @@ class PreIncrementInstruction extends Instruction {
 
       return `
 ((function() {
-  set(${left}, "${right}", add(${value}, 1, ${debugInfoVarName}), ${debugInfoVarName});
+  mavka_set(${left}, "${right}", mavka_add(${value}, 1, ${debugInfoVarName}), ${debugInfoVarName});
   return ${value};
 })())
 `.trim();

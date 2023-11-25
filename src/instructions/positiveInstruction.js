@@ -11,7 +11,7 @@ class PositiveInstruction extends Instruction {
 
     const value = await this.mavka.compileNode(scope, node.value);
 
-    return `positive(${value}, ${debugInfoVarName})`;
+    return `mavka_positive(${value}, ${debugInfoVarName})`;
   }
 }
 

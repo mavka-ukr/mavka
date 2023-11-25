@@ -9,7 +9,7 @@ export async function buildParamsExtracting(mavka, scope, params) {
       if (param.type) {
         if (param.type instanceof TypeValueSingleNode) {
           const compiledTypeIdentifier = await mavka.compileNode(scope, param.type.value);
-          return `var ${varname(name)} = mapParam(params.${name}, ${compiledTypeIdentifier}, ${defaultValue}, callDi);`;
+          return `var ${varname(name)} = mavka_mapParam(params.${name}, ${compiledTypeIdentifier}, ${defaultValue}, callDi);`;
         }
       }
       return `var ${varname(name)} = params.${name};`;
@@ -20,7 +20,7 @@ export async function buildParamsExtracting(mavka, scope, params) {
       if (param.type) {
         if (param.type instanceof TypeValueSingleNode) {
           const compiledTypeIdentifier = await mavka.compileNode(scope, param.type.value);
-          return `var ${varname(name)} = mapParam(params[${i}], ${compiledTypeIdentifier}, ${defaultValue}, callDi);`;
+          return `var ${varname(name)} = mavka_mapParam(params[${i}], ${compiledTypeIdentifier}, ${defaultValue}, callDi);`;
         }
       }
       return `var ${varname(name)} = params[${i}];`;

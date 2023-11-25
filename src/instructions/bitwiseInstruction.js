@@ -14,15 +14,15 @@ class BitwiseInstruction extends Instruction {
 
     switch (node.operation) {
       case "<<":
-        return `shiftLeft(${left}, ${right}, ${debugInfoVarName})`;
+        return `mavka_shiftLeft(${left}, ${right}, ${debugInfoVarName})`;
       case ">>":
-        return `shiftRight(${left}, ${right}, ${debugInfoVarName})`;
+        return `mavka_shiftRight(${left}, ${right}, ${debugInfoVarName})`;
       case "&":
-        return `bitAnd(${left}, ${right}, ${debugInfoVarName})`;
+        return `mavka_bitAnd(${left}, ${right}, ${debugInfoVarName})`;
       case "|":
-        return `bitOr(${left}, ${right}, ${debugInfoVarName})`;
+        return `mavka_bitOr(${left}, ${right}, ${debugInfoVarName})`;
       case "^":
-        return `bitXor(${left}, ${right}, ${debugInfoVarName})`;
+        return `mavka_bitXor(${left}, ${right}, ${debugInfoVarName})`;
       default:
         throw new Error(`BUG: Unknown operation ${node.operation}`);
     }

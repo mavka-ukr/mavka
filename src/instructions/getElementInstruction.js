@@ -12,7 +12,7 @@ class GetElementInstruction extends Instruction {
     const value = await this.mavka.compileNode(scope, node.left);
     const index = await this.mavka.compileNode(scope, node.element);
 
-    return `getSpecial(${value}, ${index}, ${debugInfoVarName})`;
+    return `mavka_getSpecial(${value}, ${index}, ${debugInfoVarName})`;
   }
 }
 

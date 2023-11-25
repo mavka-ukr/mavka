@@ -21,7 +21,7 @@ class PostDecrementInstruction extends Instruction {
       return `
 ((function() {
   var value = ${value};
-  ${value} = sub(${value}, 1, ${debugInfoVarName});
+  ${value} = mavka_sub(${value}, 1, ${debugInfoVarName});
   return value;
 })())
 `.trim();
@@ -33,7 +33,7 @@ class PostDecrementInstruction extends Instruction {
       return `
 ((function() {
   var value = ${value};
-  set(${left}, "${right}", sub(${value}, 1, ${debugInfoVarName}), ${debugInfoVarName});
+  mavka_set(${left}, "${right}", mavka_sub(${value}, 1, ${debugInfoVarName}), ${debugInfoVarName});
   return value;
 })())
 `.trim();
