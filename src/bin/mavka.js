@@ -62,6 +62,10 @@ if (command === "версія") {
       clearProgress() {
         process.stdout.clearLine();
         process.stdout.cursorTo(0);
+      },
+      renderPakError(url, error) {
+        console.error(`Помилка завантаження модуля "${url}".`);
+        console.error(error);
       }
     });
 
