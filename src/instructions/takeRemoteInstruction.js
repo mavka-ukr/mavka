@@ -38,7 +38,10 @@ class TakeRemoteInstruction extends Instruction {
           onDownloadProgress: (progressEvent) => {
             this.mavka.onPakProgress(url, Math.floor(progressEvent.progress * 100 || 0));
           },
-          responseType: "text"
+          responseType: "text",
+          headers: {
+            "X-Mavka-Version": this.mavka.constructor.VERSION
+          }
         })
         .then((r) => String(r.data))
         .catch((e) => {
