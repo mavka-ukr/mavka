@@ -77,8 +77,8 @@ if (command === "версія") {
         currentModuleDirname: cwdPath
       });
 
-      // console.log(result);
-      // console.log("---------");
+      console.log(result);
+      console.log("---------");
 
       const compiled = `
   ((async function () {

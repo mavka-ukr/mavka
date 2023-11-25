@@ -16,6 +16,8 @@ import IdentifiersChainNode from "mavka-parser/src/ast/IdentifiersChainNode.js";
 import { MavkaCompilationError } from "./error.js";
 import semver from "semver";
 import IdentifierNode from "mavka-parser/src/ast/IdentifierNode.js";
+import BreakNode from "mavka-parser/src/ast/BreakNode.js";
+import ContinueNode from "mavka-parser/src/ast/ContinueNode.js";
 
 /**
  * @param {string} name
@@ -124,8 +126,9 @@ export function unpackPackName(pak) {
 /**
  * @param {Scope} scope
  * @param {ASTNode[]} body
+ * @param {{loop?: boolean}|undefined} options
  */
-export function processBody(mavka, scope, body) {
+export function processBody(mavka, scope, body, options = {}) {
   const head = [];
   const result = [];
 
@@ -133,6 +136,22 @@ export function processBody(mavka, scope, body) {
     if (node instanceof AssignSimpleNode) {
       if (node.symbol === "=") {
         scope.vars.set(node.name, true);
+      }
+    }
+
+    if (node instanceof BreakNode) {
+      if (!options.loop) {
+        const debugInfoVarName = mavka.putDebugInfoVarName(node);
+        const di = mavka.debugInfoVarNames.get(debugInfoVarName);
+        throw new MavkaCompilationError(`"перервати" можна використовувати тільки всередині циклу.`, di);
+      }
+    }
+
+    if (node instanceof ContinueNode) {
+      if (!options.loop) {
+        const debugInfoVarName = mavka.putDebugInfoVarName(node);
+        const di = mavka.debugInfoVarNames.get(debugInfoVarName);
+        throw new MavkaCompilationError(`"пропустити" можна використовувати тільки всередині циклу.`, di);
       }
     }
 
