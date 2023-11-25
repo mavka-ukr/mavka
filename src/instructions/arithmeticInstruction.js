@@ -14,21 +14,19 @@ class ArithmeticInstruction extends Instruction {
 
     switch (node.operation) {
       case "+":
-        return `add(${left}, ${right}, ${debugInfoVarName})`;
+        return `mavka_add(${left}, ${right}, ${debugInfoVarName})`;
       case "-":
-        return `sub(${left}, ${right}, ${debugInfoVarName})`;
+        return `mavka_sub(${left}, ${right}, ${debugInfoVarName})`;
       case "*":
-        return `mul(${left}, ${right}, ${debugInfoVarName})`;
+        return `mavka_mul(${left}, ${right}, ${debugInfoVarName})`;
       case "/":
-        return `div(${left}, ${right}, ${debugInfoVarName})`;
+        return `mavka_div(${left}, ${right}, ${debugInfoVarName})`;
       case "%":
-        return `mod(${left}, ${right}, ${debugInfoVarName})`;
+        return `mavka_mod(${left}, ${right}, ${debugInfoVarName})`;
       case "//":
-        return `divDiv(${left}, ${right}, ${debugInfoVarName})`;
+        return `mavka_divDiv(${left}, ${right}, ${debugInfoVarName})`;
       case "**":
-        return `pow(${left}, ${right}, ${debugInfoVarName})`;
-      case "^":
-        return `bitXor(${left}, ${right}, ${debugInfoVarName})`;
+        return `mavka_pow(${left}, ${right}, ${debugInfoVarName})`;
       default:
         throw new Error(`BUG: Unknown operation ${node.operation}`);
     }

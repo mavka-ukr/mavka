@@ -23,14 +23,14 @@ class CallInstruction extends Instruction {
         return await this.mavka.compileNode(scope, arg);
       }));
 
-      return `call(${value}, [${args.join(", ")}], ${debugInfoVarName})`;
+      return `mavka_call(${value}, [${args.join(", ")}], ${debugInfoVarName})`;
     } else {
       const args = await Promise.all(Object.entries(node.args).map(async ([name, value]) => {
         value = await this.mavka.compileNode(scope, value);
         return `${name}: ${value}`;
       }));
 
-      return `call(${value}, { ${args.join(", ")} }, ${debugInfoVarName})`;
+      return `mavka_call(${value}, { ${args.join(", ")} }, ${debugInfoVarName})`;
     }
   }
 }

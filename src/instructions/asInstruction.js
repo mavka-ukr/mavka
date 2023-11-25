@@ -12,7 +12,7 @@ class AsInstruction extends Instruction {
     const left = await this.mavka.compileNode(scope, node.left);
     const right = await this.mavka.compileNode(scope, node.right);
 
-    return `as(${left}, ${right}, ${debugInfoVarName})`;
+    return `mavka_as(${left}, ${right}, ${debugInfoVarName})`;
   }
 }
 

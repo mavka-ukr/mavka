@@ -69,7 +69,7 @@ class AssignSimpleInstruction extends Instruction {
       return await this.mavka.compileNode(scope, newAssignNode);
     }
     const value = await this.mavka.compileNode(scope, node.value);
-    return `${node.subject ? "var " : ""}${varname(node.name)} = ${value}`;
+    return `${varname(node.name)} = ${value}`;
   }
 }
 

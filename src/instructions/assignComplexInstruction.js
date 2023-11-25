@@ -85,10 +85,10 @@ class AssignComplexInstruction extends Instruction {
     const left = await this.mavka.compileNode(scope, node.left);
     const value = await this.mavka.compileNode(scope, node.value);
     if (node.right.name) {
-      return `set(${left}, "${node.right.name}", ${value}, ${debugInfoVarName})`;
+      return `mavka_set(${left}, "${node.right.name}", ${value}, ${debugInfoVarName})`;
     } else if (node.right.element) {
       const right = await this.mavka.compileNode(scope, node.right.element);
-      return `setSpecial(${left}, ${right}, ${value}, ${debugInfoVarName})`;
+      return `mavka_setSpecial(${left}, ${right}, ${value}, ${debugInfoVarName})`;
     }
   }
 }

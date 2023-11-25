@@ -47,7 +47,7 @@ class StringInstruction extends Instruction {
       if (typeof el === "string") {
         inner.push(`"${el.replaceAll("\n", "\\n")}"`);
       } else {
-        inner.push(`to_string(${await this.mavka.compileNode(scope, el)}, ${debugInfoVarName})`);
+        inner.push(`mavka_to_string(${await this.mavka.compileNode(scope, el)}, ${debugInfoVarName})`);
       }
     }
 

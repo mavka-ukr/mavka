@@ -21,7 +21,7 @@ class PreDecrementInstruction extends Instruction {
 
       return `
 ((function() {
-  ${value} = sub(${value}, 1, ${debugInfoVarName});
+  ${value} = mavka_sub(${value}, 1, ${debugInfoVarName});
   return ${value};
 })())
 `.trim();
@@ -32,7 +32,7 @@ class PreDecrementInstruction extends Instruction {
 
       return `
 ((function() {
-  set(${left}, "${right}", sub(${value}, 1, ${debugInfoVarName}), ${debugInfoVarName});
+  mavka_set(${left}, "${right}", mavka_sub(${value}, 1, ${debugInfoVarName}), ${debugInfoVarName});
   return ${value};
 })())
 `.trim();

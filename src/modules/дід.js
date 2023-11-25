@@ -528,7 +528,7 @@
     __m_props__: {
       "розібрати": ((function() {
         const diiaValue = function(params, context) {
-          let value = mapParam(Array.isArray(params) ? params[0] : params["значення"], $текст, undefined, context);
+          let value = mavka_mapParam(Array.isArray(params) ? params[0] : params["значення"], $текст, undefined, context);
 
           let ast;
 

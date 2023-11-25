@@ -22,7 +22,7 @@ class PostIncrementInstruction extends Instruction {
       return `
 ((function() {
   var value = ${value};
-  ${value} = add(${value}, 1, ${debugInfoVarName});
+  ${value} = mavka_add(${value}, 1, ${debugInfoVarName});
   return value;
 })())
 `.trim();
@@ -34,7 +34,7 @@ class PostIncrementInstruction extends Instruction {
       return `
 ((function() {
   var value = ${value};
-  set(${left}, "${right}", add(${value}, 1, ${debugInfoVarName}), ${debugInfoVarName});
+  mavka_set(${left}, "${right}", mavka_add(${value}, 1, ${debugInfoVarName}), ${debugInfoVarName});
   return value;
 })())
 `.trim();

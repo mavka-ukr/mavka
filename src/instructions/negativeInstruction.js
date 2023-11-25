@@ -11,7 +11,7 @@ class NegativeInstruction extends Instruction {
 
     const value = await this.mavka.compileNode(scope, node.value);
 
-    return `negative(${value}, ${debugInfoVarName})`;
+    return `mavka_negative(${value}, ${debugInfoVarName})`;
   }
 }
 
