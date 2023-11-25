@@ -527,8 +527,8 @@
     __m_name__: "дід",
     __m_props__: {
       "розібрати": ((function() {
-        const diiaValue = function(params, context) {
-          let value = mavka_mapParam(Array.isArray(params) ? params[0] : params["значення"], $текст, undefined, context);
+        const diiaValue = function(params, di) {
+          let value = mavka_mapParam(Array.isArray(params) ? params[0] : params["значення"], $текст, undefined, di);
 
           let ast;
 
@@ -597,10 +597,10 @@
         return diiaValue;
       })()),
       "зібрати": ((function() {
-        const diiaValue = function(params, context) {
-          //
+        const diiaValue = function(params, di) {
+          return "";
         };
-
+        diiaValue.__m_name__ = "зібрати";
         return diiaValue;
       })())
     }

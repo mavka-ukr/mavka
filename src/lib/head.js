@@ -196,6 +196,9 @@ var mavka_compare_contains = (a, b) => {
   if (Array.isArray(a)) {
     return a.includes(b);
   }
+  if (a.__m_type__ === "dictionary") {
+    return a.__m_map__.has(b);
+  }
   if (typeof a === "object" && typeof b === "string") {
     return b in a.__m_props__;
   }
@@ -576,7 +579,7 @@ var mavka_get = (a, b, context) => {
       return a[b];
     } else {
       if (b === "додати") {
-        return (params) => {
+        return function(params) {
           var value = mavka_param(params, 0, "значення");
           a.push(value);
           return a;
@@ -590,6 +593,24 @@ var mavka_get = (a, b, context) => {
   }
   if (a.__m_type__ === "dictionary") {
     return a.__m_map__.get(b);
+  }
+  if (a.__m_type__ === "text") {
+    if (b === "закінчується_на") {
+      return function(p, di) {
+        var value = mavka_param(p, 0, "значення", undefined, $текст, di);
+        return a.endsWith(value);
+      };
+    }
+    if (b === "зрізати") {
+      return function(p, di) {
+        var indexStart = mavka_param(p, 0, "пвід", undefined, $число, di);
+        var indexEnd = mavka_param(p, 1, "пдо", undefined, $число, di);
+        return a.substring(indexStart, indexEnd);
+      };
+    }
+    if (b === "довжина") {
+      return a.length;
+    }
   }
   if (!a.__m_props__) {
     throw new MavkaError(`Неможливо отримати властивість ${mavka_to_pretty_string(b, false)}.`, context);
