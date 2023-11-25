@@ -132,50 +132,50 @@ export function processBody(mavka, scope, body) {
   for (const node of body) {
     if (node instanceof AssignSimpleNode) {
       if (node.symbol === "=") {
-        scope.vars.add(node.name);
+        scope.vars.set(node.name, true);
       }
     }
 
     if (node instanceof DiiaNode) {
       if (!node.structure) {
-        scope.vars.add(node.name);
+        scope.vars.set(node.name, true);
       }
       head.push(node);
     } else if (node instanceof StructureNode) {
-      scope.vars.add(node.name);
+      scope.vars.set(node.name, true);
       head.push(node);
     } else if (node instanceof ModuleNode) {
       if (node.name) {
-        scope.vars.add(node.name);
+        scope.vars.set(node.name, true);
         head.push(node);
       } else {
         result.push(node);
       }
     } else if (node instanceof TryNode) {
       if (node.catchName) {
-        scope.vars.add(node.catchName);
+        scope.vars.set(node.catchName, true);
       }
       result.push(node);
     } else if (node instanceof EachNode) {
       if (node.keyName) {
-        scope.vars.add(node.keyName);
+        scope.vars.set(node.keyName, true);
       }
       if (node.name) {
-        scope.vars.add(node.name);
+        scope.vars.set(node.name, true);
       }
       result.push(node);
     } else if (node instanceof TakeModuleNode) {
       if (node.id instanceof IdentifierNode) {
-        scope.vars.add(node.as || node.id.name);
+        scope.vars.set(node.as || node.id.name, true);
       } else if (node.id instanceof IdentifiersChainNode) {
         const chain = node.id.toFlatArray();
         const name = chain[chain.length - 1];
-        scope.vars.add(node.as || name);
+        scope.vars.set(node.as || name, true);
       }
       result.push(node);
     } else if (node instanceof TakeRemoteNode) {
       const { name } = unpackPackName(node.url);
-      scope.vars.add(node.as || name);
+      scope.vars.set(node.as || name, true);
       result.push(node);
     } else if (node instanceof TakePakNode) {
       // deprecated
@@ -186,11 +186,11 @@ export function processBody(mavka, scope, body) {
     } else if (node instanceof EvalNode) {
       result.push(node);
     } else if (node instanceof MockupModuleNode) {
-      scope.vars.add(node.name);
+      scope.vars.set(node.name, false);
     } else if (node instanceof MockupDiiaNode) {
-      scope.vars.add(node.name);
+      scope.vars.set(node.name, false);
     } else if (node instanceof MockupObjectNode) {
-      scope.vars.add(node.name);
+      scope.vars.set(node.name, false);
     } else {
       result.push(node);
     }

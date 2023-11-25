@@ -39,7 +39,9 @@ if (Array.isArray(params)) {
 
 export async function buildVars(scope, ignore = []) {
   const ignoredVars = ["я", ...ignore];
-  let vars = [...scope.vars]
+  let vars = [...scope.vars.entries()]
+    .filter(([, value]) => value !== false)
+    .map(([name]) => name)
     .filter((v) => !ignoredVars.includes(v))
     .map((v) => `var ${varname(v)};`)
     .join("\n");
@@ -51,7 +53,7 @@ export async function buildVars(scope, ignore = []) {
 
 export async function buildDiia(mavka, name, scope, async, params, body) {
   params.forEach((param) => {
-    scope.vars.add(param.name);
+    scope.vars.set(param.name, true);
   });
 
   const paramsExtracting = await buildParamsExtracting(mavka, scope, params);
@@ -72,7 +74,7 @@ export async function buildDiia(mavka, name, scope, async, params, body) {
 
 export async function buildStructureMethod(mavka, name, scope, async, params, body) {
   params.forEach((param) => {
-    scope.vars.add(param.name);
+    scope.vars.set(param.name, true);
   });
 
   const paramsExtracting = await buildParamsExtracting(mavka, scope, params);

@@ -100,7 +100,7 @@ import TernaryNode from "mavka-parser/src/ast/TernaryNode.js";
 let DEBUG_ID = 0;
 
 class Mavka {
-  static VERSION = "0.50.8";
+  static VERSION = "0.50.9";
 
   constructor(options = {}) {
     this.debugInfoVarNames = new Map();
@@ -433,9 +433,12 @@ class Mavka {
       lines.push(await this.compileNode(scope, element, options));
     }
 
-    scope.vars.forEach((v) => {
-      lines.unshift(`var ${varname(v)}`);
-    });
+    [...scope.vars.entries()]
+      .filter(([, value]) => value !== false)
+      .map(([name]) => name)
+      .forEach((v) => {
+        lines.unshift(`var ${varname(v)}`);
+      });
 
     return lines.map((l) => `${l};`).join("\n");
   }
@@ -457,9 +460,12 @@ class Mavka {
       lines.unshift(v);
     }
 
-    scope.vars.forEach((v) => {
-      lines.unshift(`var ${varname(v)}`);
-    });
+    [...scope.vars.entries()]
+      .filter(([, value]) => value !== false)
+      .map(([name]) => name)
+      .forEach((v) => {
+        lines.unshift(`var ${varname(v)}`);
+      });
 
     [...this.debugInfoVarNames.entries()].forEach(([name, value]) => {
       lines.unshift(`var ${name} = ${JSON.stringify(value)}`);

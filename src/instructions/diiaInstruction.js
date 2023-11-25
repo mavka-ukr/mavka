@@ -13,7 +13,7 @@ class DiiaInstruction extends Instruction {
     const diiaScope = new Scope(scope);
 
     if (node.structure) {
-      diiaScope.vars.add("я");
+      diiaScope.vars.set("я", true);
       const compiledDiia = await buildStructureMethod(this.mavka, node.name, diiaScope, node.async, node.params, node.body);
       return `
 if (${varname(node.structure)}.__m_type__ !== "structure") {

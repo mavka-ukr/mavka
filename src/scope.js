@@ -1,5 +1,5 @@
 class Scope {
-  constructor(parent, vars = new Set()) {
+  constructor(parent, vars = new Map()) {
     this.parent = parent;
     this.vars = vars;
     this.setters = vars;
