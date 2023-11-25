@@ -4,8 +4,6 @@ import StringInstruction from "./instructions/stringInstruction.js";
 import ChainNode from "mavka-parser/src/ast/ChainNode.js";
 import NumberNode from "mavka-parser/src/ast/NumberNode.js";
 import StringNode from "mavka-parser/src/ast/StringNode.js";
-import BooleanNode from "mavka-parser/src/ast/BooleanNode.js";
-import BooleanInstruction from "./instructions/booleanInstruction.js";
 import CallNode from "mavka-parser/src/ast/CallNode.js";
 import CallInstruction from "./instructions/callInstruction.js";
 import IdentifierInstruction from "./instructions/identifierInstruction.js";
@@ -102,7 +100,7 @@ import TernaryNode from "mavka-parser/src/ast/TernaryNode.js";
 let DEBUG_ID = 0;
 
 class Mavka {
-  static VERSION = "0.50.4";
+  static VERSION = "0.50.5";
 
   constructor(options = {}) {
     this.debugInfoVarNames = new Map();
@@ -145,7 +143,6 @@ class Mavka {
     this.assignSimpleInstruction = new AssignSimpleInstruction(this);
     this.bitwiseInstruction = new BitwiseInstruction(this);
     this.bitwiseNotInstruction = new BitwiseNotInstruction(this);
-    this.booleanInstruction = new BooleanInstruction(this);
     this.breakInstruction = new BreakInstruction(this);
     this.callInstruction = new CallInstruction(this);
     this.chainInstruction = new ChainInstruction(this);
@@ -228,10 +225,6 @@ class Mavka {
 
     if (node instanceof BitwiseNotNode) {
       return await this.bitwiseNotInstruction.compile(scope, node, options);
-    }
-
-    if (node instanceof BooleanNode) {
-      return await this.booleanInstruction.compile(scope, node, options);
     }
 
     if (node instanceof BreakNode) {
@@ -583,8 +576,7 @@ var init_${tempModuleName} = async function() {
 
   onPakFailed(url, error) {
     this.options.clearProgress();
-    console.error(`Помилка завантаження модуля "${url}".`);
-    console.error(error);
+    this.options.renderPakError(url, error);
   }
 
   onPakDone(url) {
