@@ -31,7 +31,7 @@ export function unpackPackName(pak) {
   if (pak.startsWith("https://")) {
     pak = pak.substring(8);
     const parts = pak.split("/");
-    const domain = parts[0];
+    const domain = parts[0] === "пак.укр" ? "хмарний.пак.укр" : parts[0];
     const path = parts.slice(1).filter((p) => p);
     let moduleName;
     let versionName;
@@ -82,7 +82,7 @@ export function unpackPackName(pak) {
         version: parts[1]
       };
     }
-    const domain = parts[0];
+    const domain = parts[0] === "пак.укр" ? "хмарний.пак.укр" : parts[0];
     const path = parts.slice(1).filter((p) => p);
     let moduleName;
     let versionName;
