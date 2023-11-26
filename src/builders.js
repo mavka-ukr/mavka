@@ -17,6 +17,9 @@ export async function buildParamsExtracting(mavka, scope, params) {
           }
         }
       }
+      if (defaultValue) {
+        return `var ${varname(name)} = params.${name} === undefined ? ${defaultValue} : params.${name};`;
+      }
       return `var ${varname(name)} = params.${name};`;
     }))).join("\n");
     const paramsExtractionFromArray = (await Promise.all(params.map(async (param, i) => {
@@ -31,6 +34,9 @@ export async function buildParamsExtracting(mavka, scope, params) {
             }
           }
         }
+      }
+      if (defaultValue) {
+        return `var ${varname(name)} = params[${i}] === undefined ? ${defaultValue} : params[${i}];`;
       }
       return `var ${varname(name)} = params[${i}];`;
     }))).join("\n");
