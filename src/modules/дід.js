@@ -623,6 +623,22 @@
             });
           };
 
+          const filterList = (list) => {
+            return list.filter((value) => {
+              if (value == null) {
+                return true;
+              }
+              return [
+                "number",
+                "text",
+                "logical",
+                "list",
+                "dictionary",
+                "object"
+              ].includes(value.__m_type__);
+            });
+          };
+
           const makeValue = (value) => {
             if (value == null) {
               return "пусто";
@@ -636,7 +652,7 @@
               case "logical":
                 return value ? "так" : "ні";
               case "list":
-                return `[${value.map(makeValue).join(", ")}]`;
+                return `[${filterList(value).map(makeValue).join(", ")}]`;
               case "dictionary":
                 return `(${filterEntries(value.__m_map__.entries()).map(([key, value]) => `${key}=${makeValue(value)}`).join(",")})`;
               case "object":
