@@ -529,6 +529,7 @@
       "розібрати": ((function() {
         const diiaValue = function(params, di) {
           let value = mavka_mapParam(Array.isArray(params) ? params[0] : params["значення"], $текст, undefined, di);
+          let definitions = mavka_mapParam(Array.isArray(params) ? params[1] : params["визначення"], [$словник, null], mavka_create_empty_dictionary(), di);
 
           let ast;
 
@@ -564,11 +565,7 @@
             }
 
             if (node instanceof DictionaryNode) {
-              const dict = {
-                __m_type__: "dictionary",
-                __m_props__: Object.create(null),
-                __m_map__: new Map()
-              };
+              const dict = mavka_create_empty_dictionary();
               for (const entry of node.contents) {
                 dict.__m_map__.set(makeValue(entry.key), makeValue(entry.value));
               }
@@ -576,16 +573,23 @@
             }
 
             if (node instanceof ObjectNode) {
-              // todo: handle object as actual object not dictionary
-              const dict = {
-                __m_type__: "dictionary",
-                __m_props__: Object.create(null),
-                __m_map__: new Map()
-              };
-              for (const entry of node.contents) {
-                dict.__m_map__.set(makeValue(entry.key), makeValue(entry.value));
+              if (definitions.__m_map__.has(node.name)) {
+                const params = {};
+                for (const entry of node.contents) {
+                  params[makeValue(entry.key)] = makeValue(entry.value);
+                }
+                return mavka_call(
+                  definitions.__m_map__.get(node.name),
+                  params,
+                  di
+                );
+              } else {
+                const dict = mavka_create_empty_dictionary();
+                for (const entry of node.contents) {
+                  dict.__m_map__.set(makeValue(entry.key), makeValue(entry.value));
+                }
+                return dict;
               }
-              return dict;
             }
 
             return null;
@@ -598,7 +602,51 @@
       })()),
       "зібрати": ((function() {
         const diiaValue = function(params, di) {
-          return "";
+          let value = mavka_mapParam(Array.isArray(params) ? params[0] : params["значення"], undefined, null, di);
+
+          const filterEntries = (entries) => {
+            return entries.filter(([key, value]) => {
+              if (value == null) {
+                return true;
+              }
+              if (typeof key !== "string") {
+                return false;
+              }
+              return [
+                "number",
+                "text",
+                "logical",
+                "list",
+                "dictionary",
+                "object"
+              ].includes(value.__m_type__);
+            });
+          };
+
+          const makeValue = (value) => {
+            if (value == null) {
+              return "пусто";
+            }
+
+            switch (value.__m_type__) {
+              case "number":
+                return value;
+              case "text":
+                return `"${value}"`;
+              case "logical":
+                return value ? "так" : "ні";
+              case "list":
+                return `[${value.map(makeValue).join(", ")}]`;
+              case "dictionary":
+                return `(${filterEntries(value.__m_map__.entries()).map(([key, value]) => `${key}=${makeValue(value)}`).join(",")})`;
+              case "object":
+                return `${value.constructor.__m_name__}(${filterEntries(Object.entries(value.__m_props__)).map(([key, value]) => `${key}=${makeValue(value)}`).join(",")})`;
+              default:
+                return "пусто";
+            }
+          };
+
+          return makeValue(value);
         };
         diiaValue.__m_name__ = "зібрати";
         return diiaValue;
