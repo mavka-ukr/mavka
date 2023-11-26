@@ -640,7 +640,7 @@ var mavka_commonGet = (a, b, context, magicDiia) => {
       }
       if (b === "зʼєднати") {
         return function(p, di) {
-          var separator = mavka_param(p, 0, "роздільник", undefined, $текст, di);
+          var separator = mavka_param(p, 0, "роздільник", "", $текст, di);
           return a.map((v) => mavka_to_string(v, di)).join(separator);
         };
       }
@@ -653,7 +653,7 @@ var mavka_commonGet = (a, b, context, magicDiia) => {
         return function(p, di) {
           var indexStart = mavka_param(p, 0, "від", undefined, $число, di);
           var indexEnd = mavka_param(p, 1, "до", undefined, [$число, null], di);
-          return a.slice(indexStart, indexEnd);
+          return a.slice(indexStart, indexEnd ?? undefined);
         };
       }
       if (b === "скоротити") {
@@ -712,7 +712,7 @@ var mavka_commonGet = (a, b, context, magicDiia) => {
       return function(p, di) {
         var indexStart = mavka_param(p, 0, "від", undefined, $число, di);
         var indexEnd = mavka_param(p, 1, "до", undefined, [$число, null], di);
-        return a.substring(indexStart, indexEnd);
+        return a.substring(indexStart, indexEnd ?? undefined);
       };
     }
     if (b === "приєднати") {
