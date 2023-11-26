@@ -570,7 +570,7 @@ var mavka_call = (a, params, context = {}) => {
 };
 
 // get/set
-var mavka_get = (a, b, context) => {
+var mavka_commonGet = (a, b, context, magicDiia) => {
   if (!a) {
     throw new MavkaError("Неможливо отримати властивість з \"пусто\".", context);
   }
@@ -595,17 +595,80 @@ var mavka_get = (a, b, context) => {
     return a.__m_map__.get(b);
   }
   if (a.__m_type__ === "text") {
+    if (b === "символ") {
+      return function(p, di) {
+        var index = mavka_param(p, 0, "позиція", undefined, $число, di);
+        return a.charAt(index);
+      };
+    }
+    if (b === "код_символу") {
+      return function(p, di) {
+        var index = mavka_param(p, 0, "позиція", undefined, $число, di);
+        return a.charCodeAt(index);
+      };
+    }
+    if (b === "позиція") {
+      return function(p, di) {
+        var value = mavka_param(p, 0, "значення", undefined, $текст, di);
+        return a.indexOf(value);
+      };
+    }
+    if (b === "повторити") {
+      return function(p, di) {
+        var count = mavka_param(p, 0, "кількість", undefined, $число, di);
+        return a.repeat(count);
+      };
+    }
+    if (b === "замінити") {
+      return function(p, di) {
+        var value = mavka_param(p, 0, "старе_значення", undefined, $текст, di);
+        var replacement = mavka_param(p, 1, "нове_значення", undefined, $текст, di);
+        return a.replaceAll(value, replacement);
+      };
+    }
+    if (b === "замінити_перше") {
+      return function(p, di) {
+        var value = mavka_param(p, 0, "старе_значення", undefined, $текст, di);
+        var replacement = mavka_param(p, 1, "нове_значення", undefined, $текст, di);
+        return a.replace(value, replacement);
+      };
+    }
+    if (b === "зрізати") {
+      return function(p, di) {
+        var indexStart = mavka_param(p, 0, "від", undefined, $число, di);
+        var indexEnd = mavka_param(p, 1, "до", undefined, [$число, null], di);
+        return a.substring(indexStart, indexEnd);
+      };
+    }
+    if (b === "приєднати") {
+      return function(p, di) {
+        var value = (Array.isArray(p) ? p : Object.values(p))
+          .map((v) => mavka_to_string(v, di))
+          .join("");
+        return a.concat(value);
+      };
+    }
+    if (b === "розділити") {
+      return function(p, di) {
+        var separator = mavka_param(p, 0, "роздільник", undefined, $текст, di);
+        return a.split(separator);
+      };
+    }
+    if (b === "починається_з") {
+      return function(p, di) {
+        var value = mavka_param(p, 0, "значення", undefined, $текст, di);
+        return a.startsWith(value);
+      };
+    }
     if (b === "закінчується_на") {
       return function(p, di) {
         var value = mavka_param(p, 0, "значення", undefined, $текст, di);
         return a.endsWith(value);
       };
     }
-    if (b === "зрізати") {
+    if (b === "обрізати") {
       return function(p, di) {
-        var indexStart = mavka_param(p, 0, "пвід", undefined, $число, di);
-        var indexEnd = mavka_param(p, 1, "пдо", undefined, $число, di);
-        return a.substring(indexStart, indexEnd);
+        return a.trim();
       };
     }
     if (b === "довжина") {
@@ -615,41 +678,17 @@ var mavka_get = (a, b, context) => {
   if (!a.__m_props__) {
     throw new MavkaError(`Неможливо отримати властивість ${mavka_to_pretty_string(b, false)}.`, context);
   }
+  if (magicDiia) {
+    if (a.__m_props__[magicDiia]) {
+      return a.__m_props__[magicDiia]([b], context);
+    }
+  }
   return a.__m_props__[b];
 };
 
-var mavka_getSpecial = (a, b, context) => {
-  if (!a) {
-    throw new MavkaError("Неможливо отримати спеціальну властивість з \"пусто\".", context);
-  }
-  if (a.__m_type__ === "list") {
-    if (b.__m_type__ === "number") {
-      return a[b];
-    } else {
-      if (b === "додати") {
-        return (params) => {
-          var value = mavka_param(params, 0, "значення");
-          a.push(value);
-          return a;
-        };
-      }
-      if (b === "довжина") {
-        return a.length;
-      }
-      return null;
-    }
-  }
-  if (a.__m_type__ === "dictionary") {
-    return a.__m_map__.get(b);
-  }
-  if (!a.__m_props__) {
-    throw new MavkaError(`Неможливо отримати спеціальну властивість ${mavka_to_pretty_string(b, false)}.`, context);
-  }
-  if (a.__m_props__["чародія_отримати_спеціальну_властивість"]) {
-    return a.__m_props__["чародія_отримати_спеціальну_властивість"]([b], context);
-  }
-  return a.__m_props__[b];
-};
+var mavka_get = (a, b, context) => mavka_commonGet(a, b, context);
+var mavka_getSpecial = (a, b, context) => mavka_commonGet(a, b, context, "чародія_отримати_спеціальну_властивість");
+
 var mavka_set = (a, b, c, context) => {
   if (a.__m_type__ === "list" && b.__m_type__ === "number") {
     a[b] = c;
@@ -680,8 +719,12 @@ var mavka_setSpecial = (a, b, c, context) => {
 // params
 var mavka_mapParam = (value, type, defaultValue, di) => {
   if (value) {
-    if (mavka_compare_is_not(value, type, di)) {
-      throw new MavkaError("Передано невідповідний обʼєкт.", di);
+    if (Array.isArray(type)) {
+      // todo: implement
+    } else {
+      if (mavka_compare_is_not(value, type, di)) {
+        throw new MavkaError("Передано невідповідний обʼєкт.", di);
+      }
     }
   } else {
     if (defaultValue !== undefined) {
