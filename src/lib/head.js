@@ -401,14 +401,16 @@ var mavka_to_boolean = (value, context) => {
   return Boolean(value);
 };
 
-var mavka_to_number = (value, context) => {
+var mavka_to_number = (value, di) => {
   if (value && typeof value === "object") {
     if (value.__m_props__ && value.__m_props__["чародія_перетворення_на_число"]) {
       return value.__m_props__["чародія_перетворення_на_число"]();
     }
   }
-  // todo: handle all mavka types and not just cast it to boolean
-  return Number(value);
+  if (typeof value === "number") {
+    return value;
+  }
+  throw new MavkaError("Неможливо перетворити на число.", di);
 };
 
 var mavka_to_string = (value, context) => {
@@ -813,4 +815,14 @@ var mavka_create_empty_dictionary = () => {
   value.__m_map__ = new Map();
   value.constructor = $словник;
   return value;
+};
+
+var mavka_spread = (value, di) => {
+  if (Array.isArray(value)) {
+    return value;
+  }
+  if (value.__m_type__ === "dictionary") {
+    return Array.from(value.__m_map__.values());
+  }
+  throw new MavkaError("Неможливо розгорнути значення.", di);
 };
