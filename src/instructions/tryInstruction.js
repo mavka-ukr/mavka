@@ -1,5 +1,5 @@
 import Instruction from "./instruction.js";
-import { processBody } from "../utils.js";
+import { processBody, varname } from "../utils.js";
 
 class TryInstruction extends Instruction {
   /**
@@ -17,7 +17,7 @@ class TryInstruction extends Instruction {
   ${body}
 } catch (e) {
   if (e instanceof MavkaError) {
-    ${catchName ? `${catchName} = e.value;` : ""}
+    ${catchName ? `${varname(catchName)} = e.value;` : ""}
     ${catchBody}
   } else {
     throw e;
