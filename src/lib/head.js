@@ -536,12 +536,7 @@ var mavka_call = (a, params, context = {}) => {
     return [];
   }
   if (a === $словник) {
-    const value = Object.create(null);
-    value.constructor = $словник;
-    value.__m_type__ = "dictionary";
-    value.__m_props__ = Object.create(null);
-    value.__m_map__ = new Map();
-    value.constructor = $словник;
+    const value = mavka_create_empty_dictionary();
     if (Array.isArray(params)) {
       for (let i = 0; i < params.length; i++) {
         value.__m_map__.set(i, params[i]);
@@ -580,15 +575,93 @@ var mavka_commonGet = (a, b, context, magicDiia) => {
     if (b.__m_type__ === "number") {
       return a[b];
     } else {
+      if (b === "довжина") {
+        return a.length;
+      }
       if (b === "додати") {
-        return function(params) {
-          var value = mavka_param(params, 0, "значення");
+        return function(p, di) {
+          var value = mavka_param(p, 0, "значення", undefined, undefined, di);
           a.push(value);
           return a;
         };
       }
-      if (b === "довжина") {
-        return a.length;
+      if (b === "забрати") {
+        return function() {
+          return a.pop();
+        };
+      }
+      if (b === "отримати") {
+        return function(p, di) {
+          var index = mavka_param(p, 0, "позиція", undefined, $число, di);
+          return a[index];
+        };
+      }
+      if (b === "сортувати") {
+        return function(p, di) {
+          var compareFn = mavka_param(p, 0, "дія_порівняння", undefined, $Дія, di);
+          return a.sort((a, b) => compareFn([a, b], di));
+        };
+      }
+      if (b === "фільтрувати") {
+        return function(p, di) {
+          var predicateFn = mavka_param(p, 0, "дія_перевірки", undefined, $Дія, di);
+          return a.filter((v) => predicateFn([v], di));
+        };
+      }
+      if (b === "знайти") {
+        return function(p, di) {
+          var predicateFn = mavka_param(p, 0, "дія_перевірки", undefined, $Дія, di);
+          return a.find((v) => predicateFn([v], di));
+        };
+      }
+      if (b === "знайти_позицію") {
+        return function(p, di) {
+          var predicateFn = mavka_param(p, 0, "дія_перевірки", undefined, $Дія, di);
+          return a.findIndex((v) => predicateFn([v], di));
+        };
+      }
+      if (b === "перетворити") {
+        return function(p, di) {
+          var transformFn = mavka_param(p, 0, "дія_перетворення", undefined, $Дія, di);
+          return a.map((v) => transformFn([v], di));
+        };
+      }
+      if (b === "заповнити") {
+        return function(p, di) {
+          var value = mavka_param(p, 0, "значення", undefined, undefined, di);
+          return a.fill(value);
+        };
+      }
+      if (b === "злити") {
+        return function(p, di) {
+          var value = mavka_param(p, 0, "значення", undefined, $список, di);
+          return a.concat(value);
+        };
+      }
+      if (b === "зʼєднати") {
+        return function(p, di) {
+          var separator = mavka_param(p, 0, "роздільник", undefined, $текст, di);
+          return a.map((v) => mavka_to_string(v, di)).join(separator);
+        };
+      }
+      if (b === "обернути") {
+        return function() {
+          return a.reverse();
+        };
+      }
+      if (b === "зрізати") {
+        return function(p, di) {
+          var indexStart = mavka_param(p, 0, "від", undefined, $число, di);
+          var indexEnd = mavka_param(p, 1, "до", undefined, [$число, null], di);
+          return a.slice(indexStart, indexEnd);
+        };
+      }
+      if (b === "скоротити") {
+        return function(p, di) {
+          var reduceFn = mavka_param(p, 0, "дія_скорочення", undefined, $Дія, di);
+          var initialValue = mavka_param(p, 1, "початкове_значення", undefined, undefined, di);
+          return a.reduce((acc, v) => reduceFn([acc, v], di), initialValue);
+        };
       }
       return null;
     }
@@ -722,7 +795,7 @@ var mavka_setSpecial = (a, b, c, context) => {
 var mavka_mapParam = (value, type, defaultValue, di) => {
   if (value === undefined) {
     if (defaultValue === undefined) {
-      return null;
+      return undefined;
     } else {
       return defaultValue;
     }
