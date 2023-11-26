@@ -66,7 +66,14 @@ if (command === "версія") {
     });
 
     const scope = new Scope(mavka.globalScope);
-    const code = fs.readFileSync(`${cwdPath}/${command}`, "utf8");
+    let code = fs.readFileSync(`${cwdPath}/${command}`, "utf8");
+    code = `
+структура Помилка
+  повідомлення текст = ""
+кінець
+
+${code}
+`.trim();
     if (code) {
       const programNode = parse(code, {
         path: `${cwdPath}/${command}`
