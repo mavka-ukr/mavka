@@ -13,10 +13,21 @@ class StructureInstruction extends Instruction {
 
     const paramsExtracting = await buildParamsExtracting(this.mavka, scope, node.params);
 
-    const paramsAssignments = (thisName = "this", nullValue = false) => node.params.map((param) => {
+    const paramsAssignments = async (thisName = "this", nullValue = false) => (await Promise.all(node.params.map(async (param) => {
       const name = param.name;
-      return `${thisName}.__m_props__.${name} = ${nullValue ? "null" : varname(name)};`;
-    }).join("\n");
+      if (param.defaultValue) {
+        const defaultValue = await this.mavka.compileNode(scope, param.defaultValue);
+        if (nullValue) {
+          return `${thisName}.__m_props__.${name} = null;`;
+        }
+        return `${thisName}.__m_props__.${name} = ${varname(name)} === undefined ? ${defaultValue} : ${varname(name)};`;
+      } else {
+        if (nullValue) {
+          return `${thisName}.__m_props__.${name} = null;`;
+        }
+        return `${thisName}.__m_props__.${name} = ${varname(name)};`;
+      }
+    }))).join("\n");
 
     const paramDefinitionsAssignments = (thisName = "this") => node.params.map((param) => {
       const name = param.name;
@@ -47,7 +58,7 @@ ${varname(name)} = class {
        } else {
          (function() {
            ${paramsExtracting}
-           ${paramsAssignments("value")}
+           ${await paramsAssignments("value")}
          })();
        }
        if (value.__m_props__["чародія_після_створення"]) {
@@ -62,7 +73,7 @@ ${varname(name)} = class {
   constructor() {
     this.__m_type__ = "object";
     this.__m_props__ = Object.create(null);
-    ${paramsAssignments("this", true)}
+    ${await paramsAssignments("this", true)}
     this.__m_props__["чародія_перетворення_на_текст"] = (params, di) => {
       let value = "${name}(";
       let entries = [];
