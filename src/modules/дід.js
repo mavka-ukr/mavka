@@ -654,7 +654,7 @@
               case "list":
                 return `[${filterList(value).map(makeValue).join(", ")}]`;
               case "dictionary":
-                return `(${filterEntries(value.__m_map__.entries()).map(([key, value]) => `${key}=${makeValue(value)}`).join(",")})`;
+                return `(${filterEntries([...value.__m_map__.entries()]).map(([key, value]) => `${key}=${makeValue(value)}`).join(",")})`;
               case "object":
                 return `${value.constructor.__m_name__}(${filterEntries(Object.entries(value.__m_props__)).map(([key, value]) => `${key}=${makeValue(value)}`).join(",")})`;
               default:
