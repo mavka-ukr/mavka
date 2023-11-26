@@ -16,7 +16,7 @@ class CallInstruction extends Instruction {
       const args = await Promise.all(node.args.map(async (arg) => {
         if (arg instanceof ArgNode) {
           if (arg.spread) {
-            return `...${await this.mavka.compileNode(scope, arg.value)}`;
+            return `...mavka_spread(${await this.mavka.compileNode(scope, arg.value)}, ${debugInfoVarName})`;
           }
           return await this.mavka.compileNode(scope, arg.value);
         }
