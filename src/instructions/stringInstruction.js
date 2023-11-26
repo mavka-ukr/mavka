@@ -51,7 +51,7 @@ class StringInstruction extends Instruction {
 
     for (const el of interpolated) {
       if (typeof el === "string") {
-        inner.push(`"${el.replaceAll("\n", "\\n")}"`);
+        inner.push(`"${el.replaceAll("\n", "\\n").replaceAll("\"", `\\"`)}"`);
       } else {
         inner.push(`mavka_to_string(${await this.mavka.compileNode(scope, el)}, ${debugInfoVarName})`);
       }

@@ -718,17 +718,21 @@ var mavka_setSpecial = (a, b, c, context) => {
 
 // params
 var mavka_mapParam = (value, type, defaultValue, di) => {
-  if (value) {
+  if (value === undefined) {
+    if (defaultValue === undefined) {
+      return null;
+    } else {
+      return defaultValue;
+    }
+  } else {
     if (Array.isArray(type)) {
       // todo: implement
     } else {
-      if (mavka_compare_is_not(value, type, di)) {
-        throw new MavkaError("Передано невідповідний обʼєкт.", di);
+      if (type) {
+        if (mavka_compare_is_not(value, type, di)) {
+          throw new MavkaError("Передано невідповідний обʼєкт.", di);
+        }
       }
-    }
-  } else {
-    if (defaultValue !== undefined) {
-      return defaultValue;
     }
   }
   return value;
@@ -800,4 +804,13 @@ var mavka_make = (value) => {
 
       return objectProxy(value);
   }
+};
+
+var mavka_create_empty_dictionary = () => {
+  const value = Object.create(null);
+  value.__m_type__ = "dictionary";
+  value.__m_props__ = Object.create(null);
+  value.__m_map__ = new Map();
+  value.constructor = $словник;
+  return value;
 };
