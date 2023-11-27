@@ -6,13 +6,13 @@ export async function buildParamsExtracting(mavka, scope, params) {
   if (params.length) {
     const paramsExtractionFromObject = (await Promise.all(params.map(async (param) => {
       const name = param.name;
-      const defaultValue = param.defaultValue && !Array.isArray(param.defaultValue) ? await mavka.compileNode(scope, param.defaultValue) : "undefined";
+      const defaultValue = param.defaultValue && !Array.isArray(param.defaultValue) ? await mavka.compileNode(scope, param.defaultValue) : undefined;
       if (param.type) {
         if (param.type instanceof TypeValueSingleNode) {
           if (param.type.value instanceof IdentifierNode) {
             if (!["щось", "ніщо"].includes(param.type.value.name)) {
               const compiledTypeIdentifier = await mavka.compileNode(scope, param.type.value);
-              return `var ${varname(name)} = mavka_mapParam(params.${name}, ${compiledTypeIdentifier}, ${defaultValue}, callDi);`;
+              return `var ${varname(name)} = mavka_mapArg(params.${name}, ${compiledTypeIdentifier}, ${defaultValue}, callDi);`;
             }
           }
         }
@@ -24,13 +24,13 @@ export async function buildParamsExtracting(mavka, scope, params) {
     }))).join("\n");
     const paramsExtractionFromArray = (await Promise.all(params.map(async (param, i) => {
       const name = param.name;
-      const defaultValue = param.defaultValue && !Array.isArray(param.defaultValue) ? await mavka.compileNode(scope, param.defaultValue) : "undefined";
+      const defaultValue = param.defaultValue && !Array.isArray(param.defaultValue) ? await mavka.compileNode(scope, param.defaultValue) : undefined;
       if (param.type) {
         if (param.type instanceof TypeValueSingleNode) {
           if (param.type.value instanceof IdentifierNode) {
             if (!["щось", "ніщо"].includes(param.type.value.name)) {
               const compiledTypeIdentifier = await mavka.compileNode(scope, param.type.value);
-              return `var ${varname(name)} = mavka_mapParam(params[${i}], ${compiledTypeIdentifier}, ${defaultValue}, callDi);`;
+              return `var ${varname(name)} = mavka_mapArg(params[${i}], ${compiledTypeIdentifier}, ${defaultValue}, callDi);`;
             }
           }
         }
@@ -52,6 +52,15 @@ if (Array.isArray(params)) {
   return "";
 }
 
+export async function buildParams(mavka, scope, params) {
+  return "{" + (await Promise.all(params.map(async (p, i) => {
+    const name = p.name;
+    const compiledType = p.type ? await mavka.compileNode(scope, p.type) : "undefined";
+    const compiledDefaultValue = p.defaultValue ? await mavka.compileNode(scope, p.defaultValue) : "undefined";
+    return `"${name}":mavka_param(${i},"${name}",${compiledDefaultValue},${compiledType})`;
+  }))).join(",") + "}";
+}
+
 export async function buildVars(scope, ignore = []) {
   const ignoredVars = ["я", ...ignore];
   let vars = [...scope.vars.entries()]
@@ -71,40 +80,34 @@ export async function buildDiia(mavka, name, scope, async, params, body) {
     scope.vars.set(param.name, true);
   });
 
+  const compiledParams = await buildParams(mavka, scope, params);
   const paramsExtracting = await buildParamsExtracting(mavka, scope, params);
   const compiledBody = await mavka.compileDiiaBody(scope, processBody(mavka, scope, body));
   const vars = await buildVars(scope, params.map((p) => p.name));
   const bodyString = [vars, paramsExtracting, compiledBody].filter((v) => v).join("\n");
 
   return `
-((function() {
-  var ${name} = ${async ? "async " : ""}function(params, callDi) {
-    ${bodyString}
-  };
-  ${name}.__m_name__ = "${name}";
-  return ${name};
-})())
+mavka_diia("${name}",${compiledParams},${async ? "async " : ""}function($я, params, callDi) {
+  ${bodyString}
+})
 `.trim();
 }
 
-export async function buildStructureMethod(mavka, name, scope, async, params, body) {
+export async function buildStructureMethod(mavka, structureName, name, scope, async, params, body) {
   params.forEach((param) => {
     scope.vars.set(param.name, true);
   });
 
+  const compiledParams = await buildParams(mavka, scope, params);
   const paramsExtracting = await buildParamsExtracting(mavka, scope, params);
   const compiledBody = await mavka.compileDiiaBody(scope, processBody(mavka, scope, body));
   const vars = await buildVars(scope, params.map((p) => p.name));
   const bodyString = [vars, paramsExtracting, compiledBody].filter((v) => v).join("\n");
 
   return `
-((function() {
-  var ${name} = ${async ? "async " : ""}function($я, params, callDi) {
-    ${bodyString}
-  };
-  ${name}.__m_name__ = "${name}";
-  return ${name};
-})())
+mavka_method(${varname(structureName)},"${name}",${compiledParams},${async ? "async " : ""}function($я, params, callDi) {
+  ${bodyString}
+})
 `.trim();
 }
 
@@ -116,11 +119,7 @@ export async function buildDictionary(mavka, scope, args) {
 
   return `
 ((function() {
-  var dictionaryValue = Object.create(null);
-  dictionaryValue.constructor = $словник;
-  dictionaryValue.__m_type__ = "dictionary";
-  dictionaryValue.__m_props__ = Object.create(null);
-  dictionaryValue.__m_map__ = new Map();
+  var dictionaryValue = mavka_dictionary();
   ${compiledArgs}
   return dictionaryValue;
 })())
