@@ -11,7 +11,7 @@ class AnonymousDiiaInstruction extends Instruction {
   async compile(scope, node) {
     const diiaScope = new Scope(scope);
 
-    return await buildDiia(this.mavka, "anonymousDiia", diiaScope, node.async, node.params, node.body);
+    return await buildDiia(this.mavka, null, diiaScope, node.async, node.params, node.body);
   }
 }
 

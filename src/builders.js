@@ -80,6 +80,7 @@ export async function buildDiia(mavka, name, scope, async, params, body) {
     scope.vars.set(param.name, true);
   });
 
+  const compiledName = name == null ? "null" : `"${name}"`;
   const compiledParams = await buildParams(mavka, scope, params);
   const paramsExtracting = await buildParamsExtracting(mavka, scope, params);
   const compiledBody = await mavka.compileDiiaBody(scope, processBody(mavka, scope, body));
@@ -87,7 +88,7 @@ export async function buildDiia(mavka, name, scope, async, params, body) {
   const bodyString = [vars, paramsExtracting, compiledBody].filter((v) => v).join("\n");
 
   return `
-mavka_diia("${name}",${compiledParams},${async ? "async " : ""}function(params, callDi) {
+mavka_diia(${compiledName},${compiledParams},${async ? "async " : ""}function(params, callDi) {
   ${bodyString}
 })
 `.trim();
