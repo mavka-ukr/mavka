@@ -84,8 +84,8 @@ ${code}
         currentModuleDirname: cwdPath
       });
 
-      console.log(result);
-      console.log("---------");
+      // console.log(result);
+      // console.log("---------");
 
       const compiled = `
   ((async function () {
