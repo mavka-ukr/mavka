@@ -420,11 +420,32 @@ var mavka_to_string = (value, di) => {
   if (value.__m_props__ && value.__m_props__["чародія_перетворення_на_текст"]) {
     return value.__m_props__["чародія_перетворення_на_текст"]();
   }
-  if (Array.isArray(value)) {
-    return value.map((v) => mavka_to_string(v, false)).join(",");
+  switch (value.__m_type__) {
+    case "logical":
+      return value ? "так" : "ні";
+    case "number":
+      return value.toString();
+    case "text":
+      return value;
+    case "list":
+      return "<список>";
+    case "diia":
+      return "<дія>";
+    case "god":
+      return "<бог>";
+    case "dictionary":
+      return "<словник>";
+    case "object":
+      return "<обʼєкт>";
+    case "structure":
+      return "<структура>";
+    case "module":
+      return "<модуль>";
+    case "portal":
+      return "<портал>";
+    default:
+      throw new MavkaError("Неможливо перетворити на текст.", di);
   }
-  // todo: handle all mavka types and not just cast it to boolean
-  return String(value);
 };
 
 var mavka_to_pretty_string = (value, root = true) => {
