@@ -528,8 +528,8 @@
     __m_props__: {
       "розібрати": ((function() {
         const diiaValue = function(params, di) {
-          let value = mavka_mapParam(Array.isArray(params) ? params[0] : params["значення"], $текст, undefined, di);
-          let definitions = mavka_mapParam(Array.isArray(params) ? params[1] : params["визначення"], [$словник, null], mavka_create_empty_dictionary(), di);
+          let value = mavka_mapArg(Array.isArray(params) ? params[0] : params["значення"], $текст, undefined, di);
+          let definitions = mavka_mapArg(Array.isArray(params) ? params[1] : params["визначення"], [$словник, null], mavka_dictionary(), di);
 
           let ast;
 
@@ -565,7 +565,7 @@
             }
 
             if (node instanceof DictionaryNode) {
-              const dict = mavka_create_empty_dictionary();
+              const dict = mavka_dictionary();
               for (const entry of node.contents) {
                 dict.__m_map__.set(makeValue(entry.key), makeValue(entry.value));
               }
@@ -584,7 +584,7 @@
                   di
                 );
               } else {
-                const dict = mavka_create_empty_dictionary();
+                const dict = mavka_dictionary();
                 for (const entry of node.contents) {
                   dict.__m_map__.set(makeValue(entry.key), makeValue(entry.value));
                 }
@@ -602,7 +602,7 @@
       })()),
       "зібрати": ((function() {
         const diiaValue = function(params, di) {
-          let value = mavka_mapParam(Array.isArray(params) ? params[0] : params["значення"], undefined, null, di);
+          let value = mavka_mapArg(Array.isArray(params) ? params[0] : params["значення"], undefined, null, di);
 
           const filterEntries = (entries) => {
             return entries.filter(([key, value]) => {

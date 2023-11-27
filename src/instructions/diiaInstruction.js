@@ -14,13 +14,8 @@ class DiiaInstruction extends Instruction {
 
     if (node.structure) {
       diiaScope.vars.set("я", true);
-      const compiledDiia = await buildStructureMethod(this.mavka, node.name, diiaScope, node.async, node.params, node.body);
-      return `
-if (${varname(node.structure)}.__m_type__ !== "structure") {
-  throw new MavkaError("${node.structure} не є структурою. [${node.context.start.line}, ${node.context.start.column}]");
-}
-${varname(node.structure)}.__m_methods__["${node.name}"] = ${compiledDiia}
-`.trim();
+      const compiledDiia = await buildStructureMethod(this.mavka, node.structure, node.name, diiaScope, node.async, node.params, node.body);
+      return `${varname(node.structure)}.__m_methods__["${node.name}"] = ${compiledDiia}`.trim();
     }
 
     const compiledDiia = await buildDiia(this.mavka, node.name, diiaScope, node.async, node.params, node.body);
