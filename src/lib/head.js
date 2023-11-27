@@ -46,6 +46,15 @@ Function.__m_type__ = "structure";
 Function.__m_name__ = "Дія";
 Function.__m_props__ = Object.create(null);
 Function.prototype.__m_type__ = "diia";
+Function.__m_props__["назва"] = (args, di) => {
+  const value = mavka_arg(args, 0, "значення", $Дія, undefined, di);
+  return value.__m_name__;
+};
+Function.__m_props__["виконати"] = (args, di) => {
+  const value = mavka_arg(args, 0, "значення", $Дія, undefined, di);
+  const valueArgs = mavka_arg(args, 0, "аргументи", [$список, $словник], undefined, di);
+  return value(valueArgs, di);
+};
 
 $словник = Object.create(null);
 $словник.__m_type__ = "structure";
@@ -535,10 +544,12 @@ var mavka_to_pretty_string = (value, root = true) => {
 };
 
 var mavka_arg = (args, index, name, type, defaultValue, di) => {
-  if (type !== undefined) {
-    return mavka_mapArg(Array.isArray(args) ? args[index] : args[name], type, defaultValue, di);
+  if (type === undefined) {
+    if (defaultValue === undefined) {
+      return Array.isArray(args) ? args[index] : args[name];
+    }
   }
-  return Array.isArray(args) ? args[index] : args[name];
+  return mavka_mapArg(Array.isArray(args) ? args[index] : args[name], type, defaultValue, di);
 };
 
 // calls
@@ -788,6 +799,9 @@ var mavka_get = (a, b, context) => mavka_commonGet(a, b, context);
 var mavka_getSpecial = (a, b, context) => mavka_commonGet(a, b, context, "чародія_отримати_спеціальну_властивість");
 
 var mavka_set = (a, b, c, context) => {
+  if (a == null) {
+    throw new MavkaError("Неможливо встановити властивість для \"пусто\".", context);
+  }
   if (a.__m_type__ === "list" && b.__m_type__ === "number") {
     a[b] = c;
   } else if (a.__m_type__ === "dictionary") {
@@ -799,6 +813,9 @@ var mavka_set = (a, b, c, context) => {
   }
 };
 var mavka_setSpecial = (a, b, c, context) => {
+  if (a == null) {
+    throw new MavkaError("Неможливо встановити властивість для \"пусто\".", context);
+  }
   if (a.__m_type__ === "list" && b.__m_type__ === "number") {
     a[b] = c;
   } else if (a.__m_type__ === "dictionary") {
@@ -818,7 +835,7 @@ var mavka_setSpecial = (a, b, c, context) => {
 var mavka_mapArg = (value, type, defaultValue, di) => {
   if (value === undefined) {
     if (defaultValue === undefined) {
-      return undefined;
+      throw new MavkaError("Передано невідповідний обʼєкт.", di);
     } else {
       return defaultValue;
     }
@@ -930,7 +947,7 @@ var mavka_object = () => {
   return value;
 };
 
-var mavka_structure = (name, parent, params, di) => {
+var mavka_structure = (name, parent = null, params = {}, di = null) => {
   var mergedParams = params;
   var mergedMethods = Object.create(null);
   if (parent && parent.__m_type__ !== "structure") {

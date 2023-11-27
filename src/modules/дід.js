@@ -652,7 +652,7 @@
               case "logical":
                 return value ? "так" : "ні";
               case "list":
-                return `[${filterList(value).map(makeValue).join(", ")}]`;
+                return `[${filterList(value).map(makeValue).join(",")}]`;
               case "dictionary":
                 return `(${filterEntries([...value.__m_map__.entries()]).map(([key, value]) => `${key}=${makeValue(value)}`).join(",")})`;
               case "object":
