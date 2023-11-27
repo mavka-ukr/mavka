@@ -57,7 +57,7 @@ export async function buildParams(mavka, scope, params) {
     const name = p.name;
     const compiledType = p.type ? await mavka.compileNode(scope, p.type) : "undefined";
     const compiledDefaultValue = p.defaultValue ? await mavka.compileNode(scope, p.defaultValue) : "undefined";
-    return `"${name}":mavka_param(${i},"${name}",${compiledDefaultValue},${compiledType})`;
+    return `"${name}":mavka_param(${i},"${name}",${compiledType},${compiledDefaultValue})`;
   }))).join(",") + "}";
 }
 
@@ -87,7 +87,7 @@ export async function buildDiia(mavka, name, scope, async, params, body) {
   const bodyString = [vars, paramsExtracting, compiledBody].filter((v) => v).join("\n");
 
   return `
-mavka_diia("${name}",${compiledParams},${async ? "async " : ""}function($я, params, callDi) {
+mavka_diia("${name}",${compiledParams},${async ? "async " : ""}function(params, callDi) {
   ${bodyString}
 })
 `.trim();

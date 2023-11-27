@@ -413,14 +413,12 @@ var mavka_to_number = (value, di) => {
   throw new MavkaError("Неможливо перетворити на число.", di);
 };
 
-var mavka_to_string = (value, context) => {
-  if (value && typeof value === "object") {
-    if (value.__m_props__ && value.__m_props__["чародія_перетворення_на_текст"]) {
-      return value.__m_props__["чародія_перетворення_на_текст"]();
-    }
-  }
+var mavka_to_string = (value, di) => {
   if (value == null) {
     return "пусто";
+  }
+  if (value.__m_props__ && value.__m_props__["чародія_перетворення_на_текст"]) {
+    return value.__m_props__["чародія_перетворення_на_текст"]();
   }
   if (Array.isArray(value)) {
     return value.map((v) => mavka_to_string(v, false)).join(",");
@@ -512,7 +510,7 @@ var mavka_to_pretty_string = (value, root = true) => {
   if (value.__m_type__ === "portal") {
     return `<портал>`;
   }
-  return "<невідоме значення>";
+  return "<невідоме значення>" + value;
 };
 
 var mavka_arg = (args, index, name, type, defaultValue, di) => {
