@@ -52,7 +52,13 @@ Function.__m_props__["назва"] = (args, di) => {
 };
 Function.__m_props__["виконати"] = (args, di) => {
   const value = mavka_arg(args, 0, "значення", $Дія, undefined, di);
-  const valueArgs = mavka_arg(args, 0, "аргументи", [$список, $словник], undefined, di);
+  const valueArgs = mavka_arg(args, 1, "аргументи", [$список, $словник], undefined, di);
+  if (mavka_compare_is(valueArgs, $словник)) {
+    return value([...valueArgs.__m_map__.entries()].reduce((acc, [k, v]) => {
+      acc[k] = v;
+      return acc;
+    }, {}), di);
+  }
   return value(valueArgs, di);
 };
 
@@ -457,6 +463,39 @@ var mavka_to_string = (value, di) => {
   }
 };
 
+var mavka_get_type_name = (value) => {
+  if (value == null) {
+    return "пусто";
+  }
+
+  switch (value.__m_type__) {
+    case "logical":
+      return "логічне";
+    case "number":
+      return "число";
+    case "text":
+      return "текст";
+    case "list":
+      return "список";
+    case "diia":
+      return "Дія";
+    case "god":
+      return "бог";
+    case "dictionary":
+      return "словник";
+    case "object":
+      return value.__m_structure__.__m_name__;
+    case "structure":
+      return "Структура";
+    case "module":
+      return value.__m_name__;
+    case "portal":
+      return "портал";
+    default:
+      return "<невідомий тип>";
+  }
+};
+
 var mavka_to_pretty_string = (value, root = true) => {
   if (value == null) {
     return "пусто";
@@ -835,7 +874,11 @@ var mavka_setSpecial = (a, b, c, context) => {
 var mavka_mapArg = (value, type, defaultValue, di) => {
   if (value === undefined) {
     if (defaultValue === undefined) {
-      throw new MavkaError("Передано невідповідний обʼєкт.", di);
+      if (type === undefined) {
+        throw new MavkaError("Передано невідповідний обʼєкт.", di);
+      } else {
+        throw new MavkaError(`Очікується "${mavka_get_type_name(type)}", отримано ніщо.`, di);
+      }
     } else {
       return defaultValue;
     }
@@ -845,7 +888,7 @@ var mavka_mapArg = (value, type, defaultValue, di) => {
     } else {
       if (type) {
         if (mavka_compare_is_not(value, type, di)) {
-          throw new MavkaError("Передано невідповідний обʼєкт.", di);
+          throw new MavkaError(`Очікується "${mavka_get_type_name(type)}", отримано "${mavka_get_type_name(value)}".`, di);
         }
       }
     }

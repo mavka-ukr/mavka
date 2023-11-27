@@ -646,7 +646,7 @@
 
             switch (value.__m_type__) {
               case "number":
-                return value;
+                return `${value}`;
               case "text":
                 return `"${value}"`;
               case "logical":
