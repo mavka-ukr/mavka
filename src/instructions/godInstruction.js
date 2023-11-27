@@ -35,7 +35,7 @@ class GodInstruction extends Instruction {
       if (typeof e === "number" && typeof newElements[i] === "number") {
         return true;
       }
-      return e.constructor && newElements[i].constructor && e.constructor === newElements[i].constructor;
+      return e.__m_structure__ && newElements[i].__m_structure__ && e.__m_structure__ === newElements[i].__m_structure__;
     })) {
       throw new MavkaError("Бог не може складатись з обʼєктів одинакових структур.", ${debugInfoVarName});
     }

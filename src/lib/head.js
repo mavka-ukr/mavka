@@ -79,7 +79,7 @@ $Структура.__m_props__["дізнатись"] = (args, di) => {
     case "dictionary":
       return $словник;
     case "object":
-      return value.constructor;
+      return value.__m_structure__;
     default:
       return null;
   }
@@ -167,10 +167,10 @@ var mavka_compare_is = (a, b, context) => {
     case "dictionary":
       return b === $словник;
     case "object":
-      if (a.constructor === b) {
+      if (a.__m_structure__ === b) {
         return true;
       }
-      let parent = a.constructor.__m_parent__;
+      let parent = a.__m_structure__.__m_parent__;
       while (parent) {
         if (parent === b) {
           return true;
@@ -482,7 +482,7 @@ var mavka_to_pretty_string = (value, root = true) => {
         return "Структура";
       }
       if (el.__m_type__ === "object") {
-        return el.constructor.__m_name__;
+        return el.__m_structure__.__m_name__;
       }
       return "пусто";
     });
@@ -504,10 +504,13 @@ var mavka_to_pretty_string = (value, root = true) => {
   }
   if (value.__m_type__ === "object") {
     const entries = [];
-    for (const k in value.constructor.__m_params__) {
+    for (const k in value.__m_structure__.__m_params__) {
       entries.push(`${k}=${mavka_to_pretty_string(value.__m_props__[k], false)}`);
     }
-    return `${value.constructor.__m_name__}(${entries.join(", ")})`;
+    return `${value.__m_structure__.__m_name__}(${entries.join(", ")})`;
+  }
+  if (value.__m_type__ === "portal") {
+    return `<портал>`;
   }
   return "<невідоме значення>";
 };
@@ -858,7 +861,7 @@ var mavka_portal = (value) => {
 
       var objectProxy = function(obj) {
         var object = Object.create(null);
-        object.__m_type__ = "object";
+        object.__m_type__ = "portal";
         object.__m_props__ = new Proxy(obj, {
           get(target, prop, receiver) {
             if (prop in target) {
@@ -884,7 +887,7 @@ var mavka_portal = (value) => {
 
 var mavka_dictionary = () => {
   var value = Object.create(null);
-  value.constructor = $словник;
+  value.__m_structure__ = $словник;
   value.__m_type__ = "dictionary";
   value.__m_props__ = Object.create(null);
   value.__m_map__ = new Map();
@@ -893,7 +896,7 @@ var mavka_dictionary = () => {
 
 var mavka_module = (name) => {
   var value = Object.create(null);
-  value.constructor = $Модуль;
+  value.__m_structure__ = $Модуль;
   value.__m_type__ = "module";
   value.__m_props__ = Object.create(null);
   value.__m_name__ = name;
@@ -902,7 +905,7 @@ var mavka_module = (name) => {
 
 var mavka_object = () => {
   var value = Object.create(null);
-  value.constructor = $обʼєкт;
+  value.__m_structure__ = $обʼєкт;
   value.__m_type__ = "object";
   value.__m_props__ = Object.create(null);
   return value;
@@ -940,6 +943,7 @@ var mavka_structure = (name, parent, params, di) => {
     static __m_parent__ = parent;
 
     constructor() {
+      this.__m_structure__ = structure;
       this.__m_type__ = "object";
       this.__m_props__ = Object.create(null);
       // fill props and attach methods
