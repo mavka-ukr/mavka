@@ -648,7 +648,7 @@
               case "number":
                 return `${value}`;
               case "text":
-                return `"${value}"`;
+                return `"${value.replaceAll("\\", "\\\\").replaceAll("\"", "\\\"")}"`;
               case "logical":
                 return value ? "так" : "ні";
               case "list":
