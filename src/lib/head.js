@@ -819,6 +819,33 @@ var mavka_commonGet = (a, b, context, magicDiia) => {
         return a.trim();
       };
     }
+    if (b === "обтяти") {
+      return function(p, di) {
+        var lineNumberWhereSmallestIndentationIs = 0;
+        var lines = a.split("\n");
+        var smallestIndentation = Infinity;
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          if (!line.trim()) {
+            continue;
+          }
+          const indentation = line.match(/^\s*/)[0].length;
+          if (indentation < smallestIndentation) {
+            smallestIndentation = indentation;
+            lineNumberWhereSmallestIndentationIs = i;
+          }
+        }
+        const result = [];
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          if (!line.trim()) {
+            continue;
+          }
+          result.push(line.slice(smallestIndentation));
+        }
+        return result.join("\n");
+      };
+    }
     if (b === "довжина") {
       return a.length;
     }
@@ -888,7 +915,8 @@ var mavka_mapArg = (value, type, defaultValue, di) => {
     } else {
       if (type) {
         if (mavka_compare_is_not(value, type, di)) {
-          throw new MavkaError(`Очікується "${mavka_get_type_name(type)}", отримано "${mavka_get_type_name(value)}".`, di);
+          var name = type.__m_type__ === "structure" ? type.__m_name__ : mavka_get_type_name(type);
+          throw new MavkaError(`Очікується "${name}", отримано "${mavka_get_type_name(value)}".`, di);
         }
       }
     }
@@ -996,6 +1024,8 @@ var mavka_structure = (name, parent = null, params = {}, di = null) => {
   if (parent && parent.__m_type__ !== "structure") {
     throw new MavkaError("Неможливо створити структуру.", di);
   }
+  // todo: check for circular inheritance
+  // todo: check for duplicate params and methods
   var currStructure = parent;
   while (currStructure != null && currStructure.__m_type__ === "structure") {
     for (const [k, v] of Object.entries(currStructure.__m_params__)) {

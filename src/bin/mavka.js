@@ -10,6 +10,9 @@ import fs from "fs";
 import path from "path";
 import { MavkaCompilationError } from "../error.js";
 import { fileURLToPath } from "url";
+import md5 from "md5";
+import os from "os";
+import axios from "axios";
 
 process.removeAllListeners("warning");
 
@@ -47,33 +50,80 @@ if (command === "версія") {
     const headLib = fs.readFileSync(`${binPath}/../lib/head.js`, "utf8");
     const stdLib = fs.readFileSync(`${binPath}/../lib/std.js`, "utf8");
 
+
+    function printProgress(name, progress) {
+      process.stdout.clearLine();
+      process.stdout.cursorTo(0);
+      process.stdout.write(`[ ${progress}% ] ${name}`);
+    }
+
+    function clearProgress() {
+      process.stdout.clearLine();
+      process.stdout.cursorTo(0);
+    }
+
     const mavka = new Mavka({
-      hasBuiltinModuleCode: (name) => {
-        return fs.existsSync(`${binPath}/../modules/${name}.js`);
+      getBuiltinModuleCode: (name, di, options) => {
+        if (fs.existsSync(`${binPath}/../modules/${name}.js`)) {
+          return fs.readFileSync(`${binPath}/../modules/${name}.js`, "utf8");
+        }
+        throw new MavkaCompilationError(`Пак "${name}" не знайдено.`, di);
       },
-      getBuiltinModuleCode: (name) => {
-        return fs.readFileSync(`${binPath}/../modules/${name}.js`, "utf8");
+      async getModuleCode(name, di, options) {
+        const rootModuleDirname = options.rootModuleDirname;
+        const modulePathParts = name.split(".");
+        let moduleDirname = `${rootModuleDirname}/${modulePathParts.slice(0, modulePathParts.length - 1).join("/")}`;
+        if (moduleDirname.endsWith("/")) {
+          moduleDirname = moduleDirname.substring(0, moduleDirname.length - 1);
+        }
+        const modulePath = `${moduleDirname}/${modulePathParts[modulePathParts.length - 1]}.м`;
+        if (fs.existsSync(modulePath)) {
+          return [fs.readFileSync(modulePath, "utf8"), modulePath];
+        } else {
+          throw new MavkaCompilationError(`Модуль "${name}" не знайдено.`, di);
+        }
       },
-      printProgress(name, progress) {
-        process.stdout.clearLine();
-        process.stdout.cursorTo(0);
-        process.stdout.write(`[ ${progress}% ] ${name}`);
-      },
-      clearProgress() {
-        process.stdout.clearLine();
-        process.stdout.cursorTo(0);
+      async getRemoteModuleCode(name, version, di, options) {
+        const userHomeDir = os.homedir();
+        const dirUrl = `https://пак.укр/${name}/${version}`;
+        const url = `https://хмарний.пак.укр/${name}/${version}/${name}.м`;
+        const paksDir = `${userHomeDir}/.паки`;
+        if (!fs.existsSync(paksDir)) {
+          fs.mkdirSync(paksDir);
+        }
+        const dir = `${paksDir}/${md5(dirUrl)}`;
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir);
+        }
+        const file = `${dir}/${name}.м`;
+        if (!fs.existsSync(file)) {
+          printProgress(url, 0);
+          const result = await axios
+            .get(url, {
+              onDownloadProgress: (progressEvent) => {
+                printProgress(url, Math.floor(progressEvent.progress * 100 || 0));
+              },
+              responseType: "text",
+              headers: {
+                "X-Mavka-Version": mavka.constructor.VERSION
+              }
+            })
+            .then((r) => String(r.data))
+            .catch((e) => {
+              clearProgress();
+              throw new MavkaCompilationError(`Помилка завантаження паку "${name}/${version}": ${e.message}`, di);
+            });
+          clearProgress();
+          fs.writeFileSync(file, result);
+          return result;
+        }
+        return [fs.readFileSync(file, "utf8"), file];
       }
     });
 
     const scope = new Scope(mavka.globalScope);
     let code = fs.readFileSync(`${cwdPath}/${command}`, "utf8");
-    code = `
-структура Помилка
-  повідомлення текст = ""
-кінець
 
-${code}
-`.trim();
     if (code) {
       const programNode = parse(code, {
         path: `${cwdPath}/${command}`

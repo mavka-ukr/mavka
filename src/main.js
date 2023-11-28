@@ -91,16 +91,14 @@ import Scope from "./scope.js";
 import TakeRemoteInstruction from "./instructions/takeRemoteInstruction.js";
 import TakeRemoteNode from "mavka-parser/src/ast/TakeRemoteNode.js";
 import md5 from "md5";
-import fs from "fs";
 import { parse } from "mavka-parser";
-import { MavkaCompilationError } from "./error.js";
 import TernaryInstruction from "./instructions/ternaryInstruction.js";
 import TernaryNode from "mavka-parser/src/ast/TernaryNode.js";
 
 let DEBUG_ID = 0;
 
 class Mavka {
-  static VERSION = "0.50.33";
+  static VERSION = "0.50.34";
 
   constructor(options = {}) {
     this.debugInfoVarNames = new Map();
@@ -476,21 +474,18 @@ class Mavka {
   }
 
   /**
-   * @param {string} modulePath
-   * @param {string} moduleName
    * @param {string} name
+   * @param {string} as
    * @param {*} di
    * @param {*} options
    * @return {Promise<string>}
    */
-  async loadModule(modulePath, moduleName, name, di, options) {
-    const modulePathParts = modulePath.split("/");
-    const moduleDirname = modulePathParts.slice(0, modulePathParts.length - 1).join("/");
-    const tempModuleName = `${moduleName}_${md5(modulePath)}`;
+  async loadModule(name, as, di, options) {
+    const tempModuleName = `${name}_${md5(name)}`;
 
     const initModuleCode = `
 await init_${tempModuleName}();
-${varname(name)} = ${tempModuleName};
+${varname(as || name)} = ${tempModuleName};
 `.trim();
 
     if (this.modules.has(tempModuleName)) {
@@ -499,26 +494,25 @@ ${varname(name)} = ${tempModuleName};
 
     this.modules.set(tempModuleName, "");
 
-    if (fs.existsSync(modulePath)) {
-      const moduleCode = fs.readFileSync(modulePath, "utf8");
-      const moduleAst = parse(moduleCode, {
-        path: modulePath
-      });
-      const moduleScope = new Scope(this.globalScope);
-      const moduleBody = await this.compileModuleBody(
-        moduleScope,
-        processBody(this, moduleScope, moduleAst.body),
-        options
-      );
+    const [moduleCode, modulePath] = await this.options.getModuleCode(name, di, options);
+    const moduleAst = parse(moduleCode, {
+      path: modulePath
+    });
+    const moduleScope = new Scope(this.globalScope);
+    const moduleBody = await this.compileModuleBody(
+      moduleScope,
+      processBody(this, moduleScope, moduleAst.body),
+      options
+    );
 
-      const compiledModuleCode = `
+    const compiledModuleCode = `
 var ${tempModuleName};
 var init_${tempModuleName} = async function() {
   if (${tempModuleName}) {
     return;
   }
   var moduleValue = {
-    __m_name__: "${moduleName}",
+    __m_name__: "${name}",
     __m_type__: "module",
     __m_props__: Object.create(null),
   };
@@ -529,20 +523,17 @@ var init_${tempModuleName} = async function() {
 };
 `.trim();
 
-      this.modules.set(tempModuleName, compiledModuleCode);
+    this.modules.set(tempModuleName, compiledModuleCode);
 
-      return initModuleCode;
-    } else {
-      throw new MavkaCompilationError(`Модуль "${moduleName}" не знайдено.`, di);
-    }
+    return initModuleCode;
   }
 
-  async loadBuiltinModule(name, di, options) {
-    const tempModuleName = `${name}_${md5(name)}`;
+  async loadRemoteModule(name, as, version, di, options) {
+    const tempModuleName = `${name}_${md5(`пак:${name}/${version}`)}`;
 
     const initModuleCode = `
 await init_${tempModuleName}();
-${varname(name)} = ${tempModuleName};
+${varname(as || name)} = ${tempModuleName};
 `.trim();
 
     if (this.modules.has(tempModuleName)) {
@@ -551,10 +542,60 @@ ${varname(name)} = ${tempModuleName};
 
     this.modules.set(tempModuleName, "");
 
-    if (this.options.hasBuiltinModuleCode(name)) {
-      const moduleCode = await this.options.getBuiltinModuleCode(name);
+    const [moduleCode, modulePath] = await this.options.getRemoteModuleCode(name, version, di, {
+      ...options,
+      remote: `${name}/${version}`
+    });
+    const moduleAst = parse(moduleCode, {
+      path: modulePath
+    });
+    const moduleScope = new Scope(this.globalScope);
+    const moduleBody = await this.compileModuleBody(
+      moduleScope,
+      processBody(this, moduleScope, moduleAst.body),
+      options
+    );
 
-      const compiledModuleCode = `
+    const compiledModuleCode = `
+var ${tempModuleName};
+var init_${tempModuleName} = async function() {
+  if (${tempModuleName}) {
+    return;
+  }
+  var moduleValue = {
+    __m_name__: "${name}",
+    __m_type__: "module",
+    __m_props__: Object.create(null),
+  };
+  ${tempModuleName} = moduleValue;
+  await (async function() {
+    ${moduleBody}
+  })();
+};
+`.trim();
+
+    this.modules.set(tempModuleName, compiledModuleCode);
+
+    return initModuleCode;
+  }
+
+  async loadBuiltinModule(name, as, di, options) {
+    const tempModuleName = `${name}_${md5(`пак:${name}`)}`;
+
+    const initModuleCode = `
+await init_${tempModuleName}();
+${varname(as || name)} = ${tempModuleName};
+`.trim();
+
+    if (this.modules.has(tempModuleName)) {
+      return initModuleCode;
+    }
+
+    this.modules.set(tempModuleName, "");
+
+    const moduleCode = await this.options.getBuiltinModuleCode(name, di, options);
+
+    const compiledModuleCode = `
 var ${tempModuleName};
 var init_${tempModuleName} = async function() {
   if (${tempModuleName}) {
@@ -565,24 +606,9 @@ var init_${tempModuleName} = async function() {
 };
 `.trim();
 
-      this.modules.set(tempModuleName, compiledModuleCode);
+    this.modules.set(tempModuleName, compiledModuleCode);
 
-      return initModuleCode;
-    } else {
-      throw new MavkaCompilationError(`Модуль "${name}" не знайдено.`, di);
-    }
-  }
-
-  onPakStarted(url) {
-    this.options.printProgress(url, 0);
-  }
-
-  onPakProgress(url, progress) {
-    this.options.printProgress(url, progress);
-  }
-
-  onPakDone(url) {
-    this.options.clearProgress();
+    return initModuleCode;
   }
 }
 

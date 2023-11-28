@@ -12,3 +12,11 @@ var $діапазон = function* (params, di) {
     yield i;
   }
 };
+
+var $Помилка = mavka_structure(
+  "Помилка",
+  null,
+  {
+    "повідомлення": mavka_param(0, "повідомлення", $текст, "")
+  }
+);
