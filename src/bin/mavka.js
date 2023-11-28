@@ -115,7 +115,7 @@ if (command === "версія") {
             });
           clearProgress();
           fs.writeFileSync(file, result);
-          return result;
+          return [result, file];
         }
         return [fs.readFileSync(file, "utf8"), file];
       }
