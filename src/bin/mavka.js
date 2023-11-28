@@ -13,6 +13,9 @@ import { fileURLToPath } from "url";
 import md5 from "md5";
 import os from "os";
 import axios from "axios";
+import promptSync from "@kant2002/prompt-sync";
+
+global.mavka_read = promptSync;
 
 process.removeAllListeners("warning");
 
