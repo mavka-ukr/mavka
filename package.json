@@ -1,6 +1,6 @@
 {
   "name": "mavka",
-  "version": "0.50.38",
+  "version": "0.50.39",
   "description": "Сучасна українська мова програмування",
   "main": "src/main.js",
   "type": "module",
@@ -13,7 +13,8 @@
     "./error.js": "./src/error.js",
     "./scope.js": "./src/scope.js",
     "./utils.js": "./src/utils.js",
-    "./all-modules.js": "./src/all-modules.js"
+    "./all-modules.js": "./src/all-modules.js",
+    "./all-libs.js": "./src/all-libs.js"
   },
   "scripts": {
     "start": "node src/bin/mavka.js",
