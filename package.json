@@ -1,15 +1,18 @@
 {
   "name": "mavka",
-  "version": "0.50.34",
+  "version": "0.50.35",
   "description": "Сучасна українська мова програмування",
   "main": "src/main.js",
   "type": "module",
   "exports": {
     ".": "./src/main.js",
-    "./interpreter/*.js": "./src/interpreter/*.js",
-    "./loaders/*.js": "./src/loaders/*.js",
-    "./std/*.js": "./src/std/*.js",
-    "./startup-modules": "./src/startup-modules/index.js"
+    "./instructions/*.js": "./src/instructions/*.js",
+    "./lib/*.js": "./src/lib/*.js",
+    "./modules/*.js": "./src/modules/*.js",
+    "./builders.js": "./src/builders.js",
+    "./error.js": "./src/error.js",
+    "./scope.js": "./src/scope.js",
+    "./utils.js": "./src/utils.js"
   },
   "scripts": {
     "start": "node src/bin/mavka.js",
