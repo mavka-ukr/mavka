@@ -95,11 +95,12 @@ import { parse } from "mavka-parser";
 import TernaryInstruction from "./instructions/ternaryInstruction.js";
 import TernaryNode from "mavka-parser/src/ast/TernaryNode.js";
 import { MavkaCompilationError } from "./error.js";
+import { DiiaParserSyntaxError } from "mavka-parser/src/utils/errors.js";
 
 let DEBUG_ID = 0;
 
 class Mavka {
-  static VERSION = "0.50.36";
+  static VERSION = "0.50.37";
 
   constructor(options = {}) {
     this.debugInfoVarNames = new Map();
@@ -112,6 +113,7 @@ class Mavka {
     this.parse = parse;
     this.Scope = Scope;
     this.MavkaCompilationError = MavkaCompilationError;
+    this.DiiaParserSyntaxError = DiiaParserSyntaxError;
 
     this.options = options;
 
