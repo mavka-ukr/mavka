@@ -100,7 +100,7 @@ import { DiiaParserSyntaxError } from "mavka-parser/src/utils/errors.js";
 let DEBUG_ID = 0;
 
 class Mavka {
-  static VERSION = "0.50.39";
+  static VERSION = "0.50.40";
 
   constructor(options = {}) {
     this.debugInfoVarNames = new Map();
@@ -117,25 +117,25 @@ class Mavka {
 
     this.options = options;
 
-    this.globalScope = new Scope(null, new Set([
+    this.globalScope = new Scope(null, new Map([
       // head
-      "пусто",
-      "логічне",
-      "число",
-      "текст",
-      "список",
-      "словник",
-      "Дія",
-      "Структура",
-      "Модуль",
-      "так",
-      "ні",
+      ["пусто", true],
+      ["логічне", true],
+      ["число", true],
+      ["текст", true],
+      ["список", true],
+      ["словник", true],
+      ["Дія", true],
+      ["Структура", true],
+      ["Модуль", true],
+      ["так", true],
+      ["ні", true],
+      ["Помилка", true],
       // std
-      "друк",
-      // "вивести",
-      // "читати",
-      "діапазон",
-      "Помилка"
+      ["друк", true],
+      ["вивести", true],
+      ["читати", true],
+      ["діапазон", true]
     ]));
 
     this.modules = new Map();

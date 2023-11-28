@@ -1133,3 +1133,11 @@ var mavka_spread = (value, di) => {
   }
   throw new MavkaError("Неможливо розгорнути значення.", di);
 };
+
+var $Помилка = mavka_structure(
+  "Помилка",
+  null,
+  {
+    "повідомлення": mavka_param(0, "повідомлення", $текст, "")
+  }
+);
