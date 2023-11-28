@@ -193,7 +193,7 @@ export function processBody(mavka, scope, body, options = {}) {
       }
       result.push(node);
     } else if (node instanceof TakeRemoteNode) {
-      const { name } = unpackPackName(node.url);
+      const name = node.url.split("/")[0];
       scope.vars.set(node.as || name, true);
       result.push(node);
     } else if (node instanceof TakePakNode) {
