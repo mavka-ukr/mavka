@@ -417,13 +417,17 @@ var mavka_to_boolean = (value, context) => {
 };
 
 var mavka_to_number = (value, di) => {
-  if (value && typeof value === "object") {
-    if (value.__m_props__ && value.__m_props__["чародія_перетворення_на_число"]) {
-      return value.__m_props__["чародія_перетворення_на_число"]();
-    }
+  if (value == null) {
+    return 0;
+  }
+  if (value.__m_props__ && value.__m_props__["чародія_перетворення_на_число"]) {
+    return value.__m_props__["чародія_перетворення_на_число"]();
   }
   if (typeof value === "number") {
     return value;
+  }
+  if (typeof value === "string") {
+    return Number(value);
   }
   throw new MavkaError("Неможливо перетворити на число.", di);
 };
@@ -593,7 +597,7 @@ var mavka_arg = (args, index, name, type, defaultValue, di) => {
 
 // calls
 var mavka_call = (a, args, context = {}) => {
-  if (!a) {
+  if (a == null) {
     throw new MavkaError("Неможливо виконати \"пусто\".", context);
   }
   if (a === $логічне) {
@@ -636,13 +640,16 @@ var mavka_call = (a, args, context = {}) => {
   if (a.__m_props__ && a.__m_props__["чародія_викликати"]) {
     return a.__m_props__["чародія_викликати"](args, context);
   }
-  throw new MavkaError("Неможливо виконати.", context);
+  throw new MavkaError(`Неможливо виконати "${mavka_get_type_name(a)}".`, context);
 };
 
 // get/set
 var mavka_commonGet = (a, b, context, magicDiia) => {
-  if (!a) {
+  if (a == null) {
     throw new MavkaError("Неможливо отримати властивість з \"пусто\".", context);
+  }
+  if (b == null) {
+    return null;
   }
   if (a.__m_type__ === "list") {
     if (b.__m_type__ === "number") {
@@ -743,6 +750,9 @@ var mavka_commonGet = (a, b, context, magicDiia) => {
     return a.__m_map__.get(b);
   }
   if (a.__m_type__ === "text") {
+    if (b.__m_type__ === "number") {
+      return a[b];
+    }
     if (b === "символ") {
       return function(p, di) {
         var index = mavka_arg(p, 0, "позиція", $число, undefined, di);
