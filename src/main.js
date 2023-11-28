@@ -94,11 +94,12 @@ import md5 from "md5";
 import { parse } from "mavka-parser";
 import TernaryInstruction from "./instructions/ternaryInstruction.js";
 import TernaryNode from "mavka-parser/src/ast/TernaryNode.js";
+import { MavkaCompilationError } from "./error.js";
 
 let DEBUG_ID = 0;
 
 class Mavka {
-  static VERSION = "0.50.35";
+  static VERSION = "0.50.36";
 
   constructor(options = {}) {
     this.debugInfoVarNames = new Map();
@@ -107,6 +108,10 @@ class Mavka {
       this.debugInfoVarNames.set(debugInfoVarName, [node.context.fileinfo.path, node.context.start.line, node.context.start.column]);
       return debugInfoVarName;
     };
+
+    this.parse = parse;
+    this.Scope = Scope;
+    this.MavkaCompilationError = MavkaCompilationError;
 
     this.options = options;
 
