@@ -75,6 +75,16 @@ export async function buildVars(scope, ignore = []) {
   return vars;
 }
 
+export async function buildSetters(scope, ignore = []) {
+  let setters = [...scope.setters]
+    .map((v) => `var set${varname(v)} = (v) => { ${varname(v)} = v; };`)
+    .join("\n");
+  if (setters) {
+    setters += "\n";
+  }
+  return setters;
+}
+
 export async function buildDiia(mavka, name, scope, async, params, body) {
   params.forEach((param) => {
     scope.vars.set(param.name, true);
@@ -85,7 +95,8 @@ export async function buildDiia(mavka, name, scope, async, params, body) {
   const paramsExtracting = await buildParamsExtracting(mavka, scope, params);
   const compiledBody = await mavka.compileDiiaBody(scope, processBody(mavka, scope, body));
   const vars = await buildVars(scope, params.map((p) => p.name));
-  const bodyString = [vars, paramsExtracting, compiledBody].filter((v) => v).join("\n");
+  const setters = await buildSetters(scope);
+  const bodyString = [vars, setters, paramsExtracting, compiledBody].filter((v) => v).join("\n");
 
   return `
 mavka_diia(${compiledName},${compiledParams},${async ? "async " : ""}function(params, callDi) {
@@ -103,7 +114,8 @@ export async function buildStructureMethod(mavka, structureName, name, scope, as
   const paramsExtracting = await buildParamsExtracting(mavka, scope, params);
   const compiledBody = await mavka.compileDiiaBody(scope, processBody(mavka, scope, body));
   const vars = await buildVars(scope, params.map((p) => p.name));
-  const bodyString = [vars, paramsExtracting, compiledBody].filter((v) => v).join("\n");
+  const setters = await buildSetters(scope);
+  const bodyString = [vars, setters, paramsExtracting, compiledBody].filter((v) => v).join("\n");
 
   return `
 mavka_method(${varname(structureName)},"${name}",${compiledParams},${async ? "async " : ""}function($я, params, callDi) {

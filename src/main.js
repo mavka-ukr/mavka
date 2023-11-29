@@ -100,7 +100,7 @@ import { DiiaParserSyntaxError } from "mavka-parser/src/utils/errors.js";
 let DEBUG_ID = 0;
 
 class Mavka {
-  static VERSION = "0.51.6";
+  static VERSION = "0.51.7";
 
   constructor(options = {}) {
     this.debugInfoVarNames = new Map();
@@ -440,6 +440,12 @@ class Mavka {
       lines.push(await this.compileNode(scope, element, options));
     }
 
+    [...scope.setters]
+      .map((v) => `var set${varname(v)} = (v) => { ${varname(v)} = v; }`)
+      .forEach((v) => {
+        lines.unshift(v);
+      });
+
     [...scope.vars.entries()]
       .filter(([, value]) => value !== false)
       .map(([name]) => name)
@@ -462,6 +468,12 @@ class Mavka {
     for (const element of body) {
       lines.push(await this.compileNode(scope, element, options));
     }
+
+    [...scope.setters]
+      .map((v) => `var set${varname(v)} = (v) => { ${varname(v)} = v; }`)
+      .forEach((v) => {
+        lines.unshift(v);
+      });
 
     for (const [, v] of this.modules.entries()) {
       lines.unshift(v);

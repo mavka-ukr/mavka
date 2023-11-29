@@ -2,7 +2,7 @@ class Scope {
   constructor(parent, vars = new Map()) {
     this.parent = parent;
     this.vars = vars;
-    this.setters = vars;
+    this.setters = new Set();
   }
 
   has(name) {
