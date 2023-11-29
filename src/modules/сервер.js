@@ -28,13 +28,7 @@ await ((async function() {
       var options = arg("опції");
       var callback = arg("зворот");
 
-      var port = 80;
-      if (mavka_compare_contains(options, "порт")) {
-        port = mavka_get(options, "порт", di);
-        if (mavka_compare_is_not(port, $число, di)) {
-          throw new MavkaError("Властивість \"порт\" має бути числом.", di);
-        }
-      }
+      var port = mavka_get(options, "порт", di);
 
       var server = http.createServer(async (req, res) => {
         var headers = mavka_dictionary();
