@@ -158,7 +158,7 @@ var mavka_compare_ge = (a, b, context) => {
   return a >= b;
 };
 
-var mavka_compare_is = (a, b, context) => {
+var mavka_compare_is = (a, b, di) => {
   if (a == null && b == null) {
     return true;
   }
@@ -194,9 +194,9 @@ var mavka_compare_is = (a, b, context) => {
       }
       return false;
     case "god":
-      return a.__m_elements__.some((el) => mavka_compare_is(el, b, context));
+      return a.__m_elements__.some((el) => mavka_compare_is(el, b, di));
     default:
-      throw new MavkaError("[BUG] невідоме значення для порівняння: " + a.__m_type__, context);
+      throw new MavkaError("[BUG] невідоме значення для порівняння: " + a.__m_type__, di);
   }
 };
 
@@ -592,22 +592,22 @@ var mavka_arg = (args, index, name, type, defaultValue, di) => {
       return Array.isArray(args) ? args[index] : args[name];
     }
   }
-  return mavka_mapArg(Array.isArray(args) ? args[index] : args[name], type, defaultValue, di);
+  return mavka_mapArg(Array.isArray(args) ? args[index] : args[name], name, type, defaultValue, di);
 };
 
 // calls
-var mavka_call = (a, args, context = {}) => {
+var mavka_call = (a, args, di = {}) => {
   if (a == null) {
-    throw new MavkaError("Неможливо виконати \"пусто\".", context);
+    throw new MavkaError("Неможливо виконати \"пусто\".", di);
   }
   if (a === $логічне) {
-    return mavka_to_boolean(mavka_arg(args, 0, "значення"), context);
+    return mavka_to_boolean(mavka_arg(args, 0, "значення"), di);
   }
   if (a === $число) {
-    return mavka_to_number(mavka_arg(args, 0, "значення"), context);
+    return mavka_to_number(mavka_arg(args, 0, "значення"), di);
   }
   if (a === $текст) {
-    return mavka_to_string(mavka_arg(args, 0, "значення"), context);
+    return mavka_to_string(mavka_arg(args, 0, "значення"), di);
   }
   if (a === $список) {
     return [];
@@ -626,21 +626,21 @@ var mavka_call = (a, args, context = {}) => {
     return value;
   }
   if (a === $Дія) {
-    throw new MavkaError("Неможливо виконати.", context);
+    throw new MavkaError("Неможливо виконати.", di);
   }
   if (a === $Структура) {
-    throw new MavkaError("Неможливо виконати.", context);
+    throw new MavkaError("Неможливо виконати.", di);
   }
   if (a === $Модуль) {
-    throw new MavkaError("Неможливо виконати.", context);
+    throw new MavkaError("Неможливо виконати.", di);
   }
   if (a.__m_type__ === "diia") {
-    return a(args, context);
+    return a(args, di);
   }
   if (a.__m_props__ && a.__m_props__["чародія_викликати"]) {
-    return a.__m_props__["чародія_викликати"](args, context);
+    return a.__m_props__["чародія_викликати"](args, di);
   }
-  throw new MavkaError(`Неможливо виконати "${mavka_get_type_name(a)}".`, context);
+  throw new MavkaError(`Неможливо виконати "${mavka_get_type_name(a)}".`, di);
 };
 
 // get/set
@@ -871,12 +871,12 @@ var mavka_commonGet = (a, b, context, magicDiia) => {
   return a.__m_props__[b];
 };
 
-var mavka_get = (a, b, context) => mavka_commonGet(a, b, context);
-var mavka_getSpecial = (a, b, context) => mavka_commonGet(a, b, context, "чародія_отримати_спеціальну_властивість");
+var mavka_get = (a, b, di) => mavka_commonGet(a, b, di);
+var mavka_getSpecial = (a, b, di) => mavka_commonGet(a, b, di, "чародія_отримати_спеціальну_властивість");
 
-var mavka_set = (a, b, c, context) => {
+var mavka_set = (a, b, c, di) => {
   if (a == null) {
-    throw new MavkaError("Неможливо встановити властивість для \"пусто\".", context);
+    throw new MavkaError("Неможливо встановити властивість для \"пусто\".", di);
   }
   if (a.__m_type__ === "list" && b.__m_type__ === "number") {
     a[b] = c;
@@ -885,12 +885,12 @@ var mavka_set = (a, b, c, context) => {
   } else if (a.__m_props__) {
     a.__m_props__[b] = c;
   } else {
-    throw new MavkaError("Неможливо встановити властивість.", context);
+    throw new MavkaError("Неможливо встановити властивість.", di);
   }
 };
-var mavka_setSpecial = (a, b, c, context) => {
+var mavka_setSpecial = (a, b, c, di) => {
   if (a == null) {
-    throw new MavkaError("Неможливо встановити властивість для \"пусто\".", context);
+    throw new MavkaError("Неможливо встановити властивість для \"пусто\".", di);
   }
   if (a.__m_type__ === "list" && b.__m_type__ === "number") {
     a[b] = c;
@@ -898,23 +898,23 @@ var mavka_setSpecial = (a, b, c, context) => {
     a.__m_map__.set(b, c);
   } else if (a.__m_props__) {
     if (a.__m_props__["чародія_змінити_спеціальну_властивість"]) {
-      a.__m_props__["чародія_змінити_спеціальну_властивість"]([b, c], context);
+      a.__m_props__["чародія_змінити_спеціальну_властивість"]([b, c], di);
       return a;
     }
     a.__m_props__[b] = c;
   } else {
-    throw new MavkaError("Неможливо встановити властивість.", context);
+    throw new MavkaError("Неможливо встановити властивість.", di);
   }
 };
 
 // args
-var mavka_mapArg = (value, type, defaultValue, di) => {
+var mavka_mapArg = (value, name, type, defaultValue, di) => {
   if (value === undefined) {
     if (defaultValue === undefined) {
       if (type === undefined) {
         throw new MavkaError("Передано невідповідний обʼєкт.", di);
       } else {
-        throw new MavkaError(`Очікується "${mavka_get_type_name(type)}", отримано ніщо.`, di);
+        throw new MavkaError(`Очікується, що "${name}" буде "${type.__m_name__}", отримано ніщо.`, di);
       }
     } else {
       return defaultValue;
@@ -925,8 +925,7 @@ var mavka_mapArg = (value, type, defaultValue, di) => {
     } else {
       if (type) {
         if (mavka_compare_is_not(value, type, di)) {
-          var name = type.__m_type__ === "structure" ? type.__m_name__ : mavka_get_type_name(type);
-          throw new MavkaError(`Очікується "${name}", отримано "${mavka_get_type_name(value)}".`, di);
+          throw new MavkaError(`Очікується, що "${name}" буде "${type.__m_name__}", отримано "${mavka_get_type_name(value)}".`, di);
         }
       }
     }
@@ -1116,10 +1115,21 @@ var mavka_param = (index, name, type, defaultValue) => {
 };
 
 var mavka_diia = (name, params, fn, result, di) => {
-  var value = function(p, di) {
-    return fn(p, di);
+  var value = function(args, di) {
+    var arg = (argName) => {
+      return mavka_arg(
+        args,
+        value.__m_params__[argName].__m_props__["позиція"],
+        argName,
+        value.__m_params__[argName].__m_props__["тип"],
+        value.__m_params__[argName].__m_props__["значення"],
+        di
+      );
+    };
+    return fn(args, di, { arg });
   };
   value.__m_name__ = name;
+  value.__m_params__ = params;
   return value;
 };
 

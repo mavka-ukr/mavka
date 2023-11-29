@@ -521,152 +521,156 @@
   }
 
   // todo: complete
+  // todo: fix error messages
 
-  return {
-    __m_type__: "module",
-    __m_name__: "дід",
-    __m_props__: {
-      "розібрати": ((function() {
-        const diiaValue = function(params, di) {
-          let value = mavka_mapArg(Array.isArray(params) ? params[0] : params["значення"], $текст, undefined, di);
-          let definitions = mavka_mapArg(Array.isArray(params) ? params[1] : params["визначення"], [$словник, null], mavka_dictionary(), di);
+  const $дід = mavka_module("дід");
+  const $розібрати = mavka_diia(
+    "розібрати",
+    {
+      "значення": mavka_param(0, "значення", $текст),
+      "визначення": mavka_param(1, "визначення", [$словник, null], mavka_dictionary())
+    },
+    function(args, di, { arg }) {
+      var value = arg("значення");
+      var definitions = arg("визначення");
 
-          let ast;
+      var ast;
 
-          try {
-            ast = parseDid(value);
-          } catch (e) {
-            if (e && e instanceof ParserError) {
-              throw new Error(e.message);
-            } else {
-              throw e;
-            }
+      try {
+        ast = parseDid(value);
+      } catch (e) {
+        if (e && e instanceof ParserError) {
+          throw new Error(e.message);
+        } else {
+          throw e;
+        }
+      }
+
+      var makeValue = (node) => {
+        if (node instanceof NumberNode) {
+          return node.value;
+        }
+
+        if (node instanceof TextNode) {
+          return node.value;
+        }
+
+        if (node instanceof EmptyNode) {
+          return null;
+        }
+
+        if (node instanceof LogicalNode) {
+          return node.value;
+        }
+
+        if (node instanceof ListNode) {
+          return node.contents.map(makeValue);
+        }
+
+        if (node instanceof DictionaryNode) {
+          const dict = mavka_dictionary();
+          for (const entry of node.contents) {
+            dict.__m_map__.set(makeValue(entry.key), makeValue(entry.value));
           }
+          return dict;
+        }
 
-          const makeValue = (node) => {
-            if (node instanceof NumberNode) {
-              return node.value;
+        if (node instanceof ObjectNode) {
+          if (definitions.__m_map__.has(node.name)) {
+            const params = {};
+            for (const entry of node.contents) {
+              params[makeValue(entry.key)] = makeValue(entry.value);
             }
-
-            if (node instanceof TextNode) {
-              return node.value;
+            return mavka_call(
+              definitions.__m_map__.get(node.name),
+              params,
+              di
+            );
+          } else {
+            const dict = mavka_dictionary();
+            for (const entry of node.contents) {
+              dict.__m_map__.set(makeValue(entry.key), makeValue(entry.value));
             }
+            return dict;
+          }
+        }
 
-            if (node instanceof EmptyNode) {
-              return null;
-            }
+        return null;
+      };
 
-            if (node instanceof LogicalNode) {
-              return node.value;
-            }
-
-            if (node instanceof ListNode) {
-              return node.contents.map(makeValue);
-            }
-
-            if (node instanceof DictionaryNode) {
-              const dict = mavka_dictionary();
-              for (const entry of node.contents) {
-                dict.__m_map__.set(makeValue(entry.key), makeValue(entry.value));
-              }
-              return dict;
-            }
-
-            if (node instanceof ObjectNode) {
-              if (definitions.__m_map__.has(node.name)) {
-                const params = {};
-                for (const entry of node.contents) {
-                  params[makeValue(entry.key)] = makeValue(entry.value);
-                }
-                return mavka_call(
-                  definitions.__m_map__.get(node.name),
-                  params,
-                  di
-                );
-              } else {
-                const dict = mavka_dictionary();
-                for (const entry of node.contents) {
-                  dict.__m_map__.set(makeValue(entry.key), makeValue(entry.value));
-                }
-                return dict;
-              }
-            }
-
-            return null;
-          };
-
-          return makeValue(ast);
-        };
-        diiaValue.__m_name__ = "розібрати";
-        return diiaValue;
-      })()),
-      "зібрати": ((function() {
-        const diiaValue = function(params, di) {
-          let value = mavka_mapArg(Array.isArray(params) ? params[0] : params["значення"], undefined, null, di);
-
-          const filterEntries = (entries) => {
-            return entries.filter(([key, value]) => {
-              if (value == null) {
-                return true;
-              }
-              if (typeof key !== "string") {
-                return false;
-              }
-              return [
-                "number",
-                "text",
-                "logical",
-                "list",
-                "dictionary",
-                "object"
-              ].includes(value.__m_type__);
-            });
-          };
-
-          const filterList = (list) => {
-            return list.filter((value) => {
-              if (value == null) {
-                return true;
-              }
-              return [
-                "number",
-                "text",
-                "logical",
-                "list",
-                "dictionary",
-                "object"
-              ].includes(value.__m_type__);
-            });
-          };
-
-          const makeValue = (value) => {
-            if (value == null) {
-              return "пусто";
-            }
-
-            switch (value.__m_type__) {
-              case "number":
-                return `${value}`;
-              case "text":
-                return `"${value.replaceAll("\\", "\\\\").replaceAll("\"", "\\\"")}"`;
-              case "logical":
-                return value ? "так" : "ні";
-              case "list":
-                return `[${filterList(value).map(makeValue).join(",")}]`;
-              case "dictionary":
-                return `(${filterEntries([...value.__m_map__.entries()]).map(([key, value]) => `${key}=${makeValue(value)}`).join(",")})`;
-              case "object":
-                return `${value.__m_structure__.__m_name__}(${filterEntries(Object.entries(value.__m_props__)).map(([key, value]) => `${key}=${makeValue(value)}`).join(",")})`;
-              default:
-                return "пусто";
-            }
-          };
-
-          return makeValue(value);
-        };
-        diiaValue.__m_name__ = "зібрати";
-        return diiaValue;
-      })())
+      return makeValue(ast);
     }
-  };
+  );
+  const $зібрати = mavka_diia(
+    "зібрати",
+    {
+      "значення": mavka_param(0, "значення")
+    },
+    function(args, di, { arg }) {
+      var value = arg("значення");
+
+      var filterEntries = (entries) => {
+        return entries.filter(([key, value]) => {
+          if (value == null) {
+            return true;
+          }
+          if (typeof key !== "string") {
+            return false;
+          }
+          return [
+            "number",
+            "text",
+            "logical",
+            "list",
+            "dictionary",
+            "object"
+          ].includes(value.__m_type__);
+        });
+      };
+
+      var filterList = (list) => {
+        return list.filter((value) => {
+          if (value == null) {
+            return true;
+          }
+          return [
+            "number",
+            "text",
+            "logical",
+            "list",
+            "dictionary",
+            "object"
+          ].includes(value.__m_type__);
+        });
+      };
+
+      var makeValue = (value) => {
+        if (value == null) {
+          return "пусто";
+        }
+
+        switch (value.__m_type__) {
+          case "number":
+            return `${value}`;
+          case "text":
+            return `"${value.replaceAll("\"", "\\\"")}"`;
+          case "logical":
+            return value ? "так" : "ні";
+          case "list":
+            return `[${filterList(value).map(makeValue).join(",")}]`;
+          case "dictionary":
+            return `(${filterEntries([...value.__m_map__.entries()]).map(([key, value]) => `"${key}"=${makeValue(value)}`).join(",")})`;
+          case "object":
+            return `${value.__m_structure__.__m_name__}(${filterEntries(Object.entries(value.__m_props__)).map(([key, value]) => `${key}=${makeValue(value)}`).join(",")})`;
+          default:
+            return "пусто";
+        }
+      };
+
+      return makeValue(value);
+    }
+  );
+  $дід.__m_props__["розібрати"] = $розібрати;
+  $дід.__m_props__["зібрати"] = $зібрати;
+  return $дід;
 })());

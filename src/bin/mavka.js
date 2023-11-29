@@ -19,6 +19,10 @@ global.mavka_read = promptSync;
 
 process.removeAllListeners("warning");
 
+process.on("unhandledRejection", (e) => {
+  throw e;
+});
+
 const cwdPath = process.cwd();
 const binPath = path.dirname(fileURLToPath(import.meta.url));
 
@@ -140,12 +144,11 @@ if (command === "версія") {
       // console.log(result);
       // console.log("---------");
 
-      const compiled = `
-  ((async function () {
-${headLib}
-${stdLib}
-
+      const compiled = `((async function () {
 try {
+  ${headLib}
+  ${stdLib}
+
   ${result}
 } catch (e) {
   if (e instanceof MavkaError) {
@@ -155,11 +158,10 @@ try {
       console.error(mavka_to_pretty_string(e.value));
     }
   } else {
-    throw e;
+    console.error(String(e));
   }
 }
-  })());
-    `.trim();
+})());`.trim();
 
       if (doCompile) {
         if (process.argv[4]) {
@@ -181,7 +183,7 @@ try {
         console.error(e.message);
       }
     } else {
-      throw e;
+      console.error(String(e));
     }
   }
 }
