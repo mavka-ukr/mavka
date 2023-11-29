@@ -5,12 +5,12 @@ await ((async function() {
     "метод": mavka_param(0, "метод", $текст),
     "шлях": mavka_param(1, "шлях", $текст),
     "заголовки": mavka_param(2, "заголовки", $словник),
-    "тіло": mavka_param(3, "тіло", $байти)
+    "дані": mavka_param(3, "дані", $байти)
   });
   var $Відповідь = mavka_structure("Відповідь", null, {
     "код": mavka_param(0, "код", $число, 200),
     "заголовки": mavka_param(1, "заголовки", $словник, new Map()),
-    "тіло": mavka_param(2, "тіло", [$байти, $текст], "")
+    "дані": mavka_param(2, "дані", [$байти, $текст], "")
   });
   var $Опції = mavka_structure("Опції", null, {
     "порт": mavka_param(0, "порт", $число, 80)
@@ -56,7 +56,7 @@ await ((async function() {
             for (var [hk, vv] of result.__m_props__["заголовки"].entries()) {
               res.setHeader(hk, vv);
             }
-            body = result.__m_props__["тіло"];
+            body = result.__m_props__["дані"];
           } else {
             throw new MavkaError("Обробник повинен повертати байти, текст або Відповідь.", di);
           }
