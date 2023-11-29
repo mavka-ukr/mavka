@@ -569,7 +569,7 @@ var mavka_to_pretty_string = (value, root = true) => {
   if (value.__m_type__ === "dictionary") {
     const entries = [];
     for (const [k, v] of value.__m_map__) {
-      entries.push(`${mavka_to_pretty_string(k)}=${mavka_to_pretty_string(v, false)}`);
+      entries.push(`${mavka_to_pretty_string(k, false)}=${mavka_to_pretty_string(v, false)}`);
     }
     return `(${entries.join(", ")})`;
   }
@@ -1163,6 +1163,22 @@ var mavka_spread = (value, di) => {
     return Array.from(value.__m_map__.values());
   }
   throw new MavkaError("Неможливо розгорнути значення.", di);
+};
+
+var mavka_dictionary_to_js_object = (value, di) => {
+  const obj = {};
+  for (const [k, v] of value.__m_map__) {
+    obj[k] = v;
+  }
+  return obj;
+};
+
+var mavka_js_object_to_dictionary = (value, di) => {
+  const dict = mavka_dictionary();
+  for (const k in value) {
+    dict.__m_map__.set(k, value[k]);
+  }
+  return dict;
 };
 
 var $Помилка = mavka_structure(
