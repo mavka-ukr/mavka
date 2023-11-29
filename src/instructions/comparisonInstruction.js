@@ -40,13 +40,13 @@ class ComparisonInstruction extends Instruction {
         return `mavka_compare_is(${left}, ${right}, ${debugInfoVarName})`;
 
       case "не є":
-        return `mavka_compare_is_not(${left}, ${right}, ${debugInfoVarName})`;
+        return `!mavka_compare_is(${left}, ${right}, ${debugInfoVarName})`;
 
       case "містить":
         return `mavka_compare_contains(${left}, ${right}, ${debugInfoVarName})`;
 
       case "не містить":
-        return `mavka_compare_not_contains(${left}, ${right}, ${debugInfoVarName})`;
+        return `!mavka_compare_contains(${left}, ${right}, ${debugInfoVarName})`;
 
       default:
         throw new Error(`Unknown comparison operation: ${node.operation}`);

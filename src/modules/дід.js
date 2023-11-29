@@ -528,7 +528,7 @@
     "розібрати",
     {
       "значення": mavka_param(0, "значення", $текст),
-      "визначення": mavka_param(1, "визначення", [$словник, null], mavka_dictionary())
+      "визначення": mavka_param(1, "визначення", [$словник, null], new Map())
     },
     function(args, di, { arg }) {
       var value = arg("значення");
@@ -568,28 +568,28 @@
         }
 
         if (node instanceof DictionaryNode) {
-          const dict = mavka_dictionary();
+          const dict = new Map();
           for (const entry of node.contents) {
-            dict.__m_map__.set(makeValue(entry.key), makeValue(entry.value));
+            dict.set(makeValue(entry.key), makeValue(entry.value));
           }
           return dict;
         }
 
         if (node instanceof ObjectNode) {
-          if (definitions.__m_map__.has(node.name)) {
+          if (definitions.has(node.name)) {
             const params = {};
             for (const entry of node.contents) {
               params[makeValue(entry.key)] = makeValue(entry.value);
             }
             return mavka_call(
-              definitions.__m_map__.get(node.name),
+              definitions.get(node.name),
               params,
               di
             );
           } else {
-            const dict = mavka_dictionary();
+            const dict = new Map();
             for (const entry of node.contents) {
-              dict.__m_map__.set(makeValue(entry.key), makeValue(entry.value));
+              dict.set(makeValue(entry.key), makeValue(entry.value));
             }
             return dict;
           }
@@ -659,7 +659,7 @@
           case "list":
             return `[${filterList(value).map(makeValue).join(",")}]`;
           case "dictionary":
-            return `(${filterEntries([...value.__m_map__.entries()]).map(([key, value]) => `"${key}"=${makeValue(value)}`).join(",")})`;
+            return `(${filterEntries([...value.entries()]).map(([key, value]) => `"${key}"=${makeValue(value)}`).join(",")})`;
           case "object":
             return `${value.__m_structure__.__m_name__}(${filterEntries(Object.entries(value.__m_props__)).map(([key, value]) => `${key}=${makeValue(value)}`).join(",")})`;
           default:

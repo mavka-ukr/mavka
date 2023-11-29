@@ -14,6 +14,7 @@ import md5 from "md5";
 import os from "os";
 import axios from "axios";
 import promptSync from "@kant2002/prompt-sync";
+import { cleanEval } from "../cleanEval.js";
 
 global.mavka_read = promptSync;
 
@@ -55,8 +56,11 @@ if (command === "версія") {
 
   try {
     const headLib = fs.readFileSync(`${binPath}/../lib/head.js`, "utf8");
+    const comparisonLib = fs.readFileSync(`${binPath}/../lib/comparison.js`, "utf8");
+    const arithmeticLib = fs.readFileSync(`${binPath}/../lib/arithmetic.js`, "utf8");
+    const getsetLib = fs.readFileSync(`${binPath}/../lib/getset.js`, "utf8");
+    const callLib = fs.readFileSync(`${binPath}/../lib/call.js`, "utf8");
     const stdLib = fs.readFileSync(`${binPath}/../lib/std.js`, "utf8");
-
 
     function printProgress(name, progress) {
       process.stdout.clearLine();
@@ -146,7 +150,12 @@ if (command === "версія") {
 
       const compiled = `((async function () {
 ${headLib}
+${comparisonLib}
+${arithmeticLib}
+${getsetLib}
+${callLib}
 ${stdLib}
+
 try {
   ${result}
 } catch (e) {
@@ -169,7 +178,7 @@ try {
           fs.writeFileSync(`${cwdPath}/${command}.js`, compiled);
         }
       } else {
-        eval(compiled);
+        cleanEval(compiled);
       }
     }
   } catch (e) {

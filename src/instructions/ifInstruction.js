@@ -14,7 +14,7 @@ class IfInstruction extends Instruction {
     const elseBody = node.elseBody ? await this.mavka.compileBody(scope, processBody(this.mavka, scope, node.elseBody, options), options) : "";
 
     return `
-if (${value}) {
+if (mavka_to_boolean(${value})) {
   ${body}
 }${elseBody ? " else {\n" + elseBody + "\n}" : ""}
 `.trim();
