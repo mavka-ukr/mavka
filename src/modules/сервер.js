@@ -2,7 +2,8 @@ await ((async function() {
   var { default: http } = await import("http");
   var $сервер = mavka_module("сервер");
   var $Опції = mavka_structure("Опції", null, {
-    "порт": mavka_param(0, "порт", $число, 80)
+    "хост": mavka_param(0, "хост", $текст, "localhost"),
+    "порт": mavka_param(1, "порт", $число, 80)
   });
   var $Сервер = mavka_structure("Сервер", null, {
     "обробник": mavka_param(0, "обробник", $Дія),
@@ -18,6 +19,7 @@ await ((async function() {
       var handler = me.__m_props__["обробник"];
       var options = me.__m_props__["опції"];
       var callback = arg("зворот");
+      var host = mavka_get(options, "хост", di);
       var port = mavka_get(options, "порт", di);
 
       var server = http.createServer((req, res) => {
@@ -76,7 +78,7 @@ await ((async function() {
         });
       });
 
-      server.listen(port, function(err) {
+      server.listen(port, host, function(err) {
         if (err) {
           throw err;
         } else if (callback) {
