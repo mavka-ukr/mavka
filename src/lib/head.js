@@ -520,10 +520,21 @@ var mavka_method = (structure, name, params, fn, result, di) => {
   if (structure.__m_type__ !== "structure") {
     throw new MavkaError(`${structure} не є структурою.`, di);
   }
-  var value = function(me, p, di) {
-    return fn(me, p, di);
+  var value = function(me, args, di) {
+    var arg = (argName) => {
+      return mavka_arg(
+        args,
+        value.__m_params__[argName].get("позиція"),
+        argName,
+        value.__m_params__[argName].get("тип"),
+        value.__m_params__[argName].get("значення"),
+        di
+      );
+    };
+    return fn(me, args, di, { arg });
   };
   value.__m_name__ = name;
+  value.__m_params__ = params;
   return value;
 };
 
