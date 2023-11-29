@@ -3,7 +3,7 @@ await ((async function() {
   var $Відповідь = mavka_structure("Відповідь", null, {
     "код": mavka_param(0, "код", $число),
     "заголовки": mavka_param(1, "заголовки", $словник),
-    "тіло": mavka_param(2, "тіло", $байти)
+    "дані": mavka_param(2, "дані", $байти)
   });
   var $надіслати = mavka_diia(
     "надіслати",
@@ -11,13 +11,13 @@ await ((async function() {
       "метод": mavka_param(0, "метод", $текст, "GET"),
       "урл": mavka_param(1, "урл", $текст, ""),
       "заголовки": mavka_param(2, "заголовки", $словник, new Map()),
-      "тіло": mavka_param(3, "тіло", [$байти, $текст], "")
+      "дані": mavka_param(3, "дані", [$байти, $текст], "")
     },
     async function(args, di, { arg }) {
       var method = arg("метод").toUpperCase();
       var url = arg("урл");
       var headers = arg("заголовки");
-      var body = arg("тіло");
+      var body = arg("дані");
 
       const response = await fetch(url, {
         method,
