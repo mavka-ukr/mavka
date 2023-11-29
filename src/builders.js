@@ -115,12 +115,12 @@ mavka_method(${varname(structureName)},"${name}",${compiledParams},${async ? "as
 export async function buildDictionary(mavka, scope, args) {
   const compiledArgs = (await Promise.all(Object.entries(args).map(async ([name, value]) => {
     value = await mavka.compileNode(scope, value);
-    return `dictionaryValue.__m_map__.set("${name}", ${value});`;
+    return `dictionaryValue.set("${name}", ${value});`;
   }))).join("\n");
 
   return `
 ((function() {
-  var dictionaryValue = mavka_dictionary();
+  var dictionaryValue = new Map();
   ${compiledArgs}
   return dictionaryValue;
 })())
