@@ -13,11 +13,14 @@ await ((async function() {
     "заголовки": mavka_param(1, "заголовки", $словник, mavka_dictionary()),
     "тіло": mavka_param(2, "тіло", $текст, "")
   });
+  var $Опції = mavka_structure("Опції", null, {
+    "порт": mavka_param(0, "порт", $число, 80)
+  });
   var $запустити = mavka_diia(
     "запустити",
     {
       "обробник": mavka_param(0, "обробник", $Дія, undefined),
-      "опції": mavka_param(1, "опції", $словник, mavka_dictionary()),
+      "опції": mavka_param(1, "опції", $Опції, mavka_call($Опції, [])),
       "зворот": mavka_param(2, "зворот", [$Дія, null], null)
     },
     function(args, di, { arg }) {
@@ -91,6 +94,7 @@ await ((async function() {
   );
   $сервер.__m_props__["Запит"] = $Запит;
   $сервер.__m_props__["Відповідь"] = $Відповідь;
+  $сервер.__m_props__["Опції"] = $Опції;
   $сервер.__m_props__["запустити"] = $запустити;
   return $сервер;
 })());

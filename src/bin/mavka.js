@@ -145,10 +145,9 @@ if (command === "версія") {
       // console.log("---------");
 
       const compiled = `((async function () {
+${headLib}
+${stdLib}
 try {
-  ${headLib}
-  ${stdLib}
-
   ${result}
 } catch (e) {
   if (e instanceof MavkaError) {
