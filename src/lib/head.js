@@ -924,6 +924,17 @@ var mavka_mapArg = (value, name, type, defaultValue, di) => {
       // todo: implement
     } else {
       if (type) {
+        if (type.__m_type__ === "structure") {
+          if (value != null) {
+            if (value.__m_type__ === "dictionary") {
+              const argsObj = [...value.__m_map__.entries()].reduce((acc, [k, v]) => {
+                acc[k] = v;
+                return acc;
+              }, {});
+              return mavka_call(type, argsObj, di);
+            }
+          }
+        }
         if (mavka_compare_is_not(value, type, di)) {
           throw new MavkaError(`Очікується, що "${name}" буде "${type.__m_name__}", отримано "${mavka_get_type_name(value)}".`, di);
         }
