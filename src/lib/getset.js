@@ -170,7 +170,7 @@ function mavka_commonGet_text(a, b, di) {
   if (b === "зрізати") {
     return function(p, di) {
       var indexStart = mavka_arg(p, 0, "від", м_число, undefined, di);
-      var indexEnd = mavka_arg(p, 1, "до", [м_число, null], undefined, di);
+      var indexEnd = mavka_arg(p, 1, "до", [м_число, null], null, di);
       return a.substring(indexStart, indexEnd ?? undefined);
     };
   }

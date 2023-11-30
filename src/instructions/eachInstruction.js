@@ -87,15 +87,16 @@ for (${varname(name)} = compiledFrom_${i}; ${varname(name)} ${compiledSymbol} co
 
     if (keyName) {
       return `
-for (${varname(keyName)} in ${compiledIterator}) {
-  ${varname(name)} = ${compiledIterator}[${varname(keyName)}];
+for (var entry of mavka_entries(${compiledIterator})) {
+  ${varname(keyName)} = entry[0];
+  ${varname(name)} = entry[1];
   ${compiledBody}
 }
 `.trim();
     }
 
     return `
-for (${varname(name)} of ${compiledIterator}) {
+for (${varname(name)} of mavka_values(${compiledIterator})) {
   ${compiledBody}
 }
 `.trim();
