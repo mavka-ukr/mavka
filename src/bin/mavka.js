@@ -87,8 +87,8 @@ if (command === "запустити") {
   command = process.argv[3];
 }
 if (!replMode) {
-  if (fs.existsSync(`${cwdPath}/${command}`)) {
-    code = fs.readFileSync(`${cwdPath}/${command}`, "utf8");
+  if (fs.existsSync(command)) {
+    code = fs.readFileSync(command, "utf8");
   } else {
     console.error(`Модуль "${command}" не знайдено.`);
     process.exit(1);
@@ -195,12 +195,12 @@ const scope = new Scope(mavka.globalScope);
 
 try {
   const programNode = parse(code, {
-    path: `${cwdPath}/${command}`
+    path: command
   });
 
   const result = await mavka.compileProgramBody(scope, await processBody(mavka, scope, programNode.body), {
-    rootModulePath: `${cwdPath}/${command}`,
-    currentModulePath: `${cwdPath}/${command}`
+    rootModulePath: command,
+    currentModulePath: command
   });
 
   // console.log(result);
