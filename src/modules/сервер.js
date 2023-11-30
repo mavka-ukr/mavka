@@ -1,13 +1,13 @@
 await ((async function() {
   var { default: http } = await import("http");
-  var м_сервер = mavka_module("сервер");
-  var м_Опції = mavka_structure("Опції", null, {
+  var сервер = mavka_module("сервер");
+  var Опції = mavka_structure("Опції", null, {
     "хост": mavka_param(0, "хост", м_текст, "localhost"),
     "порт": mavka_param(1, "порт", м_число, 80)
   });
   var м_Сервер = mavka_structure("Сервер", null, {
     "обробник": mavka_param(0, "обробник", м_Дія),
-    "опції": mavka_param(1, "опції", м_Опції, mavka_call(м_Опції))
+    "опції": mavka_param(1, "опції", Опції, mavka_call(Опції))
   });
   м_Сервер.__m_methods__["запустити"] = mavka_method(
     м_Сервер,
@@ -34,7 +34,7 @@ await ((async function() {
             headers.set(header, req.headers[header]);
           }
           var zapyt = mavka_call(
-            м_Запит,
+            Запит,
             [
               req.method,
               decodeURI(req.url),
@@ -49,9 +49,9 @@ await ((async function() {
             var responseBody;
             if (mavka_compare_is(result, м_текст, di)) {
               responseBody = result;
-            } else if (mavka_compare_is(result, м_Байти, di)) {
+            } else if (mavka_compare_is(result, м_байти, di)) {
               responseBody = result;
-            } else if (mavka_compare_is(result, м_Відповідь, di)) {
+            } else if (mavka_compare_is(result, Відповідь, di)) {
               res.statusCode = result.__m_props__["код"];
               for (var [hk, vv] of result.__m_props__["заголовки"].entries()) {
                 res.setHeader(hk, vv);
@@ -89,22 +89,22 @@ await ((async function() {
       return null;
     }
   );
-  var м_Запит = mavka_structure("Запит", null, {
+  var Запит = mavka_structure("Запит", null, {
     "метод": mavka_param(0, "метод", м_текст),
     "шлях": mavka_param(1, "шлях", м_текст),
     "заголовки": mavka_param(2, "заголовки", м_словник),
-    "дані": mavka_param(3, "дані", м_Байти)
+    "дані": mavka_param(3, "дані", м_байти)
   });
-  var м_Відповідь = mavka_structure("Відповідь", null, {
+  var Відповідь = mavka_structure("Відповідь", null, {
     "код": mavka_param(0, "код", м_число, 200),
     "заголовки": mavka_param(1, "заголовки", м_словник, new Map()),
-    "дані": mavka_param(2, "дані", [м_Байти, м_текст], "")
+    "дані": mavka_param(2, "дані", [м_байти, м_текст], "")
   });
-  var м_запустити = mavka_diia(
+  var запустити = mavka_diia(
     "запустити",
     {
       "обробник": mavka_param(0, "обробник", м_Дія),
-      "опції": mavka_param(1, "опції", м_Опції, mavka_call(м_Опції)),
+      "опції": mavka_param(1, "опції", Опції, mavka_call(Опції)),
       "зворот": mavka_param(2, "зворот", [м_Дія, null], null)
     },
     function(args, di, { arg }) {
@@ -123,10 +123,10 @@ await ((async function() {
       return server;
     }
   );
-  м_сервер.__m_props__["Опції"] = м_Опції;
-  м_сервер.__m_props__["Сервер"] = м_Сервер;
-  м_сервер.__m_props__["Запит"] = м_Запит;
-  м_сервер.__m_props__["Відповідь"] = м_Відповідь;
-  м_сервер.__m_props__["запустити"] = м_запустити;
-  return м_сервер;
+  сервер.__m_props__["Опції"] = Опції;
+  сервер.__m_props__["Сервер"] = м_Сервер;
+  сервер.__m_props__["Запит"] = Запит;
+  сервер.__m_props__["Відповідь"] = Відповідь;
+  сервер.__m_props__["запустити"] = запустити;
+  return сервер;
 })());

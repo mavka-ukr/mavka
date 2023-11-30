@@ -523,8 +523,8 @@
   // todo: complete
   // todo: fix error messages
 
-  const м_дід = mavka_module("дід");
-  const м_розібрати = mavka_diia(
+  const дід = mavka_module("дід");
+  const розібрати = mavka_diia(
     "розібрати",
     {
       "значення": mavka_param(0, "значення", м_текст),
@@ -601,7 +601,7 @@
       return makeValue(ast);
     }
   );
-  const м_зібрати = mavka_diia(
+  const зібрати = mavka_diia(
     "зібрати",
     {
       "значення": mavka_param(0, "значення")
@@ -670,7 +670,7 @@
       return makeValue(value);
     }
   );
-  м_дід.__m_props__["розібрати"] = м_розібрати;
-  м_дід.__m_props__["зібрати"] = м_зібрати;
-  return м_дід;
+  дід.__m_props__["розібрати"] = розібрати;
+  дід.__m_props__["зібрати"] = зібрати;
+  return дід;
 })());

@@ -1,17 +1,17 @@
 await ((async function() {
-  var м_запит = mavka_module("запит");
-  var м_Відповідь = mavka_structure("Відповідь", null, {
+  var запит = mavka_module("запит");
+  var Відповідь = mavka_structure("Відповідь", null, {
     "код": mavka_param(0, "код", м_число),
     "заголовки": mavka_param(1, "заголовки", м_словник),
-    "дані": mavka_param(2, "дані", м_Байти)
+    "дані": mavka_param(2, "дані", м_байти)
   });
-  var м_надіслати = mavka_diia(
+  var надіслати = mavka_diia(
     "надіслати",
     {
       "метод": mavka_param(0, "метод", м_текст, "GET"),
       "урл": mavka_param(1, "урл", м_текст, ""),
       "заголовки": mavka_param(2, "заголовки", м_словник, new Map()),
-      "дані": mavka_param(3, "дані", [м_Байти, м_текст], "")
+      "дані": mavka_param(3, "дані", [м_байти, м_текст], "")
     },
     async function(args, di, { arg }) {
       var method = arg("метод").toUpperCase();
@@ -32,7 +32,7 @@ await ((async function() {
       }
 
       return mavka_call(
-        м_Відповідь,
+        Відповідь,
         [
           response.status,
           headersDictionary,
@@ -42,7 +42,7 @@ await ((async function() {
       );
     }
   );
-  м_запит.__m_props__["Відповідь"] = м_Відповідь;
-  м_запит.__m_props__["надіслати"] = м_надіслати;
-  return м_запит;
+  запит.__m_props__["Відповідь"] = Відповідь;
+  запит.__m_props__["надіслати"] = надіслати;
+  return запит;
 })());

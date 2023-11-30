@@ -9,9 +9,9 @@ class TryInstruction extends Instruction {
    * @returns {*}
    */
   async compile(scope, node, options) {
-    const body = await this.mavka.compileBody(scope, processBody(this.mavka, scope, node.tryBody, options), options);
+    const body = await this.mavka.compileBody(scope, await processBody(this.mavka, scope, node.tryBody, options), options);
     const catchName = node.catchName ? node.catchName : null;
-    const catchBody = await this.mavka.compileBody(scope, processBody(this.mavka, scope, node.catchBody, options), options);
+    const catchBody = await this.mavka.compileBody(scope, await processBody(this.mavka, scope, node.catchBody, options), options);
 
     return `try {
   ${body}

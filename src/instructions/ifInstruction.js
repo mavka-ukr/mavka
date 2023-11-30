@@ -10,8 +10,8 @@ class IfInstruction extends Instruction {
    */
   async compile(scope, node, options) {
     const value = await this.mavka.compileNode(scope, node.value);
-    const body = await this.mavka.compileBody(scope, processBody(this.mavka, scope, node.body, options), options);
-    const elseBody = node.elseBody ? await this.mavka.compileBody(scope, processBody(this.mavka, scope, node.elseBody, options), options) : "";
+    const body = await this.mavka.compileBody(scope, await processBody(this.mavka, scope, node.body, options), options);
+    const elseBody = node.elseBody ? await this.mavka.compileBody(scope, await processBody(this.mavka, scope, node.elseBody, options), options) : "";
 
     return `
 if (mavka_to_boolean(${value})) {

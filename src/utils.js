@@ -12,12 +12,12 @@ import TakeModuleNode from "mavka-parser/src/ast/TakeModuleNode.js";
 import TakeRemoteNode from "mavka-parser/src/ast/TakeRemoteNode.js";
 import TakePakNode from "mavka-parser/src/ast/TakePakNode.js";
 import TakeFileNode from "mavka-parser/src/ast/TakeFileNode.js";
-import IdentifiersChainNode from "mavka-parser/src/ast/IdentifiersChainNode.js";
 import { MavkaCompilationError } from "./error.js";
 import semver from "semver";
 import IdentifierNode from "mavka-parser/src/ast/IdentifierNode.js";
 import BreakNode from "mavka-parser/src/ast/BreakNode.js";
 import ContinueNode from "mavka-parser/src/ast/ContinueNode.js";
+import IdentifiersChainNode from "mavka-parser/src/ast/IdentifiersChainNode.js";
 
 /**
  * @param {string} name
@@ -128,7 +128,7 @@ export function unpackPackName(pak) {
  * @param {ASTNode[]} body
  * @param {{loop?: boolean}|undefined} options
  */
-export function processBody(mavka, scope, body, options = {}) {
+export async function processBody(mavka, scope, body, options = {}) {
   const head = [];
   const result = [];
 
@@ -185,16 +185,14 @@ export function processBody(mavka, scope, body, options = {}) {
       result.push(node);
     } else if (node instanceof TakeModuleNode) {
       if (node.id instanceof IdentifierNode) {
-        scope.vars.set(node.as || node.id.name, true);
+        scope.vars.set(node.as || await mavka.options.getModuleName(node.relative, [node.id.name]), true);
       } else if (node.id instanceof IdentifiersChainNode) {
-        const chain = node.id.toFlatArray();
-        const name = chain[chain.length - 1];
-        scope.vars.set(node.as || name, true);
+        const parts = node.id.toFlatArray();
+        scope.vars.set(node.as || await mavka.options.getModuleName(node.relative, parts), true);
       }
       result.push(node);
     } else if (node instanceof TakeRemoteNode) {
-      const name = node.url.split("/")[0];
-      scope.vars.set(node.as || name, true);
+      scope.vars.set(node.as || await mavka.options.getRemoteModuleName(node.url.split("/")), true);
       result.push(node);
     } else if (node instanceof TakePakNode) {
       // deprecated

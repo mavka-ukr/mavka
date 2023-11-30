@@ -10,7 +10,7 @@ class WhileInstruction extends Instruction {
    */
   async compile(scope, node, options) {
     const value = await this.mavka.compileNode(scope, node.value);
-    const body = await this.mavka.compileBody(scope, processBody(this.mavka, scope, node.body, {
+    const body = await this.mavka.compileBody(scope, await processBody(this.mavka, scope, node.body, {
       ...options,
       loop: true
     }), {

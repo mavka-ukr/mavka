@@ -1,4 +1,5 @@
 import Instruction from "./instruction.js";
+import semver from "semver";
 
 class TakeRemoteInstruction extends Instruction {
   /**
@@ -11,14 +12,13 @@ class TakeRemoteInstruction extends Instruction {
     const diName = this.mavka.putDebugInfoVarName(node);
     const di = this.mavka.debugInfoVarNames.get(diName);
 
-    const name = node.url.split("/")[0];
-    const version = node.url.split("/")[1];
+    const [, version] = node.url.split("/");
 
-    if (version) {
-      return await this.mavka.loadRemoteModule(name, node.as, version, di, options);
+    if (version && semver.valid(version) !== null) {
+      return await this.mavka.loadRemoteModule(node.url.split("/"), node.as, di, options);
     }
 
-    return await this.mavka.loadBuiltinModule(node.url, node.as, di, options);
+    return await this.mavka.loadBuiltinModule(node.url.split("/"), node.as, di, options);
   }
 }
 
