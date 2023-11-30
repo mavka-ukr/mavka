@@ -48,7 +48,7 @@ export async function buildDiia(mavka, name, scope, async, params, body) {
   const compiledName = name == null ? "null" : `"${name}"`;
   const compiledParams = await buildParams(mavka, scope, params);
   const paramsExtracting = await buildParamsExtracting(mavka, scope, params);
-  const compiledBody = await mavka.compileDiiaBody(scope, processBody(mavka, scope, body));
+  const compiledBody = await mavka.compileDiiaBody(scope, await processBody(mavka, scope, body));
   const vars = await buildVars(scope, params.map((p) => p.name));
   const setters = await buildSetters(scope);
   const bodyString = [vars, setters, paramsExtracting, compiledBody].filter((v) => v).join("\n");
@@ -67,7 +67,7 @@ export async function buildStructureMethod(mavka, structureName, name, scope, as
 
   const compiledParams = await buildParams(mavka, scope, params);
   const paramsExtracting = await buildParamsExtracting(mavka, scope, params);
-  const compiledBody = await mavka.compileDiiaBody(scope, processBody(mavka, scope, body));
+  const compiledBody = await mavka.compileDiiaBody(scope, await processBody(mavka, scope, body));
   const vars = await buildVars(scope, params.map((p) => p.name));
   const setters = await buildSetters(scope);
   const bodyString = [vars, setters, paramsExtracting, compiledBody].filter((v) => v).join("\n");

@@ -21,7 +21,7 @@ class EachInstruction extends Instruction {
 
     const iteratordebugInfoVarName = this.mavka.putDebugInfoVarName(iterator);
 
-    const compiledBody = await this.mavka.compileBody(scope, processBody(this.mavka, scope, body, {
+    const compiledBody = await this.mavka.compileBody(scope, await processBody(this.mavka, scope, body, {
       ...options,
       loop: true
     }), {

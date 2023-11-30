@@ -82,7 +82,7 @@ function mavka_compare_is(a, b, di) {
     return b === м_словник;
   }
   if (a.__m_type__ === "bytes") {
-    return b === м_Байти;
+    return b === м_байти;
   }
   if (a.__m_type__ === "god") {
     return a.__m_elements__.some((el) => mavka_compare_is(el, b, di));

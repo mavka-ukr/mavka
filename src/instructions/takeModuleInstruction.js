@@ -17,17 +17,19 @@ class TakeModuleInstruction extends Instruction {
       const name = node.id.name;
 
       return await this.mavka.loadModule(
-        name,
-        node.as || name,
+        node.relative,
+        [name],
+        node.as,
         di,
         options
       );
     } else if (node.id instanceof IdentifiersChainNode) {
-      const name = node.id.toFlatArray().join(".");
+      const parts = node.id.toFlatArray();
 
       return await this.mavka.loadModule(
-        name,
-        node.as || name,
+        node.relative,
+        parts,
+        node.as,
         di,
         options
       );

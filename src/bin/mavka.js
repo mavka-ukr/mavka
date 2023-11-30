@@ -10,13 +10,13 @@ import fs from "fs";
 import path from "path";
 import { MavkaCompilationError } from "../error.js";
 import { fileURLToPath } from "url";
-import md5 from "md5";
-import os from "os";
 import axios from "axios";
 import promptSync from "@kant2002/prompt-sync";
 import { cleanEval } from "../cleanEval.js";
 import repl from "repl";
 import { buildVars } from "../builders.js";
+import { Uint8ArrayReader, ZipReader } from "@zip.js/zip.js";
+import os from "os";
 
 global.mavka_read = promptSync;
 process.removeAllListeners("warning");
@@ -26,13 +26,13 @@ process.on("unhandledRejection", (e) => {
 });
 
 function printProgress(name, progress) {
-  process.stdout.clearLine();
+  process.stdout.clearLine(0);
   process.stdout.cursorTo(0);
   process.stdout.write(`[ ${progress}% ] ${name}`);
 }
 
 function clearProgress() {
-  process.stdout.clearLine();
+  process.stdout.clearLine(0);
   process.stdout.cursorTo(0);
 }
 
@@ -96,61 +96,99 @@ if (!replMode) {
 }
 
 const mavka = new Mavka({
-  getBuiltinModuleCode: (name, di, options) => {
+  async getModulePath(relative, parts, di, options) {
+    const rootModulePath = relative ? options.currentModulePath : options.rootModulePath;
+    return `${path.dirname(rootModulePath)}/${parts.join("/")}.м`;
+  },
+  async getModuleName(relative, parts, di, options) {
+    return parts[parts.length - 1];
+  },
+  async getModuleCode(relative, modulePathParts, di, options) {
+    const name = modulePathParts.join(".");
+    const modulePath = await this.getModulePath(relative, modulePathParts, di, options);
+    if (fs.existsSync(modulePath)) {
+      return fs.readFileSync(modulePath, "utf8");
+    } else {
+      throw new MavkaCompilationError(`Модуль "${name}" не знайдено.`, di);
+    }
+  },
+  async getBuiltinModuleCode([name], di, options) {
     if (fs.existsSync(`${binPath}/../modules/${name}.js`)) {
       return fs.readFileSync(`${binPath}/../modules/${name}.js`, "utf8");
     }
     throw new MavkaCompilationError(`Пак "${name}" не знайдено.`, di);
   },
-  async getModuleCode(name, di, options) {
-    const rootModuleDirname = options.rootModuleDirname;
-    const modulePathParts = name.split(".");
-    let moduleDirname = `${rootModuleDirname}/${modulePathParts.slice(0, modulePathParts.length - 1).join("/")}`;
-    if (moduleDirname.endsWith("/")) {
-      moduleDirname = moduleDirname.substring(0, moduleDirname.length - 1);
-    }
-    const modulePath = `${moduleDirname}/${modulePathParts[modulePathParts.length - 1]}.м`;
-    if (fs.existsSync(modulePath)) {
-      return [fs.readFileSync(modulePath, "utf8"), modulePath];
-    } else {
-      throw new MavkaCompilationError(`Модуль "${name}" не знайдено.`, di);
-    }
-  },
-  async getRemoteModuleCode(name, version, di, options) {
+  async getRemoteModuleName(parts, di, options) {
+    const name = parts[0];
+    const rest = parts.slice(2);
     const userHomeDir = os.homedir();
-    const dirUrl = `https://пак.укр/${name}/${version}`;
-    const url = `https://хмарний.пак.укр/${name}/${version}/${name}.м`;
-    const paksDir = `${userHomeDir}/.паки`;
-    if (!fs.existsSync(paksDir)) {
-      fs.mkdirSync(paksDir);
+    const paksDirname = `${userHomeDir}/.паки`;
+    if (rest.length) {
+      return rest[rest.length - 1];
     }
-    const dir = `${paksDir}/${md5(dirUrl)}`;
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
+    return name;
+  },
+  async getRemoteModulePakPath(parts, di, options) {
+    const name = parts[0];
+    const version = parts[1];
+    const userHomeDir = os.homedir();
+    const paksDirname = `${userHomeDir}/.паки`;
+    return `${paksDirname}/${name}/${version}`;
+  },
+  async getRemoteModulePath(parts, di, options) {
+    const name = parts[0];
+    const version = parts[1];
+    const rest = parts.slice(2);
+    const userHomeDir = os.homedir();
+    const paksDirname = `${userHomeDir}/.паки`;
+    if (rest.length) {
+      return `${paksDirname}/${name}/${version}/${rest.join("/")}.м`;
     }
-    const file = `${dir}/${name}.м`;
-    if (!fs.existsSync(file)) {
-      printProgress(url, 0);
-      const result = await axios
+    return `${paksDirname}/${name}/${version}/${name}.м`;
+  },
+  async getRemoteModuleCode(parts, di, options) {
+    const name = parts[0];
+    const version = parts[1];
+    const url = `https://завантажити.пак.укр/${name}-${version}.zip`;
+    const modulePath = await this.getRemoteModulePath(parts, di, options);
+    const pakDirname = await this.getRemoteModulePakPath(parts, di, options);
+    if (!fs.existsSync(pakDirname)) {
+      printProgress(`${name}/${version}`, 0);
+      await axios
         .get(url, {
           onDownloadProgress: (progressEvent) => {
-            printProgress(url, Math.floor(progressEvent.progress * 100 || 0));
+            printProgress(`${name}/${version}`, Math.floor(progressEvent.progress * 100 || 0));
           },
-          responseType: "text",
+          responseType: "arraybuffer",
           headers: {
             "X-Mavka-Version": mavka.constructor.VERSION
           }
         })
-        .then((r) => String(r.data))
+        .then(async (r) => {
+          fs.mkdirSync(pakDirname, { recursive: true });
+          const zipFileReader = new Uint8ArrayReader(new Uint8Array(r.data));
+          const zipReader = new ZipReader(zipFileReader);
+          const entries = await zipReader.getEntries();
+          for (const entry of entries) {
+            const entryStream = new TransformStream();
+            const entryArrayBufferPromise = new Response(entryStream.readable).arrayBuffer();
+            await entry.getData(entryStream.writable);
+            const fileName = entry.filename;
+            const fileArrayBuffer = await entryArrayBufferPromise;
+            fs.writeFileSync(`${pakDirname}/${fileName}`, Buffer.from(fileArrayBuffer));
+          }
+          await zipReader.close();
+        })
         .catch((e) => {
           clearProgress();
           throw new MavkaCompilationError(`Помилка завантаження паку "${name}/${version}": ${e.message}`, di);
         });
       clearProgress();
-      fs.writeFileSync(file, result);
-      return [result, file];
     }
-    return [fs.readFileSync(file, "utf8"), file];
+    if (!fs.existsSync(modulePath)) {
+      throw new MavkaCompilationError(`Модуль "${parts.join("/")}" не знайдено.`, di);
+    }
+    return fs.readFileSync(modulePath, "utf8");
   }
 });
 const scope = new Scope(mavka.globalScope);
@@ -160,9 +198,9 @@ try {
     path: `${cwdPath}/${command}`
   });
 
-  const result = await mavka.compileProgramBody(scope, processBody(mavka, scope, programNode.body), {
-    rootModuleDirname: cwdPath,
-    currentModuleDirname: cwdPath
+  const result = await mavka.compileProgramBody(scope, await processBody(mavka, scope, programNode.body), {
+    rootModulePath: `${cwdPath}/${command}`,
+    currentModulePath: `${cwdPath}/${command}`
   });
 
   // console.log(result);
@@ -223,7 +261,7 @@ if (replMode) {
       for (const [k, v] of scope.vars.entries()) {
         tempScope.vars.set(k, v);
       }
-      const node = processBody(mavka, tempScope, programNode.body)[0];
+      const node = await processBody(mavka, tempScope, programNode.body)[0];
       const compiledNode = await mavka.compileNode(tempScope, node);
       global.__mavka_eval__(`
 ${await buildVars(tempScope)}
@@ -235,12 +273,12 @@ $друк([${compiledNode}])
       }
     } catch (e) {
       if (e instanceof DiiaParserSyntaxError) {
-        callback(null,`${e.fileinfo.path}:${e.line}:${e.column}: ${e.msg}`);
+        callback(null, `${e.fileinfo.path}:${e.line}:${e.column}: ${e.msg}`);
       } else if (e instanceof MavkaCompilationError) {
         if (e.di) {
-          callback(null,`${e.di[0]}:${e.di[1]}:${e.di[2]}: ${e.message}`);
+          callback(null, `${e.di[0]}:${e.di[1]}:${e.di[2]}: ${e.message}`);
         } else {
-          callback(null,e.message);
+          callback(null, e.message);
         }
       } else {
         callback(null, String(e));

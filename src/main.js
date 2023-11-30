@@ -100,7 +100,7 @@ import { DiiaParserSyntaxError } from "mavka-parser/src/utils/errors.js";
 let DEBUG_ID = 0;
 
 class Mavka {
-  static VERSION = "0.52.2";
+  static VERSION = "0.53.0";
 
   constructor(options = {}) {
     this.debugInfoVarNames = new Map();
@@ -136,7 +136,8 @@ class Mavka {
       ["друк", true],
       ["вивести", true],
       ["читати", true],
-      ["діапазон", true]
+      ["діапазон", true],
+      ["___шлях_до_модуля___", true]
     ]));
 
     this.modules = new Map();
@@ -493,19 +494,14 @@ class Mavka {
     return lines.map((l) => `${l};`).join("\n");
   }
 
-  /**
-   * @param {string} name
-   * @param {string} as
-   * @param {*} di
-   * @param {*} options
-   * @return {Promise<string>}
-   */
-  async loadModule(name, as, di, options) {
-    const tempModuleName = `${name}_${md5(name)}`;
+  async loadModule(relative, parts, as, di, options) {
+    const moduleName = await this.options.getModuleName(relative, parts, di, options);
+    const modulePath = await this.options.getModulePath(relative, parts, di, options);
+    const tempModuleName = `${moduleName}_${md5(modulePath)}`;
 
     const initModuleCode = `
 await init_${tempModuleName}();
-${varname(as || name)} = ${tempModuleName};
+${varname(as || moduleName)} = ${tempModuleName};
 `.trim();
 
     if (this.modules.has(tempModuleName)) {
@@ -514,15 +510,18 @@ ${varname(as || name)} = ${tempModuleName};
 
     this.modules.set(tempModuleName, "");
 
-    const [moduleCode, modulePath] = await this.options.getModuleCode(name, di, options);
+    const moduleCode = await this.options.getModuleCode(relative, parts, di, options);
     const moduleAst = parse(moduleCode, {
       path: modulePath
     });
     const moduleScope = new Scope(this.globalScope);
     const moduleBody = await this.compileModuleBody(
       moduleScope,
-      processBody(this, moduleScope, moduleAst.body),
-      options
+      await processBody(this, moduleScope, moduleAst.body),
+      {
+        ...options,
+        currentModulePath: modulePath
+      }
     );
 
     const compiledModuleCode = `
@@ -531,9 +530,10 @@ var init_${tempModuleName} = async function() {
   if (${tempModuleName}) {
     return;
   }
-  var moduleValue = mavka_module("${name}");
+  var moduleValue = mavka_module("${moduleName}");
   ${tempModuleName} = moduleValue;
   await (async function() {
+    var м____шлях_до_модуля___ = "${modulePath}";
     ${moduleBody}
   })();
 };
@@ -544,8 +544,9 @@ var init_${tempModuleName} = async function() {
     return initModuleCode;
   }
 
-  async loadRemoteModule(name, as, version, di, options) {
-    const tempModuleName = `${name}_${md5(`пак:${name}/${version}`)}`;
+  async loadBuiltinModule(parts, as, di, options) {
+    const name = parts[parts.length - 1];
+    const tempModuleName = `${name}_${md5(`вбудований-пак:${parts.join(".")}`)}`;
 
     const initModuleCode = `
 await init_${tempModuleName}();
@@ -558,54 +559,7 @@ ${varname(as || name)} = ${tempModuleName};
 
     this.modules.set(tempModuleName, "");
 
-    const [moduleCode, modulePath] = await this.options.getRemoteModuleCode(name, version, di, {
-      ...options,
-      remote: `${name}/${version}`
-    });
-    const moduleAst = parse(moduleCode, {
-      path: modulePath
-    });
-    const moduleScope = new Scope(this.globalScope);
-    const moduleBody = await this.compileModuleBody(
-      moduleScope,
-      processBody(this, moduleScope, moduleAst.body),
-      options
-    );
-
-    const compiledModuleCode = `
-var ${tempModuleName};
-var init_${tempModuleName} = async function() {
-  if (${tempModuleName}) {
-    return;
-  }
-  var moduleValue = mavka_module("${name}");
-  ${tempModuleName} = moduleValue;
-  await (async function() {
-    ${moduleBody}
-  })();
-};
-`.trim();
-
-    this.modules.set(tempModuleName, compiledModuleCode);
-
-    return initModuleCode;
-  }
-
-  async loadBuiltinModule(name, as, di, options) {
-    const tempModuleName = `${name}_${md5(`пак:${name}`)}`;
-
-    const initModuleCode = `
-await init_${tempModuleName}();
-${varname(as || name)} = ${tempModuleName};
-`.trim();
-
-    if (this.modules.has(tempModuleName)) {
-      return initModuleCode;
-    }
-
-    this.modules.set(tempModuleName, "");
-
-    const moduleCode = await this.options.getBuiltinModuleCode(name, di, options);
+    const moduleCode = await this.options.getBuiltinModuleCode(parts, di, options);
 
     const compiledModuleCode = `
 var ${tempModuleName};
@@ -615,6 +569,57 @@ var init_${tempModuleName} = async function() {
   }
   var moduleValue = await ${moduleCode};
   ${tempModuleName} = moduleValue;
+};
+`.trim();
+
+    this.modules.set(tempModuleName, compiledModuleCode);
+
+    return initModuleCode;
+  }
+
+  async loadRemoteModule(parts, as, di, options) {
+    const moduleName = await this.options.getRemoteModuleName(parts, di, options);
+    const modulePath = await this.options.getRemoteModulePath(parts, di, options);
+    const tempModuleName = `${moduleName}_${md5(modulePath)}`;
+
+    const initModuleCode = `
+await init_${tempModuleName}();
+${varname(as || moduleName)} = ${tempModuleName};
+`.trim();
+
+    if (this.modules.has(tempModuleName)) {
+      return initModuleCode;
+    }
+
+    this.modules.set(tempModuleName, "");
+
+    const moduleCode = await this.options.getRemoteModuleCode(parts, di, options);
+    const moduleAst = parse(moduleCode, {
+      path: modulePath
+    });
+    const moduleScope = new Scope(this.globalScope);
+    const moduleBody = await this.compileModuleBody(
+      moduleScope,
+      await processBody(this, moduleScope, moduleAst.body),
+      {
+        ...options,
+        rootModulePath: modulePath,
+        currentModulePath: modulePath
+      }
+    );
+
+    const compiledModuleCode = `
+var ${tempModuleName};
+var init_${tempModuleName} = async function() {
+  if (${tempModuleName}) {
+    return;
+  }
+  var moduleValue = mavka_module("${moduleName}");
+  ${tempModuleName} = moduleValue;
+  await (async function() {
+    var м____шлях_до_модуля___ = "${modulePath}";
+    ${moduleBody}
+  })();
 };
 `.trim();
 

@@ -5,8 +5,8 @@ class MavkaError {
   }
 }
 
-var globalUtf8Decoder = new TextDecoder();
-var globalUtf8Encoder = new TextEncoder();
+var mavka_utf8Decoder = new TextDecoder("utf-8");
+var mavka_utf8Encoder = new TextEncoder("utf-8");
 
 var м_обʼєкт = Object;
 var м_пусто = null;
@@ -20,9 +20,9 @@ var м_словник = Map;
 var м_Дія = Function;
 var м_Структура;
 var м_Модуль;
-var м_Байти = Uint8Array;
+var м_байти = Uint8Array;
 var м_безкрай = Infinity;
-var м_неч = NaN;
+var м_нечисло = NaN;
 
 Object.__m_name__ = "обʼєкт";
 Object.__m_props__ = Object.create(null);
@@ -89,7 +89,7 @@ Map.__m_props__["розмір"] = (args, di) => {
     case "dictionary":
       return м_словник;
     case "bytes":
-      return м_Байти;
+      return м_байти;
     case "object":
       return value.__m_structure__;
     default:
@@ -151,7 +151,7 @@ var mavka_to_string = (value, di) => {
     case "text":
       return value;
     case "bytes":
-      return globalUtf8Decoder.decode(value);
+      return mavka_utf8Decoder.decode(value);
     default:
       throw new MavkaError("Неможливо перетворити на текст.", di);
   }

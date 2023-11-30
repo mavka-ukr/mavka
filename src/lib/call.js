@@ -16,13 +16,13 @@ function mavka_call(a, args = [], di = undefined) {
   if (a === м_список) {
     return [];
   }
-  if (a === м_Байти) {
+  if (a === м_байти) {
     var argValue = mavka_arg(args, 0, "значення", [м_число]);
     var bytesObject;
     if (mavka_compare_is(argValue, м_число, di)) {
       bytesObject = new Uint8Array(argValue);
     } else if (mavka_compare_is(argValue, м_текст, di)) {
-      bytesObject = globalUtf8Encoder.encode(argValue);
+      bytesObject = mavka_utf8Encoder.encode(argValue);
     } else {
       throw new MavkaError("Неможливо створити байти.", di);
     }
