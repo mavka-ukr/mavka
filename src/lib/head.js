@@ -378,6 +378,22 @@ var mavka_entries = (value, di) => {
   throw new MavkaError("Неможливо отримати ітератор.", di);
 };
 
+var mavka_values = (value, di) => {
+  if (value == null) {
+    throw new MavkaError("Неможливо отримати ітератор.", di);
+  }
+  if (value.__m_type__ === "list") {
+    return value;
+  }
+  if (value.__m_type__ === "dictionary") {
+    return value.values();
+  }
+  if (value.__m_type__ === "object") {
+    return Object.values(value.__m_props__);
+  }
+  throw new MavkaError("Неможливо отримати ітератор.", di);
+};
+
 var м_Помилка = mavka_structure(
   "Помилка",
   null,
