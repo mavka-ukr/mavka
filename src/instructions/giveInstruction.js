@@ -12,11 +12,7 @@ class GiveInstruction extends Instruction {
     let lines = [];
     for (const el of node.elements) {
       if (el.id instanceof IdentifierNode) {
-        if (el.as) {
-          lines.push(`moduleValue.__m_props__["${el.as}"] = ${varname(el.id.name)};`);
-        } else {
-          lines.push(`moduleValue.__m_props__["${el.id.name}"] = ${varname(el.id.name)};`);
-        }
+        lines.push(`moduleValue.__m_props__["${el.as || el.id.name}"] = ${varname(el.id.name)};`);
       }
     }
     return lines.join("\n");

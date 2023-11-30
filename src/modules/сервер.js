@@ -1,19 +1,19 @@
 await ((async function() {
   var { default: http } = await import("http");
-  var $сервер = mavka_module("сервер");
-  var $Опції = mavka_structure("Опції", null, {
-    "хост": mavka_param(0, "хост", $текст, "localhost"),
-    "порт": mavka_param(1, "порт", $число, 80)
+  var м_сервер = mavka_module("сервер");
+  var м_Опції = mavka_structure("Опції", null, {
+    "хост": mavka_param(0, "хост", м_текст, "localhost"),
+    "порт": mavka_param(1, "порт", м_число, 80)
   });
-  var $Сервер = mavka_structure("Сервер", null, {
-    "обробник": mavka_param(0, "обробник", $Дія),
-    "опції": mavka_param(1, "опції", $Опції, mavka_call($Опції))
+  var м_Сервер = mavka_structure("Сервер", null, {
+    "обробник": mavka_param(0, "обробник", м_Дія),
+    "опції": mavka_param(1, "опції", м_Опції, mavka_call(м_Опції))
   });
-  $Сервер.__m_methods__["запустити"] = mavka_method(
-    $Сервер,
+  м_Сервер.__m_methods__["запустити"] = mavka_method(
+    м_Сервер,
     "запустити",
     {
-      "зворот": mavka_param(0, "зворот", [$Дія, null], null)
+      "зворот": mavka_param(0, "зворот", [м_Дія, null], null)
     },
     function(me, args, di, { arg }) {
       var handler = me.__m_props__["обробник"];
@@ -34,7 +34,7 @@ await ((async function() {
             headers.set(header, req.headers[header]);
           }
           var zapyt = mavka_call(
-            $Запит,
+            м_Запит,
             [
               req.method,
               decodeURI(req.url),
@@ -47,11 +47,11 @@ await ((async function() {
           var result = await mavka_call(handler, [zapyt], di);
           if (result) {
             var responseBody;
-            if (mavka_compare_is(result, $текст, di)) {
+            if (mavka_compare_is(result, м_текст, di)) {
               responseBody = result;
-            } else if (mavka_compare_is(result, $байти, di)) {
+            } else if (mavka_compare_is(result, м_Байти, di)) {
               responseBody = result;
-            } else if (mavka_compare_is(result, $Відповідь, di)) {
+            } else if (mavka_compare_is(result, м_Відповідь, di)) {
               res.statusCode = result.__m_props__["код"];
               for (var [hk, vv] of result.__m_props__["заголовки"].entries()) {
                 res.setHeader(hk, vv);
@@ -89,30 +89,30 @@ await ((async function() {
       return null;
     }
   );
-  var $Запит = mavka_structure("Запит", null, {
-    "метод": mavka_param(0, "метод", $текст),
-    "шлях": mavka_param(1, "шлях", $текст),
-    "заголовки": mavka_param(2, "заголовки", $словник),
-    "дані": mavka_param(3, "дані", $байти)
+  var м_Запит = mavka_structure("Запит", null, {
+    "метод": mavka_param(0, "метод", м_текст),
+    "шлях": mavka_param(1, "шлях", м_текст),
+    "заголовки": mavka_param(2, "заголовки", м_словник),
+    "дані": mavka_param(3, "дані", м_Байти)
   });
-  var $Відповідь = mavka_structure("Відповідь", null, {
-    "код": mavka_param(0, "код", $число, 200),
-    "заголовки": mavka_param(1, "заголовки", $словник, new Map()),
-    "дані": mavka_param(2, "дані", [$байти, $текст], "")
+  var м_Відповідь = mavka_structure("Відповідь", null, {
+    "код": mavka_param(0, "код", м_число, 200),
+    "заголовки": mavka_param(1, "заголовки", м_словник, new Map()),
+    "дані": mavka_param(2, "дані", [м_Байти, м_текст], "")
   });
-  var $запустити = mavka_diia(
+  var м_запустити = mavka_diia(
     "запустити",
     {
-      "обробник": mavka_param(0, "обробник", $Дія),
-      "опції": mavka_param(1, "опції", $Опції, mavka_call($Опції)),
-      "зворот": mavka_param(2, "зворот", [$Дія, null], null)
+      "обробник": mavka_param(0, "обробник", м_Дія),
+      "опції": mavka_param(1, "опції", м_Опції, mavka_call(м_Опції)),
+      "зворот": mavka_param(2, "зворот", [м_Дія, null], null)
     },
     function(args, di, { arg }) {
       var handler = arg("обробник");
       var options = arg("опції");
       var callback = arg("зворот");
       var server = mavka_call(
-        $Сервер,
+        м_Сервер,
         [
           handler,
           options
@@ -123,10 +123,10 @@ await ((async function() {
       return server;
     }
   );
-  $сервер.__m_props__["Опції"] = $Опції;
-  $сервер.__m_props__["Сервер"] = $Сервер;
-  $сервер.__m_props__["Запит"] = $Запит;
-  $сервер.__m_props__["Відповідь"] = $Відповідь;
-  $сервер.__m_props__["запустити"] = $запустити;
-  return $сервер;
+  м_сервер.__m_props__["Опції"] = м_Опції;
+  м_сервер.__m_props__["Сервер"] = м_Сервер;
+  м_сервер.__m_props__["Запит"] = м_Запит;
+  м_сервер.__m_props__["Відповідь"] = м_Відповідь;
+  м_сервер.__m_props__["запустити"] = м_запустити;
+  return м_сервер;
 })());

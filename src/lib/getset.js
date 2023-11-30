@@ -20,8 +20,8 @@ function mavka_commonGet_bytes(a, b, di) {
     }
     if (b === "зрізати") {
       return function(p, di) {
-        var indexStart = mavka_arg(p, 0, "від", $число, undefined, di);
-        var indexEnd = mavka_arg(p, 1, "до", [$число, null], undefined, di);
+        var indexStart = mavka_arg(p, 0, "від", м_число, undefined, di);
+        var indexEnd = mavka_arg(p, 1, "до", [м_число, null], undefined, di);
         return a.slice(indexStart, indexEnd ?? undefined);
       };
     }
@@ -50,37 +50,37 @@ function mavka_commonGet_list(a, b, di) {
     }
     if (b === "отримати") {
       return function(p, di) {
-        var index = mavka_arg(p, 0, "позиція", $число, undefined, di);
+        var index = mavka_arg(p, 0, "позиція", м_число, undefined, di);
         return a[index];
       };
     }
     if (b === "сортувати") {
       return function(p, di) {
-        var compareFn = mavka_arg(p, 0, "дія_порівняння", $Дія, undefined, di);
+        var compareFn = mavka_arg(p, 0, "дія_порівняння", м_Дія, undefined, di);
         return a.sort((a, b) => compareFn([a, b], di));
       };
     }
     if (b === "фільтрувати") {
       return function(p, di) {
-        var predicateFn = mavka_arg(p, 0, "дія_перевірки", $Дія, undefined, di);
+        var predicateFn = mavka_arg(p, 0, "дія_перевірки", м_Дія, undefined, di);
         return a.filter((v) => predicateFn([v], di));
       };
     }
     if (b === "знайти") {
       return function(p, di) {
-        var predicateFn = mavka_arg(p, 0, "дія_перевірки", $Дія, undefined, di);
+        var predicateFn = mavka_arg(p, 0, "дія_перевірки", м_Дія, undefined, di);
         return a.find((v) => predicateFn([v], di));
       };
     }
     if (b === "знайти_позицію") {
       return function(p, di) {
-        var predicateFn = mavka_arg(p, 0, "дія_перевірки", $Дія, undefined, di);
+        var predicateFn = mavka_arg(p, 0, "дія_перевірки", м_Дія, undefined, di);
         return a.findIndex((v) => predicateFn([v], di));
       };
     }
     if (b === "перетворити") {
       return function(p, di) {
-        var transformFn = mavka_arg(p, 0, "дія_перетворення", $Дія, undefined, di);
+        var transformFn = mavka_arg(p, 0, "дія_перетворення", м_Дія, undefined, di);
         return a.map((v) => transformFn([v], di));
       };
     }
@@ -92,13 +92,13 @@ function mavka_commonGet_list(a, b, di) {
     }
     if (b === "злити") {
       return function(p, di) {
-        var value = mavka_arg(p, 0, "значення", $список, undefined, di);
+        var value = mavka_arg(p, 0, "значення", м_список, undefined, di);
         return a.concat(value);
       };
     }
     if (b === "зʼєднати") {
       return function(p, di) {
-        var separator = mavka_arg(p, 0, "роздільник", $текст, "", di);
+        var separator = mavka_arg(p, 0, "роздільник", м_текст, "", di);
         return a.map((v) => mavka_to_string(v, di)).join(separator);
       };
     }
@@ -109,14 +109,14 @@ function mavka_commonGet_list(a, b, di) {
     }
     if (b === "зрізати") {
       return function(p, di) {
-        var indexStart = mavka_arg(p, 0, "від", $число, undefined, di);
-        var indexEnd = mavka_arg(p, 1, "до", [$число, null], undefined, di);
+        var indexStart = mavka_arg(p, 0, "від", м_число, undefined, di);
+        var indexEnd = mavka_arg(p, 1, "до", [м_число, null], undefined, di);
         return a.slice(indexStart, indexEnd ?? undefined);
       };
     }
     if (b === "скоротити") {
       return function(p, di) {
-        var reduceFn = mavka_arg(p, 0, "дія_скорочення", $Дія, undefined, di);
+        var reduceFn = mavka_arg(p, 0, "дія_скорочення", м_Дія, undefined, di);
         var initialValue = mavka_arg(p, 1, "початкове_значення", undefined, undefined, di);
         return a.reduce((acc, v) => reduceFn([acc, v], di), initialValue);
       };
@@ -131,46 +131,46 @@ function mavka_commonGet_text(a, b, di) {
   }
   if (b === "символ") {
     return function(p, di) {
-      var index = mavka_arg(p, 0, "позиція", $число, undefined, di);
+      var index = mavka_arg(p, 0, "позиція", м_число, undefined, di);
       return a.charAt(index);
     };
   }
   if (b === "код_символу") {
     return function(p, di) {
-      var index = mavka_arg(p, 0, "позиція", $число, undefined, di);
+      var index = mavka_arg(p, 0, "позиція", м_число, undefined, di);
       return a.charCodeAt(index);
     };
   }
   if (b === "позиція") {
     return function(p, di) {
-      var value = mavka_arg(p, 0, "значення", $текст, undefined, di);
+      var value = mavka_arg(p, 0, "значення", м_текст, undefined, di);
       return a.indexOf(value);
     };
   }
   if (b === "повторити") {
     return function(p, di) {
-      var count = mavka_arg(p, 0, "кількість", $число, undefined, di);
+      var count = mavka_arg(p, 0, "кількість", м_число, undefined, di);
       return a.repeat(count);
     };
   }
   if (b === "замінити") {
     return function(p, di) {
-      var value = mavka_arg(p, 0, "старе_значення", $текст, undefined, di);
-      var replacement = mavka_arg(p, 1, "нове_значення", $текст, undefined, di);
+      var value = mavka_arg(p, 0, "старе_значення", м_текст, undefined, di);
+      var replacement = mavka_arg(p, 1, "нове_значення", м_текст, undefined, di);
       return a.replaceAll(value, replacement);
     };
   }
   if (b === "замінити_перше") {
     return function(p, di) {
-      var value = mavka_arg(p, 0, "старе_значення", $текст, undefined, di);
-      var replacement = mavka_arg(p, 1, "нове_значення", $текст, undefined, di);
+      var value = mavka_arg(p, 0, "старе_значення", м_текст, undefined, di);
+      var replacement = mavka_arg(p, 1, "нове_значення", м_текст, undefined, di);
       return a.replace(value, replacement);
     };
   }
   if (b === "зрізати") {
     return function(p, di) {
-      var indexStart = mavka_arg(p, 0, "від", $число, undefined, di);
-      var indexEnd = mavka_arg(p, 1, "до", [$число, null], undefined, di);
+      var indexStart = mavka_arg(p, 0, "від", м_число, undefined, di);
+      var indexEnd = mavka_arg(p, 1, "до", [м_число, null], undefined, di);
       return a.substring(indexStart, indexEnd ?? undefined);
     };
   }
@@ -184,19 +184,19 @@ function mavka_commonGet_text(a, b, di) {
   }
   if (b === "розділити") {
     return function(p, di) {
-      var separator = mavka_arg(p, 0, "роздільник", $текст, undefined, di);
+      var separator = mavka_arg(p, 0, "роздільник", м_текст, undefined, di);
       return a.split(separator);
     };
   }
   if (b === "починається_з") {
     return function(p, di) {
-      var value = mavka_arg(p, 0, "значення", $текст, undefined, di);
+      var value = mavka_arg(p, 0, "значення", м_текст, undefined, di);
       return a.startsWith(value);
     };
   }
   if (b === "закінчується_на") {
     return function(p, di) {
-      var value = mavka_arg(p, 0, "значення", $текст, undefined, di);
+      var value = mavka_arg(p, 0, "значення", м_текст, undefined, di);
       return a.endsWith(value);
     };
   }

@@ -23,7 +23,7 @@ import ContinueNode from "mavka-parser/src/ast/ContinueNode.js";
  * @param {string} name
  * @returns {string}
  */
-export const varname = (name) => `$${name}`;
+export const varname = (name) => `м_${name}`;
 
 /**
  * @param {string} pak

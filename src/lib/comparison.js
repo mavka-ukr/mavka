@@ -64,25 +64,25 @@ function mavka_compare_is(a, b, di) {
     return false;
   }
   if (a.__m_type__ === "number") {
-    return b === $число;
+    return b === м_число;
   }
   if (a.__m_type__ === "text") {
-    return b === $текст;
+    return b === м_текст;
   }
   if (a.__m_type__ === "logical") {
-    return b === $логічне;
+    return b === м_логічне;
   }
   if (a.__m_type__ === "list") {
-    return b === $список;
+    return b === м_список;
   }
   if (a.__m_type__ === "diia") {
-    return b === $Дія;
+    return b === м_Дія;
   }
   if (a.__m_type__ === "dictionary") {
-    return b === $словник;
+    return b === м_словник;
   }
   if (a.__m_type__ === "bytes") {
-    return b === $байти;
+    return b === м_Байти;
   }
   if (a.__m_type__ === "god") {
     return a.__m_elements__.some((el) => mavka_compare_is(el, b, di));
