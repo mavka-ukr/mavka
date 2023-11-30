@@ -100,7 +100,7 @@ import { DiiaParserSyntaxError } from "mavka-parser/src/utils/errors.js";
 let DEBUG_ID = 0;
 
 class Mavka {
-  static VERSION = "0.53.0";
+  static VERSION = "0.53.1";
 
   constructor(options = {}) {
     this.debugInfoVarNames = new Map();

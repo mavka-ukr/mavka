@@ -51,6 +51,14 @@ function mavka_structure(name, parent = null, params = {}, di = null) {
         }, undefined, di);
       }
     }
+
+    toJSON() {
+      const result = Object.create(null);
+      for (const [k, v] of Object.entries(structure.__m_params__)) {
+        result[k] = this.__m_props__[k];
+      }
+      return result;
+    }
   };
   structure.__m_props__["чародія_викликати"] = mavka_diia("чародія_викликати", {}, (args, callDi) => {
     var value = new structure();
