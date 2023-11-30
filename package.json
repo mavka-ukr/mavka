@@ -1,6 +1,6 @@
 {
   "name": "mavka",
-  "version": "0.53.1",
+  "version": "0.60.0",
   "description": "Сучасна українська мова програмування",
   "main": "src/main.js",
   "type": "module",
@@ -58,6 +58,7 @@
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.6.0",
     "eslint-config-standard": "^17.0.0",
-    "prettier": "2.8.3"
+    "prettier": "2.8.3",
+    "process": "^0.11.10"
   }
 }
