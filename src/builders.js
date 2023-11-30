@@ -10,7 +10,7 @@ export async function buildParamsExtracting(mavka, scope, params) {
 export async function buildParams(mavka, scope, params) {
   return "{" + (await Promise.all(params.map(async (p, i) => {
     const name = p.name;
-    const compiledType = p.type ? await mavka.compileNode(scope, p.type) : "undefined";
+    const compiledType = p.type && !["ніщо", "щось"].includes(p.type.value?.name) ? await mavka.compileNode(scope, p.type) : "undefined";
     const compiledDefaultValue = p.defaultValue ? await mavka.compileNode(scope, p.defaultValue) : "undefined";
     return `"${name}":mavka_param(${i},"${name}",${compiledType},${compiledDefaultValue})`;
   }))).join(",") + "}";
