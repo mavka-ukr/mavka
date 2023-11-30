@@ -3,8 +3,8 @@ import IdentifierNode from "mavka-parser/src/ast/IdentifierNode.js";
 
 function toFlatArray(node) {
   const toFlat = (id) => {
-    if (id instanceof IdentifierNode) {
-      return [id.name];
+    if (!id) {
+      return [];
     }
 
     return [...toFlat(id.left), ...toFlat(id.right)];
