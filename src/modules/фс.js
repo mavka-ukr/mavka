@@ -1,6 +1,5 @@
-import fs from "fs";
-
 await ((async function() {
+  var { default: fs } = await import("fs");
   var м_фс = mavka_module("фс");
   м_фс.__m_props__["прочитати"] = mavka_diia(
     "прочитати",
