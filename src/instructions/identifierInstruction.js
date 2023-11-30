@@ -11,7 +11,6 @@ class IdentifierInstruction extends Instruction {
   async compile(scope, node) {
     const debugInfoVarName = this.mavka.putDebugInfoVarName(node);
     const debugInfoVar = this.mavka.debugInfoVarNames.get(debugInfoVarName);
-
     if (!scope.has(node.name)) {
       throw new MavkaCompilationError(`Субʼєкт "${node.name}" не визначено.`, debugInfoVar);
     }

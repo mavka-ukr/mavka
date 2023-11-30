@@ -11,17 +11,13 @@ class ModuleInstruction extends Instruction {
   async compile(scope, node) {
     const moduleScope = new Scope(scope);
     const body = await this.mavka.compileModuleBody(moduleScope, processBody(this.mavka, moduleScope, node.body));
-    return `${varname(node.name)} = (await (async function() {
-  var moduleValue = {
-    __m_name__: "${node.name}",
-    __m_type__: "module",
-    __m_props__: Object.create(null),
-  };
+    return `${varname(node.name)} = await (async function() {
+  var moduleValue = mavka_module("${node.name}");
   await (async function() {
     ${body}
   })();
   return moduleValue;
-})())`;
+})()`;
   }
 }
 

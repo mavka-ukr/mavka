@@ -100,7 +100,7 @@ import { DiiaParserSyntaxError } from "mavka-parser/src/utils/errors.js";
 let DEBUG_ID = 0;
 
 class Mavka {
-  static VERSION = "0.51.7";
+  static VERSION = "0.51.8";
 
   constructor(options = {}) {
     this.debugInfoVarNames = new Map();
@@ -531,11 +531,7 @@ var init_${tempModuleName} = async function() {
   if (${tempModuleName}) {
     return;
   }
-  var moduleValue = {
-    __m_name__: "${name}",
-    __m_type__: "module",
-    __m_props__: Object.create(null),
-  };
+  var moduleValue = mavka_module("${name}");
   ${tempModuleName} = moduleValue;
   await (async function() {
     ${moduleBody}
@@ -582,11 +578,7 @@ var init_${tempModuleName} = async function() {
   if (${tempModuleName}) {
     return;
   }
-  var moduleValue = {
-    __m_name__: "${name}",
-    __m_type__: "module",
-    __m_props__: Object.create(null),
-  };
+  var moduleValue = mavka_module("${name}");
   ${tempModuleName} = moduleValue;
   await (async function() {
     ${moduleBody}

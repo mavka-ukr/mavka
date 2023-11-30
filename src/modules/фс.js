@@ -1,11 +1,12 @@
+import fs from "fs";
+
 await ((async function() {
-  var { default: fs } = await import("fs");
-  var $фс = mavka_module("фс");
-  $фс.__m_props__["прочитати"] = mavka_diia(
+  var м_фс = mavka_module("фс");
+  м_фс.__m_props__["прочитати"] = mavka_diia(
     "прочитати",
     {
-      "шлях": mavka_param(0, "шлях", $текст),
-      "тип": mavka_param(1, "тип", $текст, "байти")
+      "шлях": mavka_param(0, "шлях", м_текст),
+      "тип": mavka_param(1, "тип", м_текст, "байти")
     },
     async function(args, di, { arg }) {
       var path = arg("шлях");
@@ -20,11 +21,11 @@ await ((async function() {
       }
     }
   );
-  $фс.__m_props__["записати"] = mavka_diia(
+  м_фс.__m_props__["записати"] = mavka_diia(
     "записати",
     {
-      "шлях": mavka_param(0, "шлях", $текст),
-      "дані": mavka_param(1, "дані", [$байти, $текст])
+      "шлях": mavka_param(0, "шлях", м_текст),
+      "дані": mavka_param(1, "дані", [м_Байти, м_текст])
     },
     async function(args, di, { arg }) {
       var path = arg("шлях");
@@ -35,11 +36,11 @@ await ((async function() {
       return null;
     }
   );
-  $фс.__m_props__["дописати"] = mavka_diia(
+  м_фс.__m_props__["дописати"] = mavka_diia(
     "дописати",
     {
-      "шлях": mavka_param(0, "шлях", $текст),
-      "дані": mavka_param(1, "дані", [$байти, $текст])
+      "шлях": mavka_param(0, "шлях", м_текст),
+      "дані": mavka_param(1, "дані", [м_Байти, м_текст])
     },
     async function(args, di, { arg }) {
       var path = arg("шлях");
@@ -50,11 +51,11 @@ await ((async function() {
       return null;
     }
   );
-  $фс.__m_props__["перейменувати"] = mavka_diia(
+  м_фс.__m_props__["перейменувати"] = mavka_diia(
     "перейменувати",
     {
-      "шлях": mavka_param(0, "шлях", $текст),
-      "новий_шлях": mavka_param(1, "новий_шлях", $текст)
+      "шлях": mavka_param(0, "шлях", м_текст),
+      "новий_шлях": mavka_param(1, "новий_шлях", м_текст)
     },
     async function(args, di, { arg }) {
       var path = arg("шлях");
@@ -65,10 +66,10 @@ await ((async function() {
       return null;
     }
   );
-  $фс.__m_props__["видалити"] = mavka_diia(
+  м_фс.__m_props__["видалити"] = mavka_diia(
     "видалити",
     {
-      "шлях": mavka_param(0, "шлях", $текст)
+      "шлях": mavka_param(0, "шлях", м_текст)
     },
     async function(args, di, { arg }) {
       var path = arg("шлях");
@@ -78,5 +79,16 @@ await ((async function() {
       return null;
     }
   );
-  return $фс;
+  м_фс.__m_props__["існує"] = mavka_diia(
+    "видалити",
+    {
+      "шлях": mavka_param(0, "шлях", м_текст)
+    },
+    async function(args, di, { arg }) {
+      var path = arg("шлях");
+
+      return fs.existsSync(path);
+    }
+  );
+  return м_фс;
 })());

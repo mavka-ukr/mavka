@@ -7,7 +7,7 @@ class TypeValueSingleInstruction extends Instruction {
    * @returns {*}
    */
   async compile(scope, node) {
-    //
+    return await this.mavka.compileNode(scope, node.value);
   }
 }
 

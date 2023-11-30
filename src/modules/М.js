@@ -13,7 +13,7 @@
       "КОРІНЬ2": Math.SQRT2,
       "абс": ((function() {
         var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "значення", $число, undefined, di);
+          let value = mavka_arg(params, 0, "значення", м_число, undefined, di);
           return Math.abs(value);
         };
         diiaValue.__m_name__ = "абс";
@@ -21,7 +21,7 @@
       })()),
       "арккос": ((function() {
         var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "значення", $число, undefined, di);
+          let value = mavka_arg(params, 0, "значення", м_число, undefined, di);
           return Math.acos(value);
         };
         diiaValue.__m_name__ = "арккос";
@@ -29,7 +29,7 @@
       })()),
       "арксин": ((function() {
         var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "значення", $число, undefined, di);
+          let value = mavka_arg(params, 0, "значення", м_число, undefined, di);
           return Math.asin(value);
         };
         diiaValue.__m_name__ = "арксин";
@@ -37,7 +37,7 @@
       })()),
       "арктан": ((function() {
         var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "значення", $число, undefined, di);
+          let value = mavka_arg(params, 0, "значення", м_число, undefined, di);
           return Math.atan(value);
         };
         diiaValue.__m_name__ = "арктан";
@@ -45,8 +45,8 @@
       })()),
       "арктан2": ((function() {
         var diiaValue = (params, di) => {
-          let y = mavka_arg(params, 0, "y", $число, undefined, di);
-          let x = mavka_arg(params, 1, "x", $число, undefined, di);
+          let y = mavka_arg(params, 0, "y", м_число, undefined, di);
+          let x = mavka_arg(params, 1, "x", м_число, undefined, di);
           return Math.atan2(y, x);
         };
         diiaValue.__m_name__ = "арктан2";
@@ -54,7 +54,7 @@
       })()),
       "до_більшого": ((function() {
         var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "значення", $число, undefined, di);
+          let value = mavka_arg(params, 0, "значення", м_число, undefined, di);
           return Math.ceil(value);
         };
         diiaValue.__m_name__ = "до_більшого";
@@ -62,7 +62,7 @@
       })()),
       "до_меншого": ((function() {
         var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "значення", $число, undefined, di);
+          let value = mavka_arg(params, 0, "значення", м_число, undefined, di);
           return Math.floor(value);
         };
         diiaValue.__m_name__ = "до_меншого";
@@ -70,7 +70,7 @@
       })()),
       "кос": ((function() {
         var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "кут", $число, undefined, di);
+          let value = mavka_arg(params, 0, "кут", м_число, undefined, di);
           return Math.cos(value);
         };
         diiaValue.__m_name__ = "кос";
@@ -78,7 +78,7 @@
       })()),
       "експ": ((function() {
         var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "експонента", $число, undefined, di);
+          let value = mavka_arg(params, 0, "експонента", м_число, undefined, di);
           return Math.exp(value);
         };
         diiaValue.__m_name__ = "експ";
@@ -102,8 +102,8 @@
       })()),
       "степінь": ((function() {
         var diiaValue = (params, di) => {
-          let base = mavka_arg(params, 0, "основа", $число, undefined, di);
-          let exponent = mavka_arg(params, 1, "показник", $число, undefined, di);
+          let base = mavka_arg(params, 0, "основа", м_число, undefined, di);
+          let exponent = mavka_arg(params, 1, "показник", м_число, undefined, di);
           return Math.pow(base, exponent);
         };
         diiaValue.__m_name__ = "степінь";
@@ -111,7 +111,7 @@
       })()),
       "округлити": ((function() {
         var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "значення", $число, undefined, di);
+          let value = mavka_arg(params, 0, "значення", м_число, undefined, di);
           return Math.round(value);
         };
         diiaValue.__m_name__ = "округлити";
@@ -119,7 +119,7 @@
       })()),
       "син": ((function() {
         var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "кут", $число, undefined, di);
+          let value = mavka_arg(params, 0, "кут", м_число, undefined, di);
           return Math.sin(value);
         };
         diiaValue.__m_name__ = "син";
@@ -127,7 +127,7 @@
       })()),
       "корінь": ((function() {
         var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "значення", $число, undefined, di);
+          let value = mavka_arg(params, 0, "значення", м_число, undefined, di);
           return Math.sqrt(value);
         };
         diiaValue.__m_name__ = "корінь";
@@ -135,7 +135,7 @@
       })()),
       "тан": ((function() {
         var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "кут", $число, undefined, di);
+          let value = mavka_arg(params, 0, "кут", м_число, undefined, di);
           return Math.tan(value);
         };
         diiaValue.__m_name__ = "тан";

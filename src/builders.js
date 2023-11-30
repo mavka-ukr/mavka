@@ -1,55 +1,10 @@
 import { processBody, varname } from "./utils.js";
-import TypeValueSingleNode from "mavka-parser/src/ast/TypeValueSingleNode.js";
-import IdentifierNode from "mavka-parser/src/ast/IdentifierNode.js";
 
 export async function buildParamsExtracting(mavka, scope, params) {
-  if (params.length) {
-    const paramsExtractionFromObject = (await Promise.all(params.map(async (param) => {
-      const name = param.name;
-      const defaultValue = param.defaultValue && !Array.isArray(param.defaultValue) ? await mavka.compileNode(scope, param.defaultValue) : undefined;
-      if (param.type) {
-        if (param.type instanceof TypeValueSingleNode) {
-          if (param.type.value instanceof IdentifierNode) {
-            if (!["щось", "ніщо"].includes(param.type.value.name)) {
-              const compiledTypeIdentifier = await mavka.compileNode(scope, param.type.value);
-              return `var ${varname(name)} = mavka_mapArg(params.${name}, ${compiledTypeIdentifier}, ${defaultValue}, callDi);`;
-            }
-          }
-        }
-      }
-      if (defaultValue) {
-        return `var ${varname(name)} = params.${name} === undefined ? ${defaultValue} : params.${name};`;
-      }
-      return `var ${varname(name)} = params.${name};`;
-    }))).join("\n");
-    const paramsExtractionFromArray = (await Promise.all(params.map(async (param, i) => {
-      const name = param.name;
-      const defaultValue = param.defaultValue && !Array.isArray(param.defaultValue) ? await mavka.compileNode(scope, param.defaultValue) : undefined;
-      if (param.type) {
-        if (param.type instanceof TypeValueSingleNode) {
-          if (param.type.value instanceof IdentifierNode) {
-            if (!["щось", "ніщо"].includes(param.type.value.name)) {
-              const compiledTypeIdentifier = await mavka.compileNode(scope, param.type.value);
-              return `var ${varname(name)} = mavka_mapArg(params[${i}], ${compiledTypeIdentifier}, ${defaultValue}, callDi);`;
-            }
-          }
-        }
-      }
-      if (defaultValue) {
-        return `var ${varname(name)} = params[${i}] === undefined ? ${defaultValue} : params[${i}];`;
-      }
-      return `var ${varname(name)} = params[${i}];`;
-    }))).join("\n");
-
-    return `
-if (Array.isArray(params)) {
-  ${paramsExtractionFromArray}
-} else {
-  ${paramsExtractionFromObject}
-}
-    `.trim();
-  }
-  return "";
+  return (await Promise.all(params.map(async (param) => {
+    const name = param.name;
+    return `var ${varname(name)} = arg("${name}");`;
+  }))).join("\n");
 }
 
 export async function buildParams(mavka, scope, params) {
@@ -99,7 +54,7 @@ export async function buildDiia(mavka, name, scope, async, params, body) {
   const bodyString = [vars, setters, paramsExtracting, compiledBody].filter((v) => v).join("\n");
 
   return `
-mavka_diia(${compiledName},${compiledParams},${async ? "async " : ""}function(params, callDi) {
+mavka_diia(${compiledName},${compiledParams},${async ? "async " : ""}function(params, callDi, { arg }) {
   ${bodyString}
 })
 `.trim();
@@ -118,7 +73,7 @@ export async function buildStructureMethod(mavka, structureName, name, scope, as
   const bodyString = [vars, setters, paramsExtracting, compiledBody].filter((v) => v).join("\n");
 
   return `
-mavka_method(${varname(structureName)},"${name}",${compiledParams},${async ? "async " : ""}function($я, params, callDi) {
+mavka_method(${varname(structureName)},"${name}",${compiledParams},${async ? "async " : ""}function(м_я, params, callDi, { arg }) {
   ${bodyString}
 })
 `.trim();
@@ -127,14 +82,14 @@ mavka_method(${varname(structureName)},"${name}",${compiledParams},${async ? "as
 export async function buildDictionary(mavka, scope, args) {
   const compiledArgs = (await Promise.all(Object.entries(args).map(async ([name, value]) => {
     value = await mavka.compileNode(scope, value);
-    return `dictionaryValue.set("${name}", ${value});`;
+    return `d.set("${name}", ${value});`;
   }))).join("\n");
 
   return `
 ((function() {
-  var dictionaryValue = new Map();
+  var d = new Map();
   ${compiledArgs}
-  return dictionaryValue;
+  return d;
 })())
 `.trim();
 }
