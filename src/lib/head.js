@@ -362,6 +362,22 @@ var mavka_spread = (value, di) => {
   throw new MavkaError("Неможливо розгорнути значення.", di);
 };
 
+var mavka_entries = (value, di) => {
+  if (value == null) {
+    throw new MavkaError("Неможливо отримати ітератор.", di);
+  }
+  if (value.__m_type__ === "list") {
+    return value.entries();
+  }
+  if (value.__m_type__ === "dictionary") {
+    return value.entries();
+  }
+  if (value.__m_type__ === "object") {
+    return Object.entries(value.__m_props__);
+  }
+  throw new MavkaError("Неможливо отримати ітератор.", di);
+};
+
 var м_Помилка = mavka_structure(
   "Помилка",
   null,
