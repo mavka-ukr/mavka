@@ -89,5 +89,27 @@ await ((async function() {
       return fs.existsSync(path);
     }
   );
+  м_фс.__m_props__["створити_папку"] = mavka_diia(
+    "створити_папку",
+    {
+      "шлях": mavka_param(0, "шлях", м_текст)
+    },
+    async function(args, di, { arg }) {
+      var path = arg("шлях");
+
+      return await fs.promises.mkdir(path);
+    }
+  );
+  м_фс.__m_props__["створити_папку_рекурсивно"] = mavka_diia(
+    "створити_папку_рекурсивно",
+    {
+      "шлях": mavka_param(0, "шлях", м_текст)
+    },
+    async function(args, di, { arg }) {
+      var path = arg("шлях");
+
+      return await fs.promises.mkdir(path, { recursive: true });
+    }
+  );
   return м_фс;
 })());
