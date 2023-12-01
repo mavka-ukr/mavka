@@ -8,7 +8,7 @@ import fs from "fs";
 import axios from "axios";
 import { Uint8ArrayReader, ZipReader } from "@zip.js/zip.js";
 import Mavka from "../main.js";
-import { exec } from "child_process";
+import { spawn } from "child_process";
 import semver from "semver";
 
 function printProgress(name, progress) {
@@ -165,14 +165,4 @@ if (!fs.existsSync(modulePath)) {
   process.exit(1);
 }
 
-exec(`mavka ${modulePath} ${process.argv.slice(3).join(" ")}`, (error, stdout, stderr) => {
-  if (error) {
-    console.log(`error: ${error.message}`);
-    return;
-  }
-  if (stderr) {
-    console.log(`stderr: ${stderr}`);
-    return;
-  }
-  process.stdout.write(stdout);
-});
+spawn("mavka", [modulePath, ...process.argv.slice(3)], { stdio: "inherit" });
