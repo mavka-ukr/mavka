@@ -1,146 +1,158 @@
 ((function() {
-  return {
-    __m_type__: "module",
-    __m_name__: "М",
-    __m_props__: {
-      "Е": Math.E,
-      "ЛОГ10": Math.LN10,
-      "ЛОГ2": Math.LN2,
-      "ЛОГ2Е": Math.LOG2E,
-      "ЛОГ10Е": Math.LOG10E,
-      "ПІ": Math.PI,
-      "КОРІНЬ1_2": Math.SQRT1_2,
-      "КОРІНЬ2": Math.SQRT2,
-      "абс": ((function() {
-        var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "значення", м_число, undefined, di);
-          return Math.abs(value);
-        };
-        diiaValue.__m_name__ = "абс";
-        return diiaValue;
-      })()),
-      "арккос": ((function() {
-        var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "значення", м_число, undefined, di);
-          return Math.acos(value);
-        };
-        diiaValue.__m_name__ = "арккос";
-        return diiaValue;
-      })()),
-      "арксин": ((function() {
-        var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "значення", м_число, undefined, di);
-          return Math.asin(value);
-        };
-        diiaValue.__m_name__ = "арксин";
-        return diiaValue;
-      })()),
-      "арктан": ((function() {
-        var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "значення", м_число, undefined, di);
-          return Math.atan(value);
-        };
-        diiaValue.__m_name__ = "арктан";
-        return diiaValue;
-      })()),
-      "арктан2": ((function() {
-        var diiaValue = (params, di) => {
-          let y = mavka_arg(params, 0, "y", м_число, undefined, di);
-          let x = mavka_arg(params, 1, "x", м_число, undefined, di);
-          return Math.atan2(y, x);
-        };
-        diiaValue.__m_name__ = "арктан2";
-        return diiaValue;
-      })()),
-      "до_більшого": ((function() {
-        var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "значення", м_число, undefined, di);
-          return Math.ceil(value);
-        };
-        diiaValue.__m_name__ = "до_більшого";
-        return diiaValue;
-      })()),
-      "до_меншого": ((function() {
-        var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "значення", м_число, undefined, di);
-          return Math.floor(value);
-        };
-        diiaValue.__m_name__ = "до_меншого";
-        return diiaValue;
-      })()),
-      "кос": ((function() {
-        var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "кут", м_число, undefined, di);
-          return Math.cos(value);
-        };
-        diiaValue.__m_name__ = "кос";
-        return diiaValue;
-      })()),
-      "експ": ((function() {
-        var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "експонента", м_число, undefined, di);
-          return Math.exp(value);
-        };
-        diiaValue.__m_name__ = "експ";
-        return diiaValue;
-      })()),
-      "найбільше": ((function() {
-        var diiaValue = (params, di) => {
-          let values = Object.values(params).map((v) => mavka_to_number(v, di));
-          return Math.max(...values);
-        };
-        diiaValue.__m_name__ = "найбільше";
-        return diiaValue;
-      })()),
-      "найменше": ((function() {
-        var diiaValue = (params, di) => {
-          let values = Object.values(params).map((v) => mavka_to_number(v, di));
-          return Math.min(...values);
-        };
-        diiaValue.__m_name__ = "найменше";
-        return diiaValue;
-      })()),
-      "степінь": ((function() {
-        var diiaValue = (params, di) => {
-          let base = mavka_arg(params, 0, "основа", м_число, undefined, di);
-          let exponent = mavka_arg(params, 1, "показник", м_число, undefined, di);
-          return Math.pow(base, exponent);
-        };
-        diiaValue.__m_name__ = "степінь";
-        return diiaValue;
-      })()),
-      "округлити": ((function() {
-        var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "значення", м_число, undefined, di);
-          return Math.round(value);
-        };
-        diiaValue.__m_name__ = "округлити";
-        return diiaValue;
-      })()),
-      "син": ((function() {
-        var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "кут", м_число, undefined, di);
-          return Math.sin(value);
-        };
-        diiaValue.__m_name__ = "син";
-        return diiaValue;
-      })()),
-      "корінь": ((function() {
-        var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "значення", м_число, undefined, di);
-          return Math.sqrt(value);
-        };
-        diiaValue.__m_name__ = "корінь";
-        return diiaValue;
-      })()),
-      "тан": ((function() {
-        var diiaValue = (params, di) => {
-          let value = mavka_arg(params, 0, "кут", м_число, undefined, di);
-          return Math.tan(value);
-        };
-        diiaValue.__m_name__ = "тан";
-        return diiaValue;
-      })())
+  const М = mavka_module("М");
+  М.__m_props__["Е"] = Math.E;
+  М.__m_props__["ЛОГ10"] = Math.LN10;
+  М.__m_props__["ЛОГ2"] = Math.LN2;
+  М.__m_props__["ЛОГ2Е"] = Math.LOG2E;
+  М.__m_props__["ЛОГ10Е"] = Math.LOG10E;
+  М.__m_props__["ПІ"] = Math.PI;
+  М.__m_props__["КОРІНЬ1_2"] = Math.SQRT1_2;
+  М.__m_props__["КОРІНЬ2"] = Math.SQRT2;
+  М.__m_props__["абс"] = mavka_diia(
+    "абс",
+    {
+      "значення": mavka_param(0, "значення", м_число)
+    },
+    function(args, di, { arg }) {
+      return Math.abs(arg("значення"));
     }
-  };
+  );
+  М.__m_props__["арккос"] = mavka_diia(
+    "арккос",
+    {
+      "значення": mavka_param(0, "значення", м_число)
+    },
+    function(args, di, { arg }) {
+      return Math.acos(arg("значення"));
+    }
+  );
+  М.__m_props__["арксин"] = mavka_diia(
+    "арксин",
+    {
+      "значення": mavka_param(0, "значення", м_число)
+    },
+    function(args, di, { arg }) {
+      return Math.asin(arg("значення"));
+    }
+  );
+  М.__m_props__["арктан"] = mavka_diia(
+    "арктан",
+    {
+      "значення": mavka_param(0, "значення", м_число)
+    },
+    function(args, di, { arg }) {
+      return Math.atan(arg("значення"));
+    }
+  );
+  М.__m_props__["арктан2"] = mavka_diia(
+    "арктан2",
+    {
+      "у": mavka_param(0, "у", м_число),
+      "х": mavka_param(1, "х", м_число)
+    },
+    function(args, di, { arg }) {
+      return Math.atan2(arg("у"), arg("х"));
+    }
+  );
+  М.__m_props__["до_більшого"] = mavka_diia(
+    "до_більшого",
+    {
+      "значення": mavka_param(0, "значення", м_число)
+    },
+    function(args, di, { arg }) {
+      return Math.ceil(arg("значення"));
+    }
+  );
+  М.__m_props__["до_меншого"] = mavka_diia(
+    "до_меншого",
+    {
+      "значення": mavka_param(0, "значення", м_число)
+    },
+    function(args, di, { arg }) {
+      return Math.floor(arg("значення"));
+    }
+  );
+  М.__m_props__["кос"] = mavka_diia(
+    "кос",
+    {
+      "кут": mavka_param(0, "кут", м_число)
+    },
+    function(args, di, { arg }) {
+      return Math.cos(arg("кут"));
+    }
+  );
+  М.__m_props__["експ"] = mavka_diia(
+    "експ",
+    {
+      "експонента": mavka_param(0, "експонента", м_число)
+    },
+    function(args, di, { arg }) {
+      return Math.exp(arg("експонента"));
+    }
+  );
+  М.__m_props__["найбільше"] = mavka_diia(
+    "найбільше",
+    {
+      "значення": mavka_param(0, "значення", м_список)
+    },
+    function(args, di, { arg }) {
+      return Math.max(...arg("значення").map((v) => mavka_to_number(v, di)));
+    }
+  );
+  М.__m_props__["найменше"] = mavka_diia(
+    "найменше",
+    {
+      "значення": mavka_param(0, "значення", м_список)
+    },
+    function(args, di, { arg }) {
+      return Math.min(...arg("значення").map((v) => mavka_to_number(v, di)));
+    }
+  );
+  М.__m_props__["степінь"] = mavka_diia(
+    "степінь",
+    {
+      "основа": mavka_param(0, "основа", м_число),
+      "показник": mavka_param(1, "показник", м_число)
+    },
+    function(args, di, { arg }) {
+      return Math.pow(arg("основа"), arg("показник"));
+    }
+  );
+  М.__m_props__["округлити"] = mavka_diia(
+    "округлити",
+    {
+      "значення": mavka_param(0, "значення", м_число)
+    },
+    function(args, di, { arg }) {
+      return Math.round(arg("значення"));
+    }
+  );
+  М.__m_props__["син"] = mavka_diia(
+    "син",
+    {
+      "кут": mavka_param(0, "кут", м_число)
+    },
+    function(args, di, { arg }) {
+      return Math.sin(arg("кут"));
+    }
+  );
+  М.__m_props__["корінь"] = mavka_diia(
+    "корінь",
+    {
+      "значення": mavka_param(0, "значення", м_число)
+    },
+    function(args, di, { arg }) {
+      return Math.sqrt(arg("значення"));
+    }
+  );
+  М.__m_props__["тан"] = mavka_diia(
+    "тан",
+    {
+      "кут": mavka_param(0, "кут", м_число)
+    },
+    function(args, di, { arg }) {
+      return Math.tan(arg("кут"));
+    }
+  );
+  return М;
 })());
