@@ -73,7 +73,7 @@ export async function buildStructureMethod(mavka, structureName, name, scope, as
   const bodyString = [vars, setters, paramsExtracting, compiledBody].filter((v) => v).join("\n");
 
   return `
-mavka_method(${varname(structureName)},"${name}",${compiledParams},${async ? "async " : ""}function(м_я, params, callDi, { arg }) {
+mavka_method(${compiledParams},${async ? "async " : ""}function(м_я, params, callDi, { arg }) {
   ${bodyString}
 })
 `.trim();
