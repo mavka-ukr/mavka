@@ -90,17 +90,6 @@ await ((async function() {
       return null;
     }
   );
-  фс.__m_props__["існує"] = mavka_diia(
-    "видалити",
-    {
-      "шлях": mavka_param(0, м_текст)
-    },
-    async function(args, di, { arg }) {
-      var path = arg("шлях");
-
-      return fs.existsSync(path);
-    }
-  );
   фс.__m_props__["створити_папку"] = mavka_diia(
     "створити_папку",
     {
@@ -121,6 +110,47 @@ await ((async function() {
       var path = arg("шлях");
 
       return await fs.promises.mkdir(path, { recursive: true });
+    }
+  );
+  фс.__m_props__["видалити_папку"] = mavka_diia(
+    "видалити_папку",
+    {
+      "шлях": mavka_param(0, м_текст)
+    },
+    async function(args, di, { arg }) {
+      var path = arg("шлях");
+
+      if (fs.existsSync(path)) {
+        fs.rmdirSync(path);
+      }
+
+      return null;
+    }
+  );
+  фс.__m_props__["видалити_папку_рекурсивно"] = mavka_diia(
+    "видалити_папку_рекурсивно",
+    {
+      "шлях": mavka_param(0, м_текст)
+    },
+    async function(args, di, { arg }) {
+      var path = arg("шлях");
+
+      if (fs.existsSync(path)) {
+        fs.rmdirSync(path, { recursive: true });
+      }
+
+      return null;
+    }
+  );
+  фс.__m_props__["існує"] = mavka_diia(
+    "існує",
+    {
+      "шлях": mavka_param(0, м_текст)
+    },
+    async function(args, di, { arg }) {
+      var path = arg("шлях");
+
+      return fs.existsSync(path);
     }
   );
   return фс;
