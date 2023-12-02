@@ -527,8 +527,8 @@
   const розібрати = mavka_diia(
     "розібрати",
     {
-      "значення": mavka_param(0, "значення", м_текст),
-      "визначення": mavka_param(1, "визначення", [м_словник, null], new Map())
+      "значення": mavka_param(0, м_текст),
+      "визначення": mavka_param(1, [м_словник, null], new Map())
     },
     function(args, di, { arg }) {
       var value = arg("значення");
@@ -604,7 +604,7 @@
   const зібрати = mavka_diia(
     "зібрати",
     {
-      "значення": mavka_param(0, "значення")
+      "значення": mavka_param(0)
     },
     function(args, di, { arg }) {
       var value = arg("значення");

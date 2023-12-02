@@ -1,6 +1,9 @@
 function mavka_diia(name, params, fn, result, di) {
-  var diia = function(args, di) {
-    var arg = (argName) => {
+  var diia = function(...args) {
+    return diia.__m_call__(args);
+  };
+  diia.__m_call__ = function(args, di) {
+    var arg = function(argName) {
       return mavka_arg(
         args,
         diia.__m_params__[argName].get("позиція"),
@@ -14,40 +17,35 @@ function mavka_diia(name, params, fn, result, di) {
   };
   diia.__m_name__ = name;
   diia.__m_params__ = params;
+  diia.__m_type__ = "diia";
   return diia;
 }
 
-function mavka_method(structure, name, params, fn, result, di) {
-  if (structure.__m_type__ !== "structure") {
-    throw new MavkaError(`${structure} не є структурою.`, di);
-  }
-  var value = function(me, args, di) {
-    var arg = (argName) => {
+function mavka_method(params, fn, result, di) {
+  var method = function(me, args, di) {
+    var arg = function(argName) {
       return mavka_arg(
         args,
-        value.__m_params__[argName].get("позиція"),
+        method.__m_params__[argName].get("позиція"),
         argName,
-        value.__m_params__[argName].get("тип"),
-        value.__m_params__[argName].get("значення"),
+        method.__m_params__[argName].get("тип"),
+        method.__m_params__[argName].get("значення"),
         di
       );
     };
     return fn(me, args, di, { arg });
   };
-  value.__m_name__ = name;
-  value.__m_params__ = params;
-  return value;
+  method.__m_params__ = params;
+  return method;
 }
 
-function mavka_param(index, name, type, defaultValue) {
+function mavka_param(index, type, defaultValue) {
   return new Map([
     ["позиція", index],
-    ["назва", name],
     ["тип", type],
     ["значення", defaultValue]
   ]);
 }
-
 
 function mavka_arg(args, index, name, type, defaultValue, di) {
   var value = Array.isArray(args) ? args[index] : args[name];

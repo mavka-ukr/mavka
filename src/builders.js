@@ -12,7 +12,7 @@ export async function buildParams(mavka, scope, params) {
     const name = p.name;
     const compiledType = p.type && !["ніщо", "щось"].includes(p.type.value?.name) ? await mavka.compileNode(scope, p.type) : "undefined";
     const compiledDefaultValue = p.defaultValue ? await mavka.compileNode(scope, p.defaultValue) : "undefined";
-    return `"${name}":mavka_param(${i},"${name}",${compiledType},${compiledDefaultValue})`;
+    return `"${name}":mavka_param(${i},${compiledType},${compiledDefaultValue})`;
   }))).join(",") + "}";
 }
 
