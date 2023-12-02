@@ -2,18 +2,16 @@ await ((async function() {
   var { default: http } = await import("http");
   var сервер = mavka_module("сервер");
   var Опції = mavka_structure("Опції", null, {
-    "хост": mavka_param(0, "хост", м_текст, "localhost"),
-    "порт": mavka_param(1, "порт", м_число, 80)
+    "хост": mavka_param(0, м_текст, "localhost"),
+    "порт": mavka_param(1, м_число, 80)
   });
   var м_Сервер = mavka_structure("Сервер", null, {
-    "обробник": mavka_param(0, "обробник", м_Дія),
-    "опції": mavka_param(1, "опції", Опції, mavka_call(Опції))
+    "обробник": mavka_param(0, м_Дія),
+    "опції": mavka_param(1, Опції, mavka_call(Опції))
   });
   м_Сервер.__m_methods__["запустити"] = mavka_method(
-    м_Сервер,
-    "запустити",
     {
-      "зворот": mavka_param(0, "зворот", [м_Дія, null], null)
+      "зворот": mavka_param(0, [м_Дія, null], null)
     },
     function(me, args, di, { arg }) {
       var handler = me.__m_props__["обробник"];
@@ -90,22 +88,22 @@ await ((async function() {
     }
   );
   var Запит = mavka_structure("Запит", null, {
-    "метод": mavka_param(0, "метод", м_текст),
-    "шлях": mavka_param(1, "шлях", м_текст),
-    "заголовки": mavka_param(2, "заголовки", м_словник),
-    "дані": mavka_param(3, "дані", м_байти)
+    "метод": mavka_param(0, м_текст),
+    "шлях": mavka_param(1, м_текст),
+    "заголовки": mavka_param(2, м_словник),
+    "дані": mavka_param(3, м_байти)
   });
   var Відповідь = mavka_structure("Відповідь", null, {
-    "код": mavka_param(0, "код", м_число, 200),
-    "заголовки": mavka_param(1, "заголовки", м_словник, new Map()),
-    "дані": mavka_param(2, "дані", [м_байти, м_текст], "")
+    "код": mavka_param(0, м_число, 200),
+    "заголовки": mavka_param(1, м_словник, new Map()),
+    "дані": mavka_param(2, [м_байти, м_текст], "")
   });
   var запустити = mavka_diia(
     "запустити",
     {
-      "обробник": mavka_param(0, "обробник", м_Дія),
-      "опції": mavka_param(1, "опції", Опції, mavka_call(Опції)),
-      "зворот": mavka_param(2, "зворот", [м_Дія, null], null)
+      "обробник": mavka_param(0, м_Дія),
+      "опції": mavka_param(1, Опції, mavka_call(Опції)),
+      "зворот": mavka_param(2, [м_Дія, null], null)
     },
     function(args, di, { arg }) {
       var handler = arg("обробник");

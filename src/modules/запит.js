@@ -1,17 +1,17 @@
 await ((async function() {
   var запит = mavka_module("запит");
   var Відповідь = mavka_structure("Відповідь", null, {
-    "код": mavka_param(0, "код", м_число),
-    "заголовки": mavka_param(1, "заголовки", м_словник),
-    "дані": mavka_param(2, "дані", м_байти)
+    "код": mavka_param(0, м_число),
+    "заголовки": mavka_param(1, м_словник),
+    "дані": mavka_param(2, м_байти)
   });
   var надіслати = mavka_diia(
     "надіслати",
     {
-      "метод": mavka_param(0, "метод", м_текст, "GET"),
-      "урл": mavka_param(1, "урл", м_текст, ""),
-      "заголовки": mavka_param(2, "заголовки", м_словник, new Map()),
-      "дані": mavka_param(3, "дані", [м_байти, м_текст], "")
+      "метод": mavka_param(0, м_текст, "GET"),
+      "урл": mavka_param(1, м_текст, ""),
+      "заголовки": mavka_param(2, м_словник, new Map()),
+      "дані": mavka_param(3, [м_байти, м_текст], "")
     },
     async function(args, di, { arg }) {
       var method = arg("метод").toUpperCase();

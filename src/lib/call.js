@@ -51,10 +51,10 @@ function mavka_call(a, args = [], di = undefined) {
     throw new MavkaError("Неможливо виконати.", di);
   }
   if (a.__m_type__ === "diia") {
-    return a(args, di);
+    return a.__m_call__(args, di);
   }
   if (a.__m_props__ && a.__m_props__["чародія_викликати"]) {
-    return a.__m_props__["чародія_викликати"](args, di);
+    return a.__m_props__["чародія_викликати"].__m_call__(args, di);
   }
   throw new MavkaError(`Неможливо виконати "${mavka_get_type_name(a)}".`, di);
 }

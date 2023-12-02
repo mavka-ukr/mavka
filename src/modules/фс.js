@@ -4,15 +4,14 @@ await ((async function() {
   фс.__m_props__["прочитати"] = mavka_diia(
     "прочитати",
     {
-      "шлях": mavka_param(0, "шлях", м_текст),
-      "тип": mavka_param(1, "тип", м_текст, "байти")
+      "шлях": mavka_param(0, м_текст)
     },
     async function(args, di, { arg }) {
       var path = arg("шлях");
-      var type = arg("тип");
+
+      return await fs.promises.readFile(path);
 
       if (type === "байти") {
-        return await fs.promises.readFile(path);
       } else if (type === "текст") {
         return await fs.promises.readFile(path, "utf8");
       } else {
@@ -20,11 +19,24 @@ await ((async function() {
       }
     }
   );
+  фс.__m_props__["прочитати_текст"] = mavka_diia(
+    "прочитати",
+    {
+      "шлях": mavka_param(0, м_текст),
+      "кодування": mavka_param(1, м_текст, "utf8")
+    },
+    async function(args, di, { arg }) {
+      var path = arg("шлях");
+      var encoding = arg("кодування");
+
+      return await fs.promises.readFile(path, encoding);
+    }
+  );
   фс.__m_props__["записати"] = mavka_diia(
     "записати",
     {
-      "шлях": mavka_param(0, "шлях", м_текст),
-      "дані": mavka_param(1, "дані", [м_байти, м_текст])
+      "шлях": mavka_param(0, м_текст),
+      "дані": mavka_param(1, [м_байти, м_текст])
     },
     async function(args, di, { arg }) {
       var path = arg("шлях");
@@ -38,8 +50,8 @@ await ((async function() {
   фс.__m_props__["дописати"] = mavka_diia(
     "дописати",
     {
-      "шлях": mavka_param(0, "шлях", м_текст),
-      "дані": mavka_param(1, "дані", [м_байти, м_текст])
+      "шлях": mavka_param(0, м_текст),
+      "дані": mavka_param(1, [м_байти, м_текст])
     },
     async function(args, di, { arg }) {
       var path = arg("шлях");
@@ -53,8 +65,8 @@ await ((async function() {
   фс.__m_props__["перейменувати"] = mavka_diia(
     "перейменувати",
     {
-      "шлях": mavka_param(0, "шлях", м_текст),
-      "новий_шлях": mavka_param(1, "новий_шлях", м_текст)
+      "шлях": mavka_param(0, м_текст),
+      "новий_шлях": mavka_param(1, м_текст)
     },
     async function(args, di, { arg }) {
       var path = arg("шлях");
@@ -68,7 +80,7 @@ await ((async function() {
   фс.__m_props__["видалити"] = mavka_diia(
     "видалити",
     {
-      "шлях": mavka_param(0, "шлях", м_текст)
+      "шлях": mavka_param(0, м_текст)
     },
     async function(args, di, { arg }) {
       var path = arg("шлях");
@@ -81,7 +93,7 @@ await ((async function() {
   фс.__m_props__["існує"] = mavka_diia(
     "видалити",
     {
-      "шлях": mavka_param(0, "шлях", м_текст)
+      "шлях": mavka_param(0, м_текст)
     },
     async function(args, di, { arg }) {
       var path = arg("шлях");
@@ -92,7 +104,7 @@ await ((async function() {
   фс.__m_props__["створити_папку"] = mavka_diia(
     "створити_папку",
     {
-      "шлях": mavka_param(0, "шлях", м_текст)
+      "шлях": mavka_param(0, м_текст)
     },
     async function(args, di, { arg }) {
       var path = arg("шлях");
@@ -103,7 +115,7 @@ await ((async function() {
   фс.__m_props__["створити_папку_рекурсивно"] = mavka_diia(
     "створити_папку_рекурсивно",
     {
-      "шлях": mavka_param(0, "шлях", м_текст)
+      "шлях": mavka_param(0, м_текст)
     },
     async function(args, di, { arg }) {
       var path = arg("шлях");

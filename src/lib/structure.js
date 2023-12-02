@@ -42,12 +42,12 @@ function mavka_structure(name, parent = null, params = {}, di = null) {
         }
         this.__m_props__[k] = v.defaultValue ?? null;
       }
-      for (const [k, v] of Object.entries(structure.__m_methods__)) {
-        if (this.__m_props__[k]) {
+      for (const [methodName, method] of Object.entries(structure.__m_methods__)) {
+        if (this.__m_props__[methodName]) {
           continue;
         }
-        this.__m_props__[k] = mavka_diia(k, v.__m_params__, (args, callDi) => {
-          return v(this, args, callDi);
+        this.__m_props__[methodName] = mavka_diia(methodName, method.__m_params__, (args, callDi) => {
+          return method(this, args, callDi);
         }, undefined, di);
       }
     }
@@ -63,7 +63,7 @@ function mavka_structure(name, parent = null, params = {}, di = null) {
   structure.__m_props__["чародія_викликати"] = mavka_diia("чародія_викликати", {}, (args, callDi) => {
     var value = new structure();
     if (value.__m_props__["чародія_створити"]) {
-      value.__m_props__["чародія_створити"](args, callDi);
+      value.__m_props__["чародія_створити"].__m_call__(args, callDi);
     } else {
       for (const [k, v] of Object.entries(structure.__m_params__)) {
         value.__m_props__[k] = mavka_arg(
@@ -77,7 +77,7 @@ function mavka_structure(name, parent = null, params = {}, di = null) {
       }
     }
     if (value.__m_props__["чародія_після_створення"]) {
-      value.__m_props__["чародія_після_створення"](args, callDi);
+      value.__m_props__["чародія_після_створення"].__m_call__(args, callDi);
     }
     return value;
   }, undefined, di);

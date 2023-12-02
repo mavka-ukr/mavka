@@ -45,7 +45,6 @@ Array.prototype.__m_type__ = "list";
 
 Function.__m_name__ = "Дія";
 Function.__m_props__ = Object.create(null);
-Function.prototype.__m_type__ = "diia";
 Function.__m_props__["назва"] = (args, di) => {
   const value = mavka_arg(args, 0, "значення", м_Дія, undefined, di);
   return value.__m_name__;
@@ -398,6 +397,6 @@ var м_Помилка = mavka_structure(
   "Помилка",
   null,
   {
-    "повідомлення": mavka_param(0, "повідомлення", м_текст, "")
+    "повідомлення": mavka_param(0, м_текст, "")
   }
 );

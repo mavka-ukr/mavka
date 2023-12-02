@@ -3,7 +3,7 @@ await ((async function() {
   json.__m_props__["parse"] = mavka_diia(
     "parse",
     {
-      "значення": mavka_param(0, "значення", м_текст)
+      "значення": mavka_param(0, м_текст)
     },
     function(args, di, { arg }) {
       var value = arg("значення");
@@ -25,7 +25,7 @@ await ((async function() {
   json.__m_props__["stringify"] = mavka_diia(
     "stringify",
     {
-      "значення": mavka_param(0, "значення")
+      "значення": mavka_param(0)
     },
     function(args, di, { arg }) {
       var value = arg("значення");
