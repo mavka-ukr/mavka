@@ -203,8 +203,8 @@ try {
     currentModulePath: command
   });
 
-  console.log(result);
-  console.log("---------");
+  // console.log(result);
+  // console.log("---------");
 
   const name = command.substring(0, command.length - 2);
 
