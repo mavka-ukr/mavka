@@ -9,14 +9,7 @@ await ((async function() {
     async function(args, di, { arg }) {
       var path = arg("шлях");
 
-      return await fs.promises.readFile(path);
-
-      if (type === "байти") {
-      } else if (type === "текст") {
-        return await fs.promises.readFile(path, "utf8");
-      } else {
-        throw new MavkaError(`Невідомий тип даних "${type}".`, di);
-      }
+      return await fs.promises.readFile(path) ?? null;
     }
   );
   фс.__m_props__["прочитати_текст"] = mavka_diia(
@@ -29,7 +22,7 @@ await ((async function() {
       var path = arg("шлях");
       var encoding = arg("кодування");
 
-      return await fs.promises.readFile(path, encoding);
+      return await fs.promises.readFile(path, encoding) ?? null;
     }
   );
   фс.__m_props__["записати"] = mavka_diia(
