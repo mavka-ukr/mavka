@@ -14,7 +14,7 @@ await ((async function() {
           return v.map(toMavkaValue);
         }
         if (typeof v === "object" && v) {
-          return new Map(Object.entries(v));
+          return new Map(Object.entries(v).map(([k, v]) => [k, toMavkaValue(v)]));
         }
         return v;
       }

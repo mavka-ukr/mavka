@@ -15,7 +15,9 @@ var м_читати = mavka_diia(
   }
 );
 
-var м_діапазон = function* (args, di) {
+var м_діапазон = function() {
+};
+м_діапазон.__m_call__ = function* (args, di) {
   const start = Array.isArray(args) ? args[0] : args.старт;
   const end = Array.isArray(args) ? args[1] : args.стоп;
   for (let i = start; i < end; i++) {

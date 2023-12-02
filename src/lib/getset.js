@@ -8,22 +8,36 @@ function mavka_commonGet_bytes(a, b, di) {
       return a.length;
     }
     if (b === "заповнити") {
-      return function(p, di) {
-        var value = mavka_arg(p, 0, "значення", undefined, undefined, di);
-        return a.fill(value);
-      };
+      return mavka_diia(
+        "заповнити",
+        {
+          "значення": mavka_param(0, "значення")
+        },
+        function(args, di, { arg }) {
+          return a.fill(arg("значення"));
+        }
+      );
     }
     if (b === "обернути") {
-      return function() {
-        return a.reverse();
-      };
+      return mavka_diia(
+        "обернути",
+        {},
+        function() {
+          return a.reverse();
+        }
+      );
     }
     if (b === "зрізати") {
-      return function(p, di) {
-        var indexStart = mavka_arg(p, 0, "від", м_число, undefined, di);
-        var indexEnd = mavka_arg(p, 1, "до", [м_число, null], undefined, di);
-        return a.slice(indexStart, indexEnd ?? undefined);
-      };
+      return mavka_diia(
+        "зрізати",
+        {
+          "від": mavka_param(0, м_число),
+          "до": mavka_param(1, [м_число, null])
+        },
+        function(args, di, { arg }) {
+          return a.slice(arg("від"), arg("до") ?? undefined);
+        }
+      );
     }
     return null;
   }
@@ -37,89 +51,157 @@ function mavka_commonGet_list(a, b, di) {
       return a.length;
     }
     if (b === "додати") {
-      return function(p, di) {
-        var value = mavka_arg(p, 0, "значення", undefined, undefined, di);
-        a.push(value);
-        return a;
-      };
+      return mavka_diia(
+        "додати",
+        {
+          "значення": mavka_param(0, "значення")
+        },
+        function(args, di, { arg }) {
+          a.push(arg("значення"));
+          return a;
+        }
+      );
     }
     if (b === "забрати") {
-      return function() {
-        return a.pop();
-      };
+      return mavka_diia(
+        "забрати",
+        {},
+        function() {
+          return a.pop();
+        }
+      );
     }
     if (b === "отримати") {
-      return function(p, di) {
-        var index = mavka_arg(p, 0, "позиція", м_число, undefined, di);
-        return a[index];
-      };
+      return mavka_diia(
+        "отримати",
+        {
+          "позиція": mavka_param(0, м_число)
+        },
+        function(args, di, { arg }) {
+          return a[arg("позиція")];
+        }
+      );
     }
     if (b === "сортувати") {
-      return function(p, di) {
-        var compareFn = mavka_arg(p, 0, "дія_порівняння", м_Дія, undefined, di);
-        return a.sort((a, b) => compareFn([a, b], di));
-      };
+      return mavka_diia(
+        "сортувати",
+        {
+          "дія_порівняння": mavka_param(0, м_Дія)
+        },
+        function(args, di, { arg }) {
+          return a.sort((a, b) => mavka_call(arg("дія_порівняння"), [a, b], di));
+        }
+      );
     }
     if (b === "фільтрувати") {
-      return function(p, di) {
-        var predicateFn = mavka_arg(p, 0, "дія_перевірки", м_Дія, undefined, di);
-        return a.filter((v) => predicateFn([v], di));
-      };
+      return mavka_diia(
+        "фільтрувати",
+        {
+          "дія_перевірки": mavka_param(0, м_Дія)
+        },
+        function(args, di, { arg }) {
+          return a.filter((v) => mavka_call(arg("дія_перевірки"), [v], di));
+        }
+      );
     }
     if (b === "знайти") {
-      return function(p, di) {
-        var predicateFn = mavka_arg(p, 0, "дія_перевірки", м_Дія, undefined, di);
-        return a.find((v) => predicateFn([v], di));
-      };
+      return mavka_diia(
+        "знайти",
+        {
+          "дія_перевірки": mavka_param(0, м_Дія)
+        },
+        function(args, di, { arg }) {
+          return a.find((v) => mavka_call(arg("дія_перевірки"), [v], di));
+        }
+      );
     }
     if (b === "знайти_позицію") {
-      return function(p, di) {
-        var predicateFn = mavka_arg(p, 0, "дія_перевірки", м_Дія, undefined, di);
-        return a.findIndex((v) => predicateFn([v], di));
-      };
+      return mavka_diia(
+        "знайти_позицію",
+        {
+          "дія_перевірки": mavka_param(0, м_Дія)
+        },
+        function(args, di, { arg }) {
+          return a.findIndex((v) => mavka_call(arg("дія_перевірки"), [v], di));
+        }
+      );
     }
     if (b === "перетворити") {
-      return function(p, di) {
-        var transformFn = mavka_arg(p, 0, "дія_перетворення", м_Дія, undefined, di);
-        return a.map((v) => transformFn([v], di));
-      };
+      return mavka_diia(
+        "перетворити",
+        {
+          "дія_перетворення": mavka_param(0, м_Дія)
+        },
+        function(args, di, { arg }) {
+          return a.map((v) => mavka_call(arg("дія_перетворення"), [v], di));
+        }
+      );
     }
     if (b === "заповнити") {
-      return function(p, di) {
-        var value = mavka_arg(p, 0, "значення", undefined, undefined, di);
-        return a.fill(value);
-      };
+      return mavka_diia(
+        "заповнити",
+        {
+          "значення": mavka_param(0, "значення")
+        },
+        function(args, di, { arg }) {
+          return a.fill(arg("значення"));
+        }
+      );
     }
     if (b === "злити") {
-      return function(p, di) {
-        var value = mavka_arg(p, 0, "значення", м_список, undefined, di);
-        return a.concat(value);
-      };
+      return mavka_diia(
+        "злити",
+        {
+          "значення": mavka_param(0, м_список)
+        },
+        function(args, di, { arg }) {
+          return a.concat(arg("значення"));
+        }
+      );
     }
     if (b === "зʼєднати") {
-      return function(p, di) {
-        var separator = mavka_arg(p, 0, "роздільник", м_текст, "", di);
-        return a.map((v) => mavka_to_string(v, di)).join(separator);
-      };
+      return mavka_diia(
+        "зʼєднати",
+        {
+          "роздільник": mavka_param(0, м_текст, "")
+        },
+        function(args, di, { arg }) {
+          return a.map((v) => mavka_to_string(v, di)).join(arg("роздільник"));
+        }
+      );
     }
     if (b === "обернути") {
-      return function() {
-        return a.reverse();
-      };
+      return mavka_diia(
+        "обернути",
+        {},
+        function() {
+          return a.reverse();
+        }
+      );
     }
     if (b === "зрізати") {
-      return function(p, di) {
-        var indexStart = mavka_arg(p, 0, "від", м_число, undefined, di);
-        var indexEnd = mavka_arg(p, 1, "до", [м_число, null], undefined, di);
-        return a.slice(indexStart, indexEnd ?? undefined);
-      };
+      return mavka_diia(
+        "зрізати",
+        {
+          "від": mavka_param(0, м_число),
+          "до": mavka_param(1, [м_число, null])
+        },
+        function(args, di, { arg }) {
+          return a.slice(arg("від"), arg("до") ?? undefined);
+        }
+      );
     }
     if (b === "скоротити") {
-      return function(p, di) {
-        var reduceFn = mavka_arg(p, 0, "дія_скорочення", м_Дія, undefined, di);
-        var initialValue = mavka_arg(p, 1, "початкове_значення", undefined, undefined, di);
-        return a.reduce((acc, v) => reduceFn([acc, v], di), initialValue);
-      };
+      return mavka_diia(
+        "скоротити",
+        {
+          "дія_скорочення": mavka_param(0, м_Дія),
+          "початкове_значення": mavka_param(1)
+        },
+        function(args, di, { arg }) {
+          return a.reduce((acc, v) => mavka_call(arg("дія_скорочення"), [acc, v], di), arg("початкове_значення"));
+        }
+      );
     }
     return null;
   }
@@ -130,107 +212,169 @@ function mavka_commonGet_text(a, b, di) {
     return a[b];
   }
   if (b === "символ") {
-    return function(p, di) {
-      var index = mavka_arg(p, 0, "позиція", м_число, undefined, di);
-      return a.charAt(index);
-    };
+    return mavka_diia(
+      "символ",
+      {
+        "позиція": mavka_param(0, м_число)
+      },
+      function(args, di, { arg }) {
+        return a.charAt(arg("позиція"));
+      }
+    );
   }
   if (b === "код_символу") {
-    return function(p, di) {
-      var index = mavka_arg(p, 0, "позиція", м_число, undefined, di);
-      return a.charCodeAt(index);
-    };
+    return mavka_diia(
+      "код_символу",
+      {
+        "позиція": mavka_param(0, м_число)
+      },
+      function(args, di, { arg }) {
+        return a.charCodeAt(arg("позиція"));
+      }
+    );
   }
   if (b === "позиція") {
-    return function(p, di) {
-      var value = mavka_arg(p, 0, "значення", м_текст, undefined, di);
-      return a.indexOf(value);
-    };
+    return mavka_diia(
+      "позиція",
+      {
+        "значення": mavka_param(0, м_текст)
+      },
+      function(args, di, { arg }) {
+        return a.indexOf(arg("значення"));
+      }
+    );
   }
   if (b === "повторити") {
-    return function(p, di) {
-      var count = mavka_arg(p, 0, "кількість", м_число, undefined, di);
-      return a.repeat(count);
-    };
+    return mavka_diia(
+      "повторити",
+      {
+        "кількість": mavka_param(0, м_число)
+      },
+      function(args, di, { arg }) {
+        return a.repeat(arg("кількість"));
+      }
+    );
   }
   if (b === "замінити") {
-    return function(p, di) {
-      var value = mavka_arg(p, 0, "старе_значення", м_текст, undefined, di);
-      var replacement = mavka_arg(p, 1, "нове_значення", м_текст, undefined, di);
-      return a.replaceAll(value, replacement);
-    };
+    return mavka_diia(
+      "замінити",
+      {
+        "старе_значення": mavka_param(0, м_текст),
+        "нове_значення": mavka_param(1, м_текст)
+      },
+      function(args, di, { arg }) {
+        return a.replaceAll(arg("старе_значення"), arg("нове_значення"));
+      }
+    );
   }
   if (b === "замінити_перше") {
-    return function(p, di) {
-      var value = mavka_arg(p, 0, "старе_значення", м_текст, undefined, di);
-      var replacement = mavka_arg(p, 1, "нове_значення", м_текст, undefined, di);
-      return a.replace(value, replacement);
-    };
+    return mavka_diia(
+      "замінити_перше",
+      {
+        "старе_значення": mavka_param(0, м_текст),
+        "нове_значення": mavka_param(1, м_текст)
+      },
+      function(args, di, { arg }) {
+        return a.replace(arg("старе_значення"), arg("нове_значення"));
+      }
+    );
   }
   if (b === "зрізати") {
-    return function(p, di) {
-      var indexStart = mavka_arg(p, 0, "від", м_число, undefined, di);
-      var indexEnd = mavka_arg(p, 1, "до", [м_число, null], null, di);
-      return a.substring(indexStart, indexEnd ?? undefined);
-    };
+    return mavka_diia(
+      "зрізати",
+      {
+        "від": mavka_param(0, м_число),
+        "до": mavka_param(1, [м_число, null])
+      },
+      function(args, di, { arg }) {
+        return a.substring(arg("від"), arg("до") ?? undefined);
+      }
+    );
   }
   if (b === "приєднати") {
-    return function(p, di) {
-      var value = (Array.isArray(p) ? p : Object.values(p))
-        .map((v) => mavka_to_string(v, di))
-        .join("");
-      return a.concat(value);
-    };
+    return mavka_diia(
+      "приєднати",
+      {},
+      function(args, di, { arg }) {
+        var value = (Array.isArray(p) ? p : Object.values(p))
+          .map((v) => mavka_to_string(v, di))
+          .join("");
+        return a.concat(value);
+      }
+    );
   }
   if (b === "розділити") {
-    return function(p, di) {
-      var separator = mavka_arg(p, 0, "роздільник", м_текст, undefined, di);
-      return a.split(separator);
-    };
+    return mavka_diia(
+      "розділити",
+      {
+        "роздільник": mavka_param(0, м_текст)
+      },
+      function(args, di, { arg }) {
+        return a.split(arg("роздільник"));
+      }
+    );
   }
   if (b === "починається_з") {
-    return function(p, di) {
-      var value = mavka_arg(p, 0, "значення", м_текст, undefined, di);
-      return a.startsWith(value);
-    };
+    return mavka_diia(
+      "починається_з",
+      {
+        "значення": mavka_param(0, м_текст)
+      },
+      function(args, di, { arg }) {
+        return a.startsWith(arg("значення"));
+      }
+    );
   }
   if (b === "закінчується_на") {
-    return function(p, di) {
-      var value = mavka_arg(p, 0, "значення", м_текст, undefined, di);
-      return a.endsWith(value);
-    };
+    return mavka_diia(
+      "закінчується_на",
+      {
+        "значення": mavka_param(0, м_текст)
+      },
+      function(args, di, { arg }) {
+        return a.endsWith(arg("значення"));
+      }
+    );
   }
   if (b === "обрізати") {
-    return function(p, di) {
-      return a.trim();
-    };
+    return mavka_diia(
+      "обрізати",
+      {},
+      function() {
+        return a.trim();
+      }
+    );
   }
   if (b === "обтяти") {
-    return function(p, di) {
-      var lineNumberWhereSmallestIndentationIs = 0;
-      var lines = a.split("\n");
-      var smallestIndentation = Infinity;
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        if (!line.trim()) {
-          continue;
+    return mavka_diia(
+      "обтяти",
+      {},
+      function() {
+        var lineNumberWhereSmallestIndentationIs = 0;
+        var lines = a.split("\n");
+        var smallestIndentation = Infinity;
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          if (!line.trim()) {
+            continue;
+          }
+          const indentation = line.match(/^\s*/)[0].length;
+          if (indentation < smallestIndentation) {
+            smallestIndentation = indentation;
+            lineNumberWhereSmallestIndentationIs = i;
+          }
         }
-        const indentation = line.match(/^\s*/)[0].length;
-        if (indentation < smallestIndentation) {
-          smallestIndentation = indentation;
-          lineNumberWhereSmallestIndentationIs = i;
+        const result = [];
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          if (!line.trim()) {
+            continue;
+          }
+          result.push(line.slice(smallestIndentation));
         }
+        return result.join("\n");
       }
-      const result = [];
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        if (!line.trim()) {
-          continue;
-        }
-        result.push(line.slice(smallestIndentation));
-      }
-      return result.join("\n");
-    };
+    );
   }
   if (b === "довжина") {
     return a.length;
