@@ -158,11 +158,14 @@ if (!fs.existsSync(pakVersionPath)) {
   await downloadVersion(pakVersion);
 }
 
-const modulePath = `${pakVersionPath}/запуск.м`;
-
-if (!fs.existsSync(modulePath)) {
-  console.error(`Неможливо запустити пак "${pakName}/${pakVersion}": модуль "запуск.м" не знайдено.`);
-  process.exit(1);
+let modulePath = `${pakVersionPath}/запуск.м`;
+if (fs.existsSync(modulePath)) {
+} else {
+  modulePath = `${pakVersionPath}/старт.м`;
+  if (!fs.existsSync(modulePath)) {
+    console.error(`Неможливо запустити пак "${pakName}/${pakVersion}": модуль "старт.м" не знайдено.`);
+    process.exit(1);
+  }
 }
-
 spawn("mavka", [modulePath, ...process.argv.slice(3)], { stdio: "inherit" });
+
