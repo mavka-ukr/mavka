@@ -7,7 +7,6 @@ import os from "os";
 import fs from "fs";
 import axios from "axios";
 import { Uint8ArrayReader, ZipReader } from "@zip.js/zip.js";
-import Mavka from "../main.js";
 import { spawn } from "child_process";
 import semver from "semver";
 
@@ -129,7 +128,7 @@ async function downloadVersion(pakVersion) {
       },
       responseType: "arraybuffer",
       headers: {
-        "X-Mavka-Version": Mavka.VERSION
+        "X-Mavka-Version": ""
       }
     }).catch((e) => {
       clearProgress();
