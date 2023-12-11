@@ -1,4 +1,4 @@
-import Mavka from "./src/main.js";
+import Mavka from "./main.js";
 import pkg from "./package.json" assert { type: "json" };
 
 if (Mavka.VERSION !== pkg.version) {
