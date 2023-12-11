@@ -128,7 +128,7 @@ var м_друк = мДія("друк", [], function(args) {
         return path.resolve(`${paksDirname}/${name}/${version}/${name}.м`);
       }
     }
-    return path.resolve(`${binDirname}/вп/${module}.м`);
+    return path.resolve(`${binDirname}/../вп/${module}.м`);
   },
   async get_remote_module_code(module, options) {
     const parts = module.split("/");
