@@ -2,13 +2,32 @@
 
 import process from "process";
 import path from "path";
-import { exec } from "child_process";
+import { exec, spawn } from "child_process";
 import { run } from "../run.js";
 import Mavka from "../main.js";
 
 process.removeAllListeners("warning");
 
-let command = process.argv[2] || "";
+const options = [];
+let command = "";
+const rest = [];
+for (let i = 2; i < process.argv.length; i++) {
+  const arg = process.argv[i];
+  if (arg.startsWith("-")) {
+    options.push(arg);
+  } else {
+    command = arg;
+    if (["джеджалик", "пак", "версія", "допомога"].includes(command)) {
+      rest.push(...process.argv.slice(i + 1));
+    } else {
+      rest.push(...process.argv.slice(i));
+    }
+    break;
+  }
+}
+if (!command) {
+  command = "допомога";
+}
 
 const helpMessage = `
 Використання:
@@ -16,38 +35,52 @@ const helpMessage = `
   мавка [...опції] <команда> [...аргументи]
 
 Доступні команди:
-  мавка <модуль.м> — виконує модуль
-  мавка джеджалик - запускає джеджалик
-  мавка пак - запускає пак
-  мавка версія — показує версію Мавки
-  мавка допомога — друкує це повідолення
+  <модуль.м> — виконати модуль
+    Опції: ті самі, що і у Джеджалика
+
+  джеджалик - запустити Джеджалик
+    Опції: немає
+
+  пак - запустити Пак
+    Опції: немає
+
+  версія — показати версію Мавки
+    Опції: немає
+
+  допомога — показати це повідолення
+    Опції: немає
 `.trim();
 
-if (!command) {
+if (command === "допомога") {
   console.log(helpMessage);
   process.exit(0);
 } else if (command === "версія") {
   console.log(Mavka.VERSION);
   process.exit(0);
-} else if (command === "допомога") {
-  console.log(helpMessage);
-  process.exit(0);
-}
-
-const modulePath = path.resolve(command);
-
-exec(`jejalyk ${modulePath}`, async function(error, stdout, stderr) {
-  if (error) {
-    process.stdout.write(stderr);
+} else if (command === "джеджалик") {
+  spawn("jejalyk", [...rest], { stdio: "inherit" });
+} else if (command === "пак") {
+  spawn("pak", [...rest], { stdio: "inherit" });
+} else {
+  const inputFile = rest[0];
+  if (!inputFile) {
+    console.log(helpMessage);
     process.exit(1);
   }
+  const modulePath = path.resolve(inputFile);
 
-  if (stderr) {
-    process.stdout.write(stderr);
-    process.exit(1);
-  }
+  exec(`jejalyk ${modulePath}`, async function(error, stdout, stderr) {
+    if (error) {
+      process.stdout.write(stderr);
+      process.exit(1);
+    }
 
-  await run(`
+    if (stderr) {
+      process.stdout.write(stderr);
+      process.exit(1);
+    }
+
+    await run(`
 (async function() {
   try {
     ${stdout}
@@ -56,5 +89,5 @@ exec(`jejalyk ${modulePath}`, async function(error, stdout, stderr) {
   }
 })()
 `);
-});
-
+  });
+}
