@@ -1,4 +1,4 @@
-((async function() {
+js """
   // Parent class for all of the AST nodes, "column" and "line" is a list with a first column or line that element
 // occupies (inclusive) and the last one (exclusive). Because column counter resets to zero with each new line,
 // it might be hard to access a particular splice, so you can use "char" counter, which never resets.
@@ -444,7 +444,7 @@
 
     function expectDictionaryKey(line, column, char) {
       printCodeSnippet(`Тут очікується ключ словнику
-  
+
   Наприклад
   ( ім'я = "Давид" )
     ^^^^^`);
@@ -453,7 +453,7 @@
 
     function expectObjectKey(line, column, char) {
       printCodeSnippet(`Тут очікується ключ об'єкту
-  
+
   Наприклад
   ( ім'я = "Давид" )
     ^^^^^`);
@@ -470,7 +470,7 @@
     function expectDigit(numSoFar, line, column, char) {
       if (!(str[i] >= "0" && str[i] <= "9")) {
         printCodeSnippet(`Тут очікується число
-  
+
   Наприклад:
   ${numSoFar}5
   ${" ".repeat(numSoFar.length)}^`);
@@ -480,7 +480,7 @@
 
     function expectEscapeCharacter(strSoFar, line, column, char) {
       printCodeSnippet(`Очікується escape-послідовність
-  
+
   Наприклад:
   "${strSoFar}\\n"
   ${" ".repeat(strSoFar.length + 1)}^^
@@ -490,7 +490,7 @@
 
     function expectEscapeUnicode(strSoFar, line, column, char) {
       printCodeSnippet(`Очікується escape-юнінкод
-  
+
   Наприклад:
   "${strSoFar}\\u0123"
   ${" ".repeat(strSoFar.length + 1)}^^^^^^`);
@@ -499,7 +499,7 @@
 
     function keyStartsWithWrongChar(key, line, column, char) {
       printCodeSnippet(`Ключ об'єкту не може починатися з цифри або деяких інших символів таких як апостроф
-  
+
   Наприклад:
   а${key}
   ${" ".repeat(key.length + 1)}^^^^^^`);
@@ -520,157 +520,187 @@
     }
   }
 
-  // todo: complete
-  // todo: fix error messages
+м_розібрати = мДія(
+  "розібрати",
+  [
+    мПарм("значення", м_текст),
+    мПарм("визначення", м_словник, new Map()),
+  ],
+  function(args) {
+    var value = args[0] ?? args["значення"];
+    var definitions = args[1] ?? args["визначення"];
 
-  const дід = mavka_module("дід");
-  const розібрати = mavka_diia(
-    "розібрати",
-    {
-      "значення": mavka_param(0, м_текст),
-      "визначення": mavka_param(1, [м_словник, null], new Map())
-    },
-    function(args, di, { arg }) {
-      var value = arg("значення");
-      var definitions = arg("визначення");
+    var ast;
 
-      var ast;
+    try {
+      ast = parseDid(value);
+    } catch (e) {
+      if (e && e instanceof ParserError) {
+        throw new Error(e.message);
+      } else {
+        throw e;
+      }
+    }
 
-      try {
-        ast = parseDid(value);
-      } catch (e) {
-        if (e && e instanceof ParserError) {
-          throw new Error(e.message);
-        } else {
-          throw e;
-        }
+    var makeValue = (node) => {
+      if (node instanceof NumberNode) {
+        return node.value;
       }
 
-      var makeValue = (node) => {
-        if (node instanceof NumberNode) {
-          return node.value;
-        }
+      if (node instanceof TextNode) {
+        return node.value;
+      }
 
-        if (node instanceof TextNode) {
-          return node.value;
-        }
+      if (node instanceof EmptyNode) {
+        return null;
+      }
 
-        if (node instanceof EmptyNode) {
-          return null;
-        }
+      if (node instanceof LogicalNode) {
+        return node.value;
+      }
 
-        if (node instanceof LogicalNode) {
-          return node.value;
-        }
+      if (node instanceof ListNode) {
+        return node.contents.map(makeValue);
+      }
 
-        if (node instanceof ListNode) {
-          return node.contents.map(makeValue);
+      if (node instanceof DictionaryNode) {
+        const dict = new Map();
+        for (const entry of node.contents) {
+          dict.set(makeValue(entry.key), makeValue(entry.value));
         }
+        return dict;
+      }
 
-        if (node instanceof DictionaryNode) {
+      if (node instanceof ObjectNode) {
+        if (definitions.has(node.name)) {
+          const params = {};
+          for (const entry of node.contents) {
+            params[makeValue(entry.key)] = makeValue(entry.value);
+          }
+          return mavka_call(
+            definitions.get(node.name),
+            params,
+            di
+          );
+        } else {
           const dict = new Map();
           for (const entry of node.contents) {
             dict.set(makeValue(entry.key), makeValue(entry.value));
           }
           return dict;
         }
+      }
 
-        if (node instanceof ObjectNode) {
-          if (definitions.has(node.name)) {
-            const params = {};
-            for (const entry of node.contents) {
-              params[makeValue(entry.key)] = makeValue(entry.value);
-            }
-            return mavka_call(
-              definitions.get(node.name),
-              params,
-              di
-            );
-          } else {
-            const dict = new Map();
-            for (const entry of node.contents) {
-              dict.set(makeValue(entry.key), makeValue(entry.value));
-            }
-            return dict;
-          }
-        }
+      return null;
+    };
 
-        return null;
-      };
+    return makeValue(ast);
+  }
+);
+м_зібрати = мДія(
+  "зібрати",
+  [
+    мПарм("значення"),
+  ],
+  function(args) {
+    var value = args[0] ?? args["значення"];
 
-      return makeValue(ast);
-    }
-  );
-  const зібрати = mavka_diia(
-    "зібрати",
-    {
-      "значення": mavka_param(0)
-    },
-    function(args, di, { arg }) {
-      var value = arg("значення");
-
-      var filterEntries = (entries) => {
-        return entries.filter(([key, value]) => {
-          if (value == null) {
-            return true;
-          }
-          if (typeof key !== "string") {
-            return false;
-          }
-          return [
-            "number",
-            "text",
-            "logical",
-            "list",
-            "dictionary",
-            "object"
-          ].includes(value.__m_type__);
-        });
-      };
-
-      var filterList = (list) => {
-        return list.filter((value) => {
-          if (value == null) {
-            return true;
-          }
-          return [
-            "number",
-            "text",
-            "logical",
-            "list",
-            "dictionary",
-            "object"
-          ].includes(value.__m_type__);
-        });
-      };
-
-      var makeValue = (value) => {
+    var filterEntries = (entries) => {
+      return entries.filter(([key, value]) => {
         if (value == null) {
-          return "пусто";
+          return true;
         }
-
-        switch (value.__m_type__) {
-          case "number":
-            return `${value}`;
-          case "text":
-            return `"${value.replaceAll("\"", "\\\"")}"`;
-          case "logical":
-            return value ? "так" : "ні";
-          case "list":
-            return `[${filterList(value).map(makeValue).join(",")}]`;
-          case "dictionary":
-            return `(${filterEntries([...value.entries()]).map(([key, value]) => `"${key}"=${makeValue(value)}`).join(",")})`;
-          case "object":
-            return `${value.__m_structure__.__m_name__}(${filterEntries(Object.entries(value.__m_props__)).map(([key, value]) => `${key}=${makeValue(value)}`).join(",")})`;
-          default:
-            return "пусто";
+        if (typeof key !== "string") {
+          return false;
         }
-      };
+        if (typeof value === "number") {
+          return true;
+        }
+        if (typeof value === "string") {
+          return true;
+        }
+        if (typeof value === "boolean") {
+          return true;
+        }
+        if (typeof value === "object") {
+          return true;
+        }
+        if (Array.isArray(value)) {
+          return true;
+        }
+        if (value instanceof Map) {
+          return true;
+        }
+        return false;
+      });
+    };
 
-      return makeValue(value);
-    }
-  );
-  дід.__m_props__["розібрати"] = розібрати;
-  дід.__m_props__["зібрати"] = зібрати;
-  return дід;
-})());
+    var filterList = (list) => {
+      return list.filter((value) => {
+        if (value == null) {
+          return true;
+        }
+        if (typeof value === "number") {
+          return true;
+        }
+        if (typeof value === "string") {
+          return true;
+        }
+        if (typeof value === "boolean") {
+          return true;
+        }
+        if (typeof value === "object") {
+          return true;
+        }
+        if (Array.isArray(value)) {
+          return true;
+        }
+        if (value instanceof Map) {
+          return true;
+        }
+        return false;
+      });
+    };
+
+    var makeValue = (value) => {
+      if (value == null) {
+        return "пусто";
+      }
+
+      if (typeof value === "number") {
+        return `${value}`;
+      }
+
+      if (typeof value === "string") {
+        return `"${value.replaceAll("\"", "\\\"")}"`;
+      }
+
+      if (typeof value === "boolean") {
+        return value ? "так" : "ні";
+      }
+
+      if (typeof value === "object") {
+        if (Array.isArray(value)) {
+          return `[${filterList(value).map(makeValue).join(",")}]`;
+        }
+        if (value instanceof Map) {
+          return `(${filterEntries([...value.entries()]).map(([key, value]) => `"${key}"=${makeValue(value)}`).join(",")})`;
+        }
+        if (value[MAVKA]?.structure) {
+          return `${value[MAVKA].structure.name}(${filterEntries(Object.entries(value.__m_props__)).map(([key, value]) => `${key}=${makeValue(value)}`).join(",")})`;
+        }
+      }
+
+      return "пусто";
+    };
+
+    return makeValue(value);
+  }
+);
+"""
+
+макет дія розібрати(значення текст, визначення словник = ()) щось
+макет дія зібрати(значення щось) текст
+
+дати розібрати
+дати зібрати
