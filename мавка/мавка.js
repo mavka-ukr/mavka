@@ -4,7 +4,7 @@ import process from "process";
 import path from "path";
 import { exec, spawn } from "child_process";
 import { run } from "../run.js";
-import Mavka from "../main.js";
+import version from "../version.js";
 
 process.removeAllListeners("warning");
 
@@ -55,7 +55,7 @@ if (command === "допомога") {
   console.log(helpMessage);
   process.exit(0);
 } else if (command === "версія") {
-  console.log(Mavka.VERSION);
+  console.log(version);
   process.exit(0);
 } else if (command === "джеджалик") {
   spawn("jejalyk", [...rest], { stdio: "inherit" });
@@ -64,7 +64,7 @@ if (command === "допомога") {
 } else {
   const inputFile = rest[0];
   if (!inputFile) {
-    console.log(helpMessage);
+    console.error(helpMessage);
     process.exit(1);
   }
   const modulePath = path.resolve(inputFile);
