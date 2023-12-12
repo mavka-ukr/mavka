@@ -27,36 +27,65 @@ function clearProgress() {
   process.stdout.cursorTo(0);
 }
 
-let command = process.argv[2] || "";
+const options = [];
+let command = "";
+const rest = [];
+for (let i = 2; i < process.argv.length; i++) {
+  const arg = process.argv[i];
+  if (arg.startsWith("-")) {
+    options.push(arg);
+  } else {
+    command = arg;
+    if (["версія", "допомога"].includes(command)) {
+      rest.push(...process.argv.slice(i + 1));
+    } else {
+      rest.push(...process.argv.slice(i));
+    }
+    break;
+  }
+}
+if (!command) {
+  command = "допомога";
+}
 
 const helpMessage = `
 Використання:
-  джеджалик [...опції] <вхід.м> [вихід.м]
+  джеджалик [...опції] <вхід.м> [вихід.js]
   джеджалик [...опції] <команда> [...аргументи]
 
 Доступні команди:
-  джеджалик компілювати <вхід.м> [вихід.м] — компілювати модуль
-  джеджалик версія — показує версію Джеджалика
-  джеджалик допомога — друкує це повідолення
+  <модуль.м> — компілювати модуль
+    Опції:
+      --складність,-c={0,1} — вказати складність компіляції
+      --джистота,-ч={0,1} — вказати js-чистоту вихідного коду
+
+  джеджалик версія — показати версію Джеджалика
+    Опції: немає
+
+  джеджалик допомога — показати це повідолення
+    Опції: немає
 `.trim();
 
-if (!command) {
+if (command === "допомога") {
   console.log(helpMessage);
   process.exit(0);
 } else if (command === "версія") {
   console.log(JejalykVersion);
   process.exit(0);
-} else if (command === "допомога") {
-  console.log(helpMessage);
-  process.exit(0);
 }
 
-let code;
+const inputFile = rest[0];
+if (!inputFile) {
+  console.error("Вхідний файл не вказано.");
+  process.exit(1);
+}
+const inputFilePath = path.resolve(inputFile);
 
-if (fs.existsSync(command)) {
-  code = fs.readFileSync(command, "utf8");
+let code;
+if (fs.existsSync(inputFilePath)) {
+  code = fs.readFileSync(inputFilePath, "utf8");
 } else {
-  console.error(`Модуль "${command}" не знайдено.`);
+  console.error(`Модуль "${inputFilePath}" не знайдено.`);
   process.exit(1);
 }
 
@@ -71,8 +100,8 @@ var м_друк = мДія("друк", [], function(args) {
 
 макет дія друк(...значення) ніщо
 `,
-  root_module_path: path.resolve(command),
-  current_module_path: path.resolve(command),
+  root_module_path: inputFilePath,
+  current_module_path: inputFilePath,
   async get_module_name(relative, module, options) {
     const parts = module.split(".");
     return parts[parts.length - 1];
@@ -203,5 +232,10 @@ JejalykNodeModule().then(async (jejalyk) => {
     console.error(compilationResult.error.message);
     process.exit(1);
   }
-  console.log(compilationResult.result);
+  const outputFile = rest[1];
+  if (outputFile) {
+    fs.writeFileSync(outputFile, compilationResult.result);
+  } else {
+    console.log(compilationResult.result);
+  }
 });
