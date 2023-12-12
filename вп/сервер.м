@@ -9,7 +9,7 @@ var { default: http } = await import("http");
   мПарм("обробник", м_Дія),
   мПарм("опції", м_Опції, new Map()),
 ]);
-м_Сервер[MAVKA].methods.push(мМетд("запустити", [], function(me, args) {
+м_Сервер[MAVKA].methods.push(мМетд("запустити", [мПарм("зворот", [мДія, м_пусто], м_пусто)], function(me, args) {
   var handler = me["обробник"];
   var options = me["опції"];
   var callback = args[0] ?? args["зворот"] ?? null;

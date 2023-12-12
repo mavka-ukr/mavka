@@ -192,7 +192,11 @@ JejalykNodeModule().then(async (jejalyk) => {
   try {
     compilationResult = await jejalyk.compile(code);
   } catch (e) {
-    console.error(e);
+    if (typeof e === "number") {
+      console.log(jejalyk.getExceptionMessage(e).toString());
+    } else {
+      console.error(e);
+    }
     process.exit(1);
   }
   if (compilationResult.error) {
