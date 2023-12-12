@@ -5,12 +5,11 @@
   "main": "src/main.js",
   "type": "module",
   "exports": {
-    ".": "./main.js",
+    "./version": "./version.js",
     "./builtins/bundle.js": "./all-modules.js"
   },
   "scripts": {
     "start": "node мавка/мавка.js",
-    "prepublishOnly": "node checkVersion.js",
     "test": "jest"
   },
   "repository": {

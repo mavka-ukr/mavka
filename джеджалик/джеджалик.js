@@ -76,7 +76,7 @@ if (command === "допомога") {
 
 const inputFile = rest[0];
 if (!inputFile) {
-  console.error("Вхідний файл не вказано.");
+  console.error(helpMessage);
   process.exit(1);
 }
 const inputFilePath = path.resolve(inputFile);
@@ -222,7 +222,7 @@ JejalykNodeModule().then(async (jejalyk) => {
     compilationResult = await jejalyk.compile(code);
   } catch (e) {
     if (typeof e === "number") {
-      console.log(jejalyk.getExceptionMessage(e).toString());
+      console.error(jejalyk.getExceptionMessage(e).toString());
     } else {
       console.error(e);
     }

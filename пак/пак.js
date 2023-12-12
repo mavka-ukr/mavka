@@ -9,6 +9,7 @@ import axios from "axios";
 import { Uint8ArrayReader, ZipReader } from "@zip.js/zip.js";
 import { spawn } from "child_process";
 import semver from "semver";
+import version from "../version.js";
 
 function printProgress(name, progress) {
   process.stdout.clearLine(0);
@@ -125,7 +126,7 @@ async function downloadVersion(pakVersion) {
       },
       responseType: "arraybuffer",
       headers: {
-        "X-Mavka-Version": ""
+        "X-Mavka-Version": version
       }
     }).catch((e) => {
       clearProgress();
