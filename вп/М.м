@@ -82,16 +82,18 @@ js """
 );
 м_найбільше = мДія(
   "найбільше",
-  [],
+  [мПарм("а", м_список)],
   function(args) {
-    return Math.max(...Object.values(args));
+    const value = args[0] ?? args["а"];
+    return Math.max(...value);
   }
 );
 м_найменше = мДія(
   "найменше",
-  [],
+  [мПарм("а", м_список)],
   function(args) {
-    return Math.min(...Object.values(args));
+    const value = args[0] ?? args["а"];
+    return Math.min(...value);
   }
 );
 м_степінь = мДія(

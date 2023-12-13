@@ -10,6 +10,7 @@ import os from "os";
 import { Uint8ArrayReader, ZipReader } from "@zip.js/zip.js";
 import axios from "axios";
 import { fileURLToPath } from "url";
+import mavkaVersion from "../mavkaVersion.js";
 
 const binPath = fileURLToPath(import.meta.url);
 const binDirname = path.dirname(binPath);
@@ -55,7 +56,9 @@ const helpMessage = `
 
 Доступні команди:
   <модуль.м> — компілювати модуль
-    Опції: немає
+    Опції:
+      --інфо-викликів={0,1} — додати інформацію про виклики (для відлагодження)
+      --розширення={0,1} — дозволити JS-розширення
 
   джеджалик версія — показати версію Джеджалика
     Опції: немає
@@ -88,7 +91,7 @@ if (fs.existsSync(inputFilePath)) {
 }
 
 global.mavka_compilation_options = {
-  args: "",
+  args: options.join(" "),
   std_code: `
 js """
 var м_друк = мДія("друк", [], function(args) {
@@ -102,19 +105,35 @@ var м_друк = мДія("друк", [], function(args) {
   current_module_path: inputFilePath,
   async get_module_name(relative, module, options) {
     const parts = module.split(".");
-    return parts[parts.length - 1];
+    return {
+      error: "",
+      result: parts[parts.length - 1],
+      builtin: false
+    };
   },
   async get_module_path(relative, module, options) {
     const parts = module.split(".");
     const rootModulePath = relative ? options.current_module_path : options.root_module_path;
-    return path.resolve(`${path.dirname(rootModulePath)}/${parts.join("/")}.м`);
+    return {
+      error: "",
+      result: path.resolve(`${path.dirname(rootModulePath)}/${parts.join("/")}.м`),
+      builtin: false
+    };
   },
   async get_module_code(relative, module, options) {
     const modulePath = await global.mavka_compilation_options.get_module_path(relative, module, options);
-    if (fs.existsSync(modulePath)) {
-      return fs.readFileSync(modulePath, "utf8");
+    if (fs.existsSync(modulePath.result)) {
+      return {
+        error: "",
+        result: fs.readFileSync(modulePath.result, "utf8"),
+        builtin: false
+      };
     } else {
-      throw new Error(`Модуль "${module}" не знайдено.`);
+      return {
+        error: `Модуль "${module}" не знайдено.`,
+        result: "",
+        builtin: false
+      };
     }
   },
   async get_remote_module_name(module, options) {
@@ -125,19 +144,39 @@ var м_друк = мДія("друк", [], function(args) {
     if (version) {
       if (semver.valid(version)) {
         if (rest.length) {
-          return rest[rest.length - 1];
+          return {
+            error: "",
+            result: rest[rest.length - 1],
+            builtin: false
+          };
         } else {
-          return name;
+          return {
+            error: "",
+            result: name,
+            builtin: false
+          };
         }
       } else {
         if (rest.length) {
-          return rest[rest.length - 1];
+          return {
+            error: "",
+            result: rest[rest.length - 1],
+            builtin: true
+          };
         } else {
-          return version;
+          return {
+            error: "",
+            result: version,
+            builtin: true
+          };
         }
       }
     } else {
-      return name;
+      return {
+        error: "",
+        result: name,
+        builtin: true
+      };
     }
   },
   async get_remote_module_path(module, options) {
@@ -150,12 +189,24 @@ var м_друк = мДія("друк", [], function(args) {
         const userHomeDir = os.homedir();
         const paksDirname = `${userHomeDir}/.паки`;
         if (rest.length) {
-          return path.resolve(`${paksDirname}/${name}/${version}/${rest.join("/")}.м`);
+          return {
+            error: "",
+            result: path.resolve(`${paksDirname}/${name}/${version}/${rest.join("/")}.м`),
+            builtin: false
+          };
         }
-        return path.resolve(`${paksDirname}/${name}/${version}/${name}.м`);
+        return {
+          error: "",
+          result: path.resolve(`${paksDirname}/${name}/${version}/${name}.м`),
+          builtin: false
+        };
       }
     }
-    return path.resolve(`${binDirname}/../вп/${module}.м`);
+    return {
+      error: "",
+      result: path.resolve(`${binDirname}/../вп/${module}.м`),
+      builtin: true
+    };
   },
   async get_remote_module_code(module, options) {
     const parts = module.split("/");
@@ -177,7 +228,7 @@ var м_друк = мДія("друк", [], function(args) {
               },
               responseType: "arraybuffer",
               headers: {
-                "X-Mavka-Version": "lol"
+                "X-Mavka-Version": mavkaVersion
               }
             })
             .then(async (r) => {
@@ -201,39 +252,57 @@ var м_друк = мДія("друк", [], function(args) {
             });
           clearProgress();
         }
-        if (!fs.existsSync(modulePath)) {
-          throw new Error(`Пак "${module}" не знайдено.`);
+        if (!fs.existsSync(modulePath.result)) {
+          return {
+            error: `Пак "${module}" не знайдено.`,
+            result: "",
+            builtin: false
+          };
         }
-        return fs.readFileSync(modulePath, "utf8");
+        return {
+          error: "",
+          result: fs.readFileSync(modulePath.result, "utf8"),
+          builtin: false
+        };
       }
     }
-    if (!fs.existsSync(modulePath)) {
-      throw new Error(`Пак "${module}" не знайдено.`);
+    if (!fs.existsSync(modulePath.result)) {
+      return {
+        error: `Пак "${module}" не знайдено.`,
+        result: "",
+        builtin: true
+      };
     }
-    return fs.readFileSync(modulePath, "utf8");
+    return {
+      error: "",
+      result: fs.readFileSync(modulePath.result, "utf8"),
+      builtin: true
+    };
   }
 };
 
-JejalykNodeModule().then(async (jejalyk) => {
-  let compilationResult;
-  try {
-    compilationResult = await jejalyk.compile(code);
-  } catch (e) {
-    if (typeof e === "number") {
-      console.error(jejalyk.getExceptionMessage(e).toString());
-    } else {
-      console.error(e);
+if (code.trim().length) {
+  JejalykNodeModule().then(async (jejalyk) => {
+    let compilationResult;
+    try {
+      compilationResult = await jejalyk.compile(code);
+    } catch (e) {
+      if (typeof e === "number") {
+        console.error(jejalyk.getExceptionMessage(e).toString());
+      } else {
+        console.error(e);
+      }
+      process.exit(1);
     }
-    process.exit(1);
-  }
-  if (compilationResult.error) {
-    console.error(compilationResult.error.message);
-    process.exit(1);
-  }
-  const outputFile = rest[1];
-  if (outputFile) {
-    fs.writeFileSync(outputFile, compilationResult.result);
-  } else {
-    console.log(compilationResult.result);
-  }
-});
+    if (compilationResult.error) {
+      console.error(compilationResult.error.message);
+      process.exit(1);
+    }
+    const outputFile = rest[1];
+    if (outputFile) {
+      fs.writeFileSync(outputFile, compilationResult.result);
+    } else {
+      console.log(compilationResult.result);
+    }
+  });
+}

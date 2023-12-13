@@ -4,7 +4,7 @@ import process from "process";
 import path from "path";
 import { exec, spawn } from "child_process";
 import { run } from "../run.js";
-import version from "../version.js";
+import mavkaVersion from "../mavkaVersion.js";
 
 process.removeAllListeners("warning");
 
@@ -55,7 +55,7 @@ if (command === "допомога") {
   console.log(helpMessage);
   process.exit(0);
 } else if (command === "версія") {
-  console.log(version);
+  console.log(mavkaVersion);
   process.exit(0);
 } else if (command === "джеджалик") {
   spawn("jejalyk", [...rest], { stdio: "inherit" });
@@ -69,7 +69,7 @@ if (command === "допомога") {
   }
   const modulePath = path.resolve(inputFile);
 
-  exec(`jejalyk ${modulePath}`, async function(error, stdout, stderr) {
+  exec(`jejalyk ${options.length ? options.join(" ") + " " : ""}${modulePath}`, async function(error, stdout, stderr) {
     if (error) {
       process.stdout.write(stderr);
       process.exit(1);
@@ -81,6 +81,10 @@ if (command === "допомога") {
     }
 
     await run(`
+process.on("unhandledRejection", (e) => {
+  throw e;
+});
+
 (async function() {
   try {
     ${stdout}
