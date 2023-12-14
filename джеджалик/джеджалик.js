@@ -95,7 +95,7 @@ global.mavka_compilation_options = {
   std_code: `
 js """
 var м_друк = мДія("друк", [], function(args) {
-  console.log(...Object.values(args));
+  console.log(__мГТкс__(...Object.values(args)));
 });
 """
 
