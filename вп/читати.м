@@ -2,6 +2,10 @@ js """
 var mavka_read = await (async function() {
   'use strict'
 
+  if (typeof window !== "undefined") {
+    return;
+  }
+
   var { default: fs } = await import('fs');
   var term = 13; // carriage return
 
