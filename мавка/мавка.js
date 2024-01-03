@@ -80,18 +80,9 @@ if (command === "допомога") {
       process.exit(1);
     }
 
-    await run(`
-process.on("unhandledRejection", (e) => {
-  throw e;
-});
-
-(async function() {
-  try {
-    ${stdout}
-  } catch (e) {
-    console.error(String(e));
-  }
-})()
-`);
+    await run(`var run = async function() {
+${stdout}
+};
+run()`);
   });
 }
