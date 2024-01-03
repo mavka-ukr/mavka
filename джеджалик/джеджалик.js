@@ -57,7 +57,7 @@ const helpMessage = `
 Доступні команди:
   <модуль.м> — компілювати модуль
     Опції:
-      --інфо-викликів={0,1} — додати інформацію про виклики (для відлагодження)
+      --строгість={0,1} — рівень строгості
       --розширення={0,1} — дозволити JS-розширення
 
   джеджалик версія — показати версію Джеджалика
@@ -94,22 +94,22 @@ global.mavka_compilation_options = {
   args: options.join(" "),
   std_code: `
 js """
-var м_друк = мДія("друк", [], function(args) {
-  console.log(...Object.values(args).map((v) => мГТкс(v)));
+var м_друк = мДія(function друк(values) {
+  console.log(...values.map((v) => мГарно(v)));
 });
-var м_вивести = мДія("вивести", [], function(args) {
-  process.stdout.write(...Object.values(args).map((v) => мГТкс(v)));
+var м_вивести = мДія(function вивести(values) {
+  process.stdout.write(...values.map((v) => мГарно(v)));
 });
-var м_показати_вітрину = мДія("показати_вітрину", [], function(args) {});
-var м_приховати_вітрину = мДія("приховати_вітрину", [], function(args) {});
-var м_тримати_вітрину = мДія("тримати_вітрину", [], function(args) {});
+var м_показати_вітрину = мДія(function показати_вітрину() {});
+var м_приховати_вітрину = мДія(function приховати_вітрину() {});
+var м_тримати_вітрину = мДія(function тримати_вітрину() {});
 """
 
-макет дія друк(...значення список) ніщо
-макет дія вивести(...значення список) ніщо
-макет дія показати_вітрину() ніщо
-макет дія приховати_вітрину() ніщо
-макет дія тримати_вітрину() ніщо
+макет дія друк(...значення список) пусто
+макет дія вивести(...значення список) пусто
+макет дія показати_вітрину() пусто
+макет дія приховати_вітрину() пусто
+макет дія тримати_вітрину() пусто
 `,
   root_module_path: inputFilePath,
   current_module_path: inputFilePath,
@@ -305,7 +305,7 @@ if (code.trim().length) {
       process.exit(1);
     }
     if (compilationResult.error) {
-      console.error(compilationResult.error.message);
+      console.error(`${compilationResult.error.path}:${compilationResult.error.line}: ${compilationResult.error.message}`);
       process.exit(1);
     }
     const outputFile = rest[1];
