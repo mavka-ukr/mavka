@@ -2,9 +2,10 @@
 
 import process from "process";
 import path from "path";
-import { exec, spawn } from "child_process";
-import { run } from "../run.js";
+import { spawn } from "child_process";
 import mavkaVersion from "../mavkaVersion.js";
+import fs from "fs";
+import { run } from "../run.js";
 
 process.removeAllListeners("warning");
 
@@ -69,20 +70,19 @@ if (command === "допомога") {
   }
   const modulePath = path.resolve(inputFile);
 
-  exec(`jejalyk ${options.length ? options.join(" ") + " " : ""}${modulePath}`, async function(error, stdout, stderr) {
-    if (error) {
-      process.stdout.write(stderr);
-      process.exit(1);
-    }
+  const tempFilename = path.resolve(`${new Date().getTime().toString()}_${Math.round(Math.random() * 1000)}.js`);
 
-    if (stderr) {
-      process.stdout.write(stderr);
-      process.exit(1);
-    }
+  spawn(`jejalyk`, [...options, modulePath, tempFilename], { stdio: "inherit" })
+    .on("exit", async function() {
+      if (fs.existsSync(tempFilename)) {
+        const code = fs.readFileSync(tempFilename, "utf8");
+        fs.unlinkSync(tempFilename);
 
-    await run(`var run = async function() {
-${stdout}
+        await run(`var run = async function() {
+${code}
 };
 run()`);
-  });
+
+      }
+    });
 }

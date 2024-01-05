@@ -274,12 +274,11 @@ var mavka_read = await (async function() {
   return create;
 })();
 
-var м_читати = мДія("читати", [мПарм("питання", [м_текст], "")], function(args) {
-  var ask = args[0] ?? args["питання"] ?? "";
+var м_читати = мДія(function читати(м_питання = "") {
   if (typeof window === "undefined") {
-    return mavka_read({ sigint: true })(ask);
+    return mavka_read({ sigint: true })(м_питання);
   }
-  return prompt(ask);
+  return prompt(м_питання);
 });
 """
 
