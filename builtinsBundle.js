@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 
 const driveLetterPattern = /^\/[A-Z]:\//;
-let startupModuleDirectory = new URL("./", import.meta.url).pathname + "вп";
+let startupModuleDirectory = new URL("./", import.meta.url).pathname + "бібліотека";
 if (driveLetterPattern.test(startupModuleDirectory)) {
   startupModuleDirectory = startupModuleDirectory.substring(1);
 }

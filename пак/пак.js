@@ -11,6 +11,9 @@ import { spawn } from "child_process";
 import semver from "semver";
 import mavkaVersion from "../mavkaVersion.js";
 
+console.log("Тимчасово недоступно.");
+process.exit(1);
+
 function printProgress(name, progress) {
   process.stdout.clearLine(0);
   process.stdout.cursorTo(0);
