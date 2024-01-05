@@ -129,7 +129,8 @@ var м_тримати_вітрину = мДія(function тримати_вітр
     if (relative) {
       return {
         error: "",
-        result: path.resolve(`${path.dirname(options.current_module_path)}/${parts.join("/")}.м`)
+        result: path.resolve(`${path.dirname(options.current_module_path)}/${parts.join("/")}.м`),
+        builtin: false
       };
     } else {
       const rootModulePath = options.root_module_path;
@@ -139,40 +140,46 @@ var м_тримати_вітрину = мДія(function тримати_вітр
         if (fs.existsSync(path.resolve(`${path.dirname(rootModulePath)}/${parts[0]}.м`))) {
           return {
             error: "",
-            result: path.resolve(`${path.dirname(rootModulePath)}/${parts[0]}.м`)
+            result: path.resolve(`${path.dirname(rootModulePath)}/${parts[0]}.м`),
+            builtin: false
           };
         }
         if (loadedPaks.has(parts[0])) {
           const loaded_pak = loadedPaks.get(parts[0]);
           return {
             error: "",
-            result: path.resolve(`${loaded_pak.path}/${parts[0]}.м`)
+            result: path.resolve(`${loaded_pak.path}/${parts[0]}.м`),
+            builtin: false
           };
         }
         if (fs.existsSync(path.resolve(`${stdDirname}/${parts[0]}.м`))) {
           return {
             error: "",
-            result: path.resolve(`${stdDirname}/${parts[0]}.м`)
+            result: path.resolve(`${stdDirname}/${parts[0]}.м`),
+            builtin: true
           };
         }
       } else {
         if (fs.existsSync(path.resolve(`${path.dirname(rootModulePath)}/${parts.join("/")}.м`))) {
           return {
             error: "",
-            result: path.resolve(`${path.dirname(rootModulePath)}/${parts.join("/")}.м`)
+            result: path.resolve(`${path.dirname(rootModulePath)}/${parts.join("/")}.м`),
+            builtin: false
           };
         }
         if (loadedPaks.has(parts[0])) {
           const loaded_pak = loadedPaks.get(parts[0]);
           return {
             error: "",
-            result: path.resolve(`${loaded_pak.path}/${parts.join("/")}.м`)
+            result: path.resolve(`${loaded_pak.path}/${parts.join("/")}.м`),
+            builtin: false
           };
         }
       }
       return {
         error: `Модуль "${module}" не знайдено.`,
-        result: ""
+        result: "",
+        builtin: false
       };
     }
   },
@@ -185,7 +192,7 @@ var м_тримати_вітрину = мДія(function тримати_вітр
       return {
         error: "",
         result: fs.readFileSync(modulePathResult.result, "utf8"),
-        builtin: false
+        builtin: modulePathResult.result.startsWith(path.resolve(`${binDirname}/../бібліотека`))
       };
     } else {
       return {
@@ -213,7 +220,8 @@ var м_тримати_вітрину = мДія(function тримати_вітр
     if (!pakName) {
       return {
         error: `Невірна назва паку.`,
-        result: ""
+        result: "",
+        builtin: false
       };
     }
     if (loadedPaks.has(pakName)) {
@@ -223,7 +231,8 @@ var м_тримати_вітрину = мДія(function тримати_вітр
       if (loaded_pak_major_version !== pak_major_version) {
         return {
           error: `Пак "${pakName}" "${version}" вже завантажено з версією "${loaded_pak.version}".`,
-          result: ""
+          result: "",
+          builtin: false
         };
       }
       const loaded_pak_minor_version = loaded_pak.version.split(".")[1];
@@ -231,12 +240,14 @@ var м_тримати_вітрину = мДія(function тримати_вітр
       if (loaded_pak_minor_version < pak_minor_version) {
         return {
           error: `Пак "${pakName}" "${version}" вже завантажено з версією "${loaded_pak.version}".`,
-          result: ""
+          result: "",
+          builtin: false
         };
       }
       return {
         error: "",
-        result: ""
+        result: "",
+        builtin: false
       };
     }
     let repositoriesText = "пак=https://завантажити.пак.укр/{NAME}-{VERSION}.zip";
@@ -260,7 +271,8 @@ var м_тримати_вітрину = мДія(function тримати_вітр
       if (!repository) {
         return {
           error: `Репозиторій "${pakRepository}" не знайдено.`,
-          result: ""
+          result: "",
+          builtin: false
         };
       }
       const url = repository.url.replaceAll("{NAME}", pakName).replaceAll("{VERSION}", version);
@@ -298,14 +310,16 @@ var м_тримати_вітрину = мДія(function тримати_вітр
       if (error) {
         return {
           error,
-          result: ""
+          result: "",
+          builtin: false
         };
       }
     }
     loadedPaks.set(pakName, { version, path: `${userHomeDir}/.паки/${pakRepository}/${pakName}/${version}` });
     return {
       error: "",
-      result: ""
+      result: "",
+      builtin: false
     };
   }
 };
