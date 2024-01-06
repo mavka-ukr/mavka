@@ -520,20 +520,12 @@ js """
     }
   }
 
-м_розібрати = мДія(
-  "розібрати",
-  [
-    мПарм("значення", м_текст),
-    мПарм("визначення", м_словник, new Map()),
-  ],
-  function(args) {
-    var value = args[0] ?? args["значення"];
-    var definitions = args[1] ?? args["визначення"];
-
+var м_розібрати = мДія(
+  function розібрати(м_значення) {
     var ast;
 
     try {
-      ast = parseDid(value);
+      ast = parseDid(м_значення);
     } catch (e) {
       if (e && e instanceof ParserError) {
         throw new Error(e.message);
@@ -572,23 +564,11 @@ js """
       }
 
       if (node instanceof ObjectNode) {
-        if (definitions.has(node.name)) {
-          const params = {};
-          for (const entry of node.contents) {
-            params[makeValue(entry.key)] = makeValue(entry.value);
-          }
-          return mavka_call(
-            definitions.get(node.name),
-            params,
-            di
-          );
-        } else {
-          const dict = new Map();
-          for (const entry of node.contents) {
-            dict.set(makeValue(entry.key), makeValue(entry.value));
-          }
-          return dict;
+        const dict = new Map();
+        for (const entry of node.contents) {
+          dict.set(makeValue(entry.key), makeValue(entry.value));
         }
+        return dict;
       }
 
       return null;
@@ -597,14 +577,8 @@ js """
     return makeValue(ast);
   }
 );
-м_зібрати = мДія(
-  "зібрати",
-  [
-    мПарм("значення"),
-  ],
-  function(args) {
-    var value = args[0] ?? args["значення"];
-
+var м_зібрати = мДія(
+  function зібрати(м_значення) {
     var filterEntries = (entries) => {
       return entries.filter(([key, value]) => {
         if (value == null) {
@@ -686,21 +660,21 @@ js """
         if (value instanceof Map) {
           return `(${filterEntries([...value.entries()]).map(([key, value]) => `"${key}"=${makeValue(value)}`).join(",")})`;
         }
-        if (value[MAVKA]?.structure) {
-          return `${value[MAVKA].structure.name}(${filterEntries(Object.entries(value.__m_props__)).map(([key, value]) => `${key}=${makeValue(value)}`).join(",")})`;
+        if (value[М]?.структура) {
+          return `${value[М].структура[М].назва}(${filterEntries(Object.entries(value)).map(([key, value]) => `${key}=${makeValue(value)}`).join(",")})`;
         }
       }
 
       return "пусто";
     };
 
-    return makeValue(value);
+    return makeValue(м_значення);
   }
 );
 """
 
-макет дія розібрати(значення текст, визначення словник = ()) щось
-макет дія зібрати(значення щось) текст
+макет дія розібрати<Т>(значення текст) Т
+макет дія зібрати(значення обʼєкт) текст
 
 дати розібрати
 дати зібрати

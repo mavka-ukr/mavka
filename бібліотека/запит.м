@@ -1,0 +1,39 @@
+js """
+var м_Відповідь = мСтруктура(м_обʼєкт, function Відповідь(мs, м_код, м_заголовки, м_дані) {
+  мs.код = м_код;
+  мs.заголовки = м_заголовки;
+  мs.дані = м_дані;
+  return мs;
+});
+var м_надіслати = мДія(async function надіслати(м_метод = "GET", м_урл = "", м_заголовки = new Map(), м_дані = "") {
+  const response = await fetch(м_урл, {
+    м_метод,
+    headers: Object.fromEntries(м_заголовки.entries()),
+    body: м_метод === "GET" || м_метод === "HEAD" ? undefined : м_дані
+  });
+  const bytes = new Uint8Array(await response.arrayBuffer());
+
+  const headersDictionary = new Map();
+  for (const [hk, vv] of response.headers.entries()) {
+    headersDictionary.set(hk, vv);
+  }
+
+  return м_Відповідь.чародія_викликати(response.status, headersDictionary, bytes);
+});
+"""
+
+макет структура Відповідь
+  код число
+  заголовки словник
+  дані байти
+кінець
+
+макет тривала дія надіслати(
+  метод текст = "GET",
+  урл текст = "",
+  заголовки словник<текст, текст> = (),
+  дані байти або текст = ""
+) Відповідь
+
+дати Відповідь
+дати надіслати

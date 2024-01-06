@@ -1,0 +1,136 @@
+js """
+var { default: http } = await import("http");
+
+var м_Опції = мСтруктура(м_обʼєкт, function Опції(мs, м_хост = "localhost", м_порт = "8080") {
+  мs.хост = м_хост;
+  мs.порт = м_порт;
+  return мs;
+});
+var м_Сервер = мСтруктура(м_обʼєкт, function Сервер(мs, м_обробник, м_опції) {
+  мs.обробник = м_обробник;
+  мs.опції = м_опції;
+  мs.запустити = мДія(function запустити(...args) {
+    return м_Сервер[М].методи.запустити(мs, ...args)
+  });
+  return мs;
+});
+м_Сервер[М].методи.запустити = мДія(function запустити(м_я, м_зворот = null) {
+  var handler = м_я.обробник;
+  var options = м_я.опції;
+  var callback = м_зворот;
+  var host = options.хост;
+  var port = options.порт;
+
+  var server = http.createServer((req, res) => {
+    var parts = [];
+
+    req.on("data", (chunk) => {
+      parts.push(chunk);
+    }).on("end", async () => {
+      var requestBody = Buffer.concat(parts);
+      var headers = new Map();
+      for (var header in req.headers) {
+        headers.set(header, req.headers[header]);
+      }
+      var zapyt = м_Запит.чародія_викликати(
+        req.method,
+        decodeURI(req.url),
+        headers,
+        requestBody
+      );
+
+      var result = await handler(zapyt);
+      if (result) {
+        var responseBody;
+        if (мЄ(result, м_текст)) {
+          responseBody = result;
+        } else if (мЄ(result, м_байти)) {
+          responseBody = result;
+        } else if (мЄ(result, м_Відповідь)) {
+          res.statusCode = result.код;
+          for (var [hk, vv] of result.заголовки.entries()) {
+            res.setHeader(hk, vv);
+          }
+          responseBody = result.дані;
+        } else {
+          throw new Error("Обробник повинен повертати байти, текст або Відповідь.");
+        }
+        var contentType = res.getHeader("content-type");
+        if (!contentType) {
+          if (responseBody instanceof Uint8Array) {
+            contentType = "application/octet-stream";
+          } else {
+            contentType = "text/plain; charset=utf-8";
+          }
+        } else if (!contentType.includes("charset")) {
+          contentType += "; charset=utf-8";
+        }
+        res.setHeader("content-type", contentType);
+        res.end(responseBody);
+      } else {
+        res.end();
+      }
+    });
+  });
+
+  server.listen(port, host, function(err) {
+    if (err) {
+      throw err;
+    } else if (callback) {
+      callback();
+    }
+  });
+
+  return null;
+})
+var м_Запит = мСтруктура(м_обʼєкт, function Запит(мs, м_метод, м_шлях, м_заголовки, м_дані) {
+  мs.метод = м_метод;
+  мs.шлях = м_шлях;
+  мs.заголовки = м_заголовки;
+  мs.дані = м_дані;
+  return мs;
+});
+var м_Відповідь = мСтруктура(м_обʼєкт, function Відповідь(мs, м_код = 200, м_заголовки = new Map(), м_дані = "") {
+  мs.код = м_код;
+  мs.заголовки = м_заголовки;
+  мs.дані = м_дані;
+  return мs;
+});
+var м_запустити = мДія(function запустити(м_обробник, м_опції = new Map(), м_зворот = null) {
+  var м_сервер = м_Сервер.чародія_викликати(м_обробник, м_опції);
+  м_сервер.запустити(м_зворот);
+  return м_сервер;
+});
+"""
+
+макет структура Опції
+  хост текст = "localhost"
+  порт число = 8080
+кінець
+
+макет структура Сервер
+  обробник Дія
+  опції Опції
+кінець
+макет дія Сервер.запустити(зворот Дія або пусто = пусто) пусто
+
+макет структура Запит
+  метод текст
+  шлях текст
+  заголовки словник
+  дані байти
+кінець
+
+макет структура Відповідь
+  код число = 200
+  заголовки словник<текст, текст> = ()
+  дані байти або текст = ""
+кінець
+
+макет дія запустити(обробник Дія, опції Опції, зворот Дія або пусто = пусто) Сервер
+
+дати Опції
+дати Сервер
+дати Запит
+дати Відповідь
+дати запустити

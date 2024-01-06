@@ -1,10 +1,7 @@
 js """
-м_parse = мДія(
-  "parse",
-  [мПарм("значення", м_текст)],
-  function(args) {
-    var value = args[0] ?? null;
-    var result = JSON.parse(value);
+var м_parse = мДія(
+  function parse(м_значення) {
+    var result = JSON.parse(м_значення);
 
     function toMavkaValue(v) {
       if (Array.isArray(v)) {
@@ -19,12 +16,8 @@ js """
     return toMavkaValue(result);
   }
 );
-м_stringify = мДія(
-  "stringify",
-  [мПарм("значення")],
-  function(args) {
-    var value = args[0] ?? null;
-
+var м_stringify = мДія(
+  function stringify(м_значення) {
     function replacer(key, value) {
       if (value instanceof Map) {
         return Object.fromEntries(value.entries());
@@ -33,13 +26,13 @@ js """
       }
     }
 
-    return JSON.stringify(value, replacer);
+    return JSON.stringify(м_значення, replacer);
   }
 );
 """
 
-макет дія parse(значення текст) щось
-макет дія stringify(значення щось) текст
+макет дія parse(значення текст) обʼєкт
+макет дія stringify(значення обʼєкт) текст
 
 дати parse
 дати stringify

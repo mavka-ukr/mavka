@@ -168,4 +168,3 @@ if (fs.existsSync(modulePath)) {
   }
 }
 spawn("mavka", [modulePath, ...process.argv.slice(3)], { stdio: "inherit" });
-
