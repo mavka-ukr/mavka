@@ -1,0 +1,132 @@
+cmake_minimum_required(VERSION 3.26)
+project(mavka)
+
+set(CMAKE_CXX_STANDARD 20)
+
+add_subdirectory(mama/parser/syntax)
+
+set(MAVKA_COMPILER_SRC
+        mama/compiler/nodes/compile_anon_diia.cpp
+        mama/compiler/nodes/compile_arithmetic_node.cpp
+        mama/compiler/nodes/compile_array_node.cpp
+        mama/compiler/nodes/compile_as_node.cpp
+        mama/compiler/nodes/compile_assign_by_element_node.cpp
+        mama/compiler/nodes/compile_assign_by_identifier_node.cpp
+        mama/compiler/nodes/compile_assign_simple_node.cpp
+        mama/compiler/nodes/compile_bitwise_node.cpp
+        mama/compiler/nodes/compile_bitwise_not_node.cpp
+        mama/compiler/nodes/compile_break_node.cpp
+        mama/compiler/nodes/compile_call_node.cpp
+        mama/compiler/nodes/compile_chain_node.cpp
+        mama/compiler/nodes/compile_comparison_node.cpp
+        mama/compiler/nodes/compile_continue_node.cpp
+        mama/compiler/nodes/compile_dictionary_node.cpp
+        mama/compiler/nodes/compile_diia_node.cpp
+        mama/compiler/nodes/compile_each_node.cpp
+        mama/compiler/nodes/compile_eval_node.cpp
+        mama/compiler/nodes/compile_from_to_complex_node.cpp
+        mama/compiler/nodes/compile_from_to_simple_node.cpp
+        mama/compiler/nodes/compile_function_node.cpp
+        mama/compiler/nodes/compile_get_element_node.cpp
+        mama/compiler/nodes/compile_give_node.cpp
+        mama/compiler/nodes/compile_god_node.cpp
+        mama/compiler/nodes/compile_identifier_node.cpp
+        mama/compiler/nodes/compile_if_node.cpp
+        mama/compiler/nodes/compile_method_declaration_node.cpp
+        mama/compiler/nodes/compile_mml_node.cpp
+        mama/compiler/nodes/compile_mockup_diia_node.cpp
+        mama/compiler/nodes/compile_mockup_module_node.cpp
+        mama/compiler/nodes/compile_mockup_structure_node.cpp
+        mama/compiler/nodes/compile_mockup_subject_node.cpp
+        mama/compiler/nodes/compile_module_node.cpp
+        mama/compiler/nodes/compile_mrm_diia_node.cpp
+        mama/compiler/nodes/compile_negative_node.cpp
+        mama/compiler/nodes/compile_not_node.cpp
+        mama/compiler/nodes/compile_number_node.cpp
+        mama/compiler/nodes/compile_positive_node.cpp
+        mama/compiler/nodes/compile_post_decrement_node.cpp
+        mama/compiler/nodes/compile_post_increment_node.cpp
+        mama/compiler/nodes/compile_pre_decrement_node.cpp
+        mama/compiler/nodes/compile_pre_increment_node.cpp
+        mama/compiler/nodes/compile_return_node.cpp
+        mama/compiler/nodes/compile_string_node.cpp
+        mama/compiler/nodes/compile_structure_node.cpp
+        mama/compiler/nodes/compile_take_module_node.cpp
+        mama/compiler/nodes/compile_take_pak_node.cpp
+        mama/compiler/nodes/compile_ternary_node.cpp
+        mama/compiler/nodes/compile_test_node.cpp
+        mama/compiler/nodes/compile_throw_node.cpp
+        mama/compiler/nodes/compile_try_node.cpp
+        mama/compiler/nodes/compile_type_value_single_node.cpp
+        mama/compiler/nodes/compile_wait_node.cpp
+        mama/compiler/nodes/compile_while_node.cpp
+        mama/compiler/compiler.cpp
+        mama/compiler/compiler.h
+        mama/compiler/ops.h
+        mama/interpreter/do_PUSH_NUMBER.h
+        mama/interpreter/do_ADD.h
+        mama/interpreter/do_SUB.h
+        mama/interpreter/do_MUL.h
+        mama/interpreter/do_DIV.h
+        mama/interpreter/do_MOD.h
+        mama/interpreter/do_DIVDIV.h
+        mama/interpreter/do_POW.h
+        mama/interpreter/do_STORE.h
+        mama/interpreter/do_LOAD.h
+        mama/interpreter/do_GET.h
+        mama/interpreter/do_SET.h
+        mama/interpreter/do_PUSH_STRING.h
+        mama/interpreter/do_XOR.h
+        mama/interpreter/do_BOR.h
+        mama/interpreter/do_BAND.h
+        mama/interpreter/do_SHL.h
+        mama/interpreter/do_SHR.h
+        mama/interpreter/do_BNOT.h
+        mama/interpreter/do_JUMP.h
+        mama/interpreter/do_JUMP_IF_FALSE.h
+        mama/interpreter/do_THROW.h
+        mama/interpreter/do_EQ.h
+        mama/interpreter/do_NE.h
+        mama/interpreter/do_LT.h
+        mama/interpreter/do_LE.h
+        mama/interpreter/do_GT.h
+        mama/interpreter/do_GE.h
+        mama/interpreter/do_AND.h
+        mama/interpreter/do_OR.h
+        mama/interpreter/do_CALL.h
+        mama/interpreter/do_RETURN.h
+        mama/interpreter/do_LOAD_PARAM.h
+        mama/interpreter/do_SET_ELEMENT.h
+        mama/interpreter/do_SET_ARG.h
+        mama/interpreter/do_LIST.h
+        mama/interpreter/do_LIST_APPEND.h
+        mama/interpreter/do_GET_ELEMENT.h
+        mama/interpreter/do_NEGATIVE.h
+        mama/interpreter/do_POSITIVE.h
+        mama/interpreter/do_STORE_DIIA.h
+        mama/interpreter/do_EACH_SIMPLE.h
+        mama/interpreter/do_PUSH_ARGS.h
+        mama/parser/ast.cpp
+        mama/parser/ast.h
+        mama/parser/parser.cpp
+        mama/parser/parser.h
+        mama/helpers.cpp
+        mama/mama.cpp
+        mama/mama.h
+        mama/run.cpp
+        utils/chrono.h
+        utils/tools.cpp
+        utils/tools.h
+)
+
+add_executable(mavka mavka.cpp ${MAVKA_COMPILER_SRC})
+add_executable(mavka_optimized mavka.cpp ${MAVKA_COMPILER_SRC})
+
+target_link_libraries(mavka mavka_syntax)
+target_link_libraries(mavka_optimized mavka_syntax)
+
+target_compile_options(mavka PRIVATE -fexceptions)
+target_compile_options(mavka_optimized PRIVATE -fexceptions -O3)
+
+set_target_properties(mavka PROPERTIES OUTPUT_NAME "мавка")
+set_target_properties(mavka_optimized PROPERTIES OUTPUT_NAME "мавка_оптимізовано")
