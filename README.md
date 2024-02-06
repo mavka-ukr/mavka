@@ -6,11 +6,7 @@
 
 ## Встановлення
 
-Через NPM:
-
-```shell
-npm i -g mavka
-```
+~
 
 ## Використання
 
@@ -28,23 +24,30 @@ npm i -g mavka
 
 ## Розробка
 
-Вимоги:
+### Вимоги
 
-- NodeJS 18+
-- NPM
+- Clang
+- CMake
+- Make
+- Java (для ANTLR4)
 
-Встановлення:
+### Початок
 
-```shell
+```
 git clone https://github.com/mavka-ukr/mavka
-
 cd mavka
-
-npm install
 ```
 
-Тести:
+### Будування
 
 ```shell
-npm test
+./build.sh antlr4 # antlr4 grammar
+```
+
+```shell
+./build.sh bin # executable
+```
+
+```shell
+./build.sh Obin # optimized executable
 ```
