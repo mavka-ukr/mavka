@@ -28,9 +28,9 @@ class MaList final {
 
 class MaDict final {
  public:
-  std::map<MaCell*, MaCell*> o_map;
-  std::map<std::string, MaCell*> s_map;
-  std::map<double, MaCell*> n_map;
+  std::unordered_map<MaCell*, MaCell*> o_map;
+  std::unordered_map<std::string, MaCell*> s_map;
+  std::unordered_map<double, MaCell*> n_map;
 
   void set(MaCell* key, MaCell* value);
   void set(const std::string& key, MaCell* value);
@@ -69,6 +69,10 @@ class MaCell final {
  public:
   unsigned char type;
   void* value;
+  long ref_count;
+
+  void retain();
+  void release();
 
   inline MaNumber* cast_number() const { return static_cast<MaNumber*>(value); }
   inline double number() const { return cast_number()->value; }
@@ -106,8 +110,8 @@ inline MaCell* create_list(const std::vector<MaCell*>& list) {
   return new MaCell(MA_LIST, new MaList(list));
 }
 
-inline MaCell* create_dict(const std::map<MaCell*, MaCell*>& dict) {
-  return new MaCell(MA_DICT, new MaDict(dict));
+inline MaCell* create_dict() {
+  return new MaCell(MA_DICT, new MaDict());
 }
 
 inline MaCell* create_diia(const int& index) {
@@ -129,32 +133,45 @@ inline MaCell* create_structure(
 
 inline void MaDict::set(MaCell* key, MaCell* value) {
   if (key->type == MA_NUMBER) {
+    if (const auto it = n_map.find(key->number()); it != n_map.end()) {
+      it->second->release();
+    }
+    value->retain();
     n_map.insert_or_assign(key->number(), value);
   } else if (key->type == MA_STRING) {
+    if (const auto it = s_map.find(key->string()); it != s_map.end()) {
+      it->second->release();
+    }
+    value->retain();
     s_map.insert_or_assign(key->string(), value);
   } else {
+    if (const auto it = o_map.find(key); it != o_map.end()) {
+      it->second->release();
+    }
+    value->retain();
     o_map.insert_or_assign(key, value);
   }
 }
 
 inline void MaDict::set(const std::string& key, MaCell* value) {
+  if (const auto it = s_map.find(key); it != s_map.end()) {
+    it->second->release();
+  }
+  value->retain();
   s_map.insert_or_assign(key, value);
 }
 
 inline MaCell* MaDict::get(MaCell* key) const {
   if (key->type == MA_NUMBER) {
-    const auto it = n_map.find(key->number());
-    if (it != n_map.end()) {
+    if (const auto it = n_map.find(key->number()); it != n_map.end()) {
       return it->second;
     }
   } else if (key->type == MA_STRING) {
-    const auto it = s_map.find(key->string());
-    if (it != s_map.end()) {
+    if (const auto it = s_map.find(key->string()); it != s_map.end()) {
       return it->second;
     }
   } else {
-    const auto it = o_map.find(key);
-    if (it != o_map.end()) {
+    if (const auto it = o_map.find(key); it != o_map.end()) {
       return it->second;
     }
   }
@@ -163,11 +180,24 @@ inline MaCell* MaDict::get(MaCell* key) const {
 
 inline void MaDict::remove(MaCell* key) {
   if (key->type == MA_NUMBER) {
-    n_map.erase(key->number());
+    if (n_map.contains(key->number())) {
+      const auto value = n_map[key->number()];
+      value->release();
+      n_map.erase(key->number());
+    }
   } else if (key->type == MA_STRING) {
-    s_map.erase(key->string());
+    if (s_map.contains(key->string())) {
+      const auto value = s_map[key->string()];
+      value->release();
+      s_map.erase(key->string());
+    }
   } else {
-    o_map.erase(key);
+    if (o_map.contains(key)) {
+      const auto value = o_map[key];
+      value->release();
+      o_map.erase(key);
+      key->release();
+    }
   }
 }
 
@@ -176,7 +206,11 @@ inline long MaDict::size() const {
 }
 
 inline void MaObject::set(const std::string& name, MaCell* value) {
+  if (const auto it = properties.find(name); it != properties.end()) {
+    it->second->release();
+  }
   properties.insert_or_assign(name, value);
+  value->retain();
 }
 
 inline MaCell* MaObject::get(const std::string& name) const {
@@ -185,6 +219,21 @@ inline MaCell* MaObject::get(const std::string& name) const {
     return it->second;
   }
   return nullptr;
+}
+
+inline void MaCell::retain() {
+  ref_count++;
+}
+
+inline void MaCell::release() {
+  ref_count--;
+
+  if (ref_count == 0) {
+#if MAMA_DEBUG == 1
+    std::cout << "deleting " << this << std::endl;
+#endif
+    delete this;
+  }
 }
 
 #endif // OBJECTS_H

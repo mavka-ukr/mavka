@@ -16,6 +16,7 @@ namespace mavka::mama {
       }
       C->instructions.push_back(
           new MaInstruction(OP_SET, 0, assign_by_identifier_node->identifier));
+      return success();
     }
     return error(mavka::ast::make_ast_some(assign_by_identifier_node),
                  "Not implemented");

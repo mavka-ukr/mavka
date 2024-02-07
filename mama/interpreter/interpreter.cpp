@@ -1,7 +1,5 @@
 #include "../mama.h"
 
-#define MAMA_PRINT_DEBUG 1
-
 namespace mavka::mama {
 #include "instructions/do_ADD.h"
 #include "instructions/do_AND.h"
@@ -54,7 +52,7 @@ namespace mavka::mama {
         return;
       }
       const auto I = C->instructions[M->i];
-#if MAMA_PRINT_DEBUG == 1
+#if MAMA_DEBUG == 1
       print_instruction_with_index(M->i, I);
 #endif
 
@@ -225,7 +223,7 @@ namespace mavka::mama {
           const auto call_stack_value = M->call_stack.top();
           M->call_stack.pop();
           M->i = call_stack_value->return_index;
-#if MAMA_PRINT_DEBUG == 1
+#if MAMA_DEBUG == 1
           std::cout << "returning to " << M->i << std::endl;
 #endif
           goto start;

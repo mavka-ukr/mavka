@@ -14,7 +14,7 @@
 #include "parser/ast.h"
 #include "parser/parser.h"
 
-#define JJ_DEBUG 0
+#define MAMA_DEBUG 0
 
 #define JJ_MAG_ADD "чародія_додати"
 #define JJ_MAG_SUB "чародія_відняти"
@@ -105,6 +105,10 @@ namespace mavka::mama {
     }
 
     void set_variable(const std::string& name, MaCell* value) {
+      if (this->variables.contains(name)) {
+        this->variables.at(name)->release();
+      }
+      value->retain();
       variables.insert_or_assign(name, value);
     }
 
