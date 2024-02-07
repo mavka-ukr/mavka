@@ -2,7 +2,7 @@
 
 namespace mavka::mama {
   MaCompilationResult* compile_not_node(MaCode* C,
-                                        mavka::ast::NotNode* not_node) {
+                                        const mavka::ast::NotNode* not_node) {
     const auto result = compile_node(C, not_node->value);
     if (result->error) {
       return result;

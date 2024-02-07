@@ -1,8 +1,9 @@
 #include "../compiler.h"
 
 namespace mavka::mama {
-  MaCompilationResult* compile_while_node(MaCode* C,
-                                          mavka::ast::WhileNode* while_node) {
+  MaCompilationResult* compile_while_node(
+      MaCode* C,
+      const mavka::ast::WhileNode* while_node) {
     const auto initial_jump = C->instructions.size();
     const auto condition_result = compile_node(C, while_node->condition);
     if (condition_result->error) {

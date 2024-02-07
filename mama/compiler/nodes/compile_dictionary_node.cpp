@@ -4,7 +4,7 @@
 namespace mavka::mama {
   MaCompilationResult* compile_dictionary_node(
       MaCode* C,
-      mavka::ast::DictionaryNode* dictionary_node) {
+      const mavka::ast::DictionaryNode* dictionary_node) {
     C->instructions.push_back(new MaInstruction(OP_DICT));
     for (const auto& element : dictionary_node->elements) {
       const auto result = compile_node(C, element->value);

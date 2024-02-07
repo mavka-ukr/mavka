@@ -3,7 +3,7 @@
 namespace mavka::mama {
   MaCompilationResult* compile_assign_simple_node(
       MaCode* C,
-      mavka::ast::AssignSimpleNode* assign_simple_node) {
+      const mavka::ast::AssignSimpleNode* assign_simple_node) {
     const auto result = compile_node(C, assign_simple_node->value);
     if (result->error) {
       return result;

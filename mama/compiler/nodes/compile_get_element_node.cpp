@@ -3,7 +3,7 @@
 namespace mavka::mama {
   MaCompilationResult* compile_get_element_node(
       MaCode* C,
-      mavka::ast::GetElementNode* get_element_node) {
+      const mavka::ast::GetElementNode* get_element_node) {
     const auto key_result = compile_node(C, get_element_node->index);
     if (key_result->error) {
       return key_result;

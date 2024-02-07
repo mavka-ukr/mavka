@@ -3,7 +3,7 @@
 namespace mavka::mama {
   MaCompilationResult* compile_arithmetic_node(
       MaCode* C,
-      mavka::ast::ArithmeticNode* arithmetic_node) {
+      const mavka::ast::ArithmeticNode* arithmetic_node) {
     const auto left = compile_node(C, arithmetic_node->left);
     if (left->error) {
       return left;

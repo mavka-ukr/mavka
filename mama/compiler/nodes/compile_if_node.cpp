@@ -1,7 +1,8 @@
 #include "../compiler.h"
 
 namespace mavka::mama {
-  MaCompilationResult* compile_if_node(MaCode* C, mavka::ast::IfNode* if_node) {
+  MaCompilationResult* compile_if_node(MaCode* C,
+                                       const mavka::ast::IfNode* if_node) {
     const auto condition_result = compile_node(C, if_node->condition);
     if (condition_result->error) {
       return condition_result;

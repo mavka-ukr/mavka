@@ -2,7 +2,7 @@
 
 namespace mavka::mama {
   MaCompilationResult* compile_try_node(MaCode* C,
-                                        mavka::ast::TryNode* try_node) {
+                                        const mavka::ast::TryNode* try_node) {
     const auto try_i = MaInstruction::create_try(0);
     C->instructions.push_back(try_i);
     const auto result = compile_body(C, try_node->body);

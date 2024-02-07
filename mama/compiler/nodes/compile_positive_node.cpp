@@ -3,7 +3,7 @@
 namespace mavka::mama {
   MaCompilationResult* compile_positive_node(
       MaCode* C,
-      mavka::ast::PositiveNode* positive_node) {
+      const mavka::ast::PositiveNode* positive_node) {
     const auto result = compile_node(C, positive_node->value);
     if (result->error) {
       return result;
