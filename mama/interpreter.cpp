@@ -409,7 +409,7 @@ namespace mavka::mama {
             if (diia->me) {
               diia_scope->set_variable("я", diia->me);
             }
-            int i = 0;
+            long i = 0;
             for (const auto& name : diia->params) {
               if (M->aR.contains(name)) {
                 diia_scope->set_variable(name, M->aR[name]);

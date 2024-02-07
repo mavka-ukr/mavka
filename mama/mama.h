@@ -15,7 +15,7 @@
 #include "parser/ast.h"
 #include "parser/parser.h"
 
-#define MAMA_DEBUG 0
+#define MAMA_DEBUG 1
 
 #if MAMA_DEBUG == 0
 #define DEBUG_LOG(value)

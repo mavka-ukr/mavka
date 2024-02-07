@@ -273,6 +273,9 @@ namespace mavka::mama {
       if (result->error) {
         return result;
       }
+      if (node->is_popable()) {
+        C->instructions.push_back(new MaInstruction(OP_POP));
+      }
     }
     return success();
   }

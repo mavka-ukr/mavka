@@ -222,6 +222,7 @@ namespace mavka::ast {
     mavka::ast::WhileNode* WhileNode = nullptr;
 
     bool is_nullptr();
+    bool is_popable();
   };
 
   class AnonDiiaNode final : public ASTValueNode {
