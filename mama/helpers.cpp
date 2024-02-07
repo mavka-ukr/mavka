@@ -67,7 +67,7 @@ namespace mavka::mama {
         return "OP_CALL";
       case OP_RETURN:
         return "OP_RETURN";
-      case OP_LOAD_PARAM:
+      case OP_LOAD_ARG:
         return "OP_LOAD_PARAM";
       case OP_POP:
         return "OP_POP";
@@ -89,8 +89,6 @@ namespace mavka::mama {
         return "OP_STORE_DIIA";
       case OP_EACH_SIMPLE:
         return "OP_EACH_SIMPLE";
-      case OP_PUSH_ARGS:
-        return "OP_PUSH_ARGS";
       default:
         break;
     }
@@ -111,8 +109,6 @@ namespace mavka::mama {
         return "MA_NO";
       case MA_DIIA:
         return "MA_DIIA";
-      case MA_ARGS:
-        return "MA_ARGS";
       case OP_STORE_DIIA:
         return "OP_STORE_DIIA";
       default:
@@ -134,8 +130,6 @@ namespace mavka::mama {
       return "ні";
     } else if (cell->type == MA_DIIA) {
       return "<дія>";
-    } else if (cell->type == MA_ARGS) {
-      return "<аргументи>";
     }
     return "<невідомо>";
   }
@@ -153,8 +147,6 @@ namespace mavka::mama {
       std::cout << "no" << std::endl;
     } else if (cell->type == MA_DIIA) {
       std::cout << "diia" << std::endl;
-    } else if (cell->type == MA_ARGS) {
-      std::cout << "args" << std::endl;
     } else if (cell->type == MA_LIST) {
       std::cout << "list" << std::endl;
     } else {

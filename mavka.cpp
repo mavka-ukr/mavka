@@ -21,9 +21,7 @@ void init_diia(MaMa* M) {}
 void init_print(MaMa* M, MaScope* S) {
   const auto diia_cell = new MaCell(MA_DIIA_NATIVE);
   diia_cell->diia_native = [](MaCell* self, MaMa* M, MaScope* S) {
-    const auto args_cell = M->stack.top();
-    M->stack.pop();
-    for (const auto& [key, value] : args_cell->args) {
+    for (const auto& [key, value] : M->aR) {
       std::cout << cell_to_string(value) << std::endl;
     }
     M->stack.push(M->empty_cell);
