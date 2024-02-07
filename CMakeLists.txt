@@ -63,7 +63,7 @@ set(MAVKA_COMPILER_SRC
         mama/compiler/compiler.cpp
         mama/compiler/compiler.h
         mama/compiler/ops.h
-        mama/interpreter/interpreter.cpp
+        mama/interpreter.cpp
         mama/parser/ast.cpp
         mama/parser/ast.h
         mama/parser/parser.cpp
