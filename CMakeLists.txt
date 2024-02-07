@@ -33,7 +33,6 @@ set(MAVKA_COMPILER_SRC
         mama/compiler/nodes/compile_identifier_node.cpp
         mama/compiler/nodes/compile_if_node.cpp
         mama/compiler/nodes/compile_method_declaration_node.cpp
-        mama/compiler/nodes/compile_mml_node.cpp
         mama/compiler/nodes/compile_mockup_diia_node.cpp
         mama/compiler/nodes/compile_mockup_module_node.cpp
         mama/compiler/nodes/compile_mockup_structure_node.cpp
@@ -64,6 +63,7 @@ set(MAVKA_COMPILER_SRC
         mama/compiler/compiler.cpp
         mama/compiler/compiler.h
         mama/compiler/ops.h
+        mama/interpreter/interpreter.cpp
         mama/parser/ast.cpp
         mama/parser/ast.h
         mama/parser/parser.cpp
@@ -71,7 +71,7 @@ set(MAVKA_COMPILER_SRC
         mama/helpers.cpp
         mama/mama.cpp
         mama/mama.h
-        mama/interpreter/interpreter.cpp
+        mama/objects.h
         utils/chrono.h
         utils/tools.cpp
         utils/tools.h

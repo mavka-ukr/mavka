@@ -166,11 +166,6 @@ namespace mavka::ast {
     ast_some->MethodDeclarationNode = node;
     return ast_some;
   }
-  ASTSome* make_ast_some(ast::MMLNode* node) {
-    const auto ast_some = new ASTSome();
-    ast_some->MMLNode = node;
-    return ast_some;
-  }
   ASTSome* make_ast_some(ast::MockupDiiaNode* node) {
     const auto ast_some = new ASTSome();
     ast_some->MockupDiiaNode = node;
@@ -479,11 +474,6 @@ namespace mavka::ast {
       ast_some->MethodDeclarationNode = real_node;
       return ast_some;
     }
-    if (const auto real_node = dynamic_cast<MMLNode*>(node)) {
-      const auto ast_some = new ASTSome();
-      ast_some->MMLNode = real_node;
-      return ast_some;
-    }
     if (const auto real_node = dynamic_cast<MockupDiiaNode*>(node)) {
       const auto ast_some = new ASTSome();
       ast_some->MockupDiiaNode = real_node;
@@ -689,8 +679,6 @@ namespace mavka::ast {
       return ast_some->IfNode;
     if (ast_some->MethodDeclarationNode != nullptr)
       return ast_some->MethodDeclarationNode;
-    if (ast_some->MMLNode != nullptr)
-      return ast_some->MMLNode;
     if (ast_some->MockupDiiaNode != nullptr)
       return ast_some->MockupDiiaNode;
     if (ast_some->MockupModuleNode != nullptr)

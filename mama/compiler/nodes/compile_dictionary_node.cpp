@@ -5,6 +5,17 @@ namespace mavka::mama {
   MaCompilationResult* compile_dictionary_node(
       MaCode* C,
       mavka::ast::DictionaryNode* dictionary_node) {
-    return error(mavka::ast::make_ast_some(dictionary_node), "Not implemented");
+    C->instructions.push_back(new MaInstruction(OP_DICT));
+    for (auto& element : dictionary_node->elements) {
+      if (element->key->StringNode) {
+        const auto result = compile_node(C, element->value);
+        if (result->error) {
+          return result;
+        }
+        C->instructions.push_back(
+            new MaInstruction(OP_DICT_SET, 0, element->key->StringNode->value));
+      }
+    }
+    return success();
   }
 } // namespace mavka::mama

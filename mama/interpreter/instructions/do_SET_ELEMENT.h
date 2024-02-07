@@ -5,12 +5,13 @@ inline void do_SET_ELEMENT(MaMa* M) {
   M->stack.pop();
   const auto key = M->stack.top();
   M->stack.pop();
-  const auto list_cell = M->stack.top();
-  if (list_cell->type == MA_LIST) {
+  const auto cell = M->stack.top();
+  if (cell->type == MA_LIST) {
+    const auto list = cell->cast_list();
     if (key->type == MA_NUMBER) {
-      const auto index = static_cast<int>(key->number);
-      if (index >= 0 && index < list_cell->list.size()) {
-        list_cell->list[index] = value;
+      const auto index = key->number_long();
+      if (index >= 0 && index < list->value.size()) {
+        list->value[index] = value;
       }
     }
   }

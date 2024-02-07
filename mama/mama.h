@@ -49,119 +49,82 @@
 #define MA_OBJECT 6
 #define MA_DIIA 7
 #define MA_LIST 8
-#define MA_DICTIONARY 9
+#define MA_DICT 9
 #define MA_DIIA_NATIVE 11
 
 namespace mavka::mama {
-    class MaMa;
-    class MaScope;
-    class MaDiia;
-    class MaCell;
+  class MaMa;
+  class MaScope;
 
-    class MaCallStackValue final {
-    public:
-        MaCell* cell;
-        MaScope* scope;
-        int return_index;
-    };
+#include "objects.h"
 
-    class MaMa final {
-    public:
-        std::stack<MaCell *> stack;
-        std::stack<MaCallStackValue *> call_stack;
-        bool do_throw;
-        size_t i;
-        std::unordered_map<std::string, MaCell *> aR; // args register
+  class MaCallStackValue final {
+   public:
+    MaCell* cell;
+    MaScope* scope;
+    int return_index;
+  };
 
-        MaCell* empty_cell;
-        MaCell* yes_cell;
-        MaCell* no_cell;
-    };
+  class MaMa final {
+   public:
+    std::stack<MaCell*> stack;
+    std::stack<MaCallStackValue*> call_stack;
+    bool do_throw;
+    size_t i;
+    std::unordered_map<std::string, MaCell*> aR; // args register
 
-    class MaScope final {
-    public:
-        MaScope* parent;
-        std::map<std::string, MaCell *> variables;
+    MaCell* empty_cell;
+    MaCell* yes_cell;
+    MaCell* no_cell;
+  };
 
-        bool has_variable(const std::string& name) {
-            if (this->variables.contains(name)) {
-                return true;
-            }
-            if (this->parent) {
-                return this->parent->has_variable(name);
-            }
-            return false;
-        }
+  class MaScope final {
+   public:
+    MaScope* parent;
+    std::map<std::string, MaCell*> variables;
 
-        MaCell* get_variable(const std::string& name) {
-            if (this->variables.contains(name)) {
-                return this->variables.at(name);
-            }
-            if (this->parent) {
-                return this->parent->get_variable(name);
-            }
-            return nullptr;
-        }
-
-        void set_variable(const std::string& name, MaCell* value) {
-            variables.insert_or_assign(name, value);
-        }
-
-        void delete_variable(const std::string& name) { variables.erase(name); }
-    };
-
-    class MaCell final {
-    public:
-        unsigned char type;
-        double number;
-        std::string string;
-        std::map<std::string, MaCell *> properties;
-        int diia_index;
-        std::vector<MaCell *> list;
-        std::map<MaCell *, MaCell *> dictionary;
-        std::map<std::string, MaCell *> args;
-
-        void (*diia_native)(MaCell* self, MaMa* M, MaScope* S);
-
-        MaCell* get_property(const std::string& name) {
-            if (this->properties.contains(name)) {
-                return this->properties.at(name);
-            }
-            return nullptr;
-        }
-
-        bool has_property(const std::string& name) {
-            return this->properties.contains(name);
-        }
-
-        void set_property(const std::string& name, MaCell* value) {
-            properties.insert_or_assign(name, value);
-        }
-    };
-
-    inline MaCell* create_number(const double& number) {
-        return new MaCell(MA_NUMBER, number);
+    bool has_variable(const std::string& name) {
+      if (this->variables.contains(name)) {
+        return true;
+      }
+      if (this->parent) {
+        return this->parent->has_variable(name);
+      }
+      return false;
     }
 
-    inline MaCell* create_string(const std::string& string) {
-        return new MaCell(MA_STRING, 0, string);
+    MaCell* get_variable(const std::string& name) {
+      if (this->variables.contains(name)) {
+        return this->variables.at(name);
+      }
+      if (this->parent) {
+        return this->parent->get_variable(name);
+      }
+      return nullptr;
     }
 
-    std::string getopname(size_t op);
+    void set_variable(const std::string& name, MaCell* value) {
+      variables.insert_or_assign(name, value);
+    }
 
-    std::string gettypename(size_t type);
+    void delete_variable(const std::string& name) { variables.erase(name); }
+  };
 
-    std::string cell_to_string(MaCell* cell);
+  std::string getopname(size_t op);
 
-    void print_cell(MaCell* cell);
+  std::string gettypename(size_t type);
 
-    void print_instruction_with_index(int index, MaInstruction* instruction);
+  std::string cell_to_string(MaCell* cell);
 
-    void print_instruction(MaInstruction* instruction);
+  void print_cell(MaCell* cell);
 
-    void print_code(MaCode* C);
+  void print_instruction_with_index(int index, MaInstruction* instruction);
 
-    void run(MaMa* M, MaScope* S, MaCode* C);
+  void print_instruction(MaInstruction* instruction);
+
+  void print_code(MaCode* C);
+
+  void run(MaMa* M, MaScope* S, MaCode* C);
 } // namespace mavka::mama
 
 #endif // MAMA_H

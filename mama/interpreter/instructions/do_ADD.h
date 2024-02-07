@@ -6,5 +6,5 @@ inline void do_ADD(MaMa* M) {
   const auto left_cell = M->stack.top();
   M->stack.pop();
 
-  M->stack.push(create_number(left_cell->number + right_cell->number));
+  M->stack.push(create_number(left_cell->number() + right_cell->number()));
 }

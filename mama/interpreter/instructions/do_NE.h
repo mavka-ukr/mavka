@@ -5,7 +5,8 @@ inline void do_NE(MaMa* M) {
   M->stack.pop();
   const auto left = M->stack.top();
   M->stack.pop();
-  if (left->number != right->number) {
+
+  if (left->number() != right->number()) {
     M->stack.push(M->yes_cell);
   } else {
     M->stack.push(M->no_cell);

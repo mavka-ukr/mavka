@@ -6,8 +6,8 @@ inline void do_EACH_SIMPLE(MaMa* M, const std::string& name) {
   const auto from = M->stack.top();
   M->stack.pop();
   const auto call_stack_value = M->call_stack.top();
-  for (int i = static_cast<int>(from->number);
-       i <= static_cast<int>(to->number); ++i) {
+
+  for (long i = from->number_long(); i <= to->number_long(); ++i) {
     call_stack_value->scope->set_variable(name, create_number(i));
   }
 }
