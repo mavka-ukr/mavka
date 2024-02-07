@@ -14,7 +14,7 @@ namespace mavka::mama {
 
   class MaInstruction final {
    public:
-    unsigned short op;
+    OP op;
     double numval;
     std::string strval;
 
@@ -179,7 +179,7 @@ namespace mavka::mama {
                                            mavka::ast::StringNode* string_node);
   MaCompilationResult* compile_structure_node(
       MaCode* C,
-      mavka::ast::StructureNode* structure_node);
+      const mavka::ast::StructureNode* structure_node);
   MaCompilationResult* compile_take_module_node(
       MaCode* C,
       mavka::ast::TakeModuleNode* take_module_node);

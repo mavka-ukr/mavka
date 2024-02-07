@@ -6,5 +6,5 @@ inline void do_DICT_SET(MaMa* M, const std::string& name) {
   const auto cell = M->stack.top();
   const auto dict = cell->cast_dict();
 
-  dict->value.insert_or_assign(create_string(name), value);
+  dict->set(create_string(name), value);
 }
