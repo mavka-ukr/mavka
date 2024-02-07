@@ -4,7 +4,7 @@ inline void do_GET(MaMa* M, const std::string& name) {
   const auto cell = M->stack.top();
   M->stack.pop();
   const auto object = cell->cast_object();
-  const auto value = object->get_property(name);
+  const auto value = object->get(name);
   if (value != nullptr) {
     M->stack.push(value);
   } else {

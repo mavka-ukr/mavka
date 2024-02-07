@@ -3,70 +3,161 @@
 #ifndef OPS_H
 #define OPS_H
 
-// OP is unsigned char (byte) so it can be 0-255
-#define OP_POP 0
+typedef enum {
+  OP_POP,
 
-// pushes: 1-19
-#define OP_PUSH_NUMBER 1
-#define OP_PUSH_STRING 2
-#define OP_PUSH_DIIA 3
+  OP_PUSH_NUMBER,
+  OP_PUSH_STRING,
 
-// arithmetics/binary: 20-49
-#define OP_ADD 20
-#define OP_SUB 21
-#define OP_MUL 22
-#define OP_DIV 23
-#define OP_MOD 24
-#define OP_DIVDIV 25
-#define OP_POW 26
-#define OP_XOR 27
-#define OP_BOR 28
-#define OP_BAND 29
-#define OP_SHL 30
-#define OP_SHR 31
+  OP_ADD,
+  OP_SUB,
+  OP_MUL,
+  OP_DIV,
+  OP_MOD,
+  OP_DIVDIV,
+  OP_POW,
+  OP_XOR,
+  OP_BOR,
+  OP_BAND,
+  OP_SHL,
+  OP_SHR,
 
-// comparison: 50-69
-#define OP_AND 50
-#define OP_OR 51
-#define OP_EQ 52
-#define OP_NE 53
-#define OP_LT 54
-#define OP_LE 55
-#define OP_GT 56
-#define OP_GE 57
+  OP_AND,
+  OP_OR,
+  OP_EQ,
+  OP_NE,
+  OP_LT,
+  OP_LE,
+  OP_GT,
+  OP_GE,
 
-// jumps: 70-89
-#define OP_JUMP 70
-#define OP_JUMP_IF_FALSE 71
+  OP_JUMP,
+  OP_JUMP_IF_FALSE,
 
-// calls: 90-119
-#define OP_CALL 90
+  OP_CALL,
 
-// unary: 120-139
-#define OP_NEGATIVE 120
-#define OP_POSITIVE 121
-#define OP_BNOT 122
+  OP_NEGATIVE,
+  OP_POSITIVE,
+  OP_BNOT,
 
-// load: 140-169
-#define OP_LOAD 140
-#define OP_LOAD_ARG 141
+  OP_LOAD,
+  OP_LOAD_ARG,
 
-// store: 170-189
-#define OP_STORE 170
+  OP_STORE,
 
-// others: 190-255
-#define OP_GET 190
-#define OP_SET 191
-#define OP_RETURN 192
-#define OP_GET_ELEMENT 193
-#define OP_SET_ELEMENT 194
-#define OP_THROW 195
-#define OP_EACH_SIMPLE 196
-#define OP_SET_ARG 197
-#define OP_LIST 198
-#define OP_LIST_APPEND 199
-#define OP_CLEAR_ARGS 200
-#define OP_DICT 201
-#define OP_DICT_SET 202
+  OP_GET,
+  OP_SET,
+  OP_RETURN,
+  OP_GET_ELEMENT,
+  OP_SET_ELEMENT,
+  OP_THROW,
+  OP_EACH_SIMPLE,
+  OP_SET_ARG,
+  OP_LIST,
+  OP_LIST_APPEND,
+  OP_CLEAR_ARGS,
+  OP_DICT,
+  OP_DICT_SET,
+  OP_STRUCT,
+  OP_STRUCT_PARAM,
+  OP_DIIA,
+  OP_DIIA_PARAM,
+} OP;
+
+inline std::string getopname(const OP op) {
+  switch (op) {
+    case OP_PUSH_NUMBER:
+      return "OP_PUSH_NUMBER";
+    case OP_ADD:
+      return "OP_ADD";
+    case OP_SUB:
+      return "OP_SUB";
+    case OP_MUL:
+      return "OP_MUL";
+    case OP_DIV:
+      return "OP_DIV";
+    case OP_MOD:
+      return "OP_MOD";
+    case OP_DIVDIV:
+      return "OP_DIVDIV";
+    case OP_POW:
+      return "OP_POW";
+    case OP_STORE:
+      return "OP_STORE";
+    case OP_LOAD:
+      return "OP_LOAD";
+    case OP_GET:
+      return "OP_GET";
+    case OP_SET:
+      return "OP_SET";
+    case OP_PUSH_STRING:
+      return "OP_PUSH_STRING";
+    case OP_XOR:
+      return "OP_XOR";
+    case OP_BOR:
+      return "OP_BOR";
+    case OP_BAND:
+      return "OP_BAND";
+    case OP_SHL:
+      return "OP_SHL";
+    case OP_SHR:
+      return "OP_SHR";
+    case OP_BNOT:
+      return "OP_BNOT";
+    case OP_JUMP_IF_FALSE:
+      return "OP_JUMP_IF_FALSE";
+    case OP_JUMP:
+      return "OP_JUMP";
+    case OP_THROW:
+      return "OP_THROW";
+    case OP_EQ:
+      return "OP_EQ";
+    case OP_NE:
+      return "OP_NE";
+    case OP_LT:
+      return "OP_LT";
+    case OP_LE:
+      return "OP_LE";
+    case OP_GT:
+      return "OP_GT";
+    case OP_GE:
+      return "OP_GE";
+    case OP_AND:
+      return "OP_AND";
+    case OP_OR:
+      return "OP_OR";
+    case OP_CALL:
+      return "OP_CALL";
+    case OP_RETURN:
+      return "OP_RETURN";
+    case OP_LOAD_ARG:
+      return "OP_LOAD_ARG";
+    case OP_POP:
+      return "OP_POP";
+    case OP_SET_ELEMENT:
+      return "OP_SET_ELEMENT";
+    case OP_SET_ARG:
+      return "OP_SET_ARG";
+    case OP_LIST:
+      return "OP_LIST";
+    case OP_LIST_APPEND:
+      return "OP_LIST_APPEND";
+    case OP_GET_ELEMENT:
+      return "OP_GET_ELEMENT";
+    case OP_NEGATIVE:
+      return "OP_NEGATIVE";
+    case OP_POSITIVE:
+      return "OP_POSITIVE";
+    case OP_DIIA:
+      return "OP_DIIA";
+    case OP_EACH_SIMPLE:
+      return "OP_EACH_SIMPLE";
+    case OP_CLEAR_ARGS:
+      return "OP_CLEAR_ARGS";
+    default:
+      break;
+  }
+  return std::to_string(op);
+}
 
 #endif // OPS_H

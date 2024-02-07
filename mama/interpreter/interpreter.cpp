@@ -181,16 +181,43 @@ namespace mavka::mama {
           const auto cell = M->stack.top();
           M->stack.pop();
           const auto call_stack_value = M->call_stack.top();
-          const auto dS = new MaScope(call_stack_value->scope);
+          const auto diia_scope = new MaScope(call_stack_value->scope);
           const auto return_index = M->i + 1;
-          M->call_stack.push(new MaCallStackValue(cell, dS, return_index));
+          M->call_stack.push(
+              new MaCallStackValue(cell, diia_scope, return_index));
           if (cell->type == MA_DIIA_NATIVE) {
             const auto diia_native = cell->cast_diia_native();
-            diia_native->value(cell, M, dS);
+            diia_native->value(cell, M, diia_scope);
             M->call_stack.pop();
           } else if (cell->type == MA_DIIA) {
+            const auto diia = cell->cast_diia();
+            int i = 0;
+            for (const auto& param : diia->params) {
+              if (M->aR.contains(param.first)) {
+                diia_scope->set_variable(param.first, M->aR[param.first]);
+              } else if (M->aR.contains(std::to_string(i))) {
+                diia_scope->set_variable(param.first, M->aR[std::to_string(i)]);
+              }
+              ++i;
+            }
+            M->aR.clear();
             M->i = cell->cast_diia()->index;
             goto start;
+          } else if (cell->type == MA_STRUCTURE) {
+            const auto structure = cell->cast_structure();
+            const auto object_cell = create_object({});
+            const auto object = object_cell->cast_object();
+            int i = 0;
+            for (const auto& param : structure->params) {
+              if (M->aR.contains(param.first)) {
+                object->set(param.first, M->aR[param.first]);
+              } else if (M->aR.contains(std::to_string(i))) {
+                object->set(param.first, M->aR[std::to_string(i)]);
+              }
+              ++i;
+            }
+            M->aR.clear();
+            M->stack.push(object_cell);
           }
           break;
         }
@@ -240,12 +267,16 @@ namespace mavka::mama {
           do_POSITIVE(M);
           break;
         }
-        case OP_PUSH_DIIA: {
+        case OP_DIIA: {
           do_PUSH_DIIA(M, I->numval, I->strval);
           break;
         }
         case OP_GET: {
           do_GET(M, I->strval);
+          break;
+        }
+        case OP_SET: {
+          do_SET(M, I->strval);
           break;
         }
         case OP_EACH_SIMPLE: {
@@ -262,6 +293,20 @@ namespace mavka::mama {
         }
         case OP_DICT_SET: {
           do_DICT_SET(M, I->strval);
+          break;
+        }
+        case OP_STRUCT: {
+          M->stack.push(create_structure({}));
+          break;
+        }
+        case OP_STRUCT_PARAM: {
+          const auto cell = M->stack.top();
+          cell->cast_structure()->params.insert_or_assign(I->strval, nullptr);
+          break;
+        }
+        case OP_DIIA_PARAM: {
+          const auto cell = M->stack.top();
+          cell->cast_diia()->params.insert_or_assign(I->strval, nullptr);
           break;
         }
         default: {

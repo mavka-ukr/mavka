@@ -51,6 +51,7 @@
 #define MA_LIST 8
 #define MA_DICT 9
 #define MA_DIIA_NATIVE 11
+#define MA_STRUCTURE 12
 
 namespace mavka::mama {
   class MaMa;
@@ -109,8 +110,6 @@ namespace mavka::mama {
 
     void delete_variable(const std::string& name) { variables.erase(name); }
   };
-
-  std::string getopname(size_t op);
 
   std::string gettypename(size_t type);
 

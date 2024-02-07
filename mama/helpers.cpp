@@ -1,102 +1,6 @@
 #include "mama.h"
 
 namespace mavka::mama {
-  std::string getopname(size_t op) {
-    switch (op) {
-      case OP_PUSH_NUMBER:
-        return "OP_PUSH_NUMBER";
-      case OP_ADD:
-        return "OP_ADD";
-      case OP_SUB:
-        return "OP_SUB";
-      case OP_MUL:
-        return "OP_MUL";
-      case OP_DIV:
-        return "OP_DIV";
-      case OP_MOD:
-        return "OP_MOD";
-      case OP_DIVDIV:
-        return "OP_DIVDIV";
-      case OP_POW:
-        return "OP_POW";
-      case OP_STORE:
-        return "OP_STORE";
-      case OP_LOAD:
-        return "OP_LOAD";
-      case OP_GET:
-        return "OP_GET";
-      case OP_SET:
-        return "OP_SET";
-      case OP_PUSH_STRING:
-        return "OP_PUSH_STRING";
-      case OP_XOR:
-        return "OP_XOR";
-      case OP_BOR:
-        return "OP_BOR";
-      case OP_BAND:
-        return "OP_BAND";
-      case OP_SHL:
-        return "OP_SHL";
-      case OP_SHR:
-        return "OP_SHR";
-      case OP_BNOT:
-        return "OP_BNOT";
-      case OP_JUMP_IF_FALSE:
-        return "OP_JUMP_IF_FALSE";
-      case OP_JUMP:
-        return "OP_JUMP";
-      case OP_THROW:
-        return "OP_THROW";
-      case OP_EQ:
-        return "OP_EQ";
-      case OP_NE:
-        return "OP_NE";
-      case OP_LT:
-        return "OP_LT";
-      case OP_LE:
-        return "OP_LE";
-      case OP_GT:
-        return "OP_GT";
-      case OP_GE:
-        return "OP_GE";
-      case OP_AND:
-        return "OP_AND";
-      case OP_OR:
-        return "OP_OR";
-      case OP_CALL:
-        return "OP_CALL";
-      case OP_RETURN:
-        return "OP_RETURN";
-      case OP_LOAD_ARG:
-        return "OP_LOAD_ARG";
-      case OP_POP:
-        return "OP_POP";
-      case OP_SET_ELEMENT:
-        return "OP_SET_ELEMENT";
-      case OP_SET_ARG:
-        return "OP_SET_ARG";
-      case OP_LIST:
-        return "OP_LIST";
-      case OP_LIST_APPEND:
-        return "OP_LIST_APPEND";
-      case OP_GET_ELEMENT:
-        return "OP_GET_ELEMENT";
-      case OP_NEGATIVE:
-        return "OP_NEGATIVE";
-      case OP_POSITIVE:
-        return "OP_POSITIVE";
-      case OP_PUSH_DIIA:
-        return "OP_PUSH_DIIA";
-      case OP_EACH_SIMPLE:
-        return "OP_EACH_SIMPLE";
-      case OP_CLEAR_ARGS:
-        return "OP_CLEAR_ARGS";
-      default:
-        break;
-    }
-    return std::to_string(op);
-  }
-
   std::string gettypename(size_t type) {
     switch (type) {
       case MA_NUMBER:
@@ -131,9 +35,13 @@ namespace mavka::mama {
     } else if (cell->type == MA_DIIA) {
       return "<дія>";
     } else if (cell->type == MA_DICT) {
-      return "<словник>";
+      return "<словник " + std::to_string(cell->cast_dict()->size()) + ">";
     } else if (cell->type == MA_LIST) {
       return "<список>";
+    } else if (cell->type == MA_STRUCTURE) {
+      return "<структура>";
+    } else if (cell->type == MA_OBJECT) {
+      return "<обʼєкт>";
     }
     return "<невідомо>";
   }
@@ -155,6 +63,8 @@ namespace mavka::mama {
       std::cout << "list" << std::endl;
     } else if (cell->type == MA_DICT) {
       std::cout << "dict" << std::endl;
+    } else if (cell->type == MA_STRUCTURE) {
+      std::cout << "structure" << std::endl;
     } else {
       std::cout << "unknown" << std::endl;
     }
