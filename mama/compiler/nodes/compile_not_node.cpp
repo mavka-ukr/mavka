@@ -3,6 +3,11 @@
 namespace mavka::mama {
   MaCompilationResult* compile_not_node(MaCode* C,
                                         mavka::ast::NotNode* not_node) {
-    return error(mavka::ast::make_ast_some(not_node), "Not implemented");
+    const auto result = compile_node(C, not_node->value);
+    if (result->error) {
+      return result;
+    }
+    C->instructions.push_back(new MaInstruction(OP_NOT));
+    return success();
   }
 } // namespace mavka::mama

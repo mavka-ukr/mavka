@@ -39,6 +39,7 @@ typedef enum {
   OP_NEGATIVE,
   OP_POSITIVE,
   OP_BNOT,
+  OP_NOT,
 
   OP_LOAD,
   OP_LOAD_ARG,
@@ -62,6 +63,9 @@ typedef enum {
   OP_STRUCT_PARAM,
   OP_DIIA,
   OP_DIIA_PARAM,
+  OP_CONTINUE,
+  OP_GIVE,
+  OP_MODULE,
 } OP;
 
 inline std::string getopname(const OP op) {
