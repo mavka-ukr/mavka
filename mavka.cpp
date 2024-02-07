@@ -9,7 +9,13 @@ void init_empty(MaMa* M) {
   M->empty_cell = new MaCell(MA_EMPTY);
 }
 
-void init_number(MaMa* M) {}
+void init_number(MaMa* M, MaScope* gS) {
+  const auto number_structure = new MaStructure();
+  number_structure->name = "число";
+  const auto number_structure_cell = new MaCell(MA_STRUCTURE, number_structure);
+  gS->set_variable(number_structure->name, number_structure_cell);
+  M->number_structure_cell = number_structure_cell;
+}
 
 void init_logical(MaMa* M) {
   M->yes_cell = new MaCell(MA_YES);
@@ -48,12 +54,13 @@ int main(int argc, char** argv) {
                                   std::istreambuf_iterator<char>());
 
   const auto M = new MaMa();
+  const auto S = new MaScope(nullptr);
+
   init_empty(M);
-  init_number(M);
+  init_number(M, S);
   init_logical(M);
   init_diia(M);
 
-  const auto S = new MaScope(nullptr);
   M->call_stack.push(new MaCallStackValue(nullptr, S));
   S->set_variable("пусто", M->empty_cell);
   S->set_variable("так", M->yes_cell);
