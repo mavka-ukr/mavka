@@ -3,7 +3,7 @@
 namespace mavka::mama {
   MaCompilationResult* compile_while_node(MaCode* C,
                                           mavka::ast::WhileNode* while_node) {
-    const auto initial_jump = C->instructions.size() - 1;
+    const auto initial_jump = C->instructions.size();
     const auto condition_result = compile_node(C, while_node->condition);
     if (condition_result->error) {
       return condition_result;
@@ -17,7 +17,7 @@ namespace mavka::mama {
     }
     const auto jump_back_instruction = new MaInstruction(OP_JUMP, initial_jump);
     C->instructions.push_back(jump_back_instruction);
-    jump_if_false_instruction->numval = C->instructions.size() - 1;
+    jump_if_false_instruction->numval = C->instructions.size();
     return success();
   }
 } // namespace mavka::mama

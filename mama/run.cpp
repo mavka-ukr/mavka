@@ -1,12 +1,13 @@
 #include "mama.h"
 
+#define MAMA_PRINT_DEBUG 0
+
 namespace mavka::mama {
 #include "interpreter/do_ADD.h"
 #include "interpreter/do_AND.h"
 #include "interpreter/do_BAND.h"
 #include "interpreter/do_BNOT.h"
 #include "interpreter/do_BOR.h"
-#include "interpreter/do_CALL.h"
 #include "interpreter/do_CLEAR_ARGS.h"
 #include "interpreter/do_DIV.h"
 #include "interpreter/do_DIVDIV.h"
@@ -16,8 +17,6 @@ namespace mavka::mama {
 #include "interpreter/do_GET.h"
 #include "interpreter/do_GET_ELEMENT.h"
 #include "interpreter/do_GT.h"
-#include "interpreter/do_JUMP.h"
-#include "interpreter/do_JUMP_IF_FALSE.h"
 #include "interpreter/do_LE.h"
 #include "interpreter/do_LIST.h"
 #include "interpreter/do_LIST_APPEND.h"
@@ -31,24 +30,29 @@ namespace mavka::mama {
 #include "interpreter/do_OR.h"
 #include "interpreter/do_POSITIVE.h"
 #include "interpreter/do_POW.h"
+#include "interpreter/do_PUSH_DIIA.h"
 #include "interpreter/do_PUSH_NUMBER.h"
 #include "interpreter/do_PUSH_STRING.h"
-#include "interpreter/do_RETURN.h"
 #include "interpreter/do_SET.h"
 #include "interpreter/do_SET_ARG.h"
 #include "interpreter/do_SET_ELEMENT.h"
 #include "interpreter/do_SHL.h"
 #include "interpreter/do_SHR.h"
 #include "interpreter/do_STORE.h"
-#include "interpreter/do_STORE_DIIA.h"
 #include "interpreter/do_SUB.h"
 #include "interpreter/do_THROW.h"
 #include "interpreter/do_XOR.h"
 
   void run(MaMa* M, MaScope* S, MaCode* C) {
     for (M->i = 0; M->i < C->instructions.size(); ++M->i) {
+    again:
+      if (M->i >= C->instructions.size()) {
+        return;
+      }
       const auto I = C->instructions[M->i];
-      // print_instruction_with_index(M->i, I);
+#if MAMA_PRINT_DEBUG == 1
+      print_instruction_with_index(M->i, I);
+#endif
 
       if (M->do_throw) {
         const auto value = M->stack.top();
@@ -123,11 +127,22 @@ namespace mavka::mama {
           break;
         }
         case OP_JUMP_IF_FALSE: {
-          do_JUMP_IF_FALSE(M, I->numval);
+          const auto value = M->stack.top();
+          M->stack.pop();
+          if (value->type == MA_NUMBER) {
+            if (value->number == 0) {
+              M->i = I->numval;
+              goto again;
+            }
+          } else if (value->type == MA_NO) {
+            M->i = I->numval;
+            goto again;
+          }
           break;
         }
         case OP_JUMP: {
-          do_JUMP(M, I->numval);
+          M->i = I->numval;
+          goto again;
           break;
         }
         case OP_THROW: {
@@ -159,11 +174,29 @@ namespace mavka::mama {
           break;
         }
         case OP_CALL: {
-          do_CALL(M);
+          const auto cell = M->stack.top();
+          M->stack.pop();
+          const auto call_stack_value = M->call_stack.top();
+          const auto dS = new MaScope(call_stack_value->scope);
+          const auto return_index = M->i + 1;
+          M->call_stack.push(new MaCallStackValue(cell, dS, return_index));
+          if (cell->type == MA_DIIA_NATIVE) {
+            cell->diia_native(cell, M, dS);
+            M->call_stack.pop();
+          } else if (cell->type == MA_DIIA) {
+            M->i = cell->diia_index;
+            goto again;
+          }
           break;
         }
         case OP_RETURN: {
-          do_RETURN(M);
+          const auto call_stack_value = M->call_stack.top();
+          M->call_stack.pop();
+          M->i = call_stack_value->return_index;
+#if MAMA_PRINT_DEBUG == 1
+          std::cout << "returning to " << M->i << std::endl;
+#endif
+          goto again;
           break;
         }
         case OP_LOAD_ARG: {
@@ -202,8 +235,8 @@ namespace mavka::mama {
           do_POSITIVE(M);
           break;
         }
-        case OP_STORE_DIIA: {
-          do_STORE_DIIA(M, I->numval, I->strval);
+        case OP_PUSH_DIIA: {
+          do_PUSH_DIIA(M, I->numval, I->strval);
           break;
         }
         case OP_GET: {

@@ -16,12 +16,12 @@ namespace mavka::mama {
     }
     const auto jump_out_else_instruction = new MaInstruction(OP_JUMP, 0);
     C->instructions.push_back(jump_out_else_instruction);
-    jump_if_instruction->numval = C->instructions.size() - 1;
+    jump_if_instruction->numval = C->instructions.size();
     const auto else_body_result = compile_body(C, {ternary_node->else_body});
     if (else_body_result->error) {
       return else_body_result;
     }
-    jump_out_else_instruction->numval = C->instructions.size() - 1;
+    jump_out_else_instruction->numval = C->instructions.size();
     return success();
   }
 } // namespace mavka::mama
