@@ -21,6 +21,10 @@ namespace mavka::mama {
     return std::to_string(type);
   }
 
+  std::string getcelltypename(MaCell* cell) {
+    return gettypename(cell->type);
+  }
+
   std::string cell_to_string(MaCell* cell) {
     if (cell->type == MA_NUMBER) {
       return std::to_string(cell->number());
@@ -50,7 +54,18 @@ namespace mavka::mama {
     } else if (cell->type == MA_STRUCTURE) {
       return "<структура>";
     } else if (cell->type == MA_OBJECT) {
-      return "<обʼєкт>";
+      const auto object_structure =
+          cell->cast_object()->structure->cast_structure();
+      std::string result = object_structure->name + "(";
+      for (const auto& [name, value] : cell->cast_object()->properties) {
+        if (object_structure->params.contains(name)) {
+          result += name + "=" + cell_to_string(value);
+          if (name != object_structure->params.rbegin()->first) {
+            result += ", ";
+          }
+        }
+      }
+      return result + ")";
     }
     return "<невідомо>";
   }

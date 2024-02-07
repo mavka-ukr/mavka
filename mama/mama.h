@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <functional>
 #include <iostream>
 #include <map>
 #include <string>
@@ -64,6 +65,7 @@
 #define MA_DICT 9
 #define MA_DIIA_NATIVE 11
 #define MA_STRUCTURE 12
+#define MA_METHOD 13
 
 namespace mavka::mama {
   class MaMa;
@@ -128,6 +130,8 @@ namespace mavka::mama {
   };
 
   std::string gettypename(size_t type);
+
+  std::string getcelltypename(MaCell* cell);
 
   std::string cell_to_string(MaCell* cell);
 

@@ -68,13 +68,24 @@ namespace mavka::mama {
       const std::vector<ast::TypeValueSingleNode*>& return_types,
       const std::vector<ast::ASTSome*>& body);
 
+  MaCompilationResult* compile_method(
+      MaCode* C,
+      const std::string& structure,
+      bool async,
+      const std::vector<ast::GenericNode*>& generics,
+      const std::string& name,
+      const std::vector<ast::ParamNode*>& params,
+      const std::vector<ast::TypeValueSingleNode*>& return_types,
+      const std::vector<ast::ASTSome*>& body);
+
   MaCompilationResult* compile_anon_diia_node(
       MaCode* C,
       const mavka::ast::AnonDiiaNode* anon_diia_node);
   MaCompilationResult* compile_arithmetic_node(
       MaCode* C,
       const mavka::ast::ArithmeticNode* arithmetic_node);
-  MaCompilationResult* compile_array_node(MaCode* C,
+  MaCompilationResult* compile_array_node(
+      MaCode* C,
       const mavka::ast::ArrayNode* array_node);
   MaCompilationResult* compile_as_node(MaCode* C, mavka::ast::AsNode* as_node);
   MaCompilationResult* compile_assign_by_element_node(
@@ -96,7 +107,8 @@ namespace mavka::mama {
                                           mavka::ast::BreakNode* break_node);
   MaCompilationResult* compile_call_node(MaCode* C,
                                          const mavka::ast::CallNode* call_node);
-  MaCompilationResult* compile_chain_node(MaCode* C,
+  MaCompilationResult* compile_chain_node(
+      MaCode* C,
       const mavka::ast::ChainNode* chain_node);
   MaCompilationResult* compile_comparison_node(
       MaCode* C,
@@ -149,7 +161,8 @@ namespace mavka::mama {
   MaCompilationResult* compile_mockup_subject_node(
       MaCode* C,
       mavka::ast::MockupSubjectNode* mockup_subject_node);
-  MaCompilationResult* compile_module_node(MaCode* C,
+  MaCompilationResult* compile_module_node(
+      MaCode* C,
       const mavka::ast::ModuleNode* module_node);
   MaCompilationResult* compile_mrm_diia_node(
       MaCode* C,
@@ -177,9 +190,11 @@ namespace mavka::mama {
   MaCompilationResult* compile_pre_increment_node(
       MaCode* C,
       mavka::ast::PreIncrementNode* pre_increment_node);
-  MaCompilationResult* compile_return_node(MaCode* C,
+  MaCompilationResult* compile_return_node(
+      MaCode* C,
       const mavka::ast::ReturnNode* return_node);
-  MaCompilationResult* compile_string_node(MaCode* C,
+  MaCompilationResult* compile_string_node(
+      MaCode* C,
       const mavka::ast::StringNode* string_node);
   MaCompilationResult* compile_structure_node(
       MaCode* C,
@@ -195,7 +210,8 @@ namespace mavka::mama {
       mavka::ast::TernaryNode* ternary_node);
   MaCompilationResult* compile_test_node(MaCode* C,
                                          const mavka::ast::TestNode* test_node);
-  MaCompilationResult* compile_throw_node(MaCode* C,
+  MaCompilationResult* compile_throw_node(
+      MaCode* C,
       const mavka::ast::ThrowNode* throw_node);
   MaCompilationResult* compile_try_node(MaCode* C,
                                         const mavka::ast::TryNode* try_node);
@@ -204,6 +220,7 @@ namespace mavka::mama {
       mavka::ast::TypeValueSingleNode* type_value_single_node);
   MaCompilationResult* compile_wait_node(MaCode* C,
                                          mavka::ast::WaitNode* wait_node);
-  MaCompilationResult* compile_while_node(MaCode* C,
+  MaCompilationResult* compile_while_node(
+      MaCode* C,
       const mavka::ast::WhileNode* while_node);
 } // namespace mavka::mama
