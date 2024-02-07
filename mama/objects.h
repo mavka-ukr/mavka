@@ -123,13 +123,12 @@ inline MaCell* create_diia_native(MaDiiaNativeFn diia_native_fn) {
   return new MaCell(MA_DIIA_NATIVE, new MaDiiaNative(diia_native_fn));
 }
 
-inline MaCell* create_object(const std::map<std::string, MaCell*>& properties) {
-  return new MaCell(MA_OBJECT, new MaObject{properties});
+inline MaCell* create_object() {
+  return new MaCell(MA_OBJECT, new MaObject());
 }
 
-inline MaCell* create_structure(
-    const std::map<std::string, std::any>& definitions) {
-  return new MaCell(MA_STRUCTURE, new MaStructure{definitions});
+inline MaCell* create_structure() {
+  return new MaCell(MA_STRUCTURE, new MaStructure());
 }
 
 inline void MaDict::set(MaCell* key, MaCell* value) {
@@ -234,10 +233,7 @@ inline void MaCell::release() {
   ref_count--;
 
   if (ref_count == 0) {
-#if MAMA_DEBUG == 1
-    std::cout << "deleting " << this << std::endl;
-#endif
-    delete this;
+    // delete this;
   }
 }
 

@@ -37,7 +37,16 @@ namespace mavka::mama {
     } else if (cell->type == MA_DICT) {
       return "<словник " + std::to_string(cell->cast_dict()->size()) + ">";
     } else if (cell->type == MA_LIST) {
-      return "<список>";
+      std::string result = "[";
+      const auto list = cell->cast_list();
+      for (int i = 0; i < list->value.size(); ++i) {
+        const auto value = list->value[i];
+        result += cell_to_string(value);
+        if (i < list->value.size() - 1) {
+          result += ", ";
+        }
+      }
+      return result + "]";
     } else if (cell->type == MA_STRUCTURE) {
       return "<структура>";
     } else if (cell->type == MA_OBJECT) {

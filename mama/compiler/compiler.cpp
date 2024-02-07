@@ -30,6 +30,10 @@ namespace mavka::mama {
     return new MaInstruction(OP_LOAD_ARG, index, name);
   }
 
+  MaInstruction* MaInstruction::create_jump(const int& index) {
+    return new MaInstruction(OP_JUMP, index);
+  }
+
   MaCompilationResult* compile_node(MaCode* C, mavka::ast::ASTSome* node) {
     if (!node) {
       return error(nullptr, "null node");

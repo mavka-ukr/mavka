@@ -14,12 +14,12 @@
 #include "parser/ast.h"
 #include "parser/parser.h"
 
-#define MAMA_DEBUG 0
+#define MAMA_DEBUG 1
 
 #if MAMA_DEBUG == 0
 #define DEBUG_LOG(value)
 #else
-#define DEBUG_LOG(value) std::cout << value << std::endl;
+#define DEBUG_LOG(value) std::cout << (value) << std::endl;
 #endif
 
 #if MAMA_DEBUG == 0
@@ -84,7 +84,7 @@ namespace mavka::mama {
     std::stack<MaCallStackValue*> call_stack;
     bool do_throw;
     size_t i;
-    std::unordered_map<std::string, MaCell*> aR; // args register
+    std::map<std::string, MaCell*> aR; // args register
 
     MaCell* empty_cell;
     MaCell* yes_cell;

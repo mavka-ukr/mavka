@@ -234,6 +234,20 @@ namespace mavka::mama {
           }
           break;
         }
+        case OP_JUMP_IF_TRUE: {
+          const auto cell = M->stack.top();
+          M->stack.pop();
+          if (cell->type == MA_NUMBER) {
+            if (cell->number() != 0) {
+              M->i = I->numval;
+              goto start;
+            }
+          } else if (cell->type == MA_YES) {
+            M->i = I->numval;
+            goto start;
+          }
+          break;
+        }
         case OP_JUMP: {
           M->i = I->numval;
           goto start;
@@ -393,7 +407,7 @@ namespace mavka::mama {
             goto start;
           } else if (cell->type == MA_STRUCTURE) {
             const auto structure = cell->cast_structure();
-            const auto object_cell = create_object({});
+            const auto object_cell = create_object();
             const auto object = object_cell->cast_object();
             int i = 0;
             for (const auto& param : structure->params) {
@@ -413,7 +427,7 @@ namespace mavka::mama {
           const auto call_stack_value = M->call_stack.top();
           M->call_stack.pop();
           M->i = call_stack_value->return_index;
-          DEBUG_LOG("returning to " + M->i)
+          DEBUG_LOG("returning to " + std::to_string(M->i))
           goto start;
           break;
         }
@@ -496,7 +510,10 @@ namespace mavka::mama {
             const auto list = cell->cast_list();
             if (key->type == MA_NUMBER) {
               const auto index = key->number_long();
-              if (index >= 0 && index < list->value.size()) {
+              if (index >= 0) {
+                if (index >= list->value.size()) {
+                  list->value.resize(index + 1);
+                }
                 list->value[index] = value;
               }
             }
@@ -535,10 +552,21 @@ namespace mavka::mama {
         case OP_GET: {
           const auto cell = M->stack.top();
           M->stack.pop();
-          const auto object = cell->cast_object();
-          const auto value = object->get(I->strval);
-          if (value != nullptr) {
-            M->stack.push(value);
+          if (cell->type == MA_OBJECT) {
+            const auto object = cell->cast_object();
+            const auto value = object->get(I->strval);
+            if (value != nullptr) {
+              M->stack.push(value);
+            } else {
+              M->stack.push(M->empty_cell);
+            }
+          } else if (cell->type == MA_LIST) {
+            if (I->strval == "довжина") {
+              const auto length = cell->cast_list()->value.size();
+              M->stack.push(create_number(length));
+            } else {
+              M->stack.push(M->empty_cell);
+            }
           } else {
             M->stack.push(M->empty_cell);
           }
@@ -582,7 +610,7 @@ namespace mavka::mama {
           break;
         }
         case OP_STRUCT: {
-          M->stack.push(create_structure({}));
+          M->stack.push(create_structure());
           break;
         }
         case OP_STRUCT_PARAM: {
