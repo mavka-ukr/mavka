@@ -3,7 +3,7 @@
 namespace mavka::mama {
   MaCompilationResult* compile_comparison_node(
       MaCode* C,
-      mavka::ast::ComparisonNode* comparison_node) {
+      const mavka::ast::ComparisonNode* comparison_node) {
     const auto left = compile_node(C, comparison_node->left);
     if (left->error) {
       return left;

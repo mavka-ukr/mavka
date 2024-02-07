@@ -3,7 +3,7 @@
 namespace mavka::mama {
   MaCompilationResult* compile_module_node(
       MaCode* C,
-      mavka::ast::ModuleNode* module_node) {
+      const mavka::ast::ModuleNode* module_node) {
     const auto jump_out_of_module_instruction = new MaInstruction(OP_JUMP);
     C->instructions.push_back(jump_out_of_module_instruction);
 

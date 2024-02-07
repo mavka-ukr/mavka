@@ -3,7 +3,7 @@
 namespace mavka::mama {
   MaCompilationResult* compile_return_node(
       MaCode* C,
-      mavka::ast::ReturnNode* return_node) {
+      const mavka::ast::ReturnNode* return_node) {
     const auto result = compile_node(C, return_node->value);
     if (result->error) {
       return result;

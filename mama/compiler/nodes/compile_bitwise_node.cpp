@@ -3,7 +3,7 @@
 namespace mavka::mama {
   MaCompilationResult* compile_bitwise_node(
       MaCode* C,
-      mavka::ast::BitwiseNode* bitwise_node) {
+      const mavka::ast::BitwiseNode* bitwise_node) {
     const auto left = compile_node(C, bitwise_node->left);
     if (left->error) {
       return left;
