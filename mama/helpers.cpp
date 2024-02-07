@@ -39,10 +39,10 @@ namespace mavka::mama {
     } else if (cell->type == MA_LIST) {
       std::string result = "[";
       const auto list = cell->cast_list();
-      for (int i = 0; i < list->value.size(); ++i) {
-        const auto value = list->value[i];
+      for (int i = 0; i < list->size(); ++i) {
+        const auto value = list->get(i);
         result += cell_to_string(value);
-        if (i < list->value.size() - 1) {
+        if (i < list->size() - 1) {
           result += ", ";
         }
       }
