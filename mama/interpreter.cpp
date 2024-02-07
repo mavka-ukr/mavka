@@ -1,18 +1,12 @@
 #include "mama.h"
 
 namespace mavka::mama {
-  void run(MaMa* M, MaScope* S, MaCode* C) {
+  void run(MaMa* M, MaCode* C) {
     M->i = 0;
     const auto size = C->instructions.size();
     for (;;) {
     start:
       if (M->i >= size) {
-        return;
-      }
-      if (M->do_throw) {
-        const auto value = M->stack.top();
-        M->stack.pop();
-        print_cell(value);
         return;
       }
     i_start:
@@ -254,7 +248,15 @@ namespace mavka::mama {
           break;
         }
         case OP_THROW: {
-          M->do_throw = true;
+          while (!M->call_stack.empty()) {
+            const auto call_stack_value = M->call_stack.top();
+            M->call_stack.pop();
+            if (call_stack_value->catch_index != 0) {
+              M->i = call_stack_value->catch_index;
+              goto start;
+            }
+          }
+          return;
           break;
         }
         case OP_EQ: {
@@ -424,8 +426,11 @@ namespace mavka::mama {
           break;
         }
         case OP_RETURN: {
-          const auto call_stack_value = M->call_stack.top();
-          M->call_stack.pop();
+          auto call_stack_value = M->call_stack.top();
+          while (call_stack_value->catch_index != 0) {
+            M->call_stack.pop();
+            call_stack_value = M->call_stack.top();
+          }
           M->i = call_stack_value->return_index;
           DEBUG_LOG("returning to " + std::to_string(M->i))
           goto start;
@@ -616,6 +621,21 @@ namespace mavka::mama {
         case OP_DIIA_PARAM: {
           const auto cell = M->stack.top();
           cell->cast_diia()->params.insert_or_assign(I->strval, nullptr);
+          break;
+        }
+        case OP_TRY: {
+          const auto call_stack_value = M->call_stack.top();
+          const auto new_call_stack_value = new MaCallStackValue();
+          new_call_stack_value->cell = call_stack_value->cell;
+          new_call_stack_value->scope = call_stack_value->scope;
+          new_call_stack_value->return_index = call_stack_value->return_index;
+          new_call_stack_value->catch_index = I->numval;
+          M->call_stack.push(new_call_stack_value);
+          break;
+        }
+        case OP_TRY_DONE: {
+          const auto call_stack_value = M->call_stack.top();
+          call_stack_value->catch_index = 0;
           break;
         }
         default: {

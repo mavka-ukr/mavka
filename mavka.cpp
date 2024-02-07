@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
   //   std::cout << "---" << std::endl;
   // })
 
-  mavka::mama::run(M, S, C);
+  mavka::mama::run(M, C);
 
   // while (M->stack.size()) {
   //   const auto value = M->stack.top();

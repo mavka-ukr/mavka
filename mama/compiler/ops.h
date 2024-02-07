@@ -66,6 +66,8 @@ typedef enum {
   OP_CONTINUE,
   OP_GIVE,
   OP_MODULE,
+  OP_TRY,
+  OP_TRY_DONE,
 } OP;
 
 inline std::string getopname(const OP op) {
