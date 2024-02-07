@@ -71,7 +71,7 @@ set(MAVKA_COMPILER_SRC
         mama/helpers.cpp
         mama/mama.cpp
         mama/mama.h
-        mama/run.cpp
+        mama/interpreter/interpreter.cpp
         utils/chrono.h
         utils/tools.cpp
         utils/tools.h
