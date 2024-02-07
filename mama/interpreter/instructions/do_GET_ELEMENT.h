@@ -5,11 +5,13 @@ inline void do_GET_ELEMENT(MaMa* M) {
   M->stack.pop();
   const auto key = M->stack.top();
   M->stack.pop();
+
   if (value->type == MA_LIST) {
+    const auto list = value->cast_list();
     if (key->type == MA_NUMBER) {
-      const auto index = static_cast<int>(key->number);
-      if (index >= 0 && index < value->list.size()) {
-        M->stack.push(value->list[index]);
+      const auto index = key->number_long();
+      if (index >= 0 && index < list->value.size()) {
+        M->stack.push(list->value[index]);
       } else {
         M->stack.push(M->empty_cell);
       }

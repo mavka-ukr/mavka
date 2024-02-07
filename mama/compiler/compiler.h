@@ -133,8 +133,6 @@ namespace mavka::mama {
   MaCompilationResult* compile_method_declaration_node(
       MaCode* C,
       mavka::ast::MethodDeclarationNode* method_declaration_node);
-  MaCompilationResult* compile_mml_node(MaCode* C,
-                                        mavka::ast::MMLNode* mml_node);
   MaCompilationResult* compile_mockup_diia_node(
       MaCode* C,
       mavka::ast::MockupDiiaNode* mockup_diia_node);

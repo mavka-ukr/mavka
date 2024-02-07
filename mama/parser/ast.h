@@ -45,7 +45,6 @@ namespace mavka::ast {
   class IdentifierNode;
   class IfNode;
   class MethodDeclarationNode;
-  class MMLNode;
   class MockupDiiaNode;
   class MockupModuleNode;
   class MockupStructureNode;
@@ -108,7 +107,6 @@ namespace mavka::ast {
   ASTSome* make_ast_some(ast::IdentifierNode* node);
   ASTSome* make_ast_some(ast::IfNode* node);
   ASTSome* make_ast_some(ast::MethodDeclarationNode* node);
-  ASTSome* make_ast_some(ast::MMLNode* node);
   ASTSome* make_ast_some(ast::MockupDiiaNode* node);
   ASTSome* make_ast_some(ast::MockupModuleNode* node);
   ASTSome* make_ast_some(ast::MockupStructureNode* node);
@@ -194,7 +192,6 @@ namespace mavka::ast {
     mavka::ast::IdentifierNode* IdentifierNode = nullptr;
     mavka::ast::IfNode* IfNode = nullptr;
     mavka::ast::MethodDeclarationNode* MethodDeclarationNode = nullptr;
-    mavka::ast::MMLNode* MMLNode = nullptr;
     mavka::ast::MockupDiiaNode* MockupDiiaNode = nullptr;
     mavka::ast::MockupModuleNode* MockupModuleNode = nullptr;
     mavka::ast::MockupStructureNode* MockupStructureNode = nullptr;
@@ -449,11 +446,6 @@ namespace mavka::ast {
     std::vector<GenericNode*> generics;
     std::vector<ParamNode*> params;
     std::vector<TypeValueSingleNode*> return_types;
-  };
-
-  class MMLNode final : public ASTValueNode {
-   public:
-    std::string text;
   };
 
   class MockupDiiaNode final : public ASTExprNode {

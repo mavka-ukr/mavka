@@ -66,5 +66,7 @@
 #define OP_LIST 198
 #define OP_LIST_APPEND 199
 #define OP_CLEAR_ARGS 200
+#define OP_DICT 201
+#define OP_DICT_SET 202
 
 #endif // OPS_H

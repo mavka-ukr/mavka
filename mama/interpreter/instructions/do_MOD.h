@@ -6,5 +6,5 @@ inline void do_MOD(MaMa* M) {
   const auto left = M->stack.top();
   M->stack.pop();
 
-  M->stack.push(create_number(std::fmod(left->number, right->number)));
+  M->stack.push(create_number(std::fmod(left->number(), right->number())));
 }

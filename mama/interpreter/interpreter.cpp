@@ -1,6 +1,6 @@
 #include "../mama.h"
 
-#define MAMA_PRINT_DEBUG 0
+#define MAMA_PRINT_DEBUG 1
 
 namespace mavka::mama {
 #include "instructions/do_ADD.h"
@@ -9,6 +9,8 @@ namespace mavka::mama {
 #include "instructions/do_BNOT.h"
 #include "instructions/do_BOR.h"
 #include "instructions/do_CLEAR_ARGS.h"
+#include "instructions/do_DICT.h"
+#include "instructions/do_DICT_SET.h"
 #include "instructions/do_DIV.h"
 #include "instructions/do_DIVDIV.h"
 #include "instructions/do_EACH_SIMPLE.h"
@@ -129,14 +131,14 @@ namespace mavka::mama {
           break;
         }
         case OP_JUMP_IF_FALSE: {
-          const auto value = M->stack.top();
+          const auto cell = M->stack.top();
           M->stack.pop();
-          if (value->type == MA_NUMBER) {
-            if (value->number == 0) {
+          if (cell->type == MA_NUMBER) {
+            if (cell->number() == 0) {
               M->i = I->numval;
               goto start;
             }
-          } else if (value->type == MA_NO) {
+          } else if (cell->type == MA_NO) {
             M->i = I->numval;
             goto start;
           }
@@ -183,10 +185,11 @@ namespace mavka::mama {
           const auto return_index = M->i + 1;
           M->call_stack.push(new MaCallStackValue(cell, dS, return_index));
           if (cell->type == MA_DIIA_NATIVE) {
-            cell->diia_native(cell, M, dS);
+            const auto diia_native = cell->cast_diia_native();
+            diia_native->value(cell, M, dS);
             M->call_stack.pop();
           } else if (cell->type == MA_DIIA) {
-            M->i = cell->diia_index;
+            M->i = cell->cast_diia()->index;
             goto start;
           }
           break;
@@ -251,6 +254,14 @@ namespace mavka::mama {
         }
         case OP_CLEAR_ARGS: {
           do_CLEAR_ARGS(M);
+          break;
+        }
+        case OP_DICT: {
+          do_DICT(M);
+          break;
+        }
+        case OP_DICT_SET: {
+          do_DICT_SET(M, I->strval);
           break;
         }
         default: {

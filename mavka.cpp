@@ -19,13 +19,13 @@ void init_logical(MaMa* M) {
 void init_diia(MaMa* M) {}
 
 void init_print(MaMa* M, MaScope* S) {
-  const auto diia_cell = new MaCell(MA_DIIA_NATIVE);
-  diia_cell->diia_native = [](MaCell* self, MaMa* M, MaScope* S) {
+  const auto diia_native_fn = [](MaCell* self, MaMa* M, MaScope* S) {
     for (const auto& [key, value] : M->aR) {
       std::cout << cell_to_string(value) << std::endl;
     }
     M->stack.push(M->empty_cell);
   };
+  const auto diia_cell = create_diia_native(diia_native_fn);
   S->set_variable("друк", diia_cell);
 }
 

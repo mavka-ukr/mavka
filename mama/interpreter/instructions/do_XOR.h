@@ -6,6 +6,5 @@ inline void do_XOR(MaMa* M) {
   const auto left = M->stack.top();
   M->stack.pop();
 
-  M->stack.push(create_number(static_cast<int>(left->number) ^
-                              static_cast<int>(right->number)));
+  M->stack.push(create_number(left->number_long() ^ right->number_long()));
 }

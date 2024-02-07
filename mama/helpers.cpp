@@ -119,9 +119,9 @@ namespace mavka::mama {
 
   std::string cell_to_string(MaCell* cell) {
     if (cell->type == MA_NUMBER) {
-      return std::to_string(cell->number);
+      return std::to_string(cell->number());
     } else if (cell->type == MA_STRING) {
-      return cell->string;
+      return cell->string();
     } else if (cell->type == MA_EMPTY) {
       return "пусто";
     } else if (cell->type == MA_YES) {
@@ -130,15 +130,19 @@ namespace mavka::mama {
       return "ні";
     } else if (cell->type == MA_DIIA) {
       return "<дія>";
+    } else if (cell->type == MA_DICT) {
+      return "<словник>";
+    } else if (cell->type == MA_LIST) {
+      return "<список>";
     }
     return "<невідомо>";
   }
 
   void print_cell(MaCell* cell) {
     if (cell->type == MA_NUMBER) {
-      std::cout << "number: " << std::to_string(cell->number) << std::endl;
+      std::cout << "number: " << std::to_string(cell->number()) << std::endl;
     } else if (cell->type == MA_STRING) {
-      std::cout << "string: " << cell->string << std::endl;
+      std::cout << "string: " << cell->string() << std::endl;
     } else if (cell->type == MA_EMPTY) {
       std::cout << "empty" << std::endl;
     } else if (cell->type == MA_YES) {
@@ -149,6 +153,8 @@ namespace mavka::mama {
       std::cout << "diia" << std::endl;
     } else if (cell->type == MA_LIST) {
       std::cout << "list" << std::endl;
+    } else if (cell->type == MA_DICT) {
+      std::cout << "dict" << std::endl;
     } else {
       std::cout << "unknown" << std::endl;
     }

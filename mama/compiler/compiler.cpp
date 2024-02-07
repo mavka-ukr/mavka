@@ -146,10 +146,6 @@ namespace mavka::mama {
       return compile_method_declaration_node(C, node->MethodDeclarationNode);
     }
 
-    if (node->MMLNode) {
-      return compile_mml_node(C, node->MMLNode);
-    }
-
     if (node->MockupDiiaNode) {
       return compile_mockup_diia_node(C, node->MockupDiiaNode);
     }
