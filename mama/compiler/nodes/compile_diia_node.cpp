@@ -19,7 +19,7 @@ namespace mavka::mama {
       C->instructions.push_back(
           MaInstruction::create_load_param(i, param->name));
     }
-    C->instructions.push_back(new MaInstruction(OP_POP)); // remove args
+    C->instructions.push_back(new MaInstruction(OP_CLEAR_ARGS));
     const auto body_result = compile_body(C, diia_node->body);
     if (body_result->error) {
       return body_result;

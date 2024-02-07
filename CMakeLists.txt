@@ -95,7 +95,7 @@ set(MAVKA_COMPILER_SRC
         mama/interpreter/do_OR.h
         mama/interpreter/do_CALL.h
         mama/interpreter/do_RETURN.h
-        mama/interpreter/do_LOAD_PARAM.h
+        mama/interpreter/do_LOAD_ARG.h
         mama/interpreter/do_SET_ELEMENT.h
         mama/interpreter/do_SET_ARG.h
         mama/interpreter/do_LIST.h
@@ -105,7 +105,7 @@ set(MAVKA_COMPILER_SRC
         mama/interpreter/do_POSITIVE.h
         mama/interpreter/do_STORE_DIIA.h
         mama/interpreter/do_EACH_SIMPLE.h
-        mama/interpreter/do_PUSH_ARGS.h
+        mama/interpreter/do_CLEAR_ARGS.h
         mama/parser/ast.cpp
         mama/parser/ast.h
         mama/parser/parser.cpp

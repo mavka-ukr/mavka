@@ -9,7 +9,6 @@
 // pushes: 1-19
 #define OP_PUSH_NUMBER 1
 #define OP_PUSH_STRING 2
-#define OP_PUSH_ARGS 3
 
 // arithmetics/binary: 20-49
 #define OP_ADD 20
@@ -49,7 +48,7 @@
 
 // load: 140-169
 #define OP_LOAD 140
-#define OP_LOAD_PARAM 141
+#define OP_LOAD_ARG 141
 
 // store: 170-189
 #define OP_STORE 170
@@ -66,5 +65,6 @@
 #define OP_SET_ARG 197
 #define OP_LIST 198
 #define OP_LIST_APPEND 199
+#define OP_CLEAR_ARGS 200
 
 #endif // OPS_H

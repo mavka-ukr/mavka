@@ -3,8 +3,6 @@
 namespace mavka::mama {
   MaCompilationResult* compile_call_node(MaCode* C,
                                          mavka::ast::CallNode* call_node) {
-    C->instructions.push_back(new MaInstruction(OP_PUSH_ARGS));
-
     for (const auto& arg : call_node->args) {
       const auto arg_result = compile_node(C, arg->value);
       if (arg_result->error) {

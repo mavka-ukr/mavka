@@ -27,7 +27,7 @@ namespace mavka::mama {
 
   MaInstruction* MaInstruction::create_load_param(const int& index,
                                                   const std::string& name) {
-    return new MaInstruction(OP_LOAD_PARAM, index, name);
+    return new MaInstruction(OP_LOAD_ARG, index, name);
   }
 
   MaCompilationResult* compile_node(MaCode* C, mavka::ast::ASTSome* node) {

@@ -7,6 +7,7 @@ namespace mavka::mama {
 #include "interpreter/do_BNOT.h"
 #include "interpreter/do_BOR.h"
 #include "interpreter/do_CALL.h"
+#include "interpreter/do_CLEAR_ARGS.h"
 #include "interpreter/do_DIV.h"
 #include "interpreter/do_DIVDIV.h"
 #include "interpreter/do_EACH_SIMPLE.h"
@@ -21,7 +22,7 @@ namespace mavka::mama {
 #include "interpreter/do_LIST.h"
 #include "interpreter/do_LIST_APPEND.h"
 #include "interpreter/do_LOAD.h"
-#include "interpreter/do_LOAD_PARAM.h"
+#include "interpreter/do_LOAD_ARG.h"
 #include "interpreter/do_LT.h"
 #include "interpreter/do_MOD.h"
 #include "interpreter/do_MUL.h"
@@ -30,7 +31,6 @@ namespace mavka::mama {
 #include "interpreter/do_OR.h"
 #include "interpreter/do_POSITIVE.h"
 #include "interpreter/do_POW.h"
-#include "interpreter/do_PUSH_ARGS.h"
 #include "interpreter/do_PUSH_NUMBER.h"
 #include "interpreter/do_PUSH_STRING.h"
 #include "interpreter/do_RETURN.h"
@@ -166,12 +166,8 @@ namespace mavka::mama {
           do_RETURN(M);
           break;
         }
-        case OP_LOAD_PARAM: {
-          do_LOAD_PARAM(M, I->numval, I->strval);
-          break;
-        }
-        case OP_PUSH_ARGS: {
-          do_PUSH_ARGS(M);
+        case OP_LOAD_ARG: {
+          do_LOAD_ARG(M, I->numval, I->strval);
           break;
         }
         case OP_POP: {
@@ -216,6 +212,10 @@ namespace mavka::mama {
         }
         case OP_EACH_SIMPLE: {
           do_EACH_SIMPLE(M, I->strval);
+          break;
+        }
+        case OP_CLEAR_ARGS: {
+          do_CLEAR_ARGS(M);
           break;
         }
         default: {
