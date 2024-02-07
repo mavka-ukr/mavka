@@ -6,8 +6,12 @@ inline void do_LT(MaMa* M) {
   const auto left = M->stack.top();
   M->stack.pop();
 
-  if (left->number() < right->number()) {
-    M->stack.push(M->yes_cell);
+  if (left->type == MA_NUMBER && right->type == MA_NUMBER) {
+    if (left->number() < right->number()) {
+      M->stack.push(M->yes_cell);
+    } else {
+      M->stack.push(M->no_cell);
+    }
   } else {
     M->stack.push(M->no_cell);
   }

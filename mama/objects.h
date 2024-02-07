@@ -33,6 +33,7 @@ class MaDict final {
   std::map<double, MaCell*> n_map;
 
   void set(MaCell* key, MaCell* value);
+  void set(const std::string& key, MaCell* value);
   MaCell* get(MaCell* key) const;
   void remove(MaCell* key);
   long size() const;
@@ -134,6 +135,10 @@ inline void MaDict::set(MaCell* key, MaCell* value) {
   } else {
     o_map.insert_or_assign(key, value);
   }
+}
+
+inline void MaDict::set(const std::string& key, MaCell* value) {
+  s_map.insert_or_assign(key, value);
 }
 
 inline MaCell* MaDict::get(MaCell* key) const {

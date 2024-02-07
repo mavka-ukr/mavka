@@ -11,6 +11,7 @@ namespace mavka::mama {
 #include "instructions/do_CLEAR_ARGS.h"
 #include "instructions/do_DICT.h"
 #include "instructions/do_DICT_SET.h"
+#include "instructions/do_DIIA.h"
 #include "instructions/do_DIV.h"
 #include "instructions/do_DIVDIV.h"
 #include "instructions/do_EACH_SIMPLE.h"
@@ -32,7 +33,6 @@ namespace mavka::mama {
 #include "instructions/do_OR.h"
 #include "instructions/do_POSITIVE.h"
 #include "instructions/do_POW.h"
-#include "instructions/do_PUSH_DIIA.h"
 #include "instructions/do_PUSH_NUMBER.h"
 #include "instructions/do_PUSH_STRING.h"
 #include "instructions/do_SET.h"
@@ -268,7 +268,7 @@ namespace mavka::mama {
           break;
         }
         case OP_DIIA: {
-          do_PUSH_DIIA(M, I->numval, I->strval);
+          do_DIIA(M, I->numval, I->strval);
           break;
         }
         case OP_GET: {
