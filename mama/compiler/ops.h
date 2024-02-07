@@ -68,6 +68,8 @@ typedef enum {
   OP_MODULE,
   OP_TRY,
   OP_TRY_DONE,
+  OP_METHOD,
+  OP_METHOD_PARAM,
 } OP;
 
 inline std::string getopname(const OP op) {
@@ -160,6 +162,10 @@ inline std::string getopname(const OP op) {
       return "OP_DIIA";
     case OP_EACH_SIMPLE:
       return "OP_EACH_SIMPLE";
+    case OP_METHOD:
+      return "OP_METHOD";
+    case OP_METHOD_PARAM:
+      return "OP_METHOD_PARAM";
     default:
       break;
   }

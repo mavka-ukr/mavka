@@ -9,6 +9,7 @@ class MaDiia;
 class MaDiiaNative;
 class MaObject;
 class MaStructure;
+class MaMethod;
 class MaCell;
 
 class MaNumber final {
@@ -48,18 +49,20 @@ class MaDiia final {
  public:
   int index;
   std::map<std::string, std::any> params;
+  MaCell* me;
 };
 
 typedef void (*MaDiiaNativeFn)(MaCell*, MaMa*, MaScope*);
 
 class MaDiiaNative final {
  public:
-  MaDiiaNativeFn value;
+  std::function<void(MaCell*, MaMa*, MaScope*)> value;
 };
 
 class MaObject final {
  public:
   std::map<std::string, MaCell*> properties;
+  MaCell* structure;
 
   void set(const std::string& name, MaCell* value);
   MaCell* get(const std::string& name) const;
@@ -68,6 +71,14 @@ class MaObject final {
 
 class MaStructure final {
  public:
+  std::string name;
+  std::map<std::string, std::any> params;
+  std::map<std::string, MaMethod*> methods;
+};
+
+class MaMethod final {
+ public:
+  int index;
   std::map<std::string, std::any> params;
 };
 
@@ -102,6 +113,8 @@ class MaCell final {
   inline MaStructure* cast_structure() const {
     return static_cast<MaStructure*>(value);
   }
+
+  inline MaMethod* cast_method() const { return static_cast<MaMethod*>(value); }
 };
 
 inline MaCell* create_number(const double& number) {
@@ -128,8 +141,17 @@ inline MaCell* create_diia_native(MaDiiaNativeFn diia_native_fn) {
   return new MaCell(MA_DIIA_NATIVE, new MaDiiaNative(diia_native_fn));
 }
 
-inline MaCell* create_object() {
-  return new MaCell(MA_OBJECT, new MaObject());
+inline MaCell* create_object(MaCell* structure) {
+  const auto object = new MaObject();
+  const auto object_cell = new MaCell(MA_OBJECT, object);
+  object->structure = structure;
+  for (const auto& [name, method] : structure->cast_structure()->methods) {
+    const auto diia_cell = create_diia(method->index);
+    diia_cell->cast_diia()->params = method->params;
+    diia_cell->cast_diia()->me = object_cell;
+    object->set(name, diia_cell);
+  }
+  return object_cell;
 }
 
 inline MaCell* create_structure() {

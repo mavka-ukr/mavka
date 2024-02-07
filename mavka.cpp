@@ -76,10 +76,11 @@ int main(int argc, char** argv) {
     }
   }
 
-  // DEBUG_DO({
-  //   print_code(C);
-  //   std::cout << "---" << std::endl;
-  // })
+  DEBUG_DO({
+    print_code(C);
+    std::cout << "---" << std::endl;
+    C;
+  })
 
   mavka::mama::run(M, C);
 

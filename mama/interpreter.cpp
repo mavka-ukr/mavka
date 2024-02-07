@@ -1,5 +1,10 @@
 #include "mama.h"
 
+#define DO_THROW_STRING(v)           \
+  M->stack.push(create_string((v))); \
+  I = new MaInstruction(OP_THROW);   \
+  goto i_start;
+
 namespace mavka::mama {
   void run(MaMa* M, MaCode* C) {
     M->i = 0;
@@ -9,9 +14,9 @@ namespace mavka::mama {
       if (M->i >= size) {
         return;
       }
-    i_start:
-      const auto I = C->instructions[M->i];
+      MaInstruction* I = C->instructions[M->i];
 
+    i_start:
       DEBUG_DO(print_instruction_with_index(M->i, I))
 
       switch (I->op) {
@@ -35,7 +40,8 @@ namespace mavka::mama {
                 create_string(left_cell->string() + right_cell->string()));
             break;
           }
-          M->stack.push(M->empty_cell);
+          DO_THROW_STRING("Неможливо додати " + getcelltypename(left_cell) +
+                          " до " + getcelltypename(right_cell))
           break;
         }
         case OP_SUB: {
@@ -49,7 +55,8 @@ namespace mavka::mama {
                 create_number(left_cell->number() - right_cell->number()));
             break;
           }
-          M->stack.push(M->empty_cell);
+          DO_THROW_STRING("Неможливо відняти " + getcelltypename(right_cell) +
+                          " від " + getcelltypename(left_cell))
           break;
         }
         case OP_MUL: {
@@ -256,6 +263,8 @@ namespace mavka::mama {
               goto start;
             }
           }
+          std::cout << "Не вдалось зловити: " << cell_to_string(M->stack.top())
+                    << std::endl;
           return;
           break;
         }
@@ -391,10 +400,13 @@ namespace mavka::mama {
               new MaCallStackValue(cell, diia_scope, return_index));
           if (cell->type == MA_DIIA_NATIVE) {
             const auto diia_native = cell->cast_diia_native();
-            diia_native->value(cell, M, diia_scope);
+            diia_native->value(nullptr, M, diia_scope);
             M->call_stack.pop();
           } else if (cell->type == MA_DIIA) {
             const auto diia = cell->cast_diia();
+            if (diia->me) {
+              diia_scope->set_variable("я", diia->me);
+            }
             int i = 0;
             for (const auto& param : diia->params) {
               if (M->aR.contains(param.first)) {
@@ -409,7 +421,7 @@ namespace mavka::mama {
             goto start;
           } else if (cell->type == MA_STRUCTURE) {
             const auto structure = cell->cast_structure();
-            const auto object_cell = create_object();
+            const auto object_cell = create_object(cell);
             const auto object = object_cell->cast_object();
             int i = 0;
             for (const auto& param : structure->params) {
@@ -427,9 +439,10 @@ namespace mavka::mama {
         }
         case OP_RETURN: {
           auto call_stack_value = M->call_stack.top();
+          M->call_stack.pop();
           while (call_stack_value->catch_index != 0) {
-            M->call_stack.pop();
             call_stack_value = M->call_stack.top();
+            M->call_stack.pop();
           }
           M->i = call_stack_value->return_index;
           DEBUG_LOG("returning to " + std::to_string(M->i))
@@ -564,6 +577,17 @@ namespace mavka::mama {
             if (I->strval == "довжина") {
               const auto length = cell->cast_list()->size();
               M->stack.push(create_number(length));
+            } else if (I->strval == "додати") {
+              auto diia_native_fn = [&cell](MaCell* self, MaMa* M, MaScope* S) {
+                const auto value = M->aR["0"];
+                M->aR.clear();
+                cell->cast_list()->append(value);
+              };
+              const auto diia_native = new MaDiiaNative();
+              diia_native->value = diia_native_fn;
+              const auto diia_native_cell =
+                  new MaCell(MA_DIIA_NATIVE, diia_native);
+              M->stack.push(diia_native_cell);
             } else {
               M->stack.push(M->empty_cell);
             }
@@ -610,7 +634,9 @@ namespace mavka::mama {
           break;
         }
         case OP_STRUCT: {
-          M->stack.push(create_structure());
+          const auto structure_cell = create_structure();
+          structure_cell->cast_structure()->name = I->strval;
+          M->stack.push(structure_cell);
           break;
         }
         case OP_STRUCT_PARAM: {
@@ -638,8 +664,28 @@ namespace mavka::mama {
           call_stack_value->catch_index = 0;
           break;
         }
+        case OP_METHOD: {
+          const auto structure_cell = M->stack.top();
+          M->stack.pop();
+          if (structure_cell->type == MA_STRUCTURE) {
+            const auto structure = structure_cell->cast_structure();
+            const auto method = new MaMethod();
+            method->index = I->numval;
+            structure->methods.insert_or_assign(I->strval, method);
+            M->stack.push(new MaCell(MA_METHOD, method));
+          } else {
+            DO_THROW_STRING("Має бути структурою.")
+          }
+          break;
+        }
+        case OP_METHOD_PARAM: {
+          const auto cell = M->stack.top();
+          cell->cast_method()->params.insert_or_assign(I->strval, nullptr);
+          break;
+        }
         default: {
-          std::cout << "unsupported instruction " << I->op << std::endl;
+          std::cout << "unsupported instruction " << getopname(I->op)
+                    << std::endl;
           return;
         }
       }
