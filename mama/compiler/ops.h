@@ -56,7 +56,6 @@ typedef enum {
   OP_SET_ARG,
   OP_LIST,
   OP_LIST_APPEND,
-  OP_CLEAR_ARGS,
   OP_DICT,
   OP_DICT_SET,
   OP_STRUCT,
@@ -156,8 +155,6 @@ inline std::string getopname(const OP op) {
       return "OP_DIIA";
     case OP_EACH_SIMPLE:
       return "OP_EACH_SIMPLE";
-    case OP_CLEAR_ARGS:
-      return "OP_CLEAR_ARGS";
     default:
       break;
   }

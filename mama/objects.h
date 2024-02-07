@@ -58,6 +58,7 @@ class MaObject final {
 
   void set(const std::string& name, MaCell* value);
   MaCell* get(const std::string& name) const;
+  bool has(const std::string& name) const;
 };
 
 class MaStructure final {
@@ -106,8 +107,8 @@ inline MaCell* create_string(const std::string& string) {
   return new MaCell(MA_STRING, new MaString(string));
 }
 
-inline MaCell* create_list(const std::vector<MaCell*>& list) {
-  return new MaCell(MA_LIST, new MaList(list));
+inline MaCell* create_list() {
+  return new MaCell(MA_LIST, new MaList());
 }
 
 inline MaCell* create_dict() {
@@ -219,6 +220,10 @@ inline MaCell* MaObject::get(const std::string& name) const {
     return it->second;
   }
   return nullptr;
+}
+
+inline bool MaObject::has(const std::string& name) const {
+  return properties.contains(name);
 }
 
 inline void MaCell::retain() {

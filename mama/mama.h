@@ -16,30 +16,42 @@
 
 #define MAMA_DEBUG 0
 
-#define JJ_MAG_ADD "чародія_додати"
-#define JJ_MAG_SUB "чародія_відняти"
-#define JJ_MAG_MUL "чародія_помножити"
-#define JJ_MAG_DIV "чародія_поділити"
-#define JJ_MAG_MOD "чародія_остача"
-#define JJ_MAG_DIVDIV "чародія_частка"
-#define JJ_MAG_POW "чародія_степінь"
-#define JJ_MAG_BW_NOT "чародія_дні"
-#define JJ_MAG_BW_XOR "чародія_вабо"
-#define JJ_MAG_BW_OR "чародія_дабо"
-#define JJ_MAG_BW_AND "чародія_ді"
-#define JJ_MAG_BW_SHIFT_LEFT "чародія_вліво"
-#define JJ_MAG_BW_SHIFT_RIGHT "чародія_вправо"
-#define JJ_MAG_BW_POSITIVE "чародія_додатнє"
-#define JJ_MAG_BW_NEGATIVE "чародія_відʼємне"
-#define JJ_MAG_GREATER "чародія_більше"
-#define JJ_MAG_LESSER "чародія_менше"
-#define JJ_MAG_GREATER_EQUAL "чародія_не_менше"
-#define JJ_MAG_LESSER_EQUAL "чародія_не_більше"
-#define JJ_MAG_CONTAINS "чародія_містить"
-#define JJ_MAG_GET_ELEMENT "чародія_отримати"
-#define JJ_MAG_PUT_ELEMENT "чародія_покласти"
-#define JJ_MAG_CALL "чародія_викликати"
-#define JJ_MAG_ITERATOR "чародія_перебір"
+#if MAMA_DEBUG == 0
+#define DEBUG_LOG(value)
+#else
+#define DEBUG_LOG(value) std::cout << value << std::endl;
+#endif
+
+#if MAMA_DEBUG == 0
+#define DEBUG_DO(value)
+#else
+#define DEBUG_DO(value) (value);
+#endif
+
+#define MAG_ADD "чародія_додати"
+#define MAG_SUB "чародія_відняти"
+#define MAG_MUL "чародія_помножити"
+#define MAG_DIV "чародія_поділити"
+#define MAG_MOD "чародія_остача"
+#define MAG_DIVDIV "чародія_частка"
+#define MAG_POW "чародія_степінь"
+#define MAG_BW_NOT "чародія_дні"
+#define MAG_BW_XOR "чародія_вабо"
+#define MAG_BW_OR "чародія_дабо"
+#define MAG_BW_AND "чародія_ді"
+#define MAG_BW_SHIFT_LEFT "чародія_вліво"
+#define MAG_BW_SHIFT_RIGHT "чародія_вправо"
+#define MAG_BW_POSITIVE "чародія_додатнє"
+#define MAG_BW_NEGATIVE "чародія_відʼємне"
+#define MAG_GREATER "чародія_більше"
+#define MAG_LESSER "чародія_менше"
+#define MAG_GREATER_EQUAL "чародія_не_менше"
+#define MAG_LESSER_EQUAL "чародія_не_більше"
+#define MAG_CONTAINS "чародія_містить"
+#define MAG_GET_ELEMENT "чародія_отримати"
+#define MAG_PUT_ELEMENT "чародія_покласти"
+#define MAG_CALL "чародія_викликати"
+#define MAG_ITERATOR "чародія_перебір"
 
 #define MA_EMPTY 0
 #define MA_YES 1
