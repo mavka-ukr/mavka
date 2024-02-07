@@ -416,20 +416,33 @@ namespace mavka::mama {
               }
               ++i;
             }
-            M->aR.clear();
+            // M->aR.clear();
             M->i = cell->cast_diia()->index;
             goto start;
           } else if (cell->type == MA_STRUCTURE) {
             if (M->number_structure_cell == cell) {
               const auto arg = M->aR["0"];
-              M->aR.clear();
+              // M->aR.clear();
               if (arg->type == MA_STRING) {
                 M->stack.push(create_number(std::stod(arg->string())));
               } else if (arg->type == MA_NUMBER) {
                 M->stack.push(arg);
               } else {
-                DO_THROW_STRING("Неможливо викликати \"" +
-                                getcelltypename(cell) + "\".")
+                DO_THROW_STRING("Неможливо перетворити на число \"" +
+                                getcelltypename(arg) + "\".")
+              }
+            } else if (M->text_structure_cell == cell) {
+              const auto arg = M->aR["0"];
+              // M->aR.clear();
+              if (arg->type == MA_STRING) {
+                M->stack.push(arg);
+              } else if (arg->type == MA_NUMBER) {
+                std::ostringstream v;
+                v << arg->number();
+                M->stack.push(create_string(v.str()));
+              } else {
+                DO_THROW_STRING("Неможливо петворити на текст \"" +
+                                getcelltypename(arg) + "\".")
               }
             } else {
               const auto structure = cell->cast_structure();
@@ -444,7 +457,7 @@ namespace mavka::mama {
                 }
                 ++i;
               }
-              M->aR.clear();
+              // M->aR.clear();
               M->stack.push(object_cell);
             }
           } else {
@@ -527,6 +540,17 @@ namespace mavka::mama {
             } else {
               M->stack.push(M->empty_cell);
             }
+          } else if (cell->type == MA_STRING) {
+            if (key->type == MA_NUMBER) {
+              const auto index = key->number_long();
+              if (index >= 0 && index < cell->string().size()) {
+                M->stack.push(create_string(cell->string().substr(index, 1)));
+              } else {
+                M->stack.push(M->empty_cell);
+              }
+            } else {
+              M->stack.push(M->empty_cell);
+            }
           } else {
             M->stack.push(M->empty_cell);
           }
@@ -596,7 +620,7 @@ namespace mavka::mama {
             } else if (I->strval == "додати") {
               auto diia_native_fn = [&cell](MaCell* self, MaMa* M, MaScope* S) {
                 const auto value = M->aR["0"];
-                M->aR.clear();
+                // M->aR.clear();
                 cell->cast_list()->append(value);
               };
               const auto diia_native = new MaDiiaNative();

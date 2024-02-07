@@ -1,4 +1,7 @@
 #include "parser.h"
+
+#include <valarray>
+
 #include "../../utils/chrono.h"
 
 namespace mavka::parser {
@@ -34,6 +37,80 @@ namespace mavka::parser {
       mavka::internal::tools::replace_all(number_copy, "д", "b");
     }
     return number_copy;
+  }
+
+  ast::ASTSome* to_string_call_node(ast::ASTSome* ast_some) {
+    if (ast_some->StringNode) {
+      return ast_some;
+    }
+    const auto identifier_node = new ast::IdentifierNode();
+    identifier_node->name = "текст";
+    const auto call_node = new ast::CallNode();
+    call_node->value = ast::make_ast_some(identifier_node);
+    const auto arg_node = new ast::ArgNode();
+    arg_node->index = 0;
+    arg_node->value = ast_some;
+    call_node->args = {arg_node};
+    return ast::make_ast_some(call_node);
+  }
+
+  ast::ASTSome* make_arithmetic_node(const std::vector<ast::ASTSome*>& nodes) {
+    if (nodes.size() == 1) {
+      return to_string_call_node(nodes[0]);
+    }
+    const auto arithmetic_node = new ast::ArithmeticNode();
+    arithmetic_node->op = "+";
+    if (nodes.size() == 2) {
+      arithmetic_node->left = to_string_call_node(nodes[0]);
+      arithmetic_node->right = to_string_call_node(nodes[1]);
+    } else {
+      arithmetic_node->left = to_string_call_node(
+          make_arithmetic_node(std::vector(nodes.begin(), nodes.end() - 1)));
+      arithmetic_node->right = to_string_call_node(nodes.back());
+    }
+    return ast::make_ast_some(arithmetic_node);
+  }
+
+  std::any process_string(antlr4::ParserRuleContext* context,
+                          const std::string& value) {
+    std::vector<ast::ASTSome*> parts;
+    std::string current_part;
+    bool interpolation = false;
+
+    for (int i = 0; i < value.length(); ++i) {
+      if (!interpolation && internal::tools::safe_substr(value, i, 1) == "%" &&
+          internal::tools::safe_substr(value, i + 1, 1) == "(") {
+        interpolation = true;
+        if (!current_part.empty()) {
+          const auto part_string = new ast::StringNode();
+          part_string->value = current_part;
+          parts.push_back(mavka::ast::make_ast_some(part_string));
+          current_part = "";
+        }
+        i += 1;
+        continue;
+      }
+
+      if (interpolation && internal::tools::safe_substr(value, i, 1) == ")") {
+        interpolation = false;
+        const auto parser_result = parser::parse(current_part, "");
+        if (parser_result->error) {
+          throw std::runtime_error("Shit.");
+        }
+        parts.push_back(parser_result->program_node->body[0]);
+        current_part = "";
+        continue;
+      }
+
+      current_part += internal::tools::safe_substr(value, i, 1);
+    }
+    if (!current_part.empty()) {
+      const auto last_part = new ast::StringNode();
+      last_part->value = current_part;
+      parts.push_back(ast::make_ast_some(last_part));
+    }
+
+    return make_arithmetic_node(parts);
   }
 
   void processASTBody(std::vector<ast::ASTSome*>& body) {
@@ -813,17 +890,14 @@ namespace mavka::parser {
 
   std::any MavkaASTVisitor::visitString_value(
       MavkaParser::String_valueContext* context) {
-    const auto string_node = new ast::StringNode();
-    fill_ast_node(string_node, context);
-    string_node->value = context->getText();
-    if (string_node->value.starts_with(R"(""")")) {
-      string_node->value =
-          string_node->value.substr(3, string_node->value.length() - 6);
+    const auto text = context->getText();
+    if (text.starts_with(R"(""")")) {
+      const auto string_value = text.substr(3, text.length() - 6);
+      return process_string(context, string_value);
     } else {
-      string_node->value =
-          string_node->value.substr(1, string_node->value.length() - 2);
+      const auto string_value = text.substr(1, text.length() - 2);
+      return process_string(context, string_value);
     }
-    return (ast::make_ast_some(string_node));
   }
 
   std::any MavkaASTVisitor::visitId(MavkaParser::IdContext* context) {
@@ -1977,61 +2051,62 @@ namespace mavka::parser {
   }
 
   MavkaParserResult* parse(std::string code, std::string path) {
-    try {
-      antlr4::ANTLRInputStream input(code);
+    antlr4::ANTLRInputStream input(code);
 
-      const auto lexer_error_listener = new MavkaParserErrorListener();
-      MavkaLexer lexer(&input);
-      // lexer.removeErrorListeners();
-      // lexer.addErrorListener(lexer_error_listener);
+    const auto lexer_error_listener = new MavkaParserErrorListener();
+    MavkaLexer lexer(&input);
+    // lexer.removeErrorListeners();
+    // lexer.addErrorListener(lexer_error_listener);
 
-      antlr4::CommonTokenStream tokens(&lexer);
+    antlr4::CommonTokenStream tokens(&lexer);
 
-      const auto parser_error_listener = new MavkaParserErrorListener();
-      MavkaParser parser(&tokens);
-      // parser.setErrorHandler(std::shared_ptr<MavkaParserErrorHandler>(error_handler));
-      // parser.removeParseListeners();
-      // parser.removeErrorListeners();
-      // parser.addErrorListener(parser_error_listener);
+    const auto parser_error_listener = new MavkaParserErrorListener();
+    MavkaParser parser(&tokens);
+    // parser.setErrorHandler(std::shared_ptr<MavkaParserErrorHandler>(error_handler));
+    // parser.removeParseListeners();
+    // parser.removeErrorListeners();
+    // parser.addErrorListener(parser_error_listener);
 
-      START_CHRONO(parse)
+    START_CHRONO(parse)
 
-      MavkaParser::FileContext* tree = parser.file();
+    MavkaParser::FileContext* tree = parser.file();
 
-      END_CHRONO(parse, "parsing ", path)
+    END_CHRONO(parse, "parsing ", path)
 
-      const auto visitor = new MavkaASTVisitor();
-      visitor->tokens = &tokens;
+    const auto visitor = new MavkaASTVisitor();
+    visitor->tokens = &tokens;
 
-      START_CHRONO(visit)
+    START_CHRONO(visit)
 
-      const auto ast_result = any_to_ast_some(visitor->visitFile(tree));
+    const auto ast_result = any_to_ast_some(visitor->visitFile(tree));
 
-      END_CHRONO(visit, "visiting ", path)
+    END_CHRONO(visit, "visiting ", path)
 
-      const auto program_node = ast_result->ProgramNode;
-      const auto parser_result = new MavkaParserResult();
-      parser_result->program_node = program_node;
-      return parser_result;
-    } catch (const antlr4::RecognitionException& e) {
-      const auto parser_result = new MavkaParserResult();
-      const auto parser_error = new MavkaParserError();
-      // wasm cannot properly handle antlr4 exceptions
-      // do not handle it for now
-      // todo: fix it
-      // parser_error->line = e.getOffendingToken()->getLine();
-      // parser_error->column = e.getOffendingToken()->getCharPositionInLine();
-      parser_error->path = std::move(path);
-      parser_error->message = "Помилка парсингу.";
-      parser_result->error = parser_error;
-      return parser_result;
-    } catch (...) {
-      const auto parser_result = new MavkaParserResult();
-      const auto parser_error = new MavkaParserError();
-      parser_error->path = std::move(path);
-      parser_error->message = "Помилка парсингу.";
-      parser_result->error = parser_error;
-      return parser_result;
-    }
+    const auto program_node = ast_result->ProgramNode;
+    const auto parser_result = new MavkaParserResult();
+    parser_result->program_node = program_node;
+    return parser_result;
+    // try {
+    //
+    // } catch (const antlr4::RecognitionException& e) {
+    //   const auto parser_result = new MavkaParserResult();
+    //   const auto parser_error = new MavkaParserError();
+    //   // wasm cannot properly handle antlr4 exceptions
+    //   // do not handle it for now
+    //   // todo: fix it
+    //   // parser_error->line = e.getOffendingToken()->getLine();
+    //   // parser_error->column =
+    //   e.getOffendingToken()->getCharPositionInLine(); parser_error->path =
+    //   std::move(path); parser_error->message = "Помилка парсингу.";
+    //   parser_result->error = parser_error;
+    //   return parser_result;
+    // } catch (...) {
+    //   const auto parser_result = new MavkaParserResult();
+    //   const auto parser_error = new MavkaParserError();
+    //   parser_error->path = std::move(path);
+    //   parser_error->message = "Помилка парсингу.";
+    //   parser_result->error = parser_error;
+    //   return parser_result;
+    // }
   }
 }
