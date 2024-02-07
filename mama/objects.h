@@ -23,7 +23,12 @@ class MaString final {
 
 class MaList final {
  public:
-  std::vector<MaCell*> value;
+  std::vector<MaCell*> v;
+
+  void append(MaCell* cell);
+  void set(size_t index, MaCell* cell);
+  MaCell* get(size_t index) const;
+  size_t size() const;
 };
 
 class MaDict final {
@@ -129,6 +134,36 @@ inline MaCell* create_object() {
 
 inline MaCell* create_structure() {
   return new MaCell(MA_STRUCTURE, new MaStructure());
+}
+
+inline void MaList::append(MaCell* cell) {
+  cell->retain();
+  this->v.push_back(cell);
+}
+
+inline void MaList::set(size_t index, MaCell* cell) {
+  if (index >= 0) {
+    if (index >= this->v.size()) {
+      this->v.resize(index + 1);
+    }
+    const auto old = this->v[index];
+    if (old) {
+      old->release();
+    }
+    cell->retain();
+    this->v[index] = cell;
+  }
+}
+
+inline MaCell* MaList::get(size_t index) const {
+  if (index >= 0 && index < this->v.size()) {
+    return this->v[index];
+  }
+  return nullptr;
+}
+
+inline size_t MaList::size() const {
+  return this->v.size();
 }
 
 inline void MaDict::set(MaCell* key, MaCell* value) {

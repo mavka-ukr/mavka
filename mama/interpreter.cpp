@@ -465,7 +465,7 @@ namespace mavka::mama {
           const auto cell = M->stack.top();
 
           const auto list = cell->cast_list();
-          list->value.push_back(value);
+          list->append(value);
           break;
         }
         case OP_GET_ELEMENT: {
@@ -478,8 +478,8 @@ namespace mavka::mama {
             const auto list = cell->cast_list();
             if (key->type == MA_NUMBER) {
               const auto index = key->number_long();
-              if (index >= 0 && index < list->value.size()) {
-                M->stack.push(list->value[index]);
+              if (index >= 0 && index < list->size()) {
+                M->stack.push(list->get(index));
               } else {
                 M->stack.push(M->empty_cell);
               }
@@ -510,12 +510,7 @@ namespace mavka::mama {
             const auto list = cell->cast_list();
             if (key->type == MA_NUMBER) {
               const auto index = key->number_long();
-              if (index >= 0) {
-                if (index >= list->value.size()) {
-                  list->value.resize(index + 1);
-                }
-                list->value[index] = value;
-              }
+              list->set(index, value);
             }
           } else if (cell->type == MA_DICT) {
             const auto dict = cell->cast_dict();
@@ -562,7 +557,7 @@ namespace mavka::mama {
             }
           } else if (cell->type == MA_LIST) {
             if (I->strval == "довжина") {
-              const auto length = cell->cast_list()->value.size();
+              const auto length = cell->cast_list()->size();
               M->stack.push(create_number(length));
             } else {
               M->stack.push(M->empty_cell);
