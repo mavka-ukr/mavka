@@ -1,52 +1,54 @@
-#include "mama.h"
+#include "../mama.h"
 
 #define MAMA_PRINT_DEBUG 0
 
 namespace mavka::mama {
-#include "interpreter/do_ADD.h"
-#include "interpreter/do_AND.h"
-#include "interpreter/do_BAND.h"
-#include "interpreter/do_BNOT.h"
-#include "interpreter/do_BOR.h"
-#include "interpreter/do_CLEAR_ARGS.h"
-#include "interpreter/do_DIV.h"
-#include "interpreter/do_DIVDIV.h"
-#include "interpreter/do_EACH_SIMPLE.h"
-#include "interpreter/do_EQ.h"
-#include "interpreter/do_GE.h"
-#include "interpreter/do_GET.h"
-#include "interpreter/do_GET_ELEMENT.h"
-#include "interpreter/do_GT.h"
-#include "interpreter/do_LE.h"
-#include "interpreter/do_LIST.h"
-#include "interpreter/do_LIST_APPEND.h"
-#include "interpreter/do_LOAD.h"
-#include "interpreter/do_LOAD_ARG.h"
-#include "interpreter/do_LT.h"
-#include "interpreter/do_MOD.h"
-#include "interpreter/do_MUL.h"
-#include "interpreter/do_NE.h"
-#include "interpreter/do_NEGATIVE.h"
-#include "interpreter/do_OR.h"
-#include "interpreter/do_POSITIVE.h"
-#include "interpreter/do_POW.h"
-#include "interpreter/do_PUSH_DIIA.h"
-#include "interpreter/do_PUSH_NUMBER.h"
-#include "interpreter/do_PUSH_STRING.h"
-#include "interpreter/do_SET.h"
-#include "interpreter/do_SET_ARG.h"
-#include "interpreter/do_SET_ELEMENT.h"
-#include "interpreter/do_SHL.h"
-#include "interpreter/do_SHR.h"
-#include "interpreter/do_STORE.h"
-#include "interpreter/do_SUB.h"
-#include "interpreter/do_THROW.h"
-#include "interpreter/do_XOR.h"
+#include "instructions/do_ADD.h"
+#include "instructions/do_AND.h"
+#include "instructions/do_BAND.h"
+#include "instructions/do_BNOT.h"
+#include "instructions/do_BOR.h"
+#include "instructions/do_CLEAR_ARGS.h"
+#include "instructions/do_DIV.h"
+#include "instructions/do_DIVDIV.h"
+#include "instructions/do_EACH_SIMPLE.h"
+#include "instructions/do_EQ.h"
+#include "instructions/do_GE.h"
+#include "instructions/do_GET.h"
+#include "instructions/do_GET_ELEMENT.h"
+#include "instructions/do_GT.h"
+#include "instructions/do_LE.h"
+#include "instructions/do_LIST.h"
+#include "instructions/do_LIST_APPEND.h"
+#include "instructions/do_LOAD.h"
+#include "instructions/do_LOAD_ARG.h"
+#include "instructions/do_LT.h"
+#include "instructions/do_MOD.h"
+#include "instructions/do_MUL.h"
+#include "instructions/do_NE.h"
+#include "instructions/do_NEGATIVE.h"
+#include "instructions/do_OR.h"
+#include "instructions/do_POSITIVE.h"
+#include "instructions/do_POW.h"
+#include "instructions/do_PUSH_DIIA.h"
+#include "instructions/do_PUSH_NUMBER.h"
+#include "instructions/do_PUSH_STRING.h"
+#include "instructions/do_SET.h"
+#include "instructions/do_SET_ARG.h"
+#include "instructions/do_SET_ELEMENT.h"
+#include "instructions/do_SHL.h"
+#include "instructions/do_SHR.h"
+#include "instructions/do_STORE.h"
+#include "instructions/do_SUB.h"
+#include "instructions/do_THROW.h"
+#include "instructions/do_XOR.h"
 
   void run(MaMa* M, MaScope* S, MaCode* C) {
-    for (M->i = 0; M->i < C->instructions.size(); ++M->i) {
-    again:
-      if (M->i >= C->instructions.size()) {
+    M->i = 0;
+    const auto size = C->instructions.size();
+    for (;;) {
+    start:
+      if (M->i >= size) {
         return;
       }
       const auto I = C->instructions[M->i];
@@ -132,17 +134,17 @@ namespace mavka::mama {
           if (value->type == MA_NUMBER) {
             if (value->number == 0) {
               M->i = I->numval;
-              goto again;
+              goto start;
             }
           } else if (value->type == MA_NO) {
             M->i = I->numval;
-            goto again;
+            goto start;
           }
           break;
         }
         case OP_JUMP: {
           M->i = I->numval;
-          goto again;
+          goto start;
           break;
         }
         case OP_THROW: {
@@ -185,7 +187,7 @@ namespace mavka::mama {
             M->call_stack.pop();
           } else if (cell->type == MA_DIIA) {
             M->i = cell->diia_index;
-            goto again;
+            goto start;
           }
           break;
         }
@@ -196,7 +198,7 @@ namespace mavka::mama {
 #if MAMA_PRINT_DEBUG == 1
           std::cout << "returning to " << M->i << std::endl;
 #endif
-          goto again;
+          goto start;
           break;
         }
         case OP_LOAD_ARG: {
@@ -256,12 +258,8 @@ namespace mavka::mama {
           return;
         }
       }
-    }
 
-    if (M->do_throw) {
-      const auto value = M->stack.top();
-      M->stack.pop();
-      print_cell(value);
+      M->i++;
     }
   }
 } // namespace mavka::mama
