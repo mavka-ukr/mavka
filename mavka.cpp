@@ -29,8 +29,21 @@ void init_print(MaMa* M, MaScope* S) {
   S->set_variable("друк", diia_cell);
 }
 
-int main() {
-  std::ifstream file = std::ifstream("тест.м");
+int main(int argc, char** argv) {
+  const auto args = std::vector<std::string>(argv, argv + argc);
+
+  if (args.size() == 1) {
+    std::cout << "Використання: мавка <файл.м>" << std::endl;
+    return 1;
+  }
+
+  const auto filename = args[1];
+
+  std::ifstream file = std::ifstream(filename);
+  if (!file.is_open()) {
+    std::cout << "Не вдалося прочитати файл " << filename << std::endl;
+    return 1;
+  }
   const auto source = std::string(std::istreambuf_iterator<char>(file),
                                   std::istreambuf_iterator<char>());
 

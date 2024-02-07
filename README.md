@@ -51,3 +51,9 @@ cd mavka
 ```shell
 ./build.sh Obin # optimized executable
 ```
+
+### Запуск
+
+```shell
+./build-bin/мавка тест.м
+```
