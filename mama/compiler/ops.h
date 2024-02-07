@@ -9,6 +9,7 @@
 // pushes: 1-19
 #define OP_PUSH_NUMBER 1
 #define OP_PUSH_STRING 2
+#define OP_PUSH_DIIA 3
 
 // arithmetics/binary: 20-49
 #define OP_ADD 20
@@ -52,7 +53,6 @@
 
 // store: 170-189
 #define OP_STORE 170
-#define OP_STORE_DIIA 44
 
 // others: 190-255
 #define OP_GET 190

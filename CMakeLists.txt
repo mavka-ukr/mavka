@@ -60,52 +60,10 @@ set(MAVKA_COMPILER_SRC
         mama/compiler/nodes/compile_type_value_single_node.cpp
         mama/compiler/nodes/compile_wait_node.cpp
         mama/compiler/nodes/compile_while_node.cpp
+        mama/compiler/nodes/diia.cpp
         mama/compiler/compiler.cpp
         mama/compiler/compiler.h
         mama/compiler/ops.h
-        mama/interpreter/do_PUSH_NUMBER.h
-        mama/interpreter/do_ADD.h
-        mama/interpreter/do_SUB.h
-        mama/interpreter/do_MUL.h
-        mama/interpreter/do_DIV.h
-        mama/interpreter/do_MOD.h
-        mama/interpreter/do_DIVDIV.h
-        mama/interpreter/do_POW.h
-        mama/interpreter/do_STORE.h
-        mama/interpreter/do_LOAD.h
-        mama/interpreter/do_GET.h
-        mama/interpreter/do_SET.h
-        mama/interpreter/do_PUSH_STRING.h
-        mama/interpreter/do_XOR.h
-        mama/interpreter/do_BOR.h
-        mama/interpreter/do_BAND.h
-        mama/interpreter/do_SHL.h
-        mama/interpreter/do_SHR.h
-        mama/interpreter/do_BNOT.h
-        mama/interpreter/do_JUMP.h
-        mama/interpreter/do_JUMP_IF_FALSE.h
-        mama/interpreter/do_THROW.h
-        mama/interpreter/do_EQ.h
-        mama/interpreter/do_NE.h
-        mama/interpreter/do_LT.h
-        mama/interpreter/do_LE.h
-        mama/interpreter/do_GT.h
-        mama/interpreter/do_GE.h
-        mama/interpreter/do_AND.h
-        mama/interpreter/do_OR.h
-        mama/interpreter/do_CALL.h
-        mama/interpreter/do_RETURN.h
-        mama/interpreter/do_LOAD_ARG.h
-        mama/interpreter/do_SET_ELEMENT.h
-        mama/interpreter/do_SET_ARG.h
-        mama/interpreter/do_LIST.h
-        mama/interpreter/do_LIST_APPEND.h
-        mama/interpreter/do_GET_ELEMENT.h
-        mama/interpreter/do_NEGATIVE.h
-        mama/interpreter/do_POSITIVE.h
-        mama/interpreter/do_STORE_DIIA.h
-        mama/interpreter/do_EACH_SIMPLE.h
-        mama/interpreter/do_CLEAR_ARGS.h
         mama/parser/ast.cpp
         mama/parser/ast.h
         mama/parser/parser.cpp

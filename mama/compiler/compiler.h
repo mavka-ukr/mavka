@@ -52,10 +52,18 @@ namespace mavka::mama {
   MaCompilationResult* success();
 
   MaCompilationResult* compile_node(MaCode* C, mavka::ast::ASTSome* node);
-
   MaCompilationResult* compile_body(
       MaCode* C,
       const std::vector<mavka::ast::ASTSome*>& body);
+
+  MaCompilationResult* compile_diia(
+      MaCode* C,
+      bool async,
+      const std::vector<ast::GenericNode*>& generics,
+      const std::string& name,
+      const std::vector<ast::ParamNode*>& params,
+      const std::vector<ast::TypeValueSingleNode*>& return_types,
+      const std::vector<ast::ASTSome*>& body);
 
   MaCompilationResult* compile_anon_diia_node(
       MaCode* C,

@@ -68,7 +68,7 @@ namespace mavka::mama {
       case OP_RETURN:
         return "OP_RETURN";
       case OP_LOAD_ARG:
-        return "OP_LOAD_PARAM";
+        return "OP_LOAD_ARG";
       case OP_POP:
         return "OP_POP";
       case OP_SET_ELEMENT:
@@ -85,10 +85,12 @@ namespace mavka::mama {
         return "OP_NEGATIVE";
       case OP_POSITIVE:
         return "OP_POSITIVE";
-      case OP_STORE_DIIA:
-        return "OP_STORE_DIIA";
+      case OP_PUSH_DIIA:
+        return "OP_PUSH_DIIA";
       case OP_EACH_SIMPLE:
         return "OP_EACH_SIMPLE";
+      case OP_CLEAR_ARGS:
+        return "OP_CLEAR_ARGS";
       default:
         break;
     }
@@ -109,8 +111,6 @@ namespace mavka::mama {
         return "MA_NO";
       case MA_DIIA:
         return "MA_DIIA";
-      case OP_STORE_DIIA:
-        return "OP_STORE_DIIA";
       default:
         break;
     }
