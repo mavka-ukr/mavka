@@ -4,17 +4,17 @@ namespace mavka::mama {
   std::string gettypename(size_t type) {
     switch (type) {
       case MA_NUMBER:
-        return "MA_NUMBER";
+        return "число";
       case MA_STRING:
-        return "MA_STRING";
+        return "текст";
       case MA_EMPTY:
-        return "MA_EMPTY";
+        return "пусто";
       case MA_YES:
-        return "MA_YES";
+        return "логічне";
       case MA_NO:
-        return "MA_NO";
+        return "логічне";
       case MA_DIIA:
-        return "MA_DIIA";
+        return "дія";
       default:
         break;
     }

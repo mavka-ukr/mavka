@@ -143,7 +143,7 @@ namespace mavka::mama {
           if (value != nullptr) {
             M->stack.push(value);
           } else {
-            M->stack.push(M->empty_cell);
+            DO_THROW_STRING("Субʼєкт \"" + I->strval + "\" не визначено.")
           }
           break;
         }
@@ -420,20 +420,36 @@ namespace mavka::mama {
             M->i = cell->cast_diia()->index;
             goto start;
           } else if (cell->type == MA_STRUCTURE) {
-            const auto structure = cell->cast_structure();
-            const auto object_cell = create_object(cell);
-            const auto object = object_cell->cast_object();
-            int i = 0;
-            for (const auto& param : structure->params) {
-              if (M->aR.contains(param.first)) {
-                object->set(param.first, M->aR[param.first]);
-              } else if (M->aR.contains(std::to_string(i))) {
-                object->set(param.first, M->aR[std::to_string(i)]);
+            if (M->number_structure_cell == cell) {
+              const auto arg = M->aR["0"];
+              M->aR.clear();
+              if (arg->type == MA_STRING) {
+                M->stack.push(create_number(std::stod(arg->string())));
+              } else if (arg->type == MA_NUMBER) {
+                M->stack.push(arg);
+              } else {
+                DO_THROW_STRING("Неможливо викликати \"" +
+                                getcelltypename(cell) + "\".")
               }
-              ++i;
+            } else {
+              const auto structure = cell->cast_structure();
+              const auto object_cell = create_object(cell);
+              const auto object = object_cell->cast_object();
+              int i = 0;
+              for (const auto& param : structure->params) {
+                if (M->aR.contains(param.first)) {
+                  object->set(param.first, M->aR[param.first]);
+                } else if (M->aR.contains(std::to_string(i))) {
+                  object->set(param.first, M->aR[std::to_string(i)]);
+                }
+                ++i;
+              }
+              M->aR.clear();
+              M->stack.push(object_cell);
             }
-            M->aR.clear();
-            M->stack.push(object_cell);
+          } else {
+            DO_THROW_STRING("Неможливо викликати \"" + getcelltypename(cell) +
+                            "\".")
           }
           break;
         }

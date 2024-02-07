@@ -91,6 +91,7 @@ namespace mavka::mama {
     MaCell* empty_cell;
     MaCell* yes_cell;
     MaCell* no_cell;
+    MaCell* number_structure_cell;
   };
 
   class MaScope final {
