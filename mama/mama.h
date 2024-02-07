@@ -76,15 +76,15 @@ namespace mavka::mama {
     MaCell* cell;
     MaScope* scope;
     int return_index;
+    int catch_index;
   };
 
   class MaMa final {
    public:
     std::stack<MaCell*> stack;
     std::stack<MaCallStackValue*> call_stack;
-    bool do_throw;
-    size_t i;
     std::map<std::string, MaCell*> aR; // args register
+    size_t i;
 
     MaCell* empty_cell;
     MaCell* yes_cell;
@@ -139,7 +139,7 @@ namespace mavka::mama {
 
   void print_code(MaCode* C);
 
-  void run(MaMa* M, MaScope* S, MaCode* C);
+  void run(MaMa* M, MaCode* C);
 } // namespace mavka::mama
 
 #endif // MAMA_H

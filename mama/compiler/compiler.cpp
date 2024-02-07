@@ -34,6 +34,14 @@ namespace mavka::mama {
     return new MaInstruction(OP_JUMP, index);
   }
 
+  MaInstruction* MaInstruction::create_try(const int& index) {
+    return new MaInstruction(OP_TRY, index);
+  }
+
+  MaInstruction* MaInstruction::create_try_done() {
+    return new MaInstruction(OP_TRY_DONE);
+  }
+
   MaCompilationResult* compile_node(MaCode* C, mavka::ast::ASTSome* node) {
     if (!node) {
       return error(nullptr, "null node");

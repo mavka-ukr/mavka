@@ -27,6 +27,8 @@ namespace mavka::mama {
     static MaInstruction* create_load_param(const int& index,
                                             const std::string& name);
     static MaInstruction* create_jump(const int& index);
+    static MaInstruction* create_try(const int& index);
+    static MaInstruction* create_try_done();
   };
 
   class MaCompilationError final {
