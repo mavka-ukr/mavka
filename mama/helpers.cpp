@@ -69,11 +69,16 @@ namespace mavka::mama {
           cell->cast_object()->structure->cast_structure();
       std::string result = object_structure->name + "(";
       for (const auto& [name, value] : cell->cast_object()->properties) {
-        if (object_structure->params.contains(name)) {
-          result += name + "=" + cell_to_string(value);
-          if (name != object_structure->params.rbegin()->first) {
-            result += ", ";
+        bool has_param = false;
+        for (const auto& param : object_structure->params) {
+          if (param == name) {
+            has_param = true;
+            break;
           }
+        }
+        if (has_param) {
+          result += name + "=" + cell_to_string(value);
+          result += ", ";
         }
       }
       return result + ")";

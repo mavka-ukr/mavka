@@ -48,15 +48,13 @@ class MaDict final {
 class MaDiia final {
  public:
   int index;
-  std::map<std::string, std::any> params;
+  std::vector<std::string> params;
   MaCell* me;
 };
 
-typedef void (*MaDiiaNativeFn)(MaCell*, MaMa*, MaScope*);
-
 class MaDiiaNative final {
  public:
-  std::function<void(MaCell*, MaMa*, MaScope*)> value;
+  std::function<MaCell*(MaCell*, MaMa*, MaScope*)> value;
 };
 
 class MaObject final {
@@ -72,14 +70,14 @@ class MaObject final {
 class MaStructure final {
  public:
   std::string name;
-  std::map<std::string, std::any> params;
+  std::vector<std::string> params;
   std::map<std::string, MaMethod*> methods;
 };
 
 class MaMethod final {
  public:
   int index;
-  std::map<std::string, std::any> params;
+  std::vector<std::string> params;
 };
 
 class MaCell final {
@@ -137,7 +135,8 @@ inline MaCell* create_diia(const int& index) {
   return new MaCell(MA_DIIA, new MaDiia(index));
 }
 
-inline MaCell* create_diia_native(MaDiiaNativeFn diia_native_fn) {
+inline MaCell* create_diia_native(
+    const std::function<MaCell*(MaCell*, MaMa*, MaScope*)>& diia_native_fn) {
   return new MaCell(MA_DIIA_NATIVE, new MaDiiaNative(diia_native_fn));
 }
 
