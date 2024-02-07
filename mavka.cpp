@@ -37,7 +37,7 @@ void init_print(MaMa* M, MaScope* S) {
     for (const auto& [key, value] : M->aR) {
       std::cout << cell_to_string(value) << std::endl;
     }
-    M->stack.push(M->empty_cell);
+    return M->empty_cell;
   };
   const auto diia_cell = create_diia_native(diia_native_fn);
   S->set_variable("друк", diia_cell);

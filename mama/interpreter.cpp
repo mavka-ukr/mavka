@@ -70,7 +70,8 @@ namespace mavka::mama {
                 create_number(left_cell->number() * right_cell->number()));
             break;
           }
-          M->stack.push(M->empty_cell);
+          DO_THROW_STRING("Неможливо помножити " + getcelltypename(left_cell) +
+                          " на " + getcelltypename(right_cell))
           break;
         }
         case OP_DIV: {
@@ -400,7 +401,8 @@ namespace mavka::mama {
               new MaCallStackValue(cell, diia_scope, return_index));
           if (cell->type == MA_DIIA_NATIVE) {
             const auto diia_native = cell->cast_diia_native();
-            diia_native->value(nullptr, M, diia_scope);
+            const auto result = diia_native->value(nullptr, M, diia_scope);
+            M->stack.push(result);
             M->call_stack.pop();
           } else if (cell->type == MA_DIIA) {
             const auto diia = cell->cast_diia();
@@ -408,24 +410,26 @@ namespace mavka::mama {
               diia_scope->set_variable("я", diia->me);
             }
             int i = 0;
-            for (const auto& param : diia->params) {
-              if (M->aR.contains(param.first)) {
-                diia_scope->set_variable(param.first, M->aR[param.first]);
+            for (const auto& name : diia->params) {
+              if (M->aR.contains(name)) {
+                diia_scope->set_variable(name, M->aR[name]);
               } else if (M->aR.contains(std::to_string(i))) {
-                diia_scope->set_variable(param.first, M->aR[std::to_string(i)]);
+                diia_scope->set_variable(name, M->aR[std::to_string(i)]);
               }
               ++i;
             }
-            // M->aR.clear();
+            M->aR.clear();
             M->i = cell->cast_diia()->index;
             goto start;
           } else if (cell->type == MA_STRUCTURE) {
             if (M->number_structure_cell == cell) {
               const auto arg = M->aR["0"];
-              // M->aR.clear();
+              M->aR.clear();
               if (arg->type == MA_STRING) {
+                M->call_stack.pop();
                 M->stack.push(create_number(std::stod(arg->string())));
               } else if (arg->type == MA_NUMBER) {
+                M->call_stack.pop();
                 M->stack.push(arg);
               } else {
                 DO_THROW_STRING("Неможливо перетворити на число \"" +
@@ -433,13 +437,14 @@ namespace mavka::mama {
               }
             } else if (M->text_structure_cell == cell) {
               const auto arg = M->aR["0"];
-              // M->aR.clear();
+              M->aR.clear();
               if (arg->type == MA_STRING) {
+                M->call_stack.pop();
                 M->stack.push(arg);
               } else if (arg->type == MA_NUMBER) {
-                std::ostringstream v;
-                v << arg->number();
-                M->stack.push(create_string(v.str()));
+                M->call_stack.pop();
+                std::string str = std::to_string(arg->number());
+                M->stack.push(create_string(str));
               } else {
                 DO_THROW_STRING("Неможливо петворити на текст \"" +
                                 getcelltypename(arg) + "\".")
@@ -450,14 +455,15 @@ namespace mavka::mama {
               const auto object = object_cell->cast_object();
               int i = 0;
               for (const auto& param : structure->params) {
-                if (M->aR.contains(param.first)) {
-                  object->set(param.first, M->aR[param.first]);
+                if (M->aR.contains(param)) {
+                  object->set(param, M->aR[param]);
                 } else if (M->aR.contains(std::to_string(i))) {
-                  object->set(param.first, M->aR[std::to_string(i)]);
+                  object->set(param, M->aR[std::to_string(i)]);
                 }
                 ++i;
               }
-              // M->aR.clear();
+              M->aR.clear();
+              M->call_stack.pop();
               M->stack.push(object_cell);
             }
           } else {
@@ -543,8 +549,10 @@ namespace mavka::mama {
           } else if (cell->type == MA_STRING) {
             if (key->type == MA_NUMBER) {
               const auto index = key->number_long();
-              if (index >= 0 && index < cell->string().size()) {
-                M->stack.push(create_string(cell->string().substr(index, 1)));
+              const auto str = cell->string();
+              if (index >= 0 && index < str.length()) {
+                const auto substr = str.substr(index, 1);
+                M->stack.push(create_string(substr));
               } else {
                 M->stack.push(M->empty_cell);
               }
@@ -620,8 +628,9 @@ namespace mavka::mama {
             } else if (I->strval == "додати") {
               auto diia_native_fn = [&cell](MaCell* self, MaMa* M, MaScope* S) {
                 const auto value = M->aR["0"];
-                // M->aR.clear();
+                M->aR.clear();
                 cell->cast_list()->append(value);
+                return M->empty_cell;
               };
               const auto diia_native = new MaDiiaNative();
               diia_native->value = diia_native_fn;
@@ -681,12 +690,12 @@ namespace mavka::mama {
         }
         case OP_STRUCT_PARAM: {
           const auto cell = M->stack.top();
-          cell->cast_structure()->params.insert_or_assign(I->strval, nullptr);
+          cell->cast_structure()->params.push_back(I->strval);
           break;
         }
         case OP_DIIA_PARAM: {
           const auto cell = M->stack.top();
-          cell->cast_diia()->params.insert_or_assign(I->strval, nullptr);
+          cell->cast_diia()->params.push_back(I->strval);
           break;
         }
         case OP_TRY: {
@@ -720,7 +729,7 @@ namespace mavka::mama {
         }
         case OP_METHOD_PARAM: {
           const auto cell = M->stack.top();
-          cell->cast_method()->params.insert_or_assign(I->strval, nullptr);
+          cell->cast_method()->params.push_back(I->strval);
           break;
         }
         default: {

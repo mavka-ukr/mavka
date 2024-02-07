@@ -166,6 +166,28 @@ inline std::string getopname(const OP op) {
       return "OP_METHOD";
     case OP_METHOD_PARAM:
       return "OP_METHOD_PARAM";
+    case OP_DIIA_PARAM:
+      return "OP_DIIA_PARAM";
+    case OP_DICT:
+      return "OP_DICT";
+    case OP_DICT_SET:
+      return "OP_DICT_SET";
+    case OP_STRUCT:
+      return "OP_STRUCT";
+    case OP_STRUCT_PARAM:
+      return "OP_STRUCT_PARAM";
+    case OP_CONTINUE:
+      return "OP_CONTINUE";
+    case OP_GIVE:
+      return "OP_GIVE";
+    case OP_MODULE:
+      return "OP_MODULE";
+    case OP_TRY:
+      return "OP_TRY";
+    case OP_TRY_DONE:
+      return "OP_TRY_DONE";
+    case OP_NOT:
+      return "OP_NOT";
     default:
       break;
   }
