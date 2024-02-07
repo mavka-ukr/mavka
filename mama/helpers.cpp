@@ -15,6 +15,10 @@ namespace mavka::mama {
         return "логічне";
       case MA_DIIA:
         return "дія";
+      case MA_STRUCTURE:
+        return "структура";
+      case MA_METHOD:
+        return "метод";
       default:
         break;
     }
@@ -23,6 +27,13 @@ namespace mavka::mama {
 
   std::string getcelltypename(MaCell* cell) {
     return gettypename(cell->type);
+  }
+
+  std::string getcellstructurename(MaCell* cell) {
+    if (cell->type == MA_OBJECT) {
+      return cell->cast_object()->structure->cast_structure()->name;
+    }
+    return "";
   }
 
   std::string cell_to_string(MaCell* cell) {

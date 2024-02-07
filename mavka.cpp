@@ -17,6 +17,14 @@ void init_number(MaMa* M, MaScope* gS) {
   M->number_structure_cell = number_structure_cell;
 }
 
+void init_text(MaMa* M, MaScope* gS) {
+  const auto text_structure = new MaStructure();
+  text_structure->name = "текст";
+  const auto text_structure_cell = new MaCell(MA_STRUCTURE, text_structure);
+  gS->set_variable(text_structure->name, text_structure_cell);
+  M->text_structure_cell = text_structure_cell;
+}
+
 void init_logical(MaMa* M) {
   M->yes_cell = new MaCell(MA_YES);
   M->no_cell = new MaCell(MA_NO);
@@ -58,6 +66,7 @@ int main(int argc, char** argv) {
 
   init_empty(M);
   init_number(M, S);
+  init_text(M, S);
   init_logical(M);
   init_diia(M);
 

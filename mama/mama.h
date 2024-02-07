@@ -92,6 +92,7 @@ namespace mavka::mama {
     MaCell* yes_cell;
     MaCell* no_cell;
     MaCell* number_structure_cell;
+    MaCell* text_structure_cell;
   };
 
   class MaScope final {
@@ -133,6 +134,8 @@ namespace mavka::mama {
   std::string gettypename(size_t type);
 
   std::string getcelltypename(MaCell* cell);
+
+  std::string getcellstructurename(MaCell* cell);
 
   std::string cell_to_string(MaCell* cell);
 
