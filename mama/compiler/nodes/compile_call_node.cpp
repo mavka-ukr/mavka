@@ -14,9 +14,6 @@ namespace mavka::mama {
       if (arg_result->error) {
         return arg_result;
       }
-    }
-    std::vector reversed_args(args.rbegin(), args.rend());
-    for (const auto& arg : reversed_args) {
       if (arg->name.empty()) {
         C->instructions.push_back(
             new MaInstruction(OP_SET_ARG, 0, std::to_string(arg->index)));

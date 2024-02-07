@@ -741,4 +741,59 @@ namespace mavka::ast {
   bool ASTSome::is_nullptr() {
     return get_ast_node(this) == nullptr;
   }
+
+  bool ASTSome::is_popable() {
+    if (this->AssignByElementNode) {
+      return false;
+    }
+    if (this->AssignByIdentifierNode) {
+      return false;
+    }
+    if (this->AssignSimpleNode) {
+      return false;
+    }
+    if (this->DiiaNode) {
+      return false;
+    }
+    if (this->EachNode) {
+      return false;
+    }
+    if (this->IfNode) {
+      return false;
+    }
+    if (this->ModuleNode) {
+      return false;
+    }
+    if (this->ProgramNode) {
+      return false;
+    }
+    if (this->BreakNode) {
+      return false;
+    }
+    if (this->ContinueNode) {
+      return false;
+    }
+    if (this->ReturnNode) {
+      return false;
+    }
+    if (this->StructureNode) {
+      return false;
+    }
+    if (this->TakeModuleNode) {
+      return false;
+    }
+    if (this->TakePakNode) {
+      return false;
+    }
+    if (this->ThrowNode) {
+      return false;
+    }
+    if (this->TryNode) {
+      return false;
+    }
+    if (this->WhileNode) {
+      return false;
+    }
+    return true;
+  }
 } // namespace mavka::ast
