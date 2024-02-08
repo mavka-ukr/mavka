@@ -3,15 +3,8 @@ set -e
 TARGET=$1
 
 if [ "$TARGET" = "" ]; then
-    echo "Usage: build.sh <antlr4|bin|Obin>"
+    echo "Usage: build.sh <bin|Obin>"
     exit 1
-fi
-
-if [ "$TARGET" = "antlr4" ]; then
-    cd mama/parser/syntax
-    java -jar antlr-4.13.0-complete.jar -Dlanguage=Cpp *.g4 -visitor
-    cd ..
-    exit 0
 fi
 
 if [ "$TARGET" = "bin" ] || [ "$TARGET" = "all" ]; then
