@@ -36,13 +36,10 @@
 ```
 git clone https://github.com/mavka-ukr/mavka
 cd mavka
+git submodule update --init --recursive
 ```
 
 ### Будування
-
-```shell
-./build.sh antlr4 # antlr4 grammar
-```
 
 ```shell
 ./build.sh bin # executable
