@@ -12,8 +12,8 @@
 
 #include "../utils/tools.h"
 #include "compiler/compiler.h"
-#include "parser/ast.h"
-#include "parser/parser.h"
+#include "../parser/ast.h"
+#include "../parser/parser.h"
 
 #define MAMA_DEBUG 0
 

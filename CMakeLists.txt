@@ -3,7 +3,7 @@ project(mavka)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_subdirectory(mama/parser/syntax)
+add_subdirectory(parser)
 
 set(MAVKA_COMPILER_SRC
         mama/compiler/nodes/compile_anon_diia.cpp
@@ -64,10 +64,6 @@ set(MAVKA_COMPILER_SRC
         mama/compiler/compiler.h
         mama/compiler/ops.h
         mama/interpreter.cpp
-        mama/parser/ast.cpp
-        mama/parser/ast.h
-        mama/parser/parser.cpp
-        mama/parser/parser.h
         mama/helpers.cpp
         mama/mama.cpp
         mama/mama.h
@@ -80,8 +76,8 @@ set(MAVKA_COMPILER_SRC
 add_executable(mavka mavka.cpp ${MAVKA_COMPILER_SRC})
 add_executable(mavka_optimized mavka.cpp ${MAVKA_COMPILER_SRC})
 
-target_link_libraries(mavka mavka_syntax)
-target_link_libraries(mavka_optimized mavka_syntax)
+target_link_libraries(mavka mavka_parser)
+target_link_libraries(mavka_optimized mavka_parser)
 
 target_compile_options(mavka PRIVATE -fexceptions)
 target_compile_options(mavka_optimized PRIVATE -fexceptions -O3)
