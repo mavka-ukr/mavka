@@ -1,20 +1,65 @@
 #ifndef OBJECTS_H
 #define OBJECTS_H
 
-class MaNumber;
+// Check windows
+#if _WIN32 || _WIN64
+#if _WIN64
+#define ENVIRONMENT64
+#else
+#define ENVIRONMENT32
+#endif
+#endif
+
+// Check GCC
+#if __GNUC__
+#if __x86_64__ || __ppc64__
+#define ENVIRONMENT64
+#else
+#define ENVIRONMENT32
+#endif
+#endif
+
+#define MA_MAKE_NUBMER(value) (MaCell{MA_CELL_NUMBER, {.number = (value)}})
+#define MA_MAKE_INTEGER(value) (MaCell{MA_CELL_NUMBER, {.integer = (value)}})
+#define MA_MAKE_OBJECT(value) (MaCell{MA_CELL_OBJECT, {.object = (value)}})
+#define MA_MAKE_EMPTY() (MaCell{MA_CELL_EMPTY})
+
 class MaString;
 class MaList;
 class MaDict;
 class MaDiia;
 class MaDiiaNative;
-class MaObject;
 class MaStructure;
 class MaMethod;
-class MaCell;
 
-class MaNumber final {
- public:
-  double value;
+struct MaCell;
+
+struct MaObject {
+  unsigned char type;
+  union {
+    MaList* list;
+    MaDict* dict;
+  } d;
+  MaObject* structure;
+  std::map<std::string, MaCell> properties;
+  std::vector<std::string> params;
+  std::map<std::string, MaMethod*> methods;
+  std::string name;
+  long diia_index;
+  std::function<MaCell(MaCell*, MaMa*, MaScope*)> diia_native;
+  MaObject* me;
+  std::string string;
+};
+
+union MaCellValue {
+  MaObject* object;
+  double number;
+  long integer;
+};
+
+struct MaCell {
+  unsigned char type;
+  MaCellValue v;
 };
 
 class MaString final {
@@ -24,47 +69,31 @@ class MaString final {
 
 class MaList final {
  public:
-  std::vector<MaCell*> v;
+  std::vector<MaCell> v;
 
-  void append(MaCell* cell);
-  void set(size_t index, MaCell* cell);
-  MaCell* get(size_t index) const;
-  size_t size() const;
+  void append(MaCell cell);
+  void set(size_t index, MaCell cell);
+  MaCell get(size_t index) const;
+  long size() const;
 };
 
 class MaDict final {
  public:
-  std::unordered_map<MaCell*, MaCell*> o_map;
-  std::unordered_map<std::string, MaCell*> s_map;
-  std::unordered_map<double, MaCell*> n_map;
-
-  void set(MaCell* key, MaCell* value);
-  void set(const std::string& key, MaCell* value);
-  MaCell* get(MaCell* key) const;
-  void remove(MaCell* key);
+  void set(MaCell key, MaCell value);
+  void set(const std::string& key, MaCell value);
+  MaCell get(MaCell key) const;
+  void remove(MaCell key);
   long size() const;
 };
 
 class MaDiia final {
  public:
   int index;
-  std::vector<std::string> params;
-  MaCell* me;
+  MaObject* me;
 };
 
 class MaDiiaNative final {
  public:
-  std::function<MaCell*(MaCell*, MaMa*, MaScope*)> value;
-};
-
-class MaObject final {
- public:
-  std::map<std::string, MaCell*> properties;
-  MaCell* structure;
-
-  void set(const std::string& name, MaCell* value);
-  MaCell* get(const std::string& name) const;
-  bool has(const std::string& name) const;
 };
 
 class MaStructure final {
@@ -80,217 +109,127 @@ class MaMethod final {
   std::vector<std::string> params;
 };
 
-class MaCell final {
- public:
-  unsigned char type;
-  void* value;
-  long ref_count;
-
-  void retain();
-  void release();
-
-  inline MaNumber* cast_number() const { return static_cast<MaNumber*>(value); }
-  inline double number() const { return cast_number()->value; }
-  inline long number_long() const { return static_cast<long>(number()); }
-
-  inline MaString* cast_string() const { return static_cast<MaString*>(value); }
-  inline std::string string() const { return cast_string()->value; }
-
-  inline MaList* cast_list() const { return static_cast<MaList*>(value); }
-
-  inline MaDict* cast_dict() const { return static_cast<MaDict*>(value); }
-
-  inline MaDiia* cast_diia() const { return static_cast<MaDiia*>(value); }
-
-  inline MaDiiaNative* cast_diia_native() const {
-    return static_cast<MaDiiaNative*>(value);
+inline void ma_object_set(MaObject* object,
+                          const std::string& name,
+                          MaCell value) {
+  if (object->properties.contains(name)) {
+    object->properties.at(name) = value;
+  } else {
+    object->properties.insert({name, value});
   }
+}
 
-  inline MaObject* cast_object() const { return static_cast<MaObject*>(value); }
-
-  inline MaStructure* cast_structure() const {
-    return static_cast<MaStructure*>(value);
+inline MaCell ma_object_get(const MaObject* object, const std::string& name) {
+  if (object->properties.contains(name)) {
+    return object->properties.at(name);
   }
-
-  inline MaMethod* cast_method() const { return static_cast<MaMethod*>(value); }
-};
-
-inline MaCell* create_number(const double& number) {
-  return new MaCell(MA_NUMBER, new MaNumber(number));
+  return MA_MAKE_EMPTY();
 }
 
-inline MaCell* create_string(const std::string& string) {
-  return new MaCell(MA_STRING, new MaString(string));
+inline bool ma_object_has(const MaObject* object, const std::string& name) {
+  return object->properties.contains(name);
 }
 
-inline MaCell* create_list() {
-  return new MaCell(MA_LIST, new MaList());
+inline MaCell create_string(const std::string& value) {
+  const auto ma_object = new MaObject();
+  ma_object->type = MA_STRING;
+  ma_object->string = value;
+  return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
 }
 
-inline MaCell* create_dict() {
-  return new MaCell(MA_DICT, new MaDict());
+inline MaCell create_list() {
+  const auto ma_object = new MaObject();
+  ma_object->type = MA_LIST;
+  const auto ma_list = new MaList();
+  ma_object->d.list = ma_list;
+  return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
 }
 
-inline MaCell* create_diia(const int& index) {
-  return new MaCell(MA_DIIA, new MaDiia(index));
+inline MaCell create_dict() {
+  const auto ma_object = new MaObject();
+  ma_object->type = MA_DICT;
+  const auto ma_dict = new MaDict();
+  ma_object->d.dict = ma_dict;
+  return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
 }
 
-inline MaCell* create_diia_native(
-    const std::function<MaCell*(MaCell*, MaMa*, MaScope*)>& diia_native_fn) {
-  return new MaCell(MA_DIIA_NATIVE, new MaDiiaNative(diia_native_fn));
+inline MaCell create_diia(const int& index) {
+  const auto ma_object = new MaObject();
+  ma_object->type = MA_DIIA;
+  ma_object->diia_index = index;
+  return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
 }
 
-inline MaCell* create_object(MaCell* structure) {
-  const auto object = new MaObject();
-  const auto object_cell = new MaCell(MA_OBJECT, object);
-  object->structure = structure;
-  for (const auto& [name, method] : structure->cast_structure()->methods) {
+inline MaCell create_diia_native(
+    const std::function<MaCell(MaCell*, MaMa*, MaScope*)>& diia_native_fn) {
+  const auto ma_object = new MaObject();
+  ma_object->type = MA_DIIA_NATIVE;
+  ma_object->diia_native = diia_native_fn;
+  return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
+}
+
+inline MaCell create_object(MaObject* structure) {
+  const auto ma_object = new MaObject();
+  const auto object_cell = MaCell{MA_CELL_OBJECT, {.object = ma_object}};
+  ma_object->structure = structure;
+  for (const auto& [name, method] : structure->methods) {
     const auto diia_cell = create_diia(method->index);
-    diia_cell->cast_diia()->params = method->params;
-    diia_cell->cast_diia()->me = object_cell;
-    object->set(name, diia_cell);
+    diia_cell.v.object->params = method->params;
+    diia_cell.v.object->me = ma_object;
+    ma_object_set(ma_object, name, diia_cell);
   }
   return object_cell;
 }
 
-inline MaCell* create_structure() {
-  return new MaCell(MA_STRUCTURE, new MaStructure());
+inline MaCell create_structure() {
+  const auto ma_object = new MaObject();
+  ma_object->type = MA_STRUCTURE;
+  return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
 }
 
-inline void MaList::append(MaCell* cell) {
-  cell->retain();
+inline void MaList::append(MaCell cell) {
   this->v.push_back(cell);
 }
 
-inline void MaList::set(size_t index, MaCell* cell) {
+inline void MaList::set(size_t index, MaCell cell) {
   if (index >= 0) {
     if (index >= this->v.size()) {
       this->v.resize(index + 1);
     }
-    const auto old = this->v[index];
-    if (old) {
-      old->release();
-    }
-    cell->retain();
     this->v[index] = cell;
   }
 }
 
-inline MaCell* MaList::get(size_t index) const {
+inline MaCell MaList::get(size_t index) const {
   if (index >= 0 && index < this->v.size()) {
     return this->v[index];
   }
-  return nullptr;
+  return MA_MAKE_EMPTY();
 }
 
-inline size_t MaList::size() const {
+inline long MaList::size() const {
   return this->v.size();
 }
 
-inline void MaDict::set(MaCell* key, MaCell* value) {
-  if (key->type == MA_NUMBER) {
-    if (const auto it = n_map.find(key->number()); it != n_map.end()) {
-      it->second->release();
-    }
-    value->retain();
-    n_map.insert_or_assign(key->number(), value);
-  } else if (key->type == MA_STRING) {
-    if (const auto it = s_map.find(key->string()); it != s_map.end()) {
-      it->second->release();
-    }
-    value->retain();
-    s_map.insert_or_assign(key->string(), value);
-  } else {
-    if (const auto it = o_map.find(key); it != o_map.end()) {
-      it->second->release();
-    }
-    value->retain();
-    o_map.insert_or_assign(key, value);
-  }
+inline void MaDict::set(MaCell key, MaCell value) {
+  throw std::runtime_error("Not implemented");
 }
 
-inline void MaDict::set(const std::string& key, MaCell* value) {
-  if (const auto it = s_map.find(key); it != s_map.end()) {
-    it->second->release();
-  }
-  value->retain();
-  s_map.insert_or_assign(key, value);
+inline void MaDict::set(const std::string& key, MaCell value) {
+  throw std::runtime_error("Not implemented");
 }
 
-inline MaCell* MaDict::get(MaCell* key) const {
-  if (key->type == MA_NUMBER) {
-    if (const auto it = n_map.find(key->number()); it != n_map.end()) {
-      return it->second;
-    }
-  } else if (key->type == MA_STRING) {
-    if (const auto it = s_map.find(key->string()); it != s_map.end()) {
-      return it->second;
-    }
-  } else {
-    if (const auto it = o_map.find(key); it != o_map.end()) {
-      return it->second;
-    }
-  }
-  return nullptr;
+inline MaCell MaDict::get(MaCell key) const {
+  throw std::runtime_error("Not implemented");
+  return MA_MAKE_EMPTY();
 }
 
-inline void MaDict::remove(MaCell* key) {
-  if (key->type == MA_NUMBER) {
-    if (n_map.contains(key->number())) {
-      const auto value = n_map[key->number()];
-      value->release();
-      n_map.erase(key->number());
-    }
-  } else if (key->type == MA_STRING) {
-    if (s_map.contains(key->string())) {
-      const auto value = s_map[key->string()];
-      value->release();
-      s_map.erase(key->string());
-    }
-  } else {
-    if (o_map.contains(key)) {
-      const auto value = o_map[key];
-      value->release();
-      o_map.erase(key);
-      key->release();
-    }
-  }
+inline void MaDict::remove(MaCell key) {
+  throw std::runtime_error("Not implemented");
 }
 
 inline long MaDict::size() const {
-  return n_map.size() + s_map.size() + o_map.size();
-}
-
-inline void MaObject::set(const std::string& name, MaCell* value) {
-  if (const auto it = properties.find(name); it != properties.end()) {
-    it->second->release();
-  }
-  properties.insert_or_assign(name, value);
-  value->retain();
-}
-
-inline MaCell* MaObject::get(const std::string& name) const {
-  const auto it = properties.find(name);
-  if (it != properties.end()) {
-    return it->second;
-  }
-  return nullptr;
-}
-
-inline bool MaObject::has(const std::string& name) const {
-  return properties.contains(name);
-}
-
-inline void MaCell::retain() {
-  ref_count++;
-}
-
-inline void MaCell::release() {
-  ref_count--;
-
-  if (ref_count == 0) {
-    // delete this;
-  }
+  return 0;
 }
 
 #endif // OBJECTS_H

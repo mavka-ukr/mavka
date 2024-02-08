@@ -3,111 +3,35 @@
 namespace mavka::mama {
   std::string gettypename(size_t type) {
     switch (type) {
-      case MA_NUMBER:
-        return "число";
-      case MA_STRING:
-        return "текст";
-      case MA_EMPTY:
+      case MA_CELL_EMPTY:
         return "пусто";
-      case MA_YES:
-        return "логічне";
-      case MA_NO:
-        return "логічне";
-      case MA_DIIA:
-        return "дія";
-      case MA_STRUCTURE:
-        return "структура";
-      case MA_METHOD:
-        return "метод";
+      case MA_CELL_NUMBER:
+        return "число";
+      case MA_CELL_OBJECT:
+        return "обʼєкт";
       default:
         break;
     }
     return std::to_string(type);
   }
 
-  std::string getcelltypename(MaCell* cell) {
-    return gettypename(cell->type);
+  std::string getcelltypename(MaCell cell) {
+    return gettypename(cell.type);
   }
 
-  std::string getcellstructurename(MaCell* cell) {
-    if (cell->type == MA_OBJECT) {
-      return cell->cast_object()->structure->cast_structure()->name;
+  std::string getcellstructurename(MaCell cell) {
+    if (cell.type == MA_CELL_OBJECT) {
+      return cell.v.object->structure->name;
     }
     return "";
   }
 
-  std::string cell_to_string(MaCell* cell) {
-    if (cell->type == MA_NUMBER) {
-      return std::to_string(cell->number());
-    } else if (cell->type == MA_STRING) {
-      return cell->string();
-    } else if (cell->type == MA_EMPTY) {
-      return "пусто";
-    } else if (cell->type == MA_YES) {
-      return "так";
-    } else if (cell->type == MA_NO) {
-      return "ні";
-    } else if (cell->type == MA_DIIA) {
-      return "<дія>";
-    } else if (cell->type == MA_DICT) {
-      return "<словник " + std::to_string(cell->cast_dict()->size()) + ">";
-    } else if (cell->type == MA_LIST) {
-      std::string result = "[";
-      const auto list = cell->cast_list();
-      for (int i = 0; i < list->size(); ++i) {
-        const auto value = list->get(i);
-        result += cell_to_string(value);
-        if (i < list->size() - 1) {
-          result += ", ";
-        }
-      }
-      return result + "]";
-    } else if (cell->type == MA_STRUCTURE) {
-      return "<структура>";
-    } else if (cell->type == MA_OBJECT) {
-      const auto object_structure =
-          cell->cast_object()->structure->cast_structure();
-      std::string result = object_structure->name + "(";
-      for (const auto& [name, value] : cell->cast_object()->properties) {
-        bool has_param = false;
-        for (const auto& param : object_structure->params) {
-          if (param == name) {
-            has_param = true;
-            break;
-          }
-        }
-        if (has_param) {
-          result += name + "=" + cell_to_string(value);
-          result += ", ";
-        }
-      }
-      return result + ")";
-    }
+  std::string cell_to_string(MaCell cell) {
     return "<невідомо>";
   }
 
   void print_cell(MaCell* cell) {
-    if (cell->type == MA_NUMBER) {
-      std::cout << "number: " << std::to_string(cell->number()) << std::endl;
-    } else if (cell->type == MA_STRING) {
-      std::cout << "string: " << cell->string() << std::endl;
-    } else if (cell->type == MA_EMPTY) {
-      std::cout << "empty" << std::endl;
-    } else if (cell->type == MA_YES) {
-      std::cout << "yes" << std::endl;
-    } else if (cell->type == MA_NO) {
-      std::cout << "no" << std::endl;
-    } else if (cell->type == MA_DIIA) {
-      std::cout << "diia" << std::endl;
-    } else if (cell->type == MA_LIST) {
-      std::cout << "list" << std::endl;
-    } else if (cell->type == MA_DICT) {
-      std::cout << "dict" << std::endl;
-    } else if (cell->type == MA_STRUCTURE) {
-      std::cout << "structure" << std::endl;
-    } else {
-      std::cout << "unknown" << std::endl;
-    }
+    std::cout << "unknown" << std::endl;
   }
 
   void print_instruction_with_index(int index, MaInstruction* instruction) {

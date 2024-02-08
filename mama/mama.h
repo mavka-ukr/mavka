@@ -10,10 +10,10 @@
 #include <variant>
 #include <vector>
 
-#include "../utils/tools.h"
-#include "compiler/compiler.h"
 #include "../parser/ast.h"
 #include "../parser/parser.h"
+#include "../utils/tools.h"
+#include "compiler/compiler.h"
 
 #define MAMA_DEBUG 0
 
@@ -54,10 +54,10 @@
 #define MAG_CALL "чародія_викликати"
 #define MAG_ITERATOR "чародія_перебір"
 
-#define MA_EMPTY 0
-#define MA_YES 1
-#define MA_NO 3
-#define MA_NUMBER 4
+#define MA_CELL_EMPTY 0
+#define MA_CELL_NUMBER 1
+#define MA_CELL_OBJECT 2
+
 #define MA_STRING 5
 #define MA_OBJECT 6
 #define MA_DIIA 7
@@ -75,32 +75,33 @@ namespace mavka::mama {
 
   class MaCallStackValue final {
    public:
-    MaCell* cell;
+    MaCell cell;
     MaScope* scope;
     int return_index;
     int catch_index;
-    std::map<std::string, MaCell*> args;
+    std::map<std::string, MaCell> args;
   };
 
   class MaMa final {
    public:
-    std::stack<MaCell*> stack;
+    std::stack<MaCell> stack;
     std::stack<MaCallStackValue*> call_stack;
     size_t i;
 
-    MaCell* empty_cell;
-    MaCell* yes_cell;
-    MaCell* no_cell;
-    MaCell* number_structure_cell;
-    MaCell* text_structure_cell;
+    MaObject* number_structure_cell;
+    MaObject* boolean_structure_cell;
+    MaObject* text_structure_cell;
+
+    MaCell yes_cell;
+    MaCell no_cell;
   };
 
   class MaScope final {
    public:
     MaScope* parent;
-    std::map<std::string, MaCell*> variables;
+    std::map<std::string, MaCell> variables;
 
-    bool has_variable(const std::string& name) {
+    inline bool has_variable(const std::string& name) {
       if (this->variables.contains(name)) {
         return true;
       }
@@ -110,34 +111,32 @@ namespace mavka::mama {
       return false;
     }
 
-    MaCell* get_variable(const std::string& name) {
+    inline MaCell get_variable(const std::string& name) {
       if (this->variables.contains(name)) {
         return this->variables.at(name);
       }
       if (this->parent) {
         return this->parent->get_variable(name);
       }
-      return nullptr;
+      return MaCell{MA_CELL_EMPTY};
     }
 
-    void set_variable(const std::string& name, MaCell* value) {
-      if (this->variables.contains(name)) {
-        this->variables.at(name)->release();
-      }
-      value->retain();
+    inline void set_variable(const std::string& name, MaCell value) {
       variables.insert_or_assign(name, value);
     }
 
-    void delete_variable(const std::string& name) { variables.erase(name); }
+    inline void delete_variable(const std::string& name) {
+      variables.erase(name);
+    }
   };
 
   std::string gettypename(size_t type);
 
-  std::string getcelltypename(MaCell* cell);
+  std::string getcelltypename(MaCell cell);
 
-  std::string getcellstructurename(MaCell* cell);
+  std::string getcellstructurename(MaCell cell);
 
-  std::string cell_to_string(MaCell* cell);
+  std::string cell_to_string(MaCell cell);
 
   void print_cell(MaCell* cell);
 

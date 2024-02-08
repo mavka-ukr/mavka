@@ -65,7 +65,6 @@ set(MAVKA_COMPILER_SRC
         mama/compiler/ops.h
         mama/interpreter.cpp
         mama/helpers.cpp
-        mama/mama.cpp
         mama/mama.h
         mama/objects.h
         utils/chrono.h
