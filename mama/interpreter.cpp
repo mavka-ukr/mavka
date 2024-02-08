@@ -21,7 +21,7 @@ namespace mavka::mama {
 
       switch (I->op) {
         case OP_PUSH_NUMBER: {
-          M->stack.push(create_number(I->numval));
+          M->stack.push(MA_MAKE_NUBMER(I->numval));
           break;
         }
         case OP_ADD: {
@@ -30,104 +30,20 @@ namespace mavka::mama {
           const auto left_cell = M->stack.top();
           M->stack.pop();
 
-          if (left_cell->type == MA_NUMBER && right_cell->type == MA_NUMBER) {
+          if (left_cell.type == MA_CELL_NUMBER &&
+              right_cell.type == MA_CELL_NUMBER) {
             M->stack.push(
-                create_number(left_cell->number() + right_cell->number()));
+                MA_MAKE_NUBMER(left_cell.v.number + right_cell.v.number));
             break;
           }
-          if (left_cell->type == MA_STRING && right_cell->type == MA_STRING) {
-            M->stack.push(
-                create_string(left_cell->string() + right_cell->string()));
+          if (left_cell.type == MA_CELL_NUMBER &&
+              right_cell.type == MA_CELL_NUMBER) {
+            M->stack.push(create_string(left_cell.v.object->string +
+                                        right_cell.v.object->string));
             break;
           }
           DO_THROW_STRING("Неможливо додати " + getcelltypename(left_cell) +
                           " до " + getcelltypename(right_cell))
-          break;
-        }
-        case OP_SUB: {
-          const auto right_cell = M->stack.top();
-          M->stack.pop();
-          const auto left_cell = M->stack.top();
-          M->stack.pop();
-
-          if (left_cell->type == MA_NUMBER && right_cell->type == MA_NUMBER) {
-            M->stack.push(
-                create_number(left_cell->number() - right_cell->number()));
-            break;
-          }
-          DO_THROW_STRING("Неможливо відняти " + getcelltypename(right_cell) +
-                          " від " + getcelltypename(left_cell))
-          break;
-        }
-        case OP_MUL: {
-          const auto right_cell = M->stack.top();
-          M->stack.pop();
-          const auto left_cell = M->stack.top();
-          M->stack.pop();
-
-          if (left_cell->type == MA_NUMBER && right_cell->type == MA_NUMBER) {
-            M->stack.push(
-                create_number(left_cell->number() * right_cell->number()));
-            break;
-          }
-          DO_THROW_STRING("Неможливо помножити " + getcelltypename(left_cell) +
-                          " на " + getcelltypename(right_cell))
-          break;
-        }
-        case OP_DIV: {
-          const auto right_cell = M->stack.top();
-          M->stack.pop();
-          const auto left_cell = M->stack.top();
-          M->stack.pop();
-
-          if (left_cell->type == MA_NUMBER && right_cell->type == MA_NUMBER) {
-            M->stack.push(
-                create_number(left_cell->number() / right_cell->number()));
-            break;
-          }
-          M->stack.push(M->empty_cell);
-          break;
-        }
-        case OP_MOD: {
-          const auto right_cell = M->stack.top();
-          M->stack.pop();
-          const auto left_cell = M->stack.top();
-          M->stack.pop();
-
-          if (left_cell->type == MA_NUMBER && right_cell->type == MA_NUMBER) {
-            M->stack.push(create_number(
-                std::fmod(left_cell->number(), right_cell->number())));
-            break;
-          }
-          M->stack.push(M->empty_cell);
-          break;
-        }
-        case OP_DIVDIV: {
-          const auto right_cell = M->stack.top();
-          M->stack.pop();
-          const auto left_cell = M->stack.top();
-          M->stack.pop();
-
-          if (left_cell->type == MA_NUMBER && right_cell->type == MA_NUMBER) {
-            M->stack.push(create_number(
-                std::floor(left_cell->number() / right_cell->number())));
-            break;
-          }
-          M->stack.push(M->empty_cell);
-          break;
-        }
-        case OP_POW: {
-          const auto right_cell = M->stack.top();
-          M->stack.pop();
-          const auto left_cell = M->stack.top();
-          M->stack.pop();
-
-          if (left_cell->type == MA_NUMBER && right_cell->type == MA_NUMBER) {
-            M->stack.push(create_number(
-                std::pow(left_cell->number(), right_cell->number())));
-            break;
-          }
-          M->stack.push(M->empty_cell);
           break;
         }
         case OP_STORE: {
@@ -140,9 +56,9 @@ namespace mavka::mama {
         }
         case OP_LOAD: {
           const auto call_stack_value = M->call_stack.top();
-          const auto value = call_stack_value->scope->get_variable(I->strval);
-          if (value != nullptr) {
-            M->stack.push(value);
+          const auto scope = call_stack_value->scope;
+          if (scope->has_variable(I->strval)) {
+            M->stack.push(scope->get_variable(I->strval));
           } else {
             DO_THROW_STRING("Субʼєкт \"" + I->strval + "\" не визначено.")
           }
@@ -152,85 +68,18 @@ namespace mavka::mama {
           M->stack.push(create_string(I->strval));
           break;
         }
-        case OP_XOR: {
-          const auto right_cell = M->stack.top();
-          M->stack.pop();
-          const auto left_cell = M->stack.top();
-          M->stack.pop();
-
-          if (left_cell->type == MA_NUMBER && right_cell->type == MA_NUMBER) {
-            M->stack.push(create_number(left_cell->number_long() ^
-                                        right_cell->number_long()));
-            break;
-          }
-          M->stack.push(M->empty_cell);
-          break;
-        }
-        case OP_BAND: {
-          const auto right_cell = M->stack.top();
-          M->stack.pop();
-          const auto left_cell = M->stack.top();
-          M->stack.pop();
-
-          if (left_cell->type == MA_NUMBER && right_cell->type == MA_NUMBER) {
-            M->stack.push(create_number(left_cell->number_long() &
-                                        right_cell->number_long()));
-            break;
-          }
-          M->stack.push(M->empty_cell);
-          break;
-        }
-        case OP_BOR: {
-          const auto right_cell = M->stack.top();
-          M->stack.pop();
-          const auto left_cell = M->stack.top();
-          M->stack.pop();
-
-          if (left_cell->type == MA_NUMBER && right_cell->type == MA_NUMBER) {
-            M->stack.push(create_number(left_cell->number_long() |
-                                        right_cell->number_long()));
-            break;
-          }
-          M->stack.push(M->empty_cell);
-          break;
-        }
-        case OP_SHL: {
-          const auto right_cell = M->stack.top();
-          M->stack.pop();
-          const auto left_cell = M->stack.top();
-          M->stack.pop();
-
-          if (left_cell->type == MA_NUMBER && right_cell->type == MA_NUMBER) {
-            M->stack.push(create_number(left_cell->number_long()
-                                        << right_cell->number_long()));
-            break;
-          }
-          M->stack.push(M->empty_cell);
-          break;
-        }
-        case OP_SHR: {
-          const auto right_cell = M->stack.top();
-          M->stack.pop();
-          const auto left_cell = M->stack.top();
-          M->stack.pop();
-
-          if (left_cell->type == MA_NUMBER && right_cell->type == MA_NUMBER) {
-            M->stack.push(create_number(left_cell->number_long() >>
-                                        right_cell->number_long()));
-            break;
-          }
-          M->stack.push(M->empty_cell);
-          break;
-        }
         case OP_JUMP_IF_FALSE: {
           const auto cell = M->stack.top();
           M->stack.pop();
-          if (cell->type == MA_NUMBER) {
-            if (cell->number() == 0) {
+          if (cell.type == MA_CELL_NUMBER) {
+            if (cell.v.number == 0.0) {
               M->i = I->numval;
               goto start;
             }
-          } else if (cell->type == MA_NO) {
+          } else if (cell.type == MA_CELL_EMPTY) {
+            M->i = I->numval;
+            goto start;
+          } else if (cell.v.object == M->no_cell.v.object) {
             M->i = I->numval;
             goto start;
           }
@@ -239,12 +88,12 @@ namespace mavka::mama {
         case OP_JUMP_IF_TRUE: {
           const auto cell = M->stack.top();
           M->stack.pop();
-          if (cell->type == MA_NUMBER) {
-            if (cell->number() != 0) {
+          if (cell.type == MA_CELL_NUMBER) {
+            if (cell.v.number != 0.0) {
               M->i = I->numval;
               goto start;
             }
-          } else if (cell->type == MA_YES) {
+          } else if (cell.v.object == M->yes_cell.v.object) {
             M->i = I->numval;
             goto start;
           }
@@ -275,119 +124,18 @@ namespace mavka::mama {
           const auto left = M->stack.top();
           M->stack.pop();
 
-          if (left->type == MA_NUMBER && right->type == MA_NUMBER) {
-            if (left->number() == right->number()) {
-              M->stack.push(M->yes_cell);
-            } else {
-              M->stack.push(M->no_cell);
-            }
-          } else if (left->type == MA_STRING && right->type == MA_STRING) {
-            if (left->string() == right->string()) {
+          if (left.type == MA_CELL_NUMBER && right.type == MA_CELL_NUMBER) {
+            if (left.v.number == right.v.number) {
               M->stack.push(M->yes_cell);
             } else {
               M->stack.push(M->no_cell);
             }
           } else {
-            if (left == right) {
+            if (left.v.object == right.v.object) {
               M->stack.push(M->yes_cell);
             } else {
               M->stack.push(M->no_cell);
             }
-          }
-          break;
-        }
-        case OP_NE: {
-          const auto right = M->stack.top();
-          M->stack.pop();
-          const auto left = M->stack.top();
-          M->stack.pop();
-
-          if (left->type == MA_NUMBER && right->type == MA_NUMBER) {
-            if (left->number() != right->number()) {
-              M->stack.push(M->yes_cell);
-            } else {
-              M->stack.push(M->no_cell);
-            }
-          } else if (left->type == MA_STRING && right->type == MA_STRING) {
-            if (left->string() != right->string()) {
-              M->stack.push(M->yes_cell);
-            } else {
-              M->stack.push(M->no_cell);
-            }
-          } else {
-            if (left != right) {
-              M->stack.push(M->yes_cell);
-            } else {
-              M->stack.push(M->no_cell);
-            }
-          }
-          break;
-        }
-        case OP_LT: {
-          const auto right = M->stack.top();
-          M->stack.pop();
-          const auto left = M->stack.top();
-          M->stack.pop();
-
-          if (left->type == MA_NUMBER && right->type == MA_NUMBER) {
-            if (left->number() < right->number()) {
-              M->stack.push(M->yes_cell);
-            } else {
-              M->stack.push(M->no_cell);
-            }
-          } else {
-            M->stack.push(M->no_cell);
-          }
-          break;
-        }
-        case OP_LE: {
-          const auto right = M->stack.top();
-          M->stack.pop();
-          const auto left = M->stack.top();
-          M->stack.pop();
-
-          if (left->type == MA_NUMBER && right->type == MA_NUMBER) {
-            if (left->number() <= right->number()) {
-              M->stack.push(M->yes_cell);
-            } else {
-              M->stack.push(M->no_cell);
-            }
-          } else {
-            M->stack.push(M->no_cell);
-          }
-          break;
-        }
-        case OP_GT: {
-          const auto right = M->stack.top();
-          M->stack.pop();
-          const auto left = M->stack.top();
-          M->stack.pop();
-
-          if (left->type == MA_NUMBER && right->type == MA_NUMBER) {
-            if (left->number() > right->number()) {
-              M->stack.push(M->yes_cell);
-            } else {
-              M->stack.push(M->no_cell);
-            }
-          } else {
-            M->stack.push(M->no_cell);
-          }
-          break;
-        }
-        case OP_GE: {
-          const auto right = M->stack.top();
-          M->stack.pop();
-          const auto left = M->stack.top();
-          M->stack.pop();
-
-          if (left->type == MA_NUMBER && right->type == MA_NUMBER) {
-            if (left->number() >= right->number()) {
-              M->stack.push(M->yes_cell);
-            } else {
-              M->stack.push(M->no_cell);
-            }
-          } else {
-            M->stack.push(M->no_cell);
           }
           break;
         }
@@ -410,73 +158,8 @@ namespace mavka::mama {
           const auto diia_scope = call_stack_value->scope;
           auto args = call_stack_value->args;
 
-          if (cell->type == MA_DIIA_NATIVE) {
-            const auto diia_native = cell->cast_diia_native();
-            const auto result = diia_native->value(nullptr, M, diia_scope);
-            M->stack.push(result);
-            M->call_stack.pop();
-          } else if (cell->type == MA_DIIA) {
-            const auto diia = cell->cast_diia();
-            if (diia->me) {
-              diia_scope->set_variable("я", diia->me);
-            }
-            long i = 0;
-            for (const auto& name : diia->params) {
-              if (args.contains(name)) {
-                diia_scope->set_variable(name, args[name]);
-              } else if (args.contains(std::to_string(i))) {
-                diia_scope->set_variable(name, args[std::to_string(i)]);
-              }
-              ++i;
-            }
-            M->i = cell->cast_diia()->index;
-            goto start;
-          } else if (cell->type == MA_STRUCTURE) {
-            if (M->number_structure_cell == cell) {
-              const auto arg = args["0"];
-              if (arg->type == MA_STRING) {
-                M->call_stack.pop();
-                M->stack.push(create_number(std::stod(arg->string())));
-              } else if (arg->type == MA_NUMBER) {
-                M->call_stack.pop();
-                M->stack.push(arg);
-              } else {
-                DO_THROW_STRING("Неможливо перетворити на число \"" +
-                                getcelltypename(arg) + "\".")
-              }
-            } else if (M->text_structure_cell == cell) {
-              const auto arg = args["0"];
-              if (arg->type == MA_STRING) {
-                M->call_stack.pop();
-                M->stack.push(arg);
-              } else if (arg->type == MA_NUMBER) {
-                M->call_stack.pop();
-                std::string str = std::to_string(arg->number());
-                M->stack.push(create_string(str));
-              } else {
-                DO_THROW_STRING("Неможливо петворити на текст \"" +
-                                getcelltypename(arg) + "\".")
-              }
-            } else {
-              const auto structure = cell->cast_structure();
-              const auto object_cell = create_object(cell);
-              const auto object = object_cell->cast_object();
-              int i = 0;
-              for (const auto& param : structure->params) {
-                if (args.contains(param)) {
-                  object->set(param, args[param]);
-                } else if (args.contains(std::to_string(i))) {
-                  object->set(param, args[std::to_string(i)]);
-                }
-                ++i;
-              }
-              M->call_stack.pop();
-              M->stack.push(object_cell);
-            }
-          } else {
-            DO_THROW_STRING("Неможливо викликати \"" + getcelltypename(cell) +
-                            "\".")
-          }
+          DO_THROW_STRING("Неможливо викликати \"" + getcelltypename(cell) +
+                          "\".")
           break;
         }
         case OP_RETURN: {
@@ -513,7 +196,7 @@ namespace mavka::mama {
           M->stack.pop();
           const auto cell = M->stack.top();
 
-          const auto list = cell->cast_list();
+          const auto list = cell.v.object->d.list;
           list->append(value);
           break;
         }
@@ -523,41 +206,7 @@ namespace mavka::mama {
           const auto key = M->stack.top();
           M->stack.pop();
 
-          if (cell->type == MA_LIST) {
-            const auto list = cell->cast_list();
-            if (key->type == MA_NUMBER) {
-              const auto index = key->number_long();
-              if (index >= 0 && index < list->size()) {
-                M->stack.push(list->get(index));
-              } else {
-                M->stack.push(M->empty_cell);
-              }
-            } else {
-              M->stack.push(M->empty_cell);
-            }
-          } else if (cell->type == MA_DICT) {
-            const auto value = cell->cast_dict()->get(key);
-            if (value) {
-              M->stack.push(value);
-            } else {
-              M->stack.push(M->empty_cell);
-            }
-          } else if (cell->type == MA_STRING) {
-            if (key->type == MA_NUMBER) {
-              const auto index = key->number_long();
-              const auto str = cell->string();
-              if (index >= 0 && index < str.length()) {
-                const auto substr = str.substr(index, 1);
-                M->stack.push(create_string(substr));
-              } else {
-                M->stack.push(M->empty_cell);
-              }
-            } else {
-              M->stack.push(M->empty_cell);
-            }
-          } else {
-            M->stack.push(M->empty_cell);
-          }
+          M->stack.push(MA_MAKE_EMPTY());
           break;
         }
         case OP_SET_ELEMENT: {
@@ -568,38 +217,8 @@ namespace mavka::mama {
           const auto key = M->stack.top();
           M->stack.pop();
 
-          if (cell->type == MA_LIST) {
-            const auto list = cell->cast_list();
-            if (key->type == MA_NUMBER) {
-              const auto index = key->number_long();
-              list->set(index, value);
-            }
-          } else if (cell->type == MA_DICT) {
-            const auto dict = cell->cast_dict();
-            dict->set(key, value);
-          }
-          break;
-        }
-        case OP_NEGATIVE: {
-          const auto value = M->stack.top();
-          M->stack.pop();
+          //
 
-          if (value->type == MA_NUMBER) {
-            M->stack.push(create_number(-value->number()));
-          } else {
-            M->stack.push(M->empty_cell);
-          }
-          break;
-        }
-        case OP_POSITIVE: {
-          const auto value = M->stack.top();
-          M->stack.pop();
-
-          if (value->type == MA_NUMBER) {
-            M->stack.push(create_number(+value->number()));
-          } else {
-            M->stack.push(M->empty_cell);
-          }
           break;
         }
         case OP_DIIA: {
@@ -609,42 +228,12 @@ namespace mavka::mama {
         case OP_GET: {
           const auto cell = M->stack.top();
           M->stack.pop();
-          if (cell->type == MA_OBJECT) {
-            const auto object = cell->cast_object();
-            const auto value = object->get(I->strval);
-            if (value != nullptr) {
-              M->stack.push(value);
-            } else {
-              M->stack.push(M->empty_cell);
-            }
-          } else if (cell->type == MA_LIST) {
-            if (I->strval == "довжина") {
-              const auto length = cell->cast_list()->size();
-              M->stack.push(create_number(length));
-            } else if (I->strval == "додати") {
-              auto diia_native_fn = [&cell](MaCell* self, MaMa* M, MaScope* S) {
-                const auto current_call_stack_value = M->call_stack.top();
-                const auto value = current_call_stack_value->args["0"];
-                cell->cast_list()->append(value);
-                return M->empty_cell;
-              };
-              const auto diia_native = new MaDiiaNative();
-              diia_native->value = diia_native_fn;
-              const auto diia_native_cell =
-                  new MaCell(MA_DIIA_NATIVE, diia_native);
-              M->stack.push(diia_native_cell);
-            } else {
-              M->stack.push(M->empty_cell);
-            }
-          } else if (cell->type == MA_STRING) {
-            if (I->strval == "довжина") {
-              const auto length = cell->cast_string()->value.length();
-              M->stack.push(create_number(length));
-            } else {
-              M->stack.push(M->empty_cell);
-            }
+          if (cell.type == MA_CELL_OBJECT) {
+            const auto object = cell.v.object;
+            const auto value = ma_object_get(object, I->strval);
+            M->stack.push(value);
           } else {
-            M->stack.push(M->empty_cell);
+            M->stack.push(MA_MAKE_EMPTY());
           }
           break;
         }
@@ -654,9 +243,9 @@ namespace mavka::mama {
           const auto value = M->stack.top();
           M->stack.pop();
 
-          if (cell->type == MA_OBJECT) {
-            const auto object = cell->cast_object();
-            object->set(I->strval, value);
+          if (cell.type == MA_CELL_OBJECT) {
+            const auto object = cell.v.object;
+            ma_object_set(object, I->strval, value);
           }
           break;
         }
@@ -667,8 +256,9 @@ namespace mavka::mama {
           M->stack.pop();
           const auto call_stack_value = M->call_stack.top();
 
-          for (long i = from->number_long(); i <= to->number_long(); ++i) {
-            call_stack_value->scope->set_variable(I->strval, create_number(i));
+          for (long i = from.v.integer; i <= to.v.integer; ++i) {
+            call_stack_value->scope->set_variable(I->strval,
+                                                  MA_MAKE_INTEGER(i));
           }
           break;
         }
@@ -680,25 +270,25 @@ namespace mavka::mama {
           const auto value = M->stack.top();
           M->stack.pop();
           const auto cell = M->stack.top();
-          const auto dict = cell->cast_dict();
+          const auto dict = cell.v.object->d.dict;
 
           dict->set(I->strval, value);
           break;
         }
         case OP_STRUCT: {
           const auto structure_cell = create_structure();
-          structure_cell->cast_structure()->name = I->strval;
+          structure_cell.v.object->name = I->strval;
           M->stack.push(structure_cell);
           break;
         }
         case OP_STRUCT_PARAM: {
           const auto cell = M->stack.top();
-          cell->cast_structure()->params.push_back(I->strval);
+          cell.v.object->params.push_back(I->strval);
           break;
         }
         case OP_DIIA_PARAM: {
           const auto cell = M->stack.top();
-          cell->cast_diia()->params.push_back(I->strval);
+          cell.v.object->params.push_back(I->strval);
           break;
         }
         case OP_TRY: {
@@ -719,34 +309,29 @@ namespace mavka::mama {
         case OP_METHOD: {
           const auto structure_cell = M->stack.top();
           M->stack.pop();
-          if (structure_cell->type == MA_STRUCTURE) {
-            const auto structure = structure_cell->cast_structure();
-            const auto method = new MaMethod();
-            method->index = I->numval;
-            structure->methods.insert_or_assign(I->strval, method);
-            M->stack.push(new MaCell(MA_METHOD, method));
-          } else {
-            DO_THROW_STRING("Має бути структурою.")
-          }
+
+          DO_THROW_STRING("Має бути структурою.")
           break;
         }
         case OP_METHOD_PARAM: {
           const auto cell = M->stack.top();
-          cell->cast_method()->params.push_back(I->strval);
+          cell.v.object->params.push_back(I->strval);
           break;
         }
         case OP_NOT: {
           const auto value = M->stack.top();
           M->stack.pop();
-          if (value->type == MA_NUMBER) {
-            if (value->number() == 0) {
+          if (value.type == MA_CELL_NUMBER) {
+            if (value.v.number == 0.0) {
               M->stack.push(M->yes_cell);
             } else {
               M->stack.push(M->no_cell);
             }
-          } else if (value->type == MA_NO) {
+          } else if (value.type == MA_CELL_EMPTY) {
             M->stack.push(M->yes_cell);
-          } else if (value->type == MA_YES) {
+          } else if (value.v.object == M->no_cell.v.object) {
+            M->stack.push(M->yes_cell);
+          } else if (value.v.object == M->yes_cell.v.object) {
             M->stack.push(M->no_cell);
           } else {
             M->stack.push(M->no_cell);

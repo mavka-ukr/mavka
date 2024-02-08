@@ -5,30 +5,27 @@
 
 using namespace mavka::mama;
 
-void init_empty(MaMa* M) {
-  M->empty_cell = new MaCell(MA_EMPTY);
-}
+void init_empty(MaMa* M) {}
 
 void init_number(MaMa* M, MaScope* gS) {
-  const auto number_structure = new MaStructure();
-  number_structure->name = "число";
-  const auto number_structure_cell = new MaCell(MA_STRUCTURE, number_structure);
-  gS->set_variable(number_structure->name, number_structure_cell);
-  M->number_structure_cell = number_structure_cell;
+  const auto ma_object = new MaObject();
+  ma_object->type = MA_STRUCTURE;
+  ma_object->name = "число";
+  const auto number_structure_cell =
+      MaCell{MA_CELL_OBJECT, {.object = ma_object}};
+  gS->set_variable(ma_object->name, number_structure_cell);
 }
 
 void init_text(MaMa* M, MaScope* gS) {
-  const auto text_structure = new MaStructure();
-  text_structure->name = "текст";
-  const auto text_structure_cell = new MaCell(MA_STRUCTURE, text_structure);
-  gS->set_variable(text_structure->name, text_structure_cell);
-  M->text_structure_cell = text_structure_cell;
+  const auto ma_object = new MaObject();
+  ma_object->type = MA_STRUCTURE;
+  ma_object->name = "текст";
+  const auto text_structure_cell =
+      MaCell{MA_CELL_OBJECT, {.object = ma_object}};
+  gS->set_variable(ma_object->name, text_structure_cell);
 }
 
-void init_logical(MaMa* M) {
-  M->yes_cell = new MaCell(MA_YES);
-  M->no_cell = new MaCell(MA_NO);
-}
+void init_logical(MaMa* M) {}
 
 void init_diia(MaMa* M) {}
 
@@ -38,7 +35,7 @@ void init_print(MaMa* M, MaScope* S) {
     for (const auto& [key, value] : current_call_stack_value->args) {
       std::cout << cell_to_string(value) << std::endl;
     }
-    return M->empty_cell;
+    return MA_MAKE_EMPTY();
   };
   const auto diia_cell = create_diia_native(diia_native_fn);
   S->set_variable("друк", diia_cell);
@@ -71,8 +68,8 @@ int main(int argc, char** argv) {
   init_logical(M);
   init_diia(M);
 
-  M->call_stack.push(new MaCallStackValue(nullptr, S));
-  S->set_variable("пусто", M->empty_cell);
+  M->call_stack.push(new MaCallStackValue(MA_MAKE_EMPTY(), S));
+  S->set_variable("пусто", MA_MAKE_EMPTY());
   S->set_variable("так", M->yes_cell);
   S->set_variable("ні", M->no_cell);
   init_print(M, S);
