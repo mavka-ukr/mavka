@@ -15,7 +15,7 @@
 #include "parser/ast.h"
 #include "parser/parser.h"
 
-#define MAMA_DEBUG 1
+#define MAMA_DEBUG 0
 
 #if MAMA_DEBUG == 0
 #define DEBUG_LOG(value)
@@ -79,13 +79,13 @@ namespace mavka::mama {
     MaScope* scope;
     int return_index;
     int catch_index;
+    std::map<std::string, MaCell*> args;
   };
 
   class MaMa final {
    public:
     std::stack<MaCell*> stack;
     std::stack<MaCallStackValue*> call_stack;
-    std::map<std::string, MaCell*> aR; // args register
     size_t i;
 
     MaCell* empty_cell;

@@ -25,11 +25,6 @@ namespace mavka::mama {
     return new MaInstruction(OP_PUSH_STRING, 0, name);
   }
 
-  MaInstruction* MaInstruction::create_load_param(const int& index,
-                                                  const std::string& name) {
-    return new MaInstruction(OP_LOAD_ARG, index, name);
-  }
-
   MaInstruction* MaInstruction::create_jump(const int& index) {
     return new MaInstruction(OP_JUMP, index);
   }
@@ -269,6 +264,12 @@ namespace mavka::mama {
       MaCode* C,
       const std::vector<mavka::ast::ASTSome*>& body) {
     for (const auto node : body) {
+      if (!node) {
+        continue;
+      }
+      if (node->is_nullptr()) {
+        continue;
+      }
       const auto result = compile_node(C, node);
       if (result->error) {
         return result;

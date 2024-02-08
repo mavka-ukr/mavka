@@ -34,7 +34,8 @@ void init_diia(MaMa* M) {}
 
 void init_print(MaMa* M, MaScope* S) {
   const auto diia_native_fn = [](MaCell* self, MaMa* M, MaScope* S) {
-    for (const auto& [key, value] : M->aR) {
+    const auto current_call_stack_value = M->call_stack.top();
+    for (const auto& [key, value] : current_call_stack_value->args) {
       std::cout << cell_to_string(value) << std::endl;
     }
     return M->empty_cell;

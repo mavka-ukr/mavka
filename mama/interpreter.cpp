@@ -391,14 +391,25 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_CALL: {
-          const auto cell = M->stack.top();
+        case OP_INITCALL: {
+          const auto diia_cell = M->stack.top();
           M->stack.pop();
+          const auto current_call_stack_value = M->call_stack.top();
+          const auto diia_scope = new MaScope(current_call_stack_value->scope);
+          const auto new_call_stack_value = new MaCallStackValue();
+          new_call_stack_value->cell = diia_cell;
+          new_call_stack_value->scope = diia_scope;
+          new_call_stack_value->return_index = I->numval;
+          new_call_stack_value->catch_index = 0;
+          M->call_stack.push(new_call_stack_value);
+          break;
+        }
+        case OP_CALL: {
           const auto call_stack_value = M->call_stack.top();
-          const auto diia_scope = new MaScope(call_stack_value->scope);
-          const auto return_index = M->i + 1;
-          M->call_stack.push(
-              new MaCallStackValue(cell, diia_scope, return_index));
+          const auto cell = call_stack_value->cell;
+          const auto diia_scope = call_stack_value->scope;
+          auto args = call_stack_value->args;
+
           if (cell->type == MA_DIIA_NATIVE) {
             const auto diia_native = cell->cast_diia_native();
             const auto result = diia_native->value(nullptr, M, diia_scope);
@@ -411,20 +422,18 @@ namespace mavka::mama {
             }
             long i = 0;
             for (const auto& name : diia->params) {
-              if (M->aR.contains(name)) {
-                diia_scope->set_variable(name, M->aR[name]);
-              } else if (M->aR.contains(std::to_string(i))) {
-                diia_scope->set_variable(name, M->aR[std::to_string(i)]);
+              if (args.contains(name)) {
+                diia_scope->set_variable(name, args[name]);
+              } else if (args.contains(std::to_string(i))) {
+                diia_scope->set_variable(name, args[std::to_string(i)]);
               }
               ++i;
             }
-            M->aR.clear();
             M->i = cell->cast_diia()->index;
             goto start;
           } else if (cell->type == MA_STRUCTURE) {
             if (M->number_structure_cell == cell) {
-              const auto arg = M->aR["0"];
-              M->aR.clear();
+              const auto arg = args["0"];
               if (arg->type == MA_STRING) {
                 M->call_stack.pop();
                 M->stack.push(create_number(std::stod(arg->string())));
@@ -436,8 +445,7 @@ namespace mavka::mama {
                                 getcelltypename(arg) + "\".")
               }
             } else if (M->text_structure_cell == cell) {
-              const auto arg = M->aR["0"];
-              M->aR.clear();
+              const auto arg = args["0"];
               if (arg->type == MA_STRING) {
                 M->call_stack.pop();
                 M->stack.push(arg);
@@ -455,14 +463,13 @@ namespace mavka::mama {
               const auto object = object_cell->cast_object();
               int i = 0;
               for (const auto& param : structure->params) {
-                if (M->aR.contains(param)) {
-                  object->set(param, M->aR[param]);
-                } else if (M->aR.contains(std::to_string(i))) {
-                  object->set(param, M->aR[std::to_string(i)]);
+                if (args.contains(param)) {
+                  object->set(param, args[param]);
+                } else if (args.contains(std::to_string(i))) {
+                  object->set(param, args[std::to_string(i)]);
                 }
                 ++i;
               }
-              M->aR.clear();
               M->call_stack.pop();
               M->stack.push(object_cell);
             }
@@ -484,19 +491,6 @@ namespace mavka::mama {
           goto start;
           break;
         }
-        case OP_LOAD_ARG: {
-          const auto call_stack_value = M->call_stack.top();
-          if (M->aR.contains(I->strval)) {
-            call_stack_value->scope->set_variable(I->strval, M->aR[I->strval]);
-          } else if (M->aR.contains(std::to_string(I->numval))) {
-            call_stack_value->scope->set_variable(
-                I->strval, M->aR[std::to_string(I->numval)]);
-          } else {
-            call_stack_value->scope->set_variable(I->strval, M->empty_cell);
-          }
-
-          break;
-        }
         case OP_POP: {
           M->stack.pop();
           break;
@@ -505,7 +499,9 @@ namespace mavka::mama {
           const auto value = M->stack.top();
           M->stack.pop();
 
-          M->aR.insert_or_assign(I->strval, value);
+          const auto current_call_stack_value = M->call_stack.top();
+
+          current_call_stack_value->args.insert_or_assign(I->strval, value);
           break;
         }
         case OP_LIST: {
@@ -627,8 +623,8 @@ namespace mavka::mama {
               M->stack.push(create_number(length));
             } else if (I->strval == "додати") {
               auto diia_native_fn = [&cell](MaCell* self, MaMa* M, MaScope* S) {
-                const auto value = M->aR["0"];
-                M->aR.clear();
+                const auto current_call_stack_value = M->call_stack.top();
+                const auto value = current_call_stack_value->args["0"];
                 cell->cast_list()->append(value);
                 return M->empty_cell;
               };
@@ -637,6 +633,13 @@ namespace mavka::mama {
               const auto diia_native_cell =
                   new MaCell(MA_DIIA_NATIVE, diia_native);
               M->stack.push(diia_native_cell);
+            } else {
+              M->stack.push(M->empty_cell);
+            }
+          } else if (cell->type == MA_STRING) {
+            if (I->strval == "довжина") {
+              const auto length = cell->cast_string()->value.length();
+              M->stack.push(create_number(length));
             } else {
               M->stack.push(M->empty_cell);
             }
@@ -730,6 +733,24 @@ namespace mavka::mama {
         case OP_METHOD_PARAM: {
           const auto cell = M->stack.top();
           cell->cast_method()->params.push_back(I->strval);
+          break;
+        }
+        case OP_NOT: {
+          const auto value = M->stack.top();
+          M->stack.pop();
+          if (value->type == MA_NUMBER) {
+            if (value->number() == 0) {
+              M->stack.push(M->yes_cell);
+            } else {
+              M->stack.push(M->no_cell);
+            }
+          } else if (value->type == MA_NO) {
+            M->stack.push(M->yes_cell);
+          } else if (value->type == MA_YES) {
+            M->stack.push(M->no_cell);
+          } else {
+            M->stack.push(M->no_cell);
+          }
           break;
         }
         default: {
