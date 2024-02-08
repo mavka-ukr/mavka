@@ -43,7 +43,6 @@ typedef enum {
   OP_NOT,
 
   OP_LOAD,
-  OP_LOAD_ARG,
 
   OP_STORE,
 
@@ -70,6 +69,7 @@ typedef enum {
   OP_TRY_DONE,
   OP_METHOD,
   OP_METHOD_PARAM,
+  OP_INITCALL
 } OP;
 
 inline std::string getopname(const OP op) {
@@ -140,8 +140,6 @@ inline std::string getopname(const OP op) {
       return "OP_CALL";
     case OP_RETURN:
       return "OP_RETURN";
-    case OP_LOAD_ARG:
-      return "OP_LOAD_ARG";
     case OP_POP:
       return "OP_POP";
     case OP_SET_ELEMENT:
@@ -188,6 +186,8 @@ inline std::string getopname(const OP op) {
       return "OP_TRY_DONE";
     case OP_NOT:
       return "OP_NOT";
+    case OP_INITCALL:
+      return "OP_INITCALL";
     default:
       break;
   }

@@ -55,6 +55,9 @@ namespace mavka::parser {
   }
 
   ast::ASTSome* make_arithmetic_node(const std::vector<ast::ASTSome*>& nodes) {
+    if (nodes.size() == 0) {
+      return ast::make_ast_some(new ast::StringNode());
+    }
     if (nodes.size() == 1) {
       return to_string_call_node(nodes[0]);
     }

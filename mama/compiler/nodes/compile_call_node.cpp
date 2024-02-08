@@ -8,6 +8,8 @@ namespace mavka::mama {
     if (result->error) {
       return result;
     }
+    const auto pushcsv_i = new MaInstruction(OP_INITCALL);
+    C->instructions.push_back(pushcsv_i);
     const auto args = call_node->args;
     for (const auto& arg : args) {
       const auto arg_result = compile_node(C, arg->value);
@@ -21,6 +23,7 @@ namespace mavka::mama {
         C->instructions.push_back(new MaInstruction(OP_SET_ARG, 0, arg->name));
       }
     }
+    pushcsv_i->numval = C->instructions.size() + 1;
     C->instructions.push_back(new MaInstruction(OP_CALL));
     return success();
   }
