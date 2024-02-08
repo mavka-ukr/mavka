@@ -29,7 +29,6 @@
 - Clang
 - CMake
 - Make
-- Java (для ANTLR4)
 
 ### Початок
 
