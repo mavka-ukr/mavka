@@ -272,7 +272,7 @@ namespace mavka::mama {
           const auto cell = M->stack.top();
           const auto dict = cell.v.object->d.dict;
 
-          dict->set(I->strval, value);
+          dict->set(create_string(I->strval), value);
           break;
         }
         case OP_STRUCT: {

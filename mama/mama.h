@@ -15,6 +15,24 @@
 #include "../utils/tools.h"
 #include "compiler/compiler.h"
 
+// Check windows
+#if _WIN32 || _WIN64
+#if _WIN64
+#define ENVIRONMENT64
+#else
+#define ENVIRONMENT32
+#endif
+#endif
+
+// Check GCC
+#if __GNUC__
+#if __x86_64__ || __ppc64__
+#define ENVIRONMENT64
+#else
+#define ENVIRONMENT32
+#endif
+#endif
+
 #define MAMA_DEBUG 0
 
 #if MAMA_DEBUG == 0
@@ -58,14 +76,19 @@
 #define MA_CELL_NUMBER 1
 #define MA_CELL_OBJECT 2
 
-#define MA_STRING 5
-#define MA_OBJECT 6
-#define MA_DIIA 7
-#define MA_LIST 8
-#define MA_DICT 9
-#define MA_DIIA_NATIVE 11
-#define MA_STRUCTURE 12
-#define MA_METHOD 13
+#define MA_OBJECT 0
+#define MA_OBJECT_DIIA 1
+#define MA_OBJECT_DIIA_NATIVE 2
+#define MA_OBJECT_STRING 3
+#define MA_OBJECT_LIST 4
+#define MA_OBJECT_DICT 5
+#define MA_OBJECT_STRUCTURE 6
+#define MA_OBJECT_METHOD 7
+
+#define MA_MAKE_EMPTY() (MaCell{MA_CELL_EMPTY})
+#define MA_MAKE_NUBMER(value) (MaCell{MA_CELL_NUMBER, {.number = (value)}})
+#define MA_MAKE_INTEGER(value) (MaCell{MA_CELL_NUMBER, {.integer = (value)}})
+#define MA_MAKE_OBJECT(value) (MaCell{MA_CELL_OBJECT, {.object = (value)}})
 
 namespace mavka::mama {
   class MaMa;

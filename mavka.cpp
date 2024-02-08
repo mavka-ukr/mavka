@@ -9,7 +9,7 @@ void init_empty(MaMa* M) {}
 
 void init_number(MaMa* M, MaScope* gS) {
   const auto ma_object = new MaObject();
-  ma_object->type = MA_STRUCTURE;
+  ma_object->type = MA_OBJECT_STRUCTURE;
   ma_object->name = "число";
   const auto number_structure_cell =
       MaCell{MA_CELL_OBJECT, {.object = ma_object}};
@@ -18,7 +18,7 @@ void init_number(MaMa* M, MaScope* gS) {
 
 void init_text(MaMa* M, MaScope* gS) {
   const auto ma_object = new MaObject();
-  ma_object->type = MA_STRUCTURE;
+  ma_object->type = MA_OBJECT_STRUCTURE;
   ma_object->name = "текст";
   const auto text_structure_cell =
       MaCell{MA_CELL_OBJECT, {.object = ma_object}};

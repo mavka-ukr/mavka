@@ -63,6 +63,9 @@ set(MAVKA_COMPILER_SRC
         mama/compiler/compiler.cpp
         mama/compiler/compiler.h
         mama/compiler/ops.h
+        mama/objects/MaDict.cpp
+        mama/objects/MaList.cpp
+        mama/objects/MaString.cpp
         mama/interpreter.cpp
         mama/helpers.cpp
         mama/mama.h
