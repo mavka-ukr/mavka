@@ -69,7 +69,6 @@ class MaDiia final {
  public:
   int index;
   MaObject* me;
-  bool is_method;
   MaScope* scope;
   std::vector<MaDiiaParam> params;
 };
@@ -77,7 +76,7 @@ class MaDiia final {
 class MaStructure final {
  public:
   std::vector<MaDiiaParam> params;
-  std::map<std::string, MaObject*> methods;
+  std::vector<MaObject*> methods;
 };
 
 class MaDiiaNative final {
@@ -150,10 +149,29 @@ inline MaCell create_diia_native(
   return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
 }
 
+inline MaObject* bind_diia(MaObject* diia, MaObject* object) {
+  const auto new_ma_diia = new MaDiia();
+  new_ma_diia->index = diia->d.diia->index;
+  new_ma_diia->me = object;
+  new_ma_diia->scope = diia->d.diia->scope;
+  new_ma_diia->params = diia->d.diia->params;
+  const auto new_diia_object = new MaObject();
+  new_diia_object->type = MA_OBJECT_DIIA;
+  new_diia_object->d.diia = new_ma_diia;
+  return new_diia_object;
+}
+
 inline MaCell create_object(MaObject* ma_structure_object) {
   const auto ma_object = new MaObject();
   const auto object_cell = MaCell{MA_CELL_OBJECT, {.object = ma_object}};
   ma_object->structure = ma_structure_object;
+  for (const auto& method : ma_structure_object->d.structure->methods) {
+    const auto diia_name =
+        ma_object_get(method, "назва").v.object->d.string->data;
+    const auto bound_diia = bind_diia(method, ma_object);
+    ma_object_set(ma_object, diia_name,
+                  MaCell{MA_CELL_OBJECT, {.object = bound_diia}});
+  }
   return object_cell;
 }
 
