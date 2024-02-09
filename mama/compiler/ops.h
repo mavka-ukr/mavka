@@ -45,9 +45,6 @@ typedef enum {
   OP_MODULE_DONE,
 
   OP_EACH,
-  OP_EACH_ITERATOR,
-  OP_CONTINUE,
-  OP_BREAK,
 
   OP_GET_ELEMENT,
   OP_SET_ELEMENT,
@@ -169,8 +166,6 @@ inline std::string getopname(const OP op) {
       return "OP_DICT_SET";
     case OP_STRUCT:
       return "OP_STRUCT";
-    case OP_CONTINUE:
-      return "OP_CONTINUE";
     case OP_GIVE:
       return "OP_GIVE";
     case OP_MODULE:

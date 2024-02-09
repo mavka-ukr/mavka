@@ -76,7 +76,9 @@
 
 #define MA_CELL_EMPTY 0
 #define MA_CELL_NUMBER 1
-#define MA_CELL_OBJECT 2
+#define MA_CELL_YES 2
+#define MA_CELL_NO 3
+#define MA_CELL_OBJECT 4
 
 #define MA_OBJECT 0
 #define MA_OBJECT_DIIA 1
@@ -90,6 +92,8 @@
 #define MA_MAKE_EMPTY() (MaCell{MA_CELL_EMPTY})
 #define MA_MAKE_NUBMER(value) (MaCell{MA_CELL_NUMBER, {.number = (value)}})
 #define MA_MAKE_INTEGER(value) (MaCell{MA_CELL_NUMBER, {.integer = (value)}})
+#define MA_MAKE_YES() (MaCell{MA_CELL_YES})
+#define MA_MAKE_NO() (MaCell{MA_CELL_NO})
 #define MA_MAKE_OBJECT(value) (MaCell{MA_CELL_OBJECT, {.object = (value)}})
 
 namespace mavka::mama {
@@ -122,9 +126,6 @@ namespace mavka::mama {
     MaObject* number_structure_cell;
     MaObject* boolean_structure_cell;
     MaObject* text_structure_cell;
-
-    MaCell yes_cell;
-    MaCell no_cell;
   };
 
   struct MaStoreInstructionArgs {
@@ -184,9 +185,9 @@ namespace mavka::mama {
   struct MaInstruction {
     OP op;
     union {
-      long jump;
-      long jumpiffalse;
-      long jumpiftrue;
+      size_t jump;
+      size_t jumpiffalse;
+      size_t jumpiftrue;
       MaCell* constant;
       MaStoreInstructionArgs* store;
       MaInitCallInstructionArgs* initcall;
@@ -306,12 +307,6 @@ namespace mavka::mama {
                                         mavka::ast::EachNode* each_node);
   MaCompilationResult compile_eval_node(MaMa* M,
                                         mavka::ast::EvalNode* eval_node);
-  MaCompilationResult compile_from_to_complex_node(
-      MaMa* M,
-      mavka::ast::FromToComplexNode* from_to_complex_node);
-  MaCompilationResult compile_from_to_simple_node(
-      MaMa* M,
-      mavka::ast::FromToSimpleNode* from_to_simple_node);
   MaCompilationResult compile_function_node(
       MaMa* M,
       const mavka::ast::FunctionNode* function_node);

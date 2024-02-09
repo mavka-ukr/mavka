@@ -24,8 +24,6 @@ set(MAVKA_COMPILER_SRC
         mama/compiler/nodes/compile_diia_node.cpp
         mama/compiler/nodes/compile_each_node.cpp
         mama/compiler/nodes/compile_eval_node.cpp
-        mama/compiler/nodes/compile_from_to_complex_node.cpp
-        mama/compiler/nodes/compile_from_to_simple_node.cpp
         mama/compiler/nodes/compile_function_node.cpp
         mama/compiler/nodes/compile_get_element_node.cpp
         mama/compiler/nodes/compile_give_node.cpp
