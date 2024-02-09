@@ -175,6 +175,12 @@ inline MaCell create_object(MaObject* ma_structure_object) {
   return object_cell;
 }
 
+inline MaCell create_empty_object() {
+  const auto ma_object = new MaObject();
+  const auto object_cell = MaCell{MA_CELL_OBJECT, {.object = ma_object}};
+  return object_cell;
+}
+
 inline MaCell create_structure() {
   const auto ma_object = new MaObject();
   ma_object->type = MA_OBJECT_STRUCTURE;

@@ -23,6 +23,7 @@ typedef enum {
   OP_JUMP_IF_FALSE,
 
   OP_GET,
+  OP_GET1,
   OP_SET,
 
   OP_TRY,
@@ -38,13 +39,13 @@ typedef enum {
   OP_STRUCT_PARAM,
   OP_STRUCT_METHOD,
 
+  OP_EACH,
+
   // todo: implement next
 
   OP_MODULE,
   OP_GIVE,
   OP_MODULE_DONE,
-
-  OP_EACH,
 
   OP_GET_ELEMENT,
   OP_SET_ELEMENT,

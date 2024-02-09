@@ -207,6 +207,15 @@ namespace mavka::mama {
           }
           break;
         }
+        case OP_GET1: {
+          const auto cell = M->stack.top();
+          if (cell.type == MA_CELL_OBJECT) {
+            M->stack.push(ma_object_get(cell.v.object, I.args.get->name));
+          } else {
+            M->stack.push(MA_MAKE_EMPTY());
+          }
+          break;
+        }
         case OP_SET: {
           const auto cell = M->stack.top();
           M->stack.pop();
@@ -294,6 +303,56 @@ namespace mavka::mama {
           }
           DO_THROW_STRING("Неможливо створити метод для типу " +
                           getcelltypename(structure_cell))
+        }
+        case OP_EACH: {
+          const auto cell = M->stack.top();
+          M->stack.pop();
+          if (cell.type == MA_CELL_OBJECT) {
+            if (cell.v.object->type == MA_OBJECT_LIST) {
+              const auto list = cell.v.object->d.list;
+              const auto iterator_object_cell = create_empty_object();
+              const auto iterator_object = iterator_object_cell.v.object;
+              M->stack.push(iterator_object_cell);
+              if (list->size() == 0) {
+                ma_object_set(iterator_object, "завершено", MA_MAKE_YES());
+                break;
+              } else if (list->size() == 1) {
+                ma_object_set(iterator_object, "завершено", MA_MAKE_NO());
+                ma_object_set(iterator_object, "значення", list->data[0]);
+                size_t i = 1;
+                const auto next_diia_native_fn = [&i, &iterator_object, &list](
+                                                     MaMa* M, MaScope* S) {
+                  ma_object_set(iterator_object, "завершено", MA_MAKE_YES());
+                  return MA_MAKE_EMPTY();
+                };
+                const auto next_diia_native_cell =
+                    create_diia_native(next_diia_native_fn);
+                ma_object_set(iterator_object, "далі", next_diia_native_cell);
+                break;
+              } else {
+                ma_object_set(iterator_object, "завершено", MA_MAKE_NO());
+                ma_object_set(iterator_object, "значення", list->data[0]);
+                size_t i = 1;
+                const auto next_diia_native_fn = [&i, &iterator_object, &list](
+                                                     MaMa* M, MaScope* S) {
+                  if (i < list->size()) {
+                    ma_object_set(iterator_object, "завершено", MA_MAKE_NO());
+                    ma_object_set(iterator_object, "значення", list->data[i]);
+                    i = i + 1;
+                  } else {
+                    ma_object_set(iterator_object, "завершено", MA_MAKE_YES());
+                  }
+                  return MA_MAKE_EMPTY();
+                };
+                const auto next_diia_native_cell =
+                    create_diia_native(next_diia_native_fn);
+                ma_object_set(iterator_object, "далі", next_diia_native_cell);
+                break;
+              }
+            }
+          }
+          DO_THROW_STRING("Неможливо перебрати " + getcelltypename(cell))
+          break;
         }
 
         case OP_ADD: {
