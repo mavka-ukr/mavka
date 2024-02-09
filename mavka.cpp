@@ -10,19 +10,19 @@ void init_empty(MaMa* M) {}
 void init_number(MaMa* M, MaScope* gS) {
   const auto ma_object = new MaObject();
   ma_object->type = MA_OBJECT_STRUCTURE;
-  ma_object->name = "число";
+  ma_object_set(ma_object, "назва", create_string("число"));
   const auto number_structure_cell =
       MaCell{MA_CELL_OBJECT, {.object = ma_object}};
-  gS->set_variable(ma_object->name, number_structure_cell);
+  gS->set_variable("число", number_structure_cell);
 }
 
 void init_text(MaMa* M, MaScope* gS) {
   const auto ma_object = new MaObject();
   ma_object->type = MA_OBJECT_STRUCTURE;
-  ma_object->name = "текст";
+  ma_object_set(ma_object, "назва", create_string("текст"));
   const auto text_structure_cell =
       MaCell{MA_CELL_OBJECT, {.object = ma_object}};
-  gS->set_variable(ma_object->name, text_structure_cell);
+  gS->set_variable("текст", text_structure_cell);
 }
 
 void init_logical(MaMa* M) {}

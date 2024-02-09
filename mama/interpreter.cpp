@@ -38,8 +38,8 @@ namespace mavka::mama {
           }
           if (left_cell.type == MA_CELL_NUMBER &&
               right_cell.type == MA_CELL_NUMBER) {
-            M->stack.push(create_string(left_cell.v.object->string +
-                                        right_cell.v.object->string));
+            M->stack.push(create_string(left_cell.v.object->d.string->data +
+                                        right_cell.v.object->d.string->data));
             break;
           }
           DO_THROW_STRING("Неможливо додати " + getcelltypename(left_cell) +
@@ -277,18 +277,19 @@ namespace mavka::mama {
         }
         case OP_STRUCT: {
           const auto structure_cell = create_structure();
-          structure_cell.v.object->name = I->strval;
+          ma_object_set(structure_cell.v.object, "назва",
+                        create_string(I->strval));
           M->stack.push(structure_cell);
           break;
         }
         case OP_STRUCT_PARAM: {
           const auto cell = M->stack.top();
-          cell.v.object->params.push_back(I->strval);
+          cell.v.object->d.structure->params.push_back(I->strval);
           break;
         }
         case OP_DIIA_PARAM: {
           const auto cell = M->stack.top();
-          cell.v.object->params.push_back(I->strval);
+          cell.v.object->d.structure->params.push_back(I->strval);
           break;
         }
         case OP_TRY: {
@@ -315,7 +316,7 @@ namespace mavka::mama {
         }
         case OP_METHOD_PARAM: {
           const auto cell = M->stack.top();
-          cell.v.object->params.push_back(I->strval);
+          cell.v.object->d.structure->params.push_back(I->strval);
           break;
         }
         case OP_NOT: {

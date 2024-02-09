@@ -21,7 +21,8 @@ namespace mavka::mama {
 
   std::string getcellstructurename(MaCell cell) {
     if (cell.type == MA_CELL_OBJECT) {
-      return cell.v.object->structure->name;
+      return ma_object_get(cell.v.object->structure, "назва")
+          .v.object->d.string->data;
     }
     return "";
   }
