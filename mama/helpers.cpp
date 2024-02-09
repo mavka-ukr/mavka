@@ -16,6 +16,12 @@ namespace mavka::mama {
   }
 
   std::string getcelltypename(MaCell cell) {
+    if (cell.type == MA_CELL_OBJECT) {
+      if (cell.v.object->structure) {
+        return ma_object_get(cell.v.object->structure, "назва")
+            .v.object->d.string->data;
+      }
+    }
     return gettypename(cell.type);
   }
 
@@ -27,7 +33,7 @@ namespace mavka::mama {
     return "";
   }
 
-  std::string cell_to_string(MaCell cell) {
+  std::string cell_to_string(MaCell cell, int depth) {
     if (cell.type == MA_CELL_EMPTY) {
       return "пусто";
     }
@@ -55,13 +61,25 @@ namespace mavka::mama {
         return "<дія " + name_cell.v.object->d.string->data + ">";
       }
       if (cell.v.object->type == MA_OBJECT_STRING) {
+        if (depth > 0) {
+          return "\"" + cell.v.object->d.string->data + "\"";
+        }
         return cell.v.object->d.string->data;
       }
       if (cell.v.object->type == MA_OBJECT_LIST) {
-        return "<список>";
+        std::vector<std::string> items;
+        for (const auto& item : cell.v.object->d.list->data) {
+          items.push_back(cell_to_string(item, depth + 1));
+        }
+        return "[" + internal::tools::implode(items, ", ") + "]";
       }
       if (cell.v.object->type == MA_OBJECT_DICT) {
-        return "<словник>";
+        std::vector<std::string> items;
+        for (const auto& item : cell.v.object->d.dict->data) {
+          items.push_back(cell_to_string(item.first, depth + 1) + "=" +
+                          cell_to_string(item.second, depth + 1));
+        }
+        return "(" + internal::tools::implode(items, ", ") + ")";
       }
       if (cell.v.object->type == MA_OBJECT_STRUCTURE) {
         const auto name =
@@ -77,11 +95,11 @@ namespace mavka::mama {
   }
 
   void print_instruction_with_index(int index, MaInstruction instruction) {
-    std::cout << index << ": " << getopname(instruction.op) << std::endl;
-  }
-
-  void print_instruction(MaInstruction instruction) {
-    std::cout << getopname(instruction.op) << std::endl;
+    std::cout << index << ": " << getopname(instruction.op) << " [";
+    if (instruction.op == OP_STORE) {
+      std::cout << instruction.args.store->name;
+    }
+    std::cout << "]" << std::endl;
   }
 
   void print_code(MaMa* M) {

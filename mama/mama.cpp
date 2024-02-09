@@ -15,6 +15,10 @@ namespace mavka::mama {
     return false;
   }
 
+  bool MaScope::has_local_variable(const std::string& name) {
+    return this->variables.contains(name);
+  }
+
   MaCell MaScope::get_variable(const std::string& name) {
     if (this->variables.contains(name)) {
       return this->variables.at(name);
@@ -25,6 +29,13 @@ namespace mavka::mama {
         return parent->variables[name];
       }
       parent = parent->parent;
+    }
+    return MA_MAKE_EMPTY();
+  }
+
+  MaCell MaScope::get_local_variable(const std::string& name) {
+    if (this->has_local_variable(name)) {
+      return this->variables.at(name);
     }
     return MA_MAKE_EMPTY();
   }

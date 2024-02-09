@@ -59,17 +59,23 @@ class MaDict final {
   long size() const;
 };
 
+class MaDiiaParam final {
+ public:
+  std::string name;
+  MaCell default_value;
+};
+
 class MaDiia final {
  public:
-  long index;
+  int index;
   MaObject* me;
-  std::vector<std::string> params;
   bool is_method;
+  MaScope* scope;
+  std::vector<MaDiiaParam> params;
 };
 
 class MaStructure final {
  public:
-  std::vector<std::string> params;
   std::map<std::string, MaObject*> methods;
 };
 
@@ -149,7 +155,6 @@ inline MaCell create_object(MaObject* ma_structure_object) {
   ma_object->structure = ma_structure_object;
   for (const auto& [name, method] : ma_structure_object->d.structure->methods) {
     const auto diia_cell = create_diia(method->d.diia->index);
-    diia_cell.v.object->d.diia->params = method->d.diia->params;
     diia_cell.v.object->d.diia->me = ma_object;
     ma_object_set(ma_object, name, diia_cell);
   }
