@@ -45,9 +45,6 @@ typedef enum {
   OP_GIVE,
   OP_MODULE_DONE,
 
-  OP_GET_ELEMENT,
-  OP_SET_ELEMENT,
-
   OP_AND,
   OP_OR,
 
@@ -145,14 +142,10 @@ inline std::string getopname(const OP op) {
       return "OP_RETURN";
     case OP_POP:
       return "OP_POP";
-    case OP_SET_ELEMENT:
-      return "OP_SET_ELEMENT";
     case OP_LIST:
       return "OP_LIST";
     case OP_LIST_APPEND:
       return "OP_LIST_APPEND";
-    case OP_GET_ELEMENT:
-      return "OP_GET_ELEMENT";
     case OP_NEGATIVE:
       return "OP_NEGATIVE";
     case OP_POSITIVE:

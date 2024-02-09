@@ -149,7 +149,12 @@ inline MaCell create_string(const std::string& value) {
 MaCell ma_list_iterate_diia_native_fn(MaMa* M,
                                       MaObject* list_me,
                                       std::map<std::string, MaCell>& args);
-
+MaCell ma_list_get_element_diia_native_fn(MaMa* M,
+                                          MaObject* list_me,
+                                          std::map<std::string, MaCell>& args);
+MaCell ma_list_set_element_diia_native_fn(MaMa* M,
+                                          MaObject* list_me,
+                                          std::map<std::string, MaCell>& args);
 MaCell ma_list_append_diia_native_fn(MaMa* M,
                                      MaObject* list_me,
                                      std::map<std::string, MaCell>& args);
@@ -161,6 +166,12 @@ inline MaCell create_list() {
   ma_object->d.list = ma_list;
   ma_object_set(ma_object, MAG_ITERATOR,
                 create_diia_native(ma_list_iterate_diia_native_fn, ma_object));
+  ma_object_set(
+      ma_object, MAG_GET_ELEMENT,
+      create_diia_native(ma_list_get_element_diia_native_fn, ma_object));
+  ma_object_set(
+      ma_object, MAG_SET_ELEMENT,
+      create_diia_native(ma_list_set_element_diia_native_fn, ma_object));
   ma_object_set(ma_object, "додати",
                 create_diia_native(ma_list_append_diia_native_fn, ma_object));
   return MaCell{MA_CELL_OBJECT, {.object = ma_object}};

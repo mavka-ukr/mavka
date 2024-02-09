@@ -70,7 +70,7 @@
 #define MAG_LESSER_EQUAL "чародія_не_більше"
 #define MAG_CONTAINS "чародія_містить"
 #define MAG_GET_ELEMENT "чародія_отримати"
-#define MAG_PUT_ELEMENT "чародія_покласти"
+#define MAG_SET_ELEMENT "чародія_покласти"
 #define MAG_CALL "чародія_викликати"
 #define MAG_ITERATOR "чародія_перебір"
 
