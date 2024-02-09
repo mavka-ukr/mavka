@@ -91,7 +91,8 @@
 
 #define MA_MAKE_EMPTY() (MaCell{MA_CELL_EMPTY})
 #define MA_MAKE_NUBMER(value) (MaCell{MA_CELL_NUMBER, {.number = (value)}})
-#define MA_MAKE_INTEGER(value) (MaCell{MA_CELL_NUMBER, {.integer = (value)}})
+#define MA_MAKE_INTEGER(value) \
+  (MaCell{MA_CELL_NUMBER, {.number = ((double)(value))}})
 #define MA_MAKE_YES() (MaCell{MA_CELL_YES})
 #define MA_MAKE_NO() (MaCell{MA_CELL_NO})
 #define MA_MAKE_OBJECT(value) (MaCell{MA_CELL_OBJECT, {.object = (value)}})

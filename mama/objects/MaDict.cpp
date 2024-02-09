@@ -106,7 +106,7 @@ namespace mavka::mama {
     }
   }
 
-  long MaDict::size() const {
-    return static_cast<long>(this->data.size());
+  size_t MaDict::size() const {
+    return this->data.size();
   }
 } // namespace mavka::mama

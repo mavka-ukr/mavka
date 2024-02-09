@@ -39,8 +39,6 @@ typedef enum {
   OP_STRUCT_PARAM,
   OP_STRUCT_METHOD,
 
-  OP_EACH,
-
   // todo: implement next
 
   OP_MODULE,
