@@ -38,6 +38,23 @@ typedef enum {
   OP_STRUCT_PARAM,
   OP_STRUCT_METHOD,
 
+  // todo: implement next
+
+  OP_MODULE,
+  OP_GIVE,
+  OP_MODULE_DONE,
+
+  OP_EACH,
+  OP_EACH_ITERATOR,
+  OP_CONTINUE,
+  OP_BREAK,
+
+  OP_GET_ELEMENT,
+  OP_SET_ELEMENT,
+
+  OP_AND,
+  OP_OR,
+
   OP_ADD,
   OP_SUB,
   OP_MUL,
@@ -51,8 +68,6 @@ typedef enum {
   OP_SHL,
   OP_SHR,
 
-  OP_AND,
-  OP_OR,
   OP_EQ,
   OP_NE,
   OP_LT,
@@ -64,15 +79,6 @@ typedef enum {
   OP_POSITIVE,
   OP_BNOT,
   OP_NOT,
-
-  OP_GET_ELEMENT,
-  OP_SET_ELEMENT,
-  OP_EACH_SIMPLE,
-  OP_CONTINUE,
-  OP_GIVE,
-  OP_MODULE,
-  OP_METHOD,
-  OP_METHOD_PARAM,
 } OP;
 
 inline std::string getopname(const OP op) {
@@ -157,12 +163,6 @@ inline std::string getopname(const OP op) {
       return "OP_POSITIVE";
     case OP_DIIA:
       return "OP_DIIA";
-    case OP_EACH_SIMPLE:
-      return "OP_EACH_SIMPLE";
-    case OP_METHOD:
-      return "OP_METHOD";
-    case OP_METHOD_PARAM:
-      return "OP_METHOD_PARAM";
     case OP_DICT:
       return "OP_DICT";
     case OP_DICT_SET:
