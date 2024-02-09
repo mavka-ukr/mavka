@@ -16,6 +16,7 @@
 #include "../parser/parser.h"
 #include "../utils/tools.h"
 #include "compiler/ops.h"
+#include <tsl/ordered_map.h>
 
 // Check windows
 #if _WIN32 || _WIN64

@@ -20,7 +20,7 @@ struct MaObject {
     MaDiiaNative* diia_native;
   } d;
   MaObject* structure;
-  std::map<std::string, MaCell> properties;
+  tsl::ordered_map<std::string, MaCell> properties;
 };
 
 union MaCellV {

@@ -1,3 +1,6 @@
 [submodule "parser"]
 	path = parser
 	url = https://github.com/mavka-ukr/parser
+[submodule "ordered-map"]
+	path = ordered-map
+	url = https://github.com/Tessil/ordered-map

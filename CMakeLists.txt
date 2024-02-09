@@ -4,6 +4,7 @@ project(mavka)
 set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(parser)
+add_subdirectory(ordered-map)
 
 set(MAVKA_COMPILER_SRC
         mama/compiler/nodes/compile_anon_diia.cpp
@@ -76,8 +77,8 @@ set(MAVKA_COMPILER_SRC
 add_executable(mavka mavka.cpp ${MAVKA_COMPILER_SRC})
 add_executable(mavka_optimized mavka.cpp ${MAVKA_COMPILER_SRC})
 
-target_link_libraries(mavka mavka_parser)
-target_link_libraries(mavka_optimized mavka_parser)
+target_link_libraries(mavka PRIVATE mavka_parser tsl::ordered_map)
+target_link_libraries(mavka_optimized PRIVATE mavka_parser tsl::ordered_map)
 
 target_compile_options(mavka PRIVATE -fexceptions)
 target_compile_options(mavka_optimized PRIVATE -fexceptions -O3)
