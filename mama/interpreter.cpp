@@ -133,6 +133,8 @@ namespace mavka::mama {
         case OP_DIIA: {
           const auto diia_cell = create_diia(I.args.diia->index);
           diia_cell.v.object->d.diia->scope = M->call_stack.top()->scope;
+          ma_object_set(diia_cell.v.object, "назва",
+                        create_string(I.args.diia->name));
           M->stack.push(diia_cell);
           break;
         }
@@ -280,6 +282,20 @@ namespace mavka::mama {
               MaDiiaParam{.name = I.args.diiaparam->name,
                           .default_value = default_value_cell});
           break;
+        }
+        case OP_STRUCT_METHOD: {
+          const auto diia_cell = M->stack.top();
+          M->stack.pop();
+          const auto structure_cell = M->stack.top();
+          if (structure_cell.type == MA_CELL_OBJECT) {
+            if (structure_cell.v.object->type == MA_OBJECT_STRUCTURE) {
+              structure_cell.v.object->d.structure->methods.push_back(
+                  diia_cell.v.object);
+              break;
+            }
+          }
+          DO_THROW_STRING("Неможливо створити метод для типу " +
+                          getcelltypename(structure_cell))
         }
 
         case OP_ADD: {
