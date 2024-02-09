@@ -220,11 +220,21 @@ inline MaCell create_object(MaObject* ma_structure_object) {
   return object_cell;
 }
 
-inline MaCell create_structure() {
+inline MaCell create_structure(const std::string& name) {
   const auto ma_object = new MaObject();
   ma_object->type = MA_OBJECT_STRUCTURE;
   const auto ma_structure = new MaStructure();
   ma_object->d.structure = ma_structure;
+  ma_object_set(ma_object, "назва", create_string(name));
+  return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
+}
+
+inline MaCell create_module(const std::string& name) {
+  const auto ma_object = new MaObject();
+  ma_object->type = MA_OBJECT_MODULE;
+  const auto ma_structure = new MaStructure();
+  ma_object->d.structure = ma_structure;
+  ma_object_set(ma_object, "назва", create_string(name));
   return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
 }
 

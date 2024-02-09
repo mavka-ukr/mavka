@@ -35,7 +35,7 @@
 #endif
 #endif
 
-#define MAMA_DEBUG 0
+#define MAMA_DEBUG 1
 
 #if MAMA_DEBUG == 0
 #define DEBUG_LOG(value)
@@ -87,7 +87,7 @@
 #define MA_OBJECT_LIST 4
 #define MA_OBJECT_DICT 5
 #define MA_OBJECT_STRUCTURE 6
-#define MA_OBJECT_METHOD 7
+#define MA_OBJECT_MODULE 7
 
 #define MA_MAKE_EMPTY() (MaCell{MA_CELL_EMPTY})
 #define MA_MAKE_NUBMER(value) (MaCell{MA_CELL_NUMBER, {.number = (value)}})
@@ -112,6 +112,7 @@ namespace mavka::mama {
     MaObject* diia;
     MaObject* diia_native;
     MaObject* structure;
+    MaObject* module;
     int return_index;
     int catch_index;
     std::map<std::string, MaCell> args;
@@ -184,6 +185,14 @@ namespace mavka::mama {
     std::string name;
   };
 
+  struct MaModuleInstructionArgs {
+    std::string name;
+  };
+
+  struct MaGiveInstructionArgs {
+    std::string name;
+  };
+
   struct MaInstruction {
     OP op;
     union {
@@ -204,6 +213,8 @@ namespace mavka::mama {
       MaStructInstructionArgs* struct_;
       MaStructParamInstructionArgs* structparam;
       MaStoreArgInstructionArgs* storearg;
+      MaModuleInstructionArgs* module;
+      MaGiveInstructionArgs* give;
     } args;
   };
 

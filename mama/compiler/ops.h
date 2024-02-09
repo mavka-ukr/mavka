@@ -39,14 +39,21 @@ typedef enum {
   OP_STRUCT_PARAM,
   OP_STRUCT_METHOD,
 
-  // todo: implement next
-
   OP_MODULE,
   OP_GIVE,
   OP_MODULE_DONE,
 
+  // todo: implement next
+
   OP_AND,
   OP_OR,
+
+  OP_EQ,
+  OP_NE,
+  OP_LT,
+  OP_LE,
+  OP_GT,
+  OP_GE,
 
   OP_ADD,
   OP_SUB,
@@ -60,13 +67,6 @@ typedef enum {
   OP_BAND,
   OP_SHL,
   OP_SHR,
-
-  OP_EQ,
-  OP_NE,
-  OP_LT,
-  OP_LE,
-  OP_GT,
-  OP_GE,
 
   OP_NEGATIVE,
   OP_POSITIVE,

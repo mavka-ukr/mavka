@@ -42,6 +42,12 @@ namespace mavka::mama {
       stream << cell.v.number;
       return stream.str();
     }
+    if (cell.type == MA_CELL_YES) {
+      return "так";
+    }
+    if (cell.type == MA_CELL_NO) {
+      return "ні";
+    }
     if (cell.type == MA_CELL_OBJECT) {
       if (cell.v.object->type == MA_OBJECT) {
         std::vector<std::string> items;
@@ -106,6 +112,9 @@ namespace mavka::mama {
     std::cout << index << ": " << getopname(instruction.op) << " [";
     if (instruction.op == OP_STORE) {
       std::cout << instruction.args.store->name;
+    }
+    if (instruction.op == OP_LOAD) {
+      std::cout << instruction.args.load->name;
     }
     std::cout << "]" << std::endl;
   }
