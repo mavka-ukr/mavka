@@ -364,41 +364,6 @@ namespace mavka::mama {
 
           break;
         }
-        // case OP_EACH_SIMPLE: {
-        //   const auto to = M->stack.top();
-        //   M->stack.pop();
-        //   const auto from = M->stack.top();
-        //   M->stack.pop();
-        //   const auto call_stack_value = M->call_stack.top();
-        //
-        //   for (long i = from.v.integer; i <= to.v.integer; ++i) {
-        //     call_stack_value->scope->set_variable(I->strval,
-        //                                           MA_MAKE_INTEGER(i));
-        //   }
-        //   break;
-        // }
-        // case OP_STRUCT_PARAM: {
-        //   const auto cell = M->stack.top();
-        //   cell.v.object->d.structure->params.push_back(I->strval);
-        //   break;
-        // }
-        // case OP_DIIA_PARAM: {
-        //   const auto cell = M->stack.top();
-        //   cell.v.object->d.structure->params.push_back(I->strval);
-        //   break;
-        // }
-        case OP_METHOD: {
-          const auto structure_cell = M->stack.top();
-          M->stack.pop();
-
-          DO_THROW_STRING("Має бути структурою.")
-          break;
-        }
-        // case OP_METHOD_PARAM: {
-        //   const auto cell = M->stack.top();
-        //   cell.v.object->d.structure->params.push_back(I->strval);
-        //   break;
-        // }
         case OP_NOT: {
           const auto value = M->stack.top();
           M->stack.pop();
