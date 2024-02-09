@@ -137,7 +137,8 @@ namespace mavka::mama {
       return success();
     } else {
       if (each_node->keyName.empty()) {
-        const auto iterator_name = "0_п";
+        M->iterator_count += 1;
+        const auto iterator_name = std::to_string(M->iterator_count) + "_п";
         const auto result = compile_node(M, each_node->value);
         if (result.error) {
           return result;
@@ -184,6 +185,10 @@ namespace mavka::mama {
             OP_LOAD, {.load = new MaLoadInstructionArgs("пусто")}});
         M->code.push_back(MaInstruction{
             OP_STORE, {.store = new MaStoreInstructionArgs(each_node->name)}});
+        M->code.push_back(MaInstruction{
+            OP_LOAD, {.load = new MaLoadInstructionArgs("пусто")}});
+        M->code.push_back(MaInstruction{
+            OP_STORE, {.store = new MaStoreInstructionArgs(iterator_name)}});
 
         return success();
       }

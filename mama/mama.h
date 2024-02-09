@@ -118,6 +118,7 @@ namespace mavka::mama {
 
   struct MaMa {
     std::vector<MaInstruction> code;
+    size_t iterator_count;
 
     std::stack<MaCell> stack;
     size_t i;
