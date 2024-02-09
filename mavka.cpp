@@ -86,8 +86,8 @@ int main(int argc, char** argv) {
 
   for (const auto& node : program_parser_result->program_node->body) {
     const auto result = compile_node(M, node);
-    if (result->error) {
-      std::cout << result->error->message << std::endl;
+    if (result.error) {
+      std::cout << result.error->message << std::endl;
       return 1;
     }
   }

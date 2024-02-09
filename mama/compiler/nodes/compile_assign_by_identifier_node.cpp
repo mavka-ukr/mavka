@@ -1,7 +1,7 @@
 #include "../../mama.h"
 
 namespace mavka::mama {
-  MaCompilationResult* compile_assign_by_identifier_node(
+  MaCompilationResult compile_assign_by_identifier_node(
       MaMa* M,
       mavka::ast::AssignByIdentifierNode* assign_by_identifier_node) {
     // if (assign_by_identifier_node->op == "=") {

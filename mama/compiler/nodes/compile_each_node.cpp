@@ -1,7 +1,7 @@
 #include "../../mama.h"
 
 namespace mavka::mama {
-  MaCompilationResult* compile_each_node(MaMa* M,
+  MaCompilationResult compile_each_node(MaMa* M,
                                          mavka::ast::EachNode* each_node) {
     // if (each_node->value->FromToSimpleNode) {
     //   const auto from_result =

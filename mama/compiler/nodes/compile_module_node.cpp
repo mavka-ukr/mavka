@@ -1,7 +1,7 @@
 #include "../../mama.h"
 
 namespace mavka::mama {
-  MaCompilationResult* compile_module_node(
+  MaCompilationResult compile_module_node(
       MaMa* M,
       const mavka::ast::ModuleNode* module_node) {
     // auto jump_out_of_module_instruction = MaInstruction{OP_JUMP};

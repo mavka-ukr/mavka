@@ -1,7 +1,7 @@
 #include "../../mama.h"
 
 namespace mavka::mama {
-  MaCompilationResult* compile_while_node(
+  MaCompilationResult compile_while_node(
       MaMa* M,
       const mavka::ast::WhileNode* while_node) {
     // const auto initial_jump = M->instructions.size();

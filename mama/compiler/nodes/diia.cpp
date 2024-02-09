@@ -1,7 +1,7 @@
 #include "../../mama.h"
 
 namespace mavka::mama {
-  MaCompilationResult* compile_diia(
+  MaCompilationResult compile_diia(
       MaMa* M,
       bool async,
       const std::vector<ast::GenericNode*>& generics,
@@ -34,7 +34,7 @@ namespace mavka::mama {
     return success();
   }
 
-  MaCompilationResult* compile_method(
+  MaCompilationResult compile_method(
       MaMa* M,
       const std::string& structure,
       bool async,

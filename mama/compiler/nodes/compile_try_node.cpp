@@ -1,7 +1,7 @@
 #include "../../mama.h"
 
 namespace mavka::mama {
-  MaCompilationResult* compile_try_node(MaMa* M,
+  MaCompilationResult compile_try_node(MaMa* M,
                                         const mavka::ast::TryNode* try_node) {
     // const auto try_i = MaInstruction::create_try(0);
     // M->instructions.push_back(try_i);
