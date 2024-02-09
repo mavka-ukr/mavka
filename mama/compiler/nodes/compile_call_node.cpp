@@ -12,8 +12,7 @@ namespace mavka::mama {
         OP_INITCALL, {.initcall = new MaInitCallInstructionArgs()}});
     const auto initcall_instruction_index = M->code.size() - 1;
 
-    const auto args = call_node->args;
-    for (const auto& arg : args) {
+    for (const auto& arg : call_node->args) {
       const auto arg_result = compile_node(M, arg->value);
       if (arg_result.error) {
         return arg_result;

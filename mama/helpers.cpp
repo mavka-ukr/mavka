@@ -44,7 +44,14 @@ namespace mavka::mama {
     }
     if (cell.type == MA_CELL_OBJECT) {
       if (cell.v.object->type == MA_OBJECT) {
-        return "<обʼєкт>";
+        std::vector<std::string> items;
+        for (const auto& item : cell.v.object->properties) {
+          items.push_back(item.first + "=" +
+                          cell_to_string(item.second, depth + 1));
+        }
+        const auto name = ma_object_get(cell.v.object->structure, "назва");
+        return name.v.object->d.string->data + "(" +
+               internal::tools::implode(items, ", ") + ")";
       }
       if (cell.v.object->type == MA_OBJECT_DIIA) {
         const auto name_cell = ma_object_get(cell.v.object, "назва");
