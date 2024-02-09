@@ -35,7 +35,7 @@
 #endif
 #endif
 
-#define MAMA_DEBUG 1
+#define MAMA_DEBUG 0
 
 #if MAMA_DEBUG == 0
 #define DEBUG_LOG(value)
