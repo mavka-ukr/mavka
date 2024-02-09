@@ -5,6 +5,11 @@ namespace mavka::mama {
                                         mavka::ast::EachNode* each_node) {
     if (each_node->value->FromToSimpleNode ||
         each_node->value->FromToComplexNode) {
+      if (!each_node->keyName.empty()) {
+        return error(mavka::ast::make_ast_some(each_node),
+                     "Перебір з ключем недоступний для діапазону.");
+      }
+
       MaInstruction check_i{};
       MaInstruction step_op_i{};
 
@@ -130,7 +135,60 @@ namespace mavka::mama {
           OP_STORE, {.store = new MaStoreInstructionArgs(each_node->name)}});
 
       return success();
+    } else {
+      if (each_node->keyName.empty()) {
+        const auto iterator_name = "0_п";
+        const auto result = compile_node(M, each_node->value);
+        if (result.error) {
+          return result;
+        }
+        M->code.push_back(MaInstruction{OP_EACH});
+        M->code.push_back(MaInstruction{
+            OP_STORE, {.store = new MaStoreInstructionArgs(iterator_name)}});
+
+        const auto start_index = M->code.size();
+
+        M->code.push_back(MaInstruction{
+            OP_LOAD, {.load = new MaLoadInstructionArgs(iterator_name)}});
+        M->code.push_back(MaInstruction{
+            OP_GET, {.get = new MaGetInstructionArgs("завершено")}});
+        M->code.push_back(MaInstruction{OP_JUMP_IF_TRUE});
+        const auto jump_out_instruction_index = M->code.size() - 1;
+
+        M->code.push_back(MaInstruction{
+            OP_LOAD, {.load = new MaLoadInstructionArgs(iterator_name)}});
+        M->code.push_back(MaInstruction{
+            OP_GET, {.get = new MaGetInstructionArgs("значення")}});
+        M->code.push_back(MaInstruction{
+            OP_STORE, {.store = new MaStoreInstructionArgs(each_node->name)}});
+
+        const auto body_result = compile_body(M, each_node->body);
+        if (body_result.error) {
+          return body_result;
+        }
+
+        M->code.push_back(MaInstruction{
+            OP_LOAD, {.load = new MaLoadInstructionArgs(iterator_name)}});
+        M->code.push_back(
+            MaInstruction{OP_GET, {.get = new MaGetInstructionArgs("далі")}});
+        M->code.push_back(MaInstruction{
+            OP_INITCALL,
+            {.initcall = new MaInitCallInstructionArgs(M->code.size() + 2)}});
+        M->code.push_back(MaInstruction{OP_CALL});
+
+        M->code.push_back(MaInstruction{OP_JUMP, {.jump = start_index}});
+
+        M->code[jump_out_instruction_index].args.jumpiftrue = M->code.size();
+
+        M->code.push_back(MaInstruction{
+            OP_LOAD, {.load = new MaLoadInstructionArgs("пусто")}});
+        M->code.push_back(MaInstruction{
+            OP_STORE, {.store = new MaStoreInstructionArgs(each_node->name)}});
+
+        return success();
+      }
     }
+
     return error(mavka::ast::make_ast_some(each_node), "Not implemented");
   }
 } // namespace mavka::mama
