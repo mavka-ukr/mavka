@@ -280,9 +280,7 @@ namespace mavka::mama {
           break;
         }
         case OP_STRUCT: {
-          const auto structure_cell = create_structure();
-          ma_object_set(structure_cell.v.object, "назва",
-                        create_string(I.args.struct_->name));
+          const auto structure_cell = create_structure(I.args.struct_->name);
           M->stack.push(structure_cell);
           break;
         }
@@ -308,6 +306,30 @@ namespace mavka::mama {
           }
           DO_THROW_STRING("Неможливо створити метод для типу " +
                           getcelltypename(structure_cell))
+        }
+        case OP_MODULE: {
+          const auto frame = M->call_stack.top();
+          const auto module_cell = create_module(I.args.module->name);
+          const auto module_scope = new MaScope(frame->scope);
+          M->call_stack.push(new MaCallFrame{.scope = module_scope,
+                                             .module = module_cell.v.object});
+          frame->scope->set_variable(I.args.module->name, module_cell);
+          break;
+        }
+        case OP_GIVE: {
+          const auto frame = M->call_stack.top();
+          const auto value = M->stack.top();
+          M->stack.pop();
+          if (frame->module) {
+            frame->module->properties.insert_or_assign(I.args.give->name,
+                                                       value);
+            break;
+          }
+          DO_THROW_STRING("Неможливо дати \"" + I.args.give->name + "\".")
+        }
+        case OP_MODULE_DONE: {
+          M->call_stack.pop();
+          break;
         }
 
         case OP_ADD: {
