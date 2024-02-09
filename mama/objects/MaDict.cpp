@@ -20,7 +20,7 @@ namespace mavka::mama {
           const auto item_object = item.first.v.object;
           if (key_object->type == MA_OBJECT_STRING) {
             if (item_object->type == MA_OBJECT_STRING) {
-              if (key_object->string == item_object->string) {
+              if (key_object->d.string->data == item_object->d.string->data) {
                 item.second = value;
                 return;
               }
@@ -54,7 +54,7 @@ namespace mavka::mama {
           const auto item_object = item.first.v.object;
           if (key_object->type == MA_OBJECT_STRING) {
             if (item_object->type == MA_OBJECT_STRING) {
-              if (key_object->string == item_object->string) {
+              if (key_object->d.string->data == item_object->d.string->data) {
                 return item.second;
               }
             }
@@ -89,7 +89,7 @@ namespace mavka::mama {
           const auto item_object = item.first.v.object;
           if (key_object->type == MA_OBJECT_STRING) {
             if (item_object->type == MA_OBJECT_STRING) {
-              if (key_object->string == item_object->string) {
+              if (key_object->d.string->data == item_object->d.string->data) {
                 this->data.erase(this->data.begin() + index);
                 return;
               }
