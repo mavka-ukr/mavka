@@ -1,7 +1,7 @@
 #include "../../mama.h"
 
 namespace mavka::mama {
-  MaCompilationResult* compile_anon_diia_node(
+  MaCompilationResult compile_anon_diia_node(
       MaMa* M,
       const mavka::ast::AnonDiiaNode* anon_diia_node) {
     return compile_diia(M, anon_diia_node->async, anon_diia_node->generics, "",

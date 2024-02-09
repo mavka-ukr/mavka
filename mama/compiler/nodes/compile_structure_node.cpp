@@ -1,7 +1,7 @@
 #include "../../mama.h"
 
 namespace mavka::mama {
-  MaCompilationResult* compile_structure_node(
+  MaCompilationResult compile_structure_node(
       MaMa* M,
       const mavka::ast::StructureNode* structure_node) {
     // M->instructions.push_back(

@@ -1,10 +1,10 @@
 #include "../../mama.h"
 
 namespace mavka::mama {
-  MaCompilationResult* compile_identifier_node(
+  MaCompilationResult compile_identifier_node(
       MaMa* M,
       const mavka::ast::IdentifierNode* identifier_node) {
-    M->instructions.push_back(MaInstruction{
+    M->code.push_back(MaInstruction{
         OP_LOAD, {.load = new MaLoadInstructionArgs(identifier_node->name)}});
     return success();
   }

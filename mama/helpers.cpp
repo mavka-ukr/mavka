@@ -85,8 +85,8 @@ namespace mavka::mama {
   }
 
   void print_code(MaMa* M) {
-    for (int i = 0; i < M->instructions.size(); ++i) {
-      const auto& instruction = M->instructions[i];
+    for (int i = 0; i < M->code.size(); ++i) {
+      const auto& instruction = M->code[i];
       print_instruction_with_index(i, instruction);
     }
   }

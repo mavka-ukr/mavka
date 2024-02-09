@@ -1,7 +1,7 @@
 #include "../../mama.h"
 
 namespace mavka::mama {
-  MaCompilationResult* compile_ternary_node(
+  MaCompilationResult compile_ternary_node(
       MaMa* M,
       mavka::ast::TernaryNode* ternary_node) {
     // const auto condition_result = compile_node(M, ternary_node->condition);

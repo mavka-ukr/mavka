@@ -5,7 +5,7 @@ namespace mavka::mama {
     return MaInstruction{OP_CONSTANT, {.constant = constant}};
   }
 
-  MaCompilationResult* compile_node(MaMa* M, mavka::ast::ASTSome* node) {
+  MaCompilationResult compile_node(MaMa* M, mavka::ast::ASTSome* node) {
     if (!node) {
       return error(nullptr, "null node");
     }
@@ -228,7 +228,7 @@ namespace mavka::mama {
     return error(node, "unsupported node");
   }
 
-  MaCompilationResult* compile_body(
+  MaCompilationResult compile_body(
       MaMa* M,
       const std::vector<mavka::ast::ASTSome*>& body) {
     for (const auto node : body) {
@@ -239,30 +239,28 @@ namespace mavka::mama {
         continue;
       }
       const auto result = compile_node(M, node);
-      if (result->error) {
+      if (result.error) {
         return result;
       }
       if (node->is_popable()) {
-        M->instructions.push_back(MaInstruction{OP_POP});
+        M->code.push_back(MaInstruction{OP_POP});
       }
     }
     return success();
   }
 
-  MaCompilationResult* error(mavka::ast::ASTSome* node,
-                             const std::string& message) {
-    const auto result = new MaCompilationResult();
+  MaCompilationResult error(mavka::ast::ASTSome* node,
+                            const std::string& message) {
     const auto error = new MaCompilationError();
     if (node) {
       error->line = mavka::ast::get_ast_node(node)->start_line;
       error->column = mavka::ast::get_ast_node(node)->start_column;
     }
     error->message = message;
-    result->error = error;
-    return result;
+    return MaCompilationResult{.error = error};
   }
 
-  MaCompilationResult* success() {
-    return new MaCompilationResult();
+  MaCompilationResult success() {
+    return MaCompilationResult{};
   }
 } // namespace mavka::mama

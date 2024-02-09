@@ -1,16 +1,16 @@
 #include "../../mama.h"
 
 namespace mavka::mama {
-  MaCompilationResult* compile_array_node(
+  MaCompilationResult compile_array_node(
       MaMa* M,
       const mavka::ast::ArrayNode* array_node) {
-    M->instructions.push_back(MaInstruction{OP_LIST});
+    M->code.push_back(MaInstruction{OP_LIST});
     for (auto& element : array_node->elements) {
       const auto result = compile_node(M, element);
-      if (result->error) {
+      if (result.error) {
         return result;
       }
-      M->instructions.push_back(MaInstruction{OP_LIST_APPEND});
+      M->code.push_back(MaInstruction{OP_LIST_APPEND});
     }
     return success();
   }
