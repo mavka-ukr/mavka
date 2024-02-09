@@ -102,6 +102,7 @@ namespace mavka::mama {
     MaScope* scope;
     int return_index;
     int catch_index;
+    std::map<std::string, MaCell> generics;
     std::map<std::string, MaCell> args;
   };
 
@@ -124,33 +125,10 @@ namespace mavka::mama {
     MaScope* parent;
     std::map<std::string, MaCell> variables;
 
-    inline bool has_variable(const std::string& name) {
-      if (this->variables.contains(name)) {
-        return true;
-      }
-      if (this->parent) {
-        return this->parent->has_variable(name);
-      }
-      return false;
-    }
-
-    inline MaCell get_variable(const std::string& name) {
-      if (this->variables.contains(name)) {
-        return this->variables.at(name);
-      }
-      if (this->parent) {
-        return this->parent->get_variable(name);
-      }
-      return MaCell{MA_CELL_EMPTY};
-    }
-
-    inline void set_variable(const std::string& name, MaCell value) {
-      variables.insert_or_assign(name, value);
-    }
-
-    inline void delete_variable(const std::string& name) {
-      variables.erase(name);
-    }
+    bool has_variable(const std::string& name);
+    MaCell get_variable(const std::string& name);
+    void set_variable(const std::string& name, MaCell value);
+    void delete_variable(const std::string& name);
   };
 
   std::string gettypename(size_t type);
