@@ -143,7 +143,14 @@ namespace mavka::mama {
         if (result.error) {
           return result;
         }
-        M->code.push_back(MaInstruction{OP_EACH});
+        M->code.push_back(MaInstruction{
+            OP_GET, {.get = new MaGetInstructionArgs(MAG_ITERATOR)}});
+        M->code.push_back(MaInstruction{
+          OP_INITCALL, {.initcall = new MaInitCallInstructionArgs()}});
+        const auto initcall_instruction_index = M->code.size() - 1;
+        M->code[initcall_instruction_index].args.initcall->index =
+            M->code.size() + 1;
+        M->code.push_back(MaInstruction{OP_CALL});
         M->code.push_back(MaInstruction{
             OP_STORE, {.store = new MaStoreInstructionArgs(iterator_name)}});
 

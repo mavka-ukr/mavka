@@ -26,7 +26,6 @@ struct MaObject {
 union MaCellV {
   MaObject* object;
   double number;
-  long integer;
 };
 
 struct MaCell {
@@ -44,9 +43,9 @@ class MaList final {
   std::vector<MaCell> data;
 
   void append(MaCell cell);
-  void set(long index, MaCell cell);
-  MaCell get(long index) const;
-  long size() const;
+  void set(size_t index, MaCell cell);
+  MaCell get(size_t index) const;
+  size_t size() const;
 };
 
 class MaDict final {
@@ -56,7 +55,7 @@ class MaDict final {
   void set(MaCell key, MaCell value);
   MaCell get(MaCell key) const;
   void remove(MaCell key);
-  long size() const;
+  size_t size() const;
 };
 
 class MaDiiaParam final {
@@ -79,9 +78,14 @@ class MaStructure final {
   std::vector<MaObject*> methods;
 };
 
+typedef MaCell DiiaNativeFn(MaMa* M,
+                            MaObject* me,
+                            std::map<std::string, MaCell>& args);
+
 class MaDiiaNative final {
  public:
-  std::function<MaCell(MaMa* M, MaScope* S)> fn;
+  std::function<DiiaNativeFn> fn;
+  MaObject* me;
 };
 
 inline void ma_object_set(MaObject* object,
@@ -105,6 +109,34 @@ inline bool ma_object_has(const MaObject* object, const std::string& name) {
   return object->properties.contains(name);
 }
 
+inline MaCell create_empty_object() {
+  const auto ma_object = new MaObject();
+  const auto object_cell = MaCell{MA_CELL_OBJECT, {.object = ma_object}};
+  return object_cell;
+}
+
+inline MaCell create_diia_native(
+    const std::function<DiiaNativeFn>& diia_native_fn) {
+  const auto ma_object = new MaObject();
+  ma_object->type = MA_OBJECT_DIIA_NATIVE;
+  const auto ma_diia_native = new MaDiiaNative();
+  ma_diia_native->fn = diia_native_fn;
+  ma_object->d.diia_native = ma_diia_native;
+  return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
+}
+
+inline MaCell create_diia_native(
+    const std::function<DiiaNativeFn>& diia_native_fn,
+    MaObject* me) {
+  const auto ma_object = new MaObject();
+  ma_object->type = MA_OBJECT_DIIA_NATIVE;
+  const auto ma_diia_native = new MaDiiaNative();
+  ma_diia_native->fn = diia_native_fn;
+  ma_diia_native->me = me;
+  ma_object->d.diia_native = ma_diia_native;
+  return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
+}
+
 inline MaCell create_string(const std::string& value) {
   const auto ma_object = new MaObject();
   ma_object->type = MA_OBJECT_STRING;
@@ -114,11 +146,23 @@ inline MaCell create_string(const std::string& value) {
   return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
 }
 
+MaCell ma_list_iterate_diia_native_fn(MaMa* M,
+                                      MaObject* list_me,
+                                      std::map<std::string, MaCell>& args);
+
+MaCell ma_list_append_diia_native_fn(MaMa* M,
+                                     MaObject* list_me,
+                                     std::map<std::string, MaCell>& args);
+
 inline MaCell create_list() {
   const auto ma_object = new MaObject();
   ma_object->type = MA_OBJECT_LIST;
   const auto ma_list = new MaList();
   ma_object->d.list = ma_list;
+  ma_object_set(ma_object, MAG_ITERATOR,
+                create_diia_native(ma_list_iterate_diia_native_fn, ma_object));
+  ma_object_set(ma_object, "додати",
+                create_diia_native(ma_list_append_diia_native_fn, ma_object));
   return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
 }
 
@@ -136,16 +180,6 @@ inline MaCell create_diia(const int& index) {
   const auto ma_diia = new MaDiia();
   ma_diia->index = index;
   ma_object->d.diia = ma_diia;
-  return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
-}
-
-inline MaCell create_diia_native(
-    const std::function<MaCell(MaMa*, MaScope*)>& diia_native_fn) {
-  const auto ma_object = new MaObject();
-  ma_object->type = MA_OBJECT_DIIA_NATIVE;
-  const auto ma_diia_native = new MaDiiaNative();
-  ma_diia_native->fn = diia_native_fn;
-  ma_object->d.diia_native = ma_diia_native;
   return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
 }
 
@@ -172,12 +206,6 @@ inline MaCell create_object(MaObject* ma_structure_object) {
     ma_object_set(ma_object, diia_name,
                   MaCell{MA_CELL_OBJECT, {.object = bound_diia}});
   }
-  return object_cell;
-}
-
-inline MaCell create_empty_object() {
-  const auto ma_object = new MaObject();
-  const auto object_cell = MaCell{MA_CELL_OBJECT, {.object = ma_object}};
   return object_cell;
 }
 

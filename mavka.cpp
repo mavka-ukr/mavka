@@ -30,9 +30,9 @@ void init_logical(MaMa* M) {}
 void init_diia(MaMa* M) {}
 
 void init_print(MaMa* M, MaScope* S) {
-  const auto diia_native_fn = [](MaMa* M, MaScope* S) {
-    const auto& frame = M->call_stack.top();
-    for (const auto& [key, value] : frame->args) {
+  const auto diia_native_fn = [](MaMa* M, MaObject* me,
+                                 std::map<std::string, MaCell>& args) {
+    for (const auto& [key, value] : args) {
       std::cout << cell_to_string(value) << std::endl;
     }
     return MA_MAKE_EMPTY();
