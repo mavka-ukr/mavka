@@ -40,14 +40,21 @@ namespace mavka::mama {
             if (object->type == MA_OBJECT_DIIA_NATIVE) {
               M->call_stack.push(
                   new MaCallFrame{.scope = frame->scope,
-                                  .diia_native = object->d.diia_native,
+                                  .diia_native = object,
                                   .return_index = I.args.initcall->index});
               break;
             }
             if (object->type == MA_OBJECT_DIIA) {
               M->call_stack.push(
                   new MaCallFrame{.scope = frame->scope,
-                                  .diia = object->d.diia,
+                                  .diia = object,
+                                  .return_index = I.args.initcall->index});
+              break;
+            }
+            if (object->type == MA_OBJECT_STRUCTURE) {
+              M->call_stack.push(
+                  new MaCallFrame{.scope = frame->scope,
+                                  .structure = object,
                                   .return_index = I.args.initcall->index});
               break;
             }
@@ -65,16 +72,17 @@ namespace mavka::mama {
         case OP_CALL: {
           const auto frame = M->call_stack.top();
           if (frame->diia_native) {
-            const auto result = frame->diia_native->fn(M, frame->scope);
+            const auto result =
+                frame->diia_native->d.diia_native->fn(M, frame->scope);
             M->stack.push(result);
             frame->args.clear();
             M->call_stack.pop();
             break;
           }
           if (frame->diia) {
-            frame->scope = new MaScope(frame->diia->scope);
-            for (int i = 0; i < frame->diia->params.size(); ++i) {
-              const auto& param = frame->diia->params[i];
+            frame->scope = new MaScope(frame->diia->d.diia->scope);
+            for (int i = 0; i < frame->diia->d.diia->params.size(); ++i) {
+              const auto& param = frame->diia->d.diia->params[i];
               if (frame->args.contains(std::to_string(i))) {
                 frame->scope->set_variable(param.name,
                                            frame->args[std::to_string(i)]);
@@ -85,8 +93,29 @@ namespace mavka::mama {
               }
             }
             frame->args.clear();
-            M->i = frame->diia->index;
+            M->i = frame->diia->d.diia->index;
             goto start;
+          }
+          if (frame->structure) {
+            const auto object_cell = create_object(frame->structure);
+            for (int i = 0; i < frame->structure->d.structure->params.size();
+                 ++i) {
+              const auto& param = frame->structure->d.structure->params[i];
+              if (frame->args.contains(std::to_string(i))) {
+                ma_object_set(object_cell.v.object, param.name,
+                              frame->args[std::to_string(i)]);
+              } else if (frame->args.contains(param.name)) {
+                ma_object_set(object_cell.v.object, param.name,
+                              frame->args[param.name]);
+              } else {
+                ma_object_set(object_cell.v.object, param.name,
+                              param.default_value);
+              }
+            }
+            M->stack.push(object_cell);
+            frame->args.clear();
+            M->call_stack.pop();
+            break;
           }
           DO_THROW_STRING("Неможливо викликати.")
         }
@@ -241,6 +270,15 @@ namespace mavka::mama {
           ma_object_set(structure_cell.v.object, "назва",
                         create_string(I.args.struct_->name));
           M->stack.push(structure_cell);
+          break;
+        }
+        case OP_STRUCT_PARAM: {
+          const auto default_value_cell = M->stack.top();
+          M->stack.pop();
+          const auto structure_cell = M->stack.top();
+          structure_cell.v.object->d.structure->params.push_back(
+              MaDiiaParam{.name = I.args.diiaparam->name,
+                          .default_value = default_value_cell});
           break;
         }
 

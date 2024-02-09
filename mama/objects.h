@@ -76,6 +76,7 @@ class MaDiia final {
 
 class MaStructure final {
  public:
+  std::vector<MaDiiaParam> params;
   std::map<std::string, MaObject*> methods;
 };
 
@@ -153,17 +154,14 @@ inline MaCell create_object(MaObject* ma_structure_object) {
   const auto ma_object = new MaObject();
   const auto object_cell = MaCell{MA_CELL_OBJECT, {.object = ma_object}};
   ma_object->structure = ma_structure_object;
-  for (const auto& [name, method] : ma_structure_object->d.structure->methods) {
-    const auto diia_cell = create_diia(method->d.diia->index);
-    diia_cell.v.object->d.diia->me = ma_object;
-    ma_object_set(ma_object, name, diia_cell);
-  }
   return object_cell;
 }
 
 inline MaCell create_structure() {
   const auto ma_object = new MaObject();
   ma_object->type = MA_OBJECT_STRUCTURE;
+  const auto ma_structure = new MaStructure();
+  ma_object->d.structure = ma_structure;
   return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
 }
 

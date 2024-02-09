@@ -26,9 +26,7 @@ namespace mavka::mama {
 
     M->code.push_back(MaInstruction{
         OP_DIIA, {.diia = new MaDiiaInstructionArgs(diia_index, name)}});
-
-    for (int i = 0; i < params.size(); ++i) {
-      const auto param = params[i];
+    for (const auto& param : params) {
       if (param->variadic) {
         return error(ast::make_ast_some(param),
                      "Варіативні параметри наразі не підтримуються.");
@@ -42,10 +40,9 @@ namespace mavka::mama {
         M->code.push_back(MaInstruction{
             OP_LOAD, {.load = new MaLoadInstructionArgs("пусто")}});
       }
-      M->code.push_back(
-          MaInstruction{OP_DIIA_PARAM,
-                        {.diiaparam = new MaDiiaParamInstructionArgs(
-                             std::to_string(i), param->name)}});
+      M->code.push_back(MaInstruction{
+          OP_DIIA_PARAM,
+          {.diiaparam = new MaDiiaParamInstructionArgs(param->name)}});
     }
 
     return success();

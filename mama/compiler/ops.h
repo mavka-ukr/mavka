@@ -35,6 +35,7 @@ typedef enum {
   OP_DICT_SET,
 
   OP_STRUCT,
+  OP_STRUCT_PARAM,
 
   OP_ADD,
   OP_SUB,

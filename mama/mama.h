@@ -104,8 +104,9 @@ namespace mavka::mama {
 
   struct MaCallFrame {
     MaScope* scope;
-    MaDiia* diia;
-    MaDiiaNative* diia_native;
+    MaObject* diia;
+    MaObject* diia_native;
+    MaObject* structure;
     int return_index;
     int catch_index;
     std::map<std::string, MaCell> args;
@@ -156,7 +157,6 @@ namespace mavka::mama {
   };
 
   struct MaDiiaParamInstructionArgs {
-    std::string index;
     std::string name;
   };
 
@@ -171,6 +171,10 @@ namespace mavka::mama {
   struct MaStructInstructionArgs {
     std::string name;
     int constructor_index;
+  };
+
+  struct MaStructParamInstructionArgs {
+    std::string name;
   };
 
   struct MaStoreArgInstructionArgs {
@@ -195,6 +199,7 @@ namespace mavka::mama {
       MaTryInstructionArgs* try_;
       MaTryDoneInstructionArgs* trydone;
       MaStructInstructionArgs* struct_;
+      MaStructParamInstructionArgs* structparam;
       MaStoreArgInstructionArgs* storearg;
     } args;
   };
