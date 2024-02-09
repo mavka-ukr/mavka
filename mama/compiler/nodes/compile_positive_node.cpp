@@ -1,14 +1,14 @@
-#include "../compiler.h"
+#include "../../mama.h"
 
 namespace mavka::mama {
   MaCompilationResult* compile_positive_node(
-      MaCode* C,
+      MaMa* M,
       const mavka::ast::PositiveNode* positive_node) {
-    const auto result = compile_node(C, positive_node->value);
+    const auto result = compile_node(M, positive_node->value);
     if (result->error) {
       return result;
     }
-    C->instructions.push_back(new MaInstruction(OP_POSITIVE));
+    M->instructions.push_back(MaInstruction{OP_POSITIVE});
     return success();
   }
 } // namespace mavka::mama

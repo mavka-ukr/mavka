@@ -1,17 +1,8 @@
-#include "../compiler.h"
+#include "../../mama.h"
 
 namespace mavka::mama {
-  MaCompilationResult* compile_give_node(
-      MaCode* C,
-      const mavka::ast::GiveNode* give_node) {
-    for (const auto& element : give_node->elements) {
-      C->instructions.push_back(new MaInstruction(OP_LOAD, 0, element->name));
-      if (element->as.empty()) {
-        C->instructions.push_back(new MaInstruction(OP_GIVE, 0, element->name));
-      } else {
-        C->instructions.push_back(new MaInstruction(OP_GIVE, 0, element->as));
-      }
-    }
-    return success();
+  MaCompilationResult* compile_give_node(MaMa* M,
+                                         mavka::ast::GiveNode* give_node) {
+    return error(mavka::ast::make_ast_some(give_node), "Not implemented");
   }
 } // namespace mavka::mama

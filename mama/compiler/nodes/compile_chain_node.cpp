@@ -1,15 +1,15 @@
-#include "../compiler.h"
+#include "../../mama.h"
 
 namespace mavka::mama {
   MaCompilationResult* compile_chain_node(
-      MaCode* C,
+      MaMa* M,
       const mavka::ast::ChainNode* chain_node) {
-    const auto result = compile_node(C, chain_node->left);
+    const auto result = compile_node(M, chain_node->left);
     if (result->error) {
       return result;
     }
-    C->instructions.push_back(
-        MaInstruction::create_get(chain_node->right->name));
+    M->instructions.push_back(MaInstruction{
+        OP_GET, {.get = new MaGetInstructionArgs(chain_node->right->name)}});
     return success();
   }
 } // namespace mavka::mama

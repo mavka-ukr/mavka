@@ -1,14 +1,14 @@
-#include "../compiler.h"
+#include "../../mama.h"
 
 namespace mavka::mama {
   MaCompilationResult* compile_throw_node(
-      MaCode* C,
+      MaMa* M,
       const mavka::ast::ThrowNode* throw_node) {
-    const auto result = compile_node(C, throw_node->value);
+    const auto result = compile_node(M, throw_node->value);
     if (result->error) {
       return result;
     }
-    C->instructions.push_back(new MaInstruction(OP_THROW));
+    M->instructions.push_back(MaInstruction{OP_THROW});
     return success();
   }
 } // namespace mavka::mama

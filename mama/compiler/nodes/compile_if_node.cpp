@@ -1,26 +1,28 @@
-#include "../compiler.h"
+#include "../../mama.h"
 
 namespace mavka::mama {
-  MaCompilationResult* compile_if_node(MaCode* C,
+  MaCompilationResult* compile_if_node(MaMa* M,
                                        const mavka::ast::IfNode* if_node) {
-    const auto condition_result = compile_node(C, if_node->condition);
+    const auto condition_result = compile_node(M, if_node->condition);
     if (condition_result->error) {
       return condition_result;
     }
-    const auto jump_if_instruction = new MaInstruction(OP_JUMP_IF_FALSE, 0);
-    C->instructions.push_back(jump_if_instruction);
-    const auto body_result = compile_body(C, if_node->body);
+    M->instructions.push_back(MaInstruction{OP_JUMP_IF_FALSE});
+    const auto jump_if_instruction_index = M->instructions.size() - 1;
+    const auto body_result = compile_body(M, if_node->body);
     if (body_result->error) {
       return body_result;
     }
-    const auto jump_out_else_instruction = new MaInstruction(OP_JUMP, 0);
-    C->instructions.push_back(jump_out_else_instruction);
-    jump_if_instruction->numval = C->instructions.size();
-    const auto else_body_result = compile_body(C, if_node->else_body);
+    M->instructions.push_back(MaInstruction{OP_JUMP});
+    const auto jump_out_else_instruction_index = M->instructions.size() - 1;
+    M->instructions[jump_if_instruction_index].args.jumpiffalse =
+        M->instructions.size();
+    const auto else_body_result = compile_body(M, if_node->else_body);
     if (else_body_result->error) {
       return else_body_result;
     }
-    jump_out_else_instruction->numval = C->instructions.size();
+    M->instructions[jump_out_else_instruction_index].args.jump =
+        M->instructions.size();
     return success();
   }
 } // namespace mavka::mama
