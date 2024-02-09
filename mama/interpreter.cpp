@@ -29,11 +29,12 @@ namespace mavka::mama {
           break;
         }
         case OP_INITCALL: {
-          const auto cell = M->stack.top();
+          auto cell = M->stack.top();
           M->stack.pop();
 
           const auto frame = M->call_stack.top();
 
+        repeat_op_initcall:
           if (cell.type == MA_CELL_OBJECT) {
             const auto object = cell.v.object;
 
@@ -57,6 +58,10 @@ namespace mavka::mama {
                                   .structure = object,
                                   .return_index = I.args.initcall->index});
               break;
+            }
+            if (object->type == MA_OBJECT) {
+              cell = ma_object_get(object, MAG_CALL);
+              goto repeat_op_initcall;
             }
           }
           DO_THROW_STRING("Неможливо викликати \"" + getcelltypename(cell) +
