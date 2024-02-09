@@ -103,8 +103,9 @@ namespace mavka::mama {
 #include "objects.h"
 
   struct MaCallFrame {
-    MaCell cell;
     MaScope* scope;
+    MaDiia* diia;
+    MaDiiaNative* diia_native;
     int return_index;
     int catch_index;
     std::map<std::string, MaCell> args;
@@ -133,11 +134,11 @@ namespace mavka::mama {
     int index;
   };
 
-  struct MaSetArgInstructionArgs {
+  struct MaGetInstructionArgs {
     std::string name;
   };
 
-  struct MaGetInstructionArgs {
+  struct MaSetInstructionArgs {
     std::string name;
   };
 
@@ -146,6 +147,33 @@ namespace mavka::mama {
   };
 
   struct MaLoadInstructionArgs {
+    std::string name;
+  };
+
+  struct MaDiiaInstructionArgs {
+    int index;
+    std::string name;
+  };
+
+  struct MaDiiaParamInstructionArgs {
+    std::string index;
+    std::string name;
+  };
+
+  struct MaTryInstructionArgs {
+    int catch_index;
+  };
+
+  struct MaTryDoneInstructionArgs {
+    int index;
+  };
+
+  struct MaStructInstructionArgs {
+    std::string name;
+    int constructor_index;
+  };
+
+  struct MaStoreArgInstructionArgs {
     std::string name;
   };
 
@@ -158,10 +186,16 @@ namespace mavka::mama {
       MaCell* constant;
       MaStoreInstructionArgs* store;
       MaInitCallInstructionArgs* initcall;
-      MaSetArgInstructionArgs* setarg;
       MaGetInstructionArgs* get;
+      MaSetInstructionArgs* set;
       MaDictSetInstructionArgs* dictset;
       MaLoadInstructionArgs* load;
+      MaDiiaInstructionArgs* diia;
+      MaDiiaParamInstructionArgs* diiaparam;
+      MaTryInstructionArgs* try_;
+      MaTryDoneInstructionArgs* trydone;
+      MaStructInstructionArgs* struct_;
+      MaStoreArgInstructionArgs* storearg;
     } args;
   };
 
@@ -171,7 +205,9 @@ namespace mavka::mama {
     std::map<std::string, MaCell> variables;
 
     bool has_variable(const std::string& name);
+    bool has_local_variable(const std::string& name);
     MaCell get_variable(const std::string& name);
+    MaCell get_local_variable(const std::string& name);
     void set_variable(const std::string& name, MaCell value);
     void delete_variable(const std::string& name);
   };
@@ -369,13 +405,11 @@ namespace mavka::mama {
 
   std::string getcellstructurename(MaCell cell);
 
-  std::string cell_to_string(MaCell cell);
+  std::string cell_to_string(MaCell cell, int depth = 0);
 
   void print_cell(MaCell* cell);
 
-  void print_instruction_with_index(int index, MaInstruction* instruction);
-
-  void print_instruction(MaInstruction* instruction);
+  void print_instruction_with_index(int index, MaInstruction instruction);
 
   void print_code(MaMa* M);
 

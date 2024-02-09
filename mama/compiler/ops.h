@@ -9,7 +9,32 @@ typedef enum {
   OP_CONSTANT,
 
   OP_INITCALL,
+  OP_STORE_ARG,
   OP_CALL,
+  OP_RETURN,
+  OP_DIIA,
+  OP_DIIA_PARAM,
+
+  OP_STORE,
+  OP_LOAD,
+
+  OP_JUMP,
+  OP_JUMP_IF_TRUE,
+  OP_JUMP_IF_FALSE,
+
+  OP_GET,
+  OP_SET,
+
+  OP_TRY,
+  OP_TRY_DONE,
+  OP_THROW,
+
+  OP_LIST,
+  OP_LIST_APPEND,
+  OP_DICT,
+  OP_DICT_SET,
+
+  OP_STRUCT,
 
   OP_ADD,
   OP_SUB,
@@ -33,39 +58,17 @@ typedef enum {
   OP_GT,
   OP_GE,
 
-  OP_JUMP,
-  OP_JUMP_IF_FALSE,
-  OP_JUMP_IF_TRUE,
-
   OP_NEGATIVE,
   OP_POSITIVE,
   OP_BNOT,
   OP_NOT,
 
-  OP_LOAD,
-  OP_STORE,
-
-  OP_GET,
-  OP_SET,
-  OP_RETURN,
   OP_GET_ELEMENT,
   OP_SET_ELEMENT,
-  OP_THROW,
   OP_EACH_SIMPLE,
-  OP_SET_ARG,
-  OP_LIST,
-  OP_LIST_APPEND,
-  OP_DICT,
-  OP_DICT_SET,
-  OP_STRUCT,
-  OP_STRUCT_PARAM,
-  OP_DIIA,
-  OP_DIIA_PARAM,
   OP_CONTINUE,
   OP_GIVE,
   OP_MODULE,
-  OP_TRY,
-  OP_TRY_DONE,
   OP_METHOD,
   OP_METHOD_PARAM,
 } OP;
@@ -140,8 +143,6 @@ inline std::string getopname(const OP op) {
       return "OP_POP";
     case OP_SET_ELEMENT:
       return "OP_SET_ELEMENT";
-    case OP_SET_ARG:
-      return "OP_SET_ARG";
     case OP_LIST:
       return "OP_LIST";
     case OP_LIST_APPEND:
@@ -160,16 +161,12 @@ inline std::string getopname(const OP op) {
       return "OP_METHOD";
     case OP_METHOD_PARAM:
       return "OP_METHOD_PARAM";
-    case OP_DIIA_PARAM:
-      return "OP_DIIA_PARAM";
     case OP_DICT:
       return "OP_DICT";
     case OP_DICT_SET:
       return "OP_DICT_SET";
     case OP_STRUCT:
       return "OP_STRUCT";
-    case OP_STRUCT_PARAM:
-      return "OP_STRUCT_PARAM";
     case OP_CONTINUE:
       return "OP_CONTINUE";
     case OP_GIVE:

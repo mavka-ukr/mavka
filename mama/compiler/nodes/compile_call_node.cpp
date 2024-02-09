@@ -19,12 +19,14 @@ namespace mavka::mama {
         return arg_result;
       }
       if (arg->name.empty()) {
-        M->code.push_back(MaInstruction{OP_SET_ARG,
-                                        {.setarg = new MaSetArgInstructionArgs(
-                                             std::to_string(arg->index))}});
+        M->code.push_back(MaInstruction{
+            OP_STORE_ARG,
+            {.storearg =
+                 new MaStoreArgInstructionArgs(std::to_string(arg->index))}});
       } else {
         M->code.push_back(MaInstruction{
-            OP_SET_ARG, {.setarg = new MaSetArgInstructionArgs(arg->name)}});
+            OP_STORE_ARG,
+            {.storearg = new MaStoreArgInstructionArgs(arg->name)}});
       }
     }
 

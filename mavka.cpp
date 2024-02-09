@@ -70,7 +70,6 @@ int main(int argc, char** argv) {
   init_diia(M);
 
   const auto frame = new MaCallFrame();
-  frame->cell = MA_MAKE_EMPTY();
   frame->scope = S;
   M->call_stack.push(frame);
   S->set_variable("пусто", MA_MAKE_EMPTY());
@@ -93,9 +92,9 @@ int main(int argc, char** argv) {
   }
 
   DEBUG_DO({
-    print_code(C);
+    print_code(M);
     std::cout << "---" << std::endl;
-    C;
+    M;
   })
 
   mavka::mama::run(M);
