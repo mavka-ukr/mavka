@@ -1,27 +1,27 @@
-#include "../compiler.h"
+#include "../../mama.h"
 
 namespace mavka::mama {
   MaCompilationResult* compile_bitwise_node(
-      MaCode* C,
+      MaMa* M,
       const mavka::ast::BitwiseNode* bitwise_node) {
-    const auto left = compile_node(C, bitwise_node->left);
+    const auto left = compile_node(M, bitwise_node->left);
     if (left->error) {
       return left;
     }
-    const auto right = compile_node(C, bitwise_node->right);
+    const auto right = compile_node(M, bitwise_node->right);
     if (right->error) {
       return right;
     }
     if (bitwise_node->op == "^") {
-      C->instructions.push_back(new MaInstruction(OP_XOR));
+      M->instructions.push_back(MaInstruction{OP_XOR});
     } else if (bitwise_node->op == "|") {
-      C->instructions.push_back(new MaInstruction(OP_BOR));
+      M->instructions.push_back(MaInstruction{OP_BOR});
     } else if (bitwise_node->op == "&") {
-      C->instructions.push_back(new MaInstruction(OP_BAND));
+      M->instructions.push_back(MaInstruction{OP_BAND});
     } else if (bitwise_node->op == "<<") {
-      C->instructions.push_back(new MaInstruction(OP_SHL));
+      M->instructions.push_back(MaInstruction{OP_SHL});
     } else if (bitwise_node->op == ">>") {
-      C->instructions.push_back(new MaInstruction(OP_SHR));
+      M->instructions.push_back(MaInstruction{OP_SHR});
     }
     return success();
   }

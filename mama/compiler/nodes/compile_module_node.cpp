@@ -1,24 +1,26 @@
-#include "../compiler.h"
+#include "../../mama.h"
 
 namespace mavka::mama {
   MaCompilationResult* compile_module_node(
-      MaCode* C,
+      MaMa* M,
       const mavka::ast::ModuleNode* module_node) {
-    const auto jump_out_of_module_instruction = new MaInstruction(OP_JUMP);
-    C->instructions.push_back(jump_out_of_module_instruction);
-
-    const auto module_index = C->instructions.size();
-
-    const auto body_result = compile_body(C, module_node->body);
-    if (body_result->error) {
-      return body_result;
-    }
-    C->instructions.push_back(MaInstruction::create_load("пусто"));
-    C->instructions.push_back(new MaInstruction(OP_RETURN));
-
-    jump_out_of_module_instruction->numval = C->instructions.size();
-    C->instructions.push_back(
-        new MaInstruction(OP_MODULE, module_index, module_node->name));
+    // auto jump_out_of_module_instruction = MaInstruction{OP_JUMP};
+    // M->instructions.push_back(jump_out_of_module_instruction);
+    //
+    // const auto module_index = M->instructions.size();
+    //
+    // const auto body_result = compile_body(M, module_node->body);
+    // if (body_result->error) {
+    //   return body_result;
+    // }
+    // M->instructions.push_back(
+    //     MaInstruction{OP_LOAD, {.load = new
+    //     MaLoadInstructionArgs("пусто")}});
+    // M->instructions.push_back(MaInstruction{OP_RETURN});
+    //
+    // jump_out_of_module_instruction.args.jump = M->instructions.size();
+    // M->instructions.push_back(
+    //     new MaInstruction(OP_MODULE, module_index, module_node->name));
 
     return success();
   }

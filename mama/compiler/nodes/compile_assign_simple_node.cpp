@@ -1,15 +1,18 @@
-#include "../compiler.h"
+#include "../../mama.h"
 
 namespace mavka::mama {
   MaCompilationResult* compile_assign_simple_node(
-      MaCode* C,
+      MaMa* M,
       const mavka::ast::AssignSimpleNode* assign_simple_node) {
-    const auto result = compile_node(C, assign_simple_node->value);
+    const auto result = compile_node(M, assign_simple_node->value);
     if (result->error) {
       return result;
     }
-    C->instructions.push_back(
-        MaInstruction::create_store(assign_simple_node->name));
+
+    M->instructions.push_back(MaInstruction{
+        OP_STORE,
+        {.store = new MaStoreInstructionArgs(assign_simple_node->name)}});
+
     return success();
   }
 } // namespace mavka::mama

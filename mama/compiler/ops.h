@@ -6,8 +6,10 @@
 typedef enum {
   OP_POP,
 
-  OP_PUSH_NUMBER,
-  OP_PUSH_STRING,
+  OP_CONSTANT,
+
+  OP_INITCALL,
+  OP_CALL,
 
   OP_ADD,
   OP_SUB,
@@ -35,15 +37,12 @@ typedef enum {
   OP_JUMP_IF_FALSE,
   OP_JUMP_IF_TRUE,
 
-  OP_CALL,
-
   OP_NEGATIVE,
   OP_POSITIVE,
   OP_BNOT,
   OP_NOT,
 
   OP_LOAD,
-
   OP_STORE,
 
   OP_GET,
@@ -69,13 +68,12 @@ typedef enum {
   OP_TRY_DONE,
   OP_METHOD,
   OP_METHOD_PARAM,
-  OP_INITCALL
 } OP;
 
 inline std::string getopname(const OP op) {
   switch (op) {
-    case OP_PUSH_NUMBER:
-      return "OP_PUSH_NUMBER";
+    case OP_CONSTANT:
+      return "OP_CONSTANT";
     case OP_ADD:
       return "OP_ADD";
     case OP_SUB:
@@ -98,8 +96,6 @@ inline std::string getopname(const OP op) {
       return "OP_GET";
     case OP_SET:
       return "OP_SET";
-    case OP_PUSH_STRING:
-      return "OP_PUSH_STRING";
     case OP_XOR:
       return "OP_XOR";
     case OP_BOR:

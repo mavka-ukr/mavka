@@ -30,14 +30,15 @@ void init_logical(MaMa* M) {}
 void init_diia(MaMa* M) {}
 
 void init_print(MaMa* M, MaScope* S) {
-  const auto diia_native_fn = [](MaCell* self, MaMa* M, MaScope* S) {
-    const auto current_call_stack_value = M->call_stack.top();
-    for (const auto& [key, value] : current_call_stack_value->args) {
+  const auto diia_native_fn = [](MaMa* M, MaScope* S) {
+    const auto& frame = M->call_stack.top();
+    for (const auto& [key, value] : frame->args) {
       std::cout << cell_to_string(value) << std::endl;
     }
     return MA_MAKE_EMPTY();
   };
   const auto diia_cell = create_diia_native(diia_native_fn);
+  ma_object_set(diia_cell.v.object, "назва", create_string("друк"));
   S->set_variable("друк", diia_cell);
 }
 
@@ -49,9 +50,9 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  const auto filename = args[1];
+  const auto& filename = args[1];
 
-  std::ifstream file = std::ifstream(filename);
+  auto file = std::ifstream(filename);
   if (!file.is_open()) {
     std::cout << "Не вдалося прочитати файл " << filename << std::endl;
     return 1;
@@ -68,7 +69,10 @@ int main(int argc, char** argv) {
   init_logical(M);
   init_diia(M);
 
-  M->call_stack.push(new MaCallStackValue(MA_MAKE_EMPTY(), S));
+  const auto frame = new MaCallFrame();
+  frame->cell = MA_MAKE_EMPTY();
+  frame->scope = S;
+  M->call_stack.push(frame);
   S->set_variable("пусто", MA_MAKE_EMPTY());
   S->set_variable("так", M->yes_cell);
   S->set_variable("ні", M->no_cell);
@@ -80,10 +84,8 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  const auto C = new MaCode();
-
   for (const auto& node : program_parser_result->program_node->body) {
-    const auto result = compile_node(C, node);
+    const auto result = compile_node(M, node);
     if (result->error) {
       std::cout << result->error->message << std::endl;
       return 1;
@@ -96,11 +98,13 @@ int main(int argc, char** argv) {
     C;
   })
 
-  mavka::mama::run(M, C);
+  mavka::mama::run(M);
 
   // while (M->stack.size()) {
   //   const auto value = M->stack.top();
   //   M->stack.pop();
   //   print_cell(value);
   // }
+
+  return 0;
 }

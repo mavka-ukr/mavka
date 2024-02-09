@@ -1,32 +1,32 @@
-#include "../compiler.h"
+#include "../../mama.h"
 
 namespace mavka::mama {
   MaCompilationResult* compile_comparison_node(
-      MaCode* C,
+      MaMa* M,
       const mavka::ast::ComparisonNode* comparison_node) {
-    const auto left = compile_node(C, comparison_node->left);
+    const auto left = compile_node(M, comparison_node->left);
     if (left->error) {
       return left;
     }
-    const auto right = compile_node(C, comparison_node->right);
+    const auto right = compile_node(M, comparison_node->right);
     if (right->error) {
       return right;
     }
     if (comparison_node->op == "==" || comparison_node->op == "рівно") {
-      C->instructions.push_back(new MaInstruction(OP_EQ));
+      M->instructions.push_back(MaInstruction{OP_EQ});
     } else if (comparison_node->op == "!=" ||
                comparison_node->op == "не рівно") {
-      C->instructions.push_back(new MaInstruction(OP_NE));
+      M->instructions.push_back(MaInstruction{OP_NE});
     } else if (comparison_node->op == "<" || comparison_node->op == "менше") {
-      C->instructions.push_back(new MaInstruction(OP_LT));
+      M->instructions.push_back(MaInstruction{OP_LT});
     } else if (comparison_node->op == "<=" ||
                comparison_node->op == "не більше") {
-      C->instructions.push_back(new MaInstruction(OP_LE));
+      M->instructions.push_back(MaInstruction{OP_LE});
     } else if (comparison_node->op == ">" || comparison_node->op == "більше") {
-      C->instructions.push_back(new MaInstruction(OP_GT));
+      M->instructions.push_back(MaInstruction{OP_GT});
     } else if (comparison_node->op == ">=" ||
                comparison_node->op == "не менше") {
-      C->instructions.push_back(new MaInstruction(OP_GE));
+      M->instructions.push_back(MaInstruction{OP_GE});
     }
     return success();
   }

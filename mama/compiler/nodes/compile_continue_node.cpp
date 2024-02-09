@@ -1,10 +1,10 @@
-#include "../compiler.h"
+#include "../../mama.h"
 
 namespace mavka::mama {
   MaCompilationResult* compile_continue_node(
-      MaCode* C,
+      MaMa* M,
       mavka::ast::ContinueNode* continue_node) {
-    C->instructions.push_back(new MaInstruction(OP_CONTINUE));
+    M->instructions.push_back(MaInstruction{OP_CONTINUE});
     return success();
   }
 } // namespace mavka::mama

@@ -75,7 +75,7 @@ class MaStructure final {
 
 class MaDiiaNative final {
  public:
-  std::function<MaCell(MaCell* self, MaMa* M, MaScope* S)> fn;
+  std::function<MaCell(MaMa* M, MaScope* S)> fn;
 };
 
 inline void ma_object_set(MaObject* object,
@@ -134,7 +134,7 @@ inline MaCell create_diia(const int& index) {
 }
 
 inline MaCell create_diia_native(
-    const std::function<MaCell(MaCell*, MaMa*, MaScope*)>& diia_native_fn) {
+    const std::function<MaCell(MaMa*, MaScope*)>& diia_native_fn) {
   const auto ma_object = new MaObject();
   ma_object->type = MA_OBJECT_DIIA_NATIVE;
   const auto ma_diia_native = new MaDiiaNative();

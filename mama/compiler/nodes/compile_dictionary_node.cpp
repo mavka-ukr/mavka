@@ -1,18 +1,20 @@
 
-#include "../compiler.h"
+#include "../../mama.h"
 
 namespace mavka::mama {
   MaCompilationResult* compile_dictionary_node(
-      MaCode* C,
+      MaMa* M,
       const mavka::ast::DictionaryNode* dictionary_node) {
-    C->instructions.push_back(new MaInstruction(OP_DICT));
+    M->instructions.push_back(MaInstruction{OP_DICT});
     for (const auto& element : dictionary_node->elements) {
-      const auto result = compile_node(C, element->value);
+      const auto result = compile_node(M, element->value);
       if (result->error) {
         return result;
       }
-      C->instructions.push_back(
-          new MaInstruction(OP_DICT_SET, 0, element->key->StringNode->value));
+      M->instructions.push_back(MaInstruction{
+          OP_DICT_SET,
+          {.dictset =
+               new MaDictSetInstructionArgs(element->key->StringNode->value)}});
     }
     return success();
   }

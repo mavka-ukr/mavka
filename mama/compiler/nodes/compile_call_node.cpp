@@ -1,30 +1,40 @@
-#include "../compiler.h"
+#include "../../mama.h"
 
 namespace mavka::mama {
   MaCompilationResult* compile_call_node(
-      MaCode* C,
+      MaMa* M,
       const mavka::ast::CallNode* call_node) {
-    const auto result = compile_node(C, call_node->value);
+    const auto result = compile_node(M, call_node->value);
     if (result->error) {
       return result;
     }
-    const auto pushcsv_i = new MaInstruction(OP_INITCALL);
-    C->instructions.push_back(pushcsv_i);
+
+    M->instructions.push_back(MaInstruction{
+        OP_INITCALL, {.initcall = new MaInitCallInstructionArgs()}});
+    const auto initcall_instruction_index = M->instructions.size() - 1;
+
     const auto args = call_node->args;
     for (const auto& arg : args) {
-      const auto arg_result = compile_node(C, arg->value);
+      const auto arg_result = compile_node(M, arg->value);
       if (arg_result->error) {
         return arg_result;
       }
       if (arg->name.empty()) {
-        C->instructions.push_back(
-            new MaInstruction(OP_SET_ARG, 0, std::to_string(arg->index)));
+        M->instructions.push_back(MaInstruction{
+            OP_SET_ARG,
+            {.setarg =
+                 new MaSetArgInstructionArgs(std::to_string(arg->index))}});
       } else {
-        C->instructions.push_back(new MaInstruction(OP_SET_ARG, 0, arg->name));
+        M->instructions.push_back(MaInstruction{
+            OP_SET_ARG, {.setarg = new MaSetArgInstructionArgs(arg->name)}});
       }
     }
-    pushcsv_i->numval = C->instructions.size() + 1;
-    C->instructions.push_back(new MaInstruction(OP_CALL));
+
+    M->instructions[initcall_instruction_index].args.initcall->index =
+        M->instructions.size() + 1;
+
+    M->instructions.push_back(MaInstruction{OP_CALL});
+
     return success();
   }
 } // namespace mavka::mama
