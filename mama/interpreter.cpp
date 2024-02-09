@@ -81,6 +81,11 @@ namespace mavka::mama {
           }
           if (frame->diia) {
             frame->scope = new MaScope(frame->diia->d.diia->scope);
+            if (frame->diia->d.diia->me) {
+              frame->scope->set_variable(
+                  "я",
+                  MaCell{MA_CELL_OBJECT, {.object = frame->diia->d.diia->me}});
+            }
             for (int i = 0; i < frame->diia->d.diia->params.size(); ++i) {
               const auto& param = frame->diia->d.diia->params[i];
               if (frame->args.contains(std::to_string(i))) {
@@ -431,27 +436,6 @@ namespace mavka::mama {
           } else {
             M->stack.push(MA_MAKE_NO());
           }
-          break;
-        }
-        case OP_GET_ELEMENT: {
-          const auto cell = M->stack.top();
-          M->stack.pop();
-          const auto key = M->stack.top();
-          M->stack.pop();
-
-          M->stack.push(MA_MAKE_EMPTY());
-          break;
-        }
-        case OP_SET_ELEMENT: {
-          const auto cell = M->stack.top();
-          M->stack.pop();
-          const auto value = M->stack.top();
-          M->stack.pop();
-          const auto key = M->stack.top();
-          M->stack.pop();
-
-          //
-
           break;
         }
         case OP_NOT: {

@@ -73,6 +73,27 @@ namespace mavka::mama {
     return iterator_object_cell;
   }
 
+  MaCell ma_list_get_element_diia_native_fn(
+      MaMa* M,
+      MaObject* list_me,
+      std::map<std::string, MaCell>& args) {
+    const auto key = args["0"];
+    if (key.type == MA_CELL_NUMBER) {
+      return list_me->d.list->get(key.v.number);
+    }
+    return MA_MAKE_EMPTY();
+  }
+
+  MaCell ma_list_set_element_diia_native_fn(
+      MaMa* M,
+      MaObject* list_me,
+      std::map<std::string, MaCell>& args) {
+    const auto key = args["0"];
+    const auto value = args["1"];
+    list_me->d.list->set(key.v.number, value);
+    return MA_MAKE_EMPTY();
+  }
+
   MaCell ma_list_append_diia_native_fn(MaMa* M,
                                        MaObject* list_me,
                                        std::map<std::string, MaCell>& args) {
