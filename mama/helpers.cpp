@@ -100,6 +100,18 @@ namespace mavka::mama {
             ma_object_get(cell.v.object, "назва").v.object->d.string->data;
         return "<структура " + name + ">";
       }
+      if (cell.v.object->type == MA_OBJECT_MODULE) {
+        const auto name =
+            ma_object_get(cell.v.object, "назва").v.object->d.string->data;
+        std::vector<std::string> items;
+        for (const auto& [k, v] : cell.v.object->properties) {
+          if (k != "назва") {
+            items.push_back(k);
+          }
+        }
+        return "<модуль " + name + "[" + internal::tools::implode(items, ", ") +
+               "]>";
+      }
     }
     return "<невідомо>";
   }
