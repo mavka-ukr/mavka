@@ -85,14 +85,6 @@ namespace mavka::mama {
       return compile_eval_node(M, node->EvalNode);
     }
 
-    if (node->FromToComplexNode) {
-      return compile_from_to_complex_node(M, node->FromToComplexNode);
-    }
-
-    if (node->FromToSimpleNode) {
-      return compile_from_to_simple_node(M, node->FromToSimpleNode);
-    }
-
     if (node->FunctionNode) {
       return compile_function_node(M, node->FunctionNode);
     }

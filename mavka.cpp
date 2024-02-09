@@ -73,8 +73,8 @@ int main(int argc, char** argv) {
   frame->scope = S;
   M->call_stack.push(frame);
   S->set_variable("пусто", MA_MAKE_EMPTY());
-  S->set_variable("так", M->yes_cell);
-  S->set_variable("ні", M->no_cell);
+  S->set_variable("так", MA_MAKE_YES());
+  S->set_variable("ні", MA_MAKE_NO());
   init_print(M, S);
 
   const auto program_parser_result = mavka::parser::parse(source, "");

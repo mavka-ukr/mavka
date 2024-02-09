@@ -174,8 +174,7 @@ namespace mavka::mama {
             M->i = I.args.jumpiftrue;
             goto start;
           }
-          if (cell.type == MA_CELL_OBJECT &&
-              cell.v.object != M->no_cell.v.object) {
+          if (cell.type != MA_CELL_NO) {
             M->i = I.args.jumpiftrue;
             goto start;
           }
@@ -192,8 +191,7 @@ namespace mavka::mama {
             M->i = I.args.jumpiffalse;
             goto start;
           }
-          if (cell.type == MA_CELL_OBJECT &&
-              cell.v.object == M->no_cell.v.object) {
+          if (cell.type == MA_CELL_NO) {
             M->i = I.args.jumpiffalse;
             goto start;
           }
@@ -322,6 +320,21 @@ namespace mavka::mama {
           DO_THROW_STRING("Неможливо додати " + getcelltypename(left_cell) +
                           " до " + getcelltypename(right_cell))
         }
+        case OP_SUB: {
+          const auto right_cell = M->stack.top();
+          M->stack.pop();
+          const auto left_cell = M->stack.top();
+          M->stack.pop();
+
+          if (left_cell.type == MA_CELL_NUMBER &&
+              right_cell.type == MA_CELL_NUMBER) {
+            M->stack.push(
+                MA_MAKE_NUBMER(left_cell.v.number - right_cell.v.number));
+            break;
+          }
+          DO_THROW_STRING("Неможливо відняти " + getcelltypename(left_cell) +
+                          " і " + getcelltypename(right_cell))
+        }
         case OP_EQ: {
           const auto right = M->stack.top();
           M->stack.pop();
@@ -330,16 +343,84 @@ namespace mavka::mama {
 
           if (left.type == MA_CELL_NUMBER && right.type == MA_CELL_NUMBER) {
             if (left.v.number == right.v.number) {
-              M->stack.push(M->yes_cell);
+              M->stack.push(MA_MAKE_YES());
             } else {
-              M->stack.push(M->no_cell);
+              M->stack.push(MA_MAKE_NO());
             }
           } else {
             if (left.v.object == right.v.object) {
-              M->stack.push(M->yes_cell);
+              M->stack.push(MA_MAKE_YES());
             } else {
-              M->stack.push(M->no_cell);
+              M->stack.push(MA_MAKE_NO());
             }
+          }
+          break;
+        }
+        case OP_GT: {
+          const auto right = M->stack.top();
+          M->stack.pop();
+          const auto left = M->stack.top();
+          M->stack.pop();
+
+          if (left.type == MA_CELL_NUMBER && right.type == MA_CELL_NUMBER) {
+            if (left.v.number > right.v.number) {
+              M->stack.push(MA_MAKE_YES());
+            } else {
+              M->stack.push(MA_MAKE_NO());
+            }
+          } else {
+            M->stack.push(MA_MAKE_NO());
+          }
+          break;
+        }
+        case OP_GE: {
+          const auto right = M->stack.top();
+          M->stack.pop();
+          const auto left = M->stack.top();
+          M->stack.pop();
+
+          if (left.type == MA_CELL_NUMBER && right.type == MA_CELL_NUMBER) {
+            if (left.v.number >= right.v.number) {
+              M->stack.push(MA_MAKE_YES());
+            } else {
+              M->stack.push(MA_MAKE_NO());
+            }
+          } else {
+            M->stack.push(MA_MAKE_NO());
+          }
+          break;
+        }
+        case OP_LT: {
+          const auto right = M->stack.top();
+          M->stack.pop();
+          const auto left = M->stack.top();
+          M->stack.pop();
+
+          if (left.type == MA_CELL_NUMBER && right.type == MA_CELL_NUMBER) {
+            if (left.v.number < right.v.number) {
+              M->stack.push(MA_MAKE_YES());
+            } else {
+              M->stack.push(MA_MAKE_NO());
+            }
+          } else {
+            M->stack.push(MA_MAKE_NO());
+          }
+          break;
+        }
+        case OP_LE: {
+          const auto right = M->stack.top();
+          M->stack.pop();
+          const auto left = M->stack.top();
+          M->stack.pop();
+
+          if (left.type == MA_CELL_NUMBER && right.type == MA_CELL_NUMBER) {
+            if (left.v.number <= right.v.number) {
+              M->stack.push(MA_MAKE_YES());
+            } else {
+              M->stack.push(MA_MAKE_NO());
+            }
+          } else {
+            M->stack.push(MA_MAKE_NO());
           }
           break;
         }
@@ -369,18 +450,18 @@ namespace mavka::mama {
           M->stack.pop();
           if (value.type == MA_CELL_NUMBER) {
             if (value.v.number == 0.0) {
-              M->stack.push(M->yes_cell);
+              M->stack.push(MA_MAKE_YES());
             } else {
-              M->stack.push(M->no_cell);
+              M->stack.push(MA_MAKE_NO());
             }
           } else if (value.type == MA_CELL_EMPTY) {
-            M->stack.push(M->yes_cell);
-          } else if (value.v.object == M->no_cell.v.object) {
-            M->stack.push(M->yes_cell);
-          } else if (value.v.object == M->yes_cell.v.object) {
-            M->stack.push(M->no_cell);
+            M->stack.push(MA_MAKE_YES());
+          } else if (value.type == MA_CELL_NO) {
+            M->stack.push(MA_MAKE_YES());
+          } else if (value.type == MA_CELL_YES) {
+            M->stack.push(MA_MAKE_NO());
           } else {
-            M->stack.push(M->no_cell);
+            M->stack.push(MA_MAKE_NO());
           }
           break;
         }
