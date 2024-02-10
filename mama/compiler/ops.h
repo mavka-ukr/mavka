@@ -49,13 +49,13 @@ typedef enum {
   OP_GIVE,
   OP_MODULE_DONE,
 
-  // todo: implement next
-
   OP_EQ,
   OP_GT,
   OP_GE,
   OP_LT,
   OP_LE,
+
+  // todo: implement next
 
   OP_ADD,
   OP_SUB,

@@ -311,7 +311,7 @@ namespace mavka::mama {
       const mavka::ast::ChainNode* chain_node);
   MaCompilationResult compile_comparison_node(
       MaMa* M,
-      const mavka::ast::ComparisonNode* comparison_node);
+      mavka::ast::ComparisonNode* comparison_node);
   MaCompilationResult compile_continue_node(
       MaMa* M,
       mavka::ast::ContinueNode* continue_node);
