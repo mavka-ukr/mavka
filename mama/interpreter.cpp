@@ -460,17 +460,7 @@ namespace mavka::mama {
         case OP_GT: {
           POP_VALUE(right);
           POP_VALUE(left);
-          if (IS_EMPTY(left)) {
-            if (IS_NUMBER(right)) {
-              if (right.v.number > 0.0) {
-                PUSH_NO();
-              } else {
-                PUSH_YES();
-              }
-            } else {
-              PUSH_NO();
-            }
-          } else if (IS_NUMBER(left)) {
+          if (IS_NUMBER(left)) {
             if (IS_NUMBER(right)) {
               if (left.v.number > right.v.number) {
                 PUSH_YES();
@@ -478,19 +468,9 @@ namespace mavka::mama {
                 PUSH_NO();
               }
             } else {
-              PUSH_NO();
-            }
-          } else if (IS_YES(left)) {
-            PUSH_NO();
-          } else if (IS_NO(left)) {
-            if (right.type == MA_CELL_NUMBER) {
-              if (right.v.number > 0.0) {
-                PUSH_NO();
-              } else {
-                PUSH_YES();
-              }
-            } else {
-              PUSH_NO();
+              DO_THROW_STRING("Дія \"" + std::string(MAG_GREATER) +
+                              "\" для типу \"число\" "
+                              "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
             if (left.v.object->properties.contains(MAG_GREATER)) {
@@ -504,13 +484,116 @@ namespace mavka::mama {
               frame->args.insert_or_assign("0", right);
               I = MaInstruction{OP_CALL};
               goto i_start;
-            } else {
-              DO_THROW_STRING(
-                  "Дію \"чародія_більше\" не визначено для типу \"" +
-                  getcelltypename(left) + "\".")
             }
           } else {
-            PUSH_NO();
+            DO_THROW_STRING("Дію \"" + std::string(MAG_GREATER) +
+                            "\" не визначено для типу \"" +
+                            getcelltypename(left) + "\".")
+          }
+          break;
+        }
+        case OP_GE: {
+          POP_VALUE(right);
+          POP_VALUE(left);
+          if (IS_NUMBER(left)) {
+            if (IS_NUMBER(right)) {
+              if (left.v.number >= right.v.number) {
+                PUSH_YES();
+              } else {
+                PUSH_NO();
+              }
+            } else {
+              DO_THROW_STRING("Дія \"" + std::string(MAG_GREATER_EQUAL) +
+                              "\" для типу \"число\" "
+                              "очікує параметром значення типу \"число\".")
+            }
+          } else if (IS_OBJECT(left)) {
+            if (left.v.object->properties.contains(MAG_GREATER_EQUAL)) {
+              const auto greater_diia_cell =
+                  ma_object_get(left.v.object, MAG_GREATER_EQUAL);
+              if (!initcall(M, greater_diia_cell, M->i + 1)) {
+                DO_THROW_STRING("Неможливо викликати \"" +
+                                getcelltypename(greater_diia_cell) + "\".")
+              }
+              const auto frame = M->call_stack.top();
+              frame->args.insert_or_assign("0", right);
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            }
+          } else {
+            DO_THROW_STRING("Дію \"" + std::string(MAG_GREATER_EQUAL) +
+                            "\" не визначено для типу \"" +
+                            getcelltypename(left) + "\".")
+          }
+          break;
+        }
+        case OP_LT: {
+          POP_VALUE(right);
+          POP_VALUE(left);
+          if (IS_NUMBER(left)) {
+            if (IS_NUMBER(right)) {
+              if (left.v.number < right.v.number) {
+                PUSH_YES();
+              } else {
+                PUSH_NO();
+              }
+            } else {
+              DO_THROW_STRING("Дія \"" + std::string(MAG_LESSER) +
+                              "\" для типу \"число\" "
+                              "очікує параметром значення типу \"число\".")
+            }
+          } else if (IS_OBJECT(left)) {
+            if (left.v.object->properties.contains(MAG_LESSER)) {
+              const auto greater_diia_cell =
+                  ma_object_get(left.v.object, MAG_LESSER);
+              if (!initcall(M, greater_diia_cell, M->i + 1)) {
+                DO_THROW_STRING("Неможливо викликати \"" +
+                                getcelltypename(greater_diia_cell) + "\".")
+              }
+              const auto frame = M->call_stack.top();
+              frame->args.insert_or_assign("0", right);
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            }
+          } else {
+            DO_THROW_STRING("Дію \"" + std::string(MAG_LESSER) +
+                            "\" не визначено для типу \"" +
+                            getcelltypename(left) + "\".")
+          }
+          break;
+        }
+        case OP_LE: {
+          POP_VALUE(right);
+          POP_VALUE(left);
+          if (IS_NUMBER(left)) {
+            if (IS_NUMBER(right)) {
+              if (left.v.number <= right.v.number) {
+                PUSH_YES();
+              } else {
+                PUSH_NO();
+              }
+            } else {
+              DO_THROW_STRING("Дія \"" + std::string(MAG_LESSER_EQUAL) +
+                              "\" для типу \"число\" "
+                              "очікує параметром значення типу \"число\".")
+            }
+          } else if (IS_OBJECT(left)) {
+            if (left.v.object->properties.contains(MAG_LESSER_EQUAL)) {
+              const auto greater_diia_cell =
+                  ma_object_get(left.v.object, MAG_LESSER_EQUAL);
+              if (!initcall(M, greater_diia_cell, M->i + 1)) {
+                DO_THROW_STRING("Неможливо викликати \"" +
+                                getcelltypename(greater_diia_cell) + "\".")
+              }
+              const auto frame = M->call_stack.top();
+              frame->args.insert_or_assign("0", right);
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            }
+          } else {
+            DO_THROW_STRING("Дію \"" + std::string(MAG_LESSER_EQUAL) +
+                            "\" не визначено для типу \"" +
+                            getcelltypename(left) + "\".")
           }
           break;
         }

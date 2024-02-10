@@ -7,6 +7,10 @@ namespace mavka::mama {
         return "пусто";
       case MA_CELL_NUMBER:
         return "число";
+      case MA_CELL_YES:
+        return "логічне";
+      case MA_CELL_NO:
+        return "логічне";
       case MA_CELL_OBJECT:
         return "обʼєкт";
       default:
