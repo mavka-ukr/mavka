@@ -18,8 +18,7 @@ namespace mavka::mama {
     if (body_result.error) {
       return body_result;
     }
-    M->code.push_back(
-        MaInstruction{OP_LOAD, {.load = new MaLoadInstructionArgs("пусто")}});
+    M->code.push_back(MaInstruction{OP_EMPTY});
     M->code.push_back(MaInstruction{OP_RETURN});
 
     M->code[jump_out_of_diia_body_instruction_index].args.jump = M->code.size();
@@ -37,8 +36,7 @@ namespace mavka::mama {
           return value_result;
         }
       } else {
-        M->code.push_back(MaInstruction{
-            OP_LOAD, {.load = new MaLoadInstructionArgs("пусто")}});
+        M->code.push_back(MaInstruction{OP_EMPTY});
       }
       M->code.push_back(MaInstruction{
           OP_DIIA_PARAM,

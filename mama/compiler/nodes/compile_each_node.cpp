@@ -127,8 +127,7 @@ namespace mavka::mama {
 
       M->code[jump_out_instruction_index].args.jumpiftrue = M->code.size();
 
-      M->code.push_back(
-          MaInstruction{OP_LOAD, {.load = new MaLoadInstructionArgs("пусто")}});
+      M->code.push_back(MaInstruction{OP_EMPTY});
       M->code.push_back(MaInstruction{
           OP_STORE, {.store = new MaStoreInstructionArgs(each_node->name)}});
 
@@ -186,12 +185,10 @@ namespace mavka::mama {
 
         M->code[jump_out_instruction_index].args.jumpiftrue = M->code.size();
 
-        M->code.push_back(MaInstruction{
-            OP_LOAD, {.load = new MaLoadInstructionArgs("пусто")}});
+        M->code.push_back(MaInstruction{OP_EMPTY});
         M->code.push_back(MaInstruction{
             OP_STORE, {.store = new MaStoreInstructionArgs(each_node->name)}});
-        M->code.push_back(MaInstruction{
-            OP_LOAD, {.load = new MaLoadInstructionArgs("пусто")}});
+        M->code.push_back(MaInstruction{OP_EMPTY});
         M->code.push_back(MaInstruction{
             OP_STORE, {.store = new MaStoreInstructionArgs(iterator_name)}});
 
