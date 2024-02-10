@@ -42,9 +42,7 @@ namespace mavka::mama {
       return "пусто";
     }
     if (cell.type == MA_CELL_NUMBER) {
-      std::ostringstream stream;
-      stream << cell.v.number;
-      return stream.str();
+      return ma_number_to_string(cell.v.number);
     }
     if (cell.type == MA_CELL_YES) {
       return "так";

@@ -794,6 +794,93 @@ namespace mavka::mama {
           }
           break;
         }
+        case OP_MOD: {
+          POP_VALUE(right);
+          POP_VALUE(left);
+          if (IS_NUMBER(left)) {
+            if (IS_NUMBER(right)) {
+              PUSH_NUMBER(fmod(left.v.number, right.v.number));
+            } else {
+              DO_THROW_STRING("Дія \"" + std::string(MAG_MOD) +
+                              "\" для типу \"число\" "
+                              "очікує параметром значення типу \"число\".")
+            }
+          } else if (IS_OBJECT(left)) {
+            if (left.v.object->properties.contains(MAG_MOD)) {
+              const auto diia_cell = ma_object_get(left.v.object, MAG_MOD);
+              if (!initcall(M, diia_cell, M->i + 1)) {
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
+              }
+              READ_TOP_FRAME();
+              frame->args.insert_or_assign("0", right);
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_MOD, left);
+            }
+          } else {
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_MOD, left);
+          }
+          break;
+        }
+        case OP_DIVDIV: {
+          POP_VALUE(right);
+          POP_VALUE(left);
+          if (IS_NUMBER(left)) {
+            if (IS_NUMBER(right)) {
+              PUSH_NUMBER(floor(left.v.number / right.v.number));
+            } else {
+              DO_THROW_STRING("Дія \"" + std::string(MAG_DIVDIV) +
+                              "\" для типу \"число\" "
+                              "очікує параметром значення типу \"число\".")
+            }
+          } else if (IS_OBJECT(left)) {
+            if (left.v.object->properties.contains(MAG_DIVDIV)) {
+              const auto diia_cell = ma_object_get(left.v.object, MAG_DIVDIV);
+              if (!initcall(M, diia_cell, M->i + 1)) {
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
+              }
+              READ_TOP_FRAME();
+              frame->args.insert_or_assign("0", right);
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_DIVDIV, left);
+            }
+          } else {
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_DIVDIV, left);
+          }
+          break;
+        }
+        case OP_POW: {
+          POP_VALUE(right);
+          POP_VALUE(left);
+          if (IS_NUMBER(left)) {
+            if (IS_NUMBER(right)) {
+              PUSH_NUMBER(pow(left.v.number, right.v.number));
+            } else {
+              DO_THROW_STRING("Дія \"" + std::string(MAG_POW) +
+                              "\" для типу \"число\" "
+                              "очікує параметром значення типу \"число\".")
+            }
+          } else if (IS_OBJECT(left)) {
+            if (left.v.object->properties.contains(MAG_POW)) {
+              const auto diia_cell = ma_object_get(left.v.object, MAG_POW);
+              if (!initcall(M, diia_cell, M->i + 1)) {
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
+              }
+              READ_TOP_FRAME();
+              frame->args.insert_or_assign("0", right);
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_POW, left);
+            }
+          } else {
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_POW, left);
+          }
+          break;
+        }
         default: {
           std::cout << "unsupported instruction " << getopname(I.op)
                     << std::endl;
