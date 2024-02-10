@@ -32,6 +32,18 @@ namespace mavka::mama {
           M->stack.push(MA_MAKE_NUBMER(I.args.number));
           break;
         }
+        case OP_EMPTY: {
+          M->stack.push(MA_MAKE_EMPTY());
+          break;
+        }
+        case OP_YES: {
+          M->stack.push(MA_MAKE_YES());
+          break;
+        }
+        case OP_NO: {
+          M->stack.push(MA_MAKE_NO());
+          break;
+        }
         case OP_INITCALL: {
           auto cell = M->stack.top();
           M->stack.pop();

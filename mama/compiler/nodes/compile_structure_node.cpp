@@ -18,8 +18,7 @@ namespace mavka::mama {
           return value_result;
         }
       } else {
-        M->code.push_back(MaInstruction{
-            OP_LOAD, {.load = new MaLoadInstructionArgs("пусто")}});
+        M->code.push_back(MaInstruction{OP_EMPTY});
       }
       M->code.push_back(MaInstruction{
           OP_STRUCT_PARAM,

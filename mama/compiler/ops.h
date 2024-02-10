@@ -8,6 +8,9 @@ typedef enum {
 
   OP_CONSTANT,
   OP_NUMBER,
+  OP_EMPTY,
+  OP_YES,
+  OP_NO,
 
   OP_INITCALL,
   OP_STORE_ARG,
