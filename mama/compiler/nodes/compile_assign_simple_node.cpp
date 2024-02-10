@@ -8,11 +8,9 @@ namespace mavka::mama {
     if (result.error) {
       return result;
     }
-
     M->code.push_back(MaInstruction{
         OP_STORE,
         {.store = new MaStoreInstructionArgs(assign_simple_node->name)}});
-
     return success();
   }
 } // namespace mavka::mama

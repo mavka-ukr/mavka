@@ -270,6 +270,7 @@ namespace mavka::mama {
   MaCompilationResult compile_method(
       MaMa* M,
       const std::string& structure,
+      bool ee,
       bool async,
       const std::vector<ast::GenericNode*>& generics,
       const std::string& name,
@@ -319,7 +320,7 @@ namespace mavka::mama {
       MaMa* M,
       const mavka::ast::DictionaryNode* dictionary_node);
   MaCompilationResult compile_diia_node(MaMa* M,
-                                        const mavka::ast::DiiaNode* diia_node);
+                                        mavka::ast::DiiaNode* diia_node);
   MaCompilationResult compile_each_node(MaMa* M,
                                         mavka::ast::EachNode* each_node);
   MaCompilationResult compile_eval_node(MaMa* M,
