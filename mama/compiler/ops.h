@@ -55,6 +55,12 @@ typedef enum {
   OP_LT,
   OP_LE,
 
+  OP_NOT,
+
+  OP_NEGATIVE,
+  OP_POSITIVE,
+  OP_BNOT,
+
   // todo: implement next
 
   OP_ADD,
@@ -69,11 +75,6 @@ typedef enum {
   OP_BAND,
   OP_SHL,
   OP_SHR,
-
-  OP_NEGATIVE,
-  OP_POSITIVE,
-  OP_BNOT,
-  OP_NOT,
 } OP;
 
 inline std::string getopname(const OP op) {
