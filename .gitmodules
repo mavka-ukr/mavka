@@ -1,6 +1,0 @@
-[submodule "external/ordered-map"]
-	path = external/ordered-map
-	url = https://github.com/Tessil/ordered-map
-[submodule "external/parser"]
-	path = external/parser
-	url = https://github.com/mavka-ukr/parser
