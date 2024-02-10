@@ -128,6 +128,23 @@ namespace mavka::mama {
     if (instruction.op == OP_LOAD) {
       std::cout << instruction.args.load->name;
     }
+    if (instruction.op == OP_JUMP_IF_TRUE ||
+        instruction.op == OP_E_JUMP_IF_TRUE) {
+      std::cout << instruction.args.jumpiftrue;
+    }
+    if (instruction.op == OP_JUMP_IF_FALSE ||
+        instruction.op == OP_E_JUMP_IF_FALSE) {
+      std::cout << instruction.args.jumpiffalse;
+    }
+    if (instruction.op == OP_JUMP) {
+      std::cout << instruction.args.jump;
+    }
+    if (instruction.op == OP_STORE_ARG) {
+      std::cout << instruction.args.storearg->name;
+    }
+    if (instruction.op == OP_NUMBER) {
+      std::cout << instruction.args.number;
+    }
     std::cout << "]" << std::endl;
   }
 

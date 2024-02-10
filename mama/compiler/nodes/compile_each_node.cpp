@@ -111,9 +111,7 @@ namespace mavka::mama {
       M->code.push_back(MaInstruction{
           OP_LOAD, {.load = new MaLoadInstructionArgs(each_node->name)}});
       if (each_node->value->FromToSimpleNode) {
-        M->code.push_back(MaInstruction{
-            OP_CONSTANT,
-            {.constant = new MaCell{MA_CELL_NUMBER, {.number = 1}}}});
+        M->code.push_back(MaInstruction{OP_NUMBER, {.number = 1}});
       } else if (each_node->value->FromToComplexNode) {
         const auto step_result =
             compile_node(M, each_node->value->FromToComplexNode->step);
@@ -146,7 +144,7 @@ namespace mavka::mama {
         M->code.push_back(MaInstruction{
             OP_GET, {.get = new MaGetInstructionArgs(MAG_ITERATOR)}});
         M->code.push_back(MaInstruction{
-          OP_INITCALL, {.initcall = new MaInitCallInstructionArgs()}});
+            OP_INITCALL, {.initcall = new MaInitCallInstructionArgs()}});
         const auto initcall_instruction_index = M->code.size() - 1;
         M->code[initcall_instruction_index].args.initcall->index =
             M->code.size() + 1;

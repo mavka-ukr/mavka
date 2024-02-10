@@ -7,6 +7,7 @@ typedef enum {
   OP_POP,
 
   OP_CONSTANT,
+  OP_NUMBER,
 
   OP_INITCALL,
   OP_STORE_ARG,
@@ -21,6 +22,8 @@ typedef enum {
   OP_JUMP,
   OP_JUMP_IF_TRUE,
   OP_JUMP_IF_FALSE,
+  OP_E_JUMP_IF_TRUE,
+  OP_E_JUMP_IF_FALSE,
 
   OP_GET,
   OP_GET1,
@@ -43,10 +46,10 @@ typedef enum {
   OP_GIVE,
   OP_MODULE_DONE,
 
-  // todo: implement next
-
   OP_AND,
   OP_OR,
+
+  // todo: implement next
 
   OP_EQ,
   OP_NE,
@@ -116,6 +119,10 @@ inline std::string getopname(const OP op) {
       return "OP_JUMP_IF_FALSE";
     case OP_JUMP_IF_TRUE:
       return "OP_JUMP_IF_TRUE";
+    case OP_E_JUMP_IF_FALSE:
+      return "OP_E_JUMP_IF_FALSE";
+    case OP_E_JUMP_IF_TRUE:
+      return "OP_E_JUMP_IF_TRUE";
     case OP_JUMP:
       return "OP_JUMP";
     case OP_THROW:
@@ -170,6 +177,20 @@ inline std::string getopname(const OP op) {
       return "OP_NOT";
     case OP_INITCALL:
       return "OP_INITCALL";
+    case OP_DIIA_PARAM:
+      return "OP_DIIA_PARAM";
+    case OP_STRUCT_PARAM:
+      return "OP_STRUCT_PARAM";
+    case OP_STRUCT_METHOD:
+      return "OP_STRUCT_METHOD";
+    case OP_MODULE_DONE:
+      return "OP_MODULE_DONE";
+    case OP_GET1:
+      return "OP_GET1";
+    case OP_STORE_ARG:
+      return "OP_STORE_ARG";
+    case OP_NUMBER:
+      return "OP_NUMBER";
     default:
       break;
   }

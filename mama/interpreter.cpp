@@ -25,7 +25,11 @@ namespace mavka::mama {
           break;
         }
         case OP_CONSTANT: {
-          M->stack.push(*I.args.constant);
+          M->stack.push(M->constants[I.args.constant]);
+          break;
+        }
+        case OP_NUMBER: {
+          M->stack.push(MA_MAKE_NUBMER(I.args.number));
           break;
         }
         case OP_INITCALL: {
@@ -193,6 +197,35 @@ namespace mavka::mama {
         case OP_JUMP_IF_FALSE: {
           const auto cell = M->stack.top();
           M->stack.pop();
+          if (cell.type == MA_CELL_EMPTY) {
+            M->i = I.args.jumpiffalse;
+            goto start;
+          } else if (cell.type == MA_CELL_NUMBER) {
+            if (cell.v.number == 0.0) {
+              M->i = I.args.jumpiffalse;
+              goto start;
+            }
+          } else if (cell.type == MA_CELL_NO) {
+            M->i = I.args.jumpiffalse;
+            goto start;
+          }
+          break;
+        }
+        case OP_E_JUMP_IF_TRUE: {
+          const auto cell = M->stack.top();
+          if (cell.type == MA_CELL_NUMBER) {
+            if (cell.v.number != 0.0) {
+              M->i = I.args.jumpiftrue;
+              goto start;
+            }
+          } else if (cell.type != MA_CELL_NO) {
+            M->i = I.args.jumpiftrue;
+            goto start;
+          }
+          break;
+        }
+        case OP_E_JUMP_IF_FALSE: {
+          const auto cell = M->stack.top();
           if (cell.type == MA_CELL_EMPTY) {
             M->i = I.args.jumpiffalse;
             goto start;

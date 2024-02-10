@@ -1,10 +1,6 @@
 #include "../mama.h"
 
 namespace mavka::mama {
-  MaInstruction create_constant_instruction(MaCell* constant) {
-    return MaInstruction{OP_CONSTANT, {.constant = constant}};
-  }
-
   MaCompilationResult compile_node(MaMa* M, mavka::ast::ASTSome* node) {
     if (!node) {
       return error(nullptr, "null node");
