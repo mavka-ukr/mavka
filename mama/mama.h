@@ -248,6 +248,11 @@ namespace mavka::mama {
     MaCompilationError* error;
   };
 
+  struct EachNodeJumps {
+    ast::BreakNode* break_node;
+    ast::ContinueNode* continue_node;
+  };
+
   MaCompilationResult error(mavka::ast::ASTSome* node,
                             const std::string& message);
 
@@ -257,6 +262,9 @@ namespace mavka::mama {
   MaCompilationResult compile_body(
       MaMa* M,
       const std::vector<mavka::ast::ASTSome*>& body);
+  void find_each_node_jumps(MaMa* M,
+                            const std::vector<mavka::ast::ASTSome*>& body,
+                            std::vector<EachNodeJumps>& jumps);
 
   MaCompilationResult compile_diia(
       MaMa* M,

@@ -3,6 +3,8 @@
 namespace mavka::mama {
   MaCompilationResult compile_break_node(MaMa* M,
                                          mavka::ast::BreakNode* break_node) {
-    return error(mavka::ast::make_ast_some(break_node), "Not implemented");
+    M->code.push_back(MaInstruction{OP_JUMP, {.jump = 0}});
+    break_node->code_index = M->code.size() - 1;
+    return success();
   }
 } // namespace mavka::mama
