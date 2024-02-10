@@ -14,15 +14,25 @@ namespace mavka::mama {
           OP_STORE, {.store = new MaStoreInstructionArgs(diia_node->name)}});
     } else {
       if (diia_node->ee) {
-        return error(ast::make_ast_some(diia_node),
-                     "Спец дії наразі не підтримуються.");
-      }
-      const auto result = compile_method(
-          M, diia_node->structure, diia_node->ee, diia_node->async,
-          diia_node->generics, diia_node->name, diia_node->params,
-          diia_node->return_types, diia_node->body);
-      if (result.error) {
-        return result;
+        const auto result = compile_diia(
+            M, diia_node->async, diia_node->generics, diia_node->name,
+            diia_node->params, diia_node->return_types, diia_node->body);
+        if (result.error) {
+          return result;
+        }
+        M->code.push_back(MaInstruction{
+            OP_LOAD,
+            {.load = new MaLoadInstructionArgs(diia_node->structure)}});
+        M->code.push_back(MaInstruction{
+            OP_SET, {.set = new MaSetInstructionArgs(diia_node->name)}});
+      } else {
+        const auto result = compile_method(
+            M, diia_node->structure, diia_node->ee, diia_node->async,
+            diia_node->generics, diia_node->name, diia_node->params,
+            diia_node->return_types, diia_node->body);
+        if (result.error) {
+          return result;
+        }
       }
     }
 
