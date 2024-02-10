@@ -6,6 +6,7 @@
 /.хмарні_паки
 /.розширення
 build/
+dist/
 build-bin/
 build-node/
 build-web/
