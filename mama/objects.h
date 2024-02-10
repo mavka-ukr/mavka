@@ -40,6 +40,8 @@ class MaString final {
   std::string data;
 
   size_t length() const;
+  std::string substr(size_t start, size_t length) const;
+  std::vector<std::string> split(const std::string& delim) const;
 };
 
 class MaList final {
@@ -151,6 +153,9 @@ MaCell ma_string_mag_get_element_diia_native_fn(
     MaMa* M,
     MaObject* me,
     std::map<std::string, MaCell>& args);
+MaCell ma_string_split_diia_native_fn(MaMa* M,
+                                      MaObject* me,
+                                      std::map<std::string, MaCell>& args);
 
 inline MaCell create_string(const std::string& value) {
   const auto ma_object = new MaObject();
@@ -170,6 +175,8 @@ inline MaCell create_string(const std::string& value) {
   ma_object_set(
       ma_object, MAG_GET_ELEMENT,
       create_diia_native(ma_string_mag_get_element_diia_native_fn, ma_object));
+  ma_object_set(ma_object, "розбити",
+                create_diia_native(ma_string_split_diia_native_fn, ma_object));
   return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
 }
 
