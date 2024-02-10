@@ -301,6 +301,14 @@ namespace mavka::mama {
           }
           break;
         }
+        case OP_E_SETR: {
+          POP_VALUE(value);
+          TOP_VALUE(cell);
+          if (IS_OBJECT(cell)) {
+            ma_object_set(cell.v.object, I.args.set->name, value);
+          }
+          break;
+        }
         case OP_TRY: {
           READ_TOP_FRAME();
           FRAME_PUSH((new MaCallFrame{

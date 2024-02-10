@@ -221,6 +221,6 @@ namespace mavka::mama {
       }
     }
 
-    return error(mavka::ast::make_ast_some(each_node), "Not implemented");
+    return error(mavka::ast::make_ast_some(each_node), "Перебір з ключем тимчасово недоступний.");
   }
 } // namespace mavka::mama

@@ -2,7 +2,7 @@
 
 namespace mavka::mama {
   MaCompilationResult compile_test_node(MaMa* M,
-                                        const mavka::ast::TestNode* test_node) {
+                                        mavka::ast::TestNode* test_node) {
     if (test_node->op == "&&" || test_node->op == "і") {
       const auto left = compile_node(M, test_node->left);
       if (left.error) {
@@ -30,6 +30,9 @@ namespace mavka::mama {
         return right;
       }
       M->code[jump_if_true_instruction_index].args.jumpiftrue = M->code.size();
+    } else {
+      return error(ast::make_ast_some(test_node),
+                   "Невідома вказівка \"" + test_node->op + "\".");
     }
     return success();
   }

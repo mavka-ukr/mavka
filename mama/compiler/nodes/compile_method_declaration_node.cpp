@@ -5,6 +5,6 @@ namespace mavka::mama {
       MaMa* M,
       mavka::ast::MethodDeclarationNode* method_declaration_node) {
     return error(mavka::ast::make_ast_some(method_declaration_node),
-                 "Not implemented");
+                 "Макети тимчасово недоступні.");
   }
 } // namespace mavka::mama

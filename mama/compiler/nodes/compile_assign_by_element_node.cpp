@@ -21,6 +21,7 @@ namespace mavka::mama {
       return success();
     }
     return error(mavka::ast::make_ast_some(assign_by_element_node),
-                 "Not implemented");
+                 "Вказівка \"" + assign_by_element_node->op +
+                     "\" тимчасово недоступна.");
   }
 } // namespace mavka::mama
