@@ -88,6 +88,12 @@ class MaDiiaNative final {
   MaObject* me;
 };
 
+inline std::string ma_number_to_string(const double number) {
+  std::ostringstream stream;
+  stream << number;
+  return stream.str();
+}
+
 inline void ma_object_set(MaObject* object,
                           const std::string& name,
                           MaCell value) {
