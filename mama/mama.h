@@ -13,8 +13,8 @@
 #include <vector>
 
 #include <tsl/ordered_map.h>
-#include "../lib/parser/ast.h"
-#include "../lib/parser/parser.h"
+#include "../external/parser/ast.h"
+#include "../external/parser/parser.h"
 #include "../utils/tools.h"
 #include "compiler/ops.h"
 
