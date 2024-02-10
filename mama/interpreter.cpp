@@ -10,6 +10,9 @@
                   "\" не визначено для типу \"" + getcelltypename(type) + \
                   "\".")
 
+#define DO_THROW_CANNOT_CALL_CELL(cell) \
+  DO_THROW_STRING("Неможливо викликати \"" + getcelltypename(cell) + "\".")
+
 #define IS_EMPTY(cell) ((cell).type == MA_CELL_EMPTY)
 #define IS_NUMBER(cell) ((cell).type == MA_CELL_NUMBER)
 #define IS_YES(cell) ((cell).type == MA_CELL_YES)
@@ -107,8 +110,7 @@ namespace mavka::mama {
           if (initcall(M, cell, I.args.initcall->index)) {
             break;
           }
-          DO_THROW_STRING("Неможливо викликати \"" + getcelltypename(cell) +
-                          "\".")
+          DO_THROW_CANNOT_CALL_CELL(cell);
         }
         case OP_STORE_ARG: {
           const auto value = M->stack.top();
@@ -481,8 +483,7 @@ namespace mavka::mama {
             if (left.v.object->properties.contains(MAG_GREATER)) {
               const auto diia_cell = ma_object_get(left.v.object, MAG_GREATER);
               if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_STRING("Неможливо викликати \"" +
-                                getcelltypename(diia_cell) + "\".")
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
               }
               const auto frame = M->call_stack.top();
               frame->args.insert_or_assign("0", right);
@@ -516,8 +517,7 @@ namespace mavka::mama {
               const auto diia_cell =
                   ma_object_get(left.v.object, MAG_GREATER_EQUAL);
               if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_STRING("Неможливо викликати \"" +
-                                getcelltypename(diia_cell) + "\".")
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
               }
               const auto frame = M->call_stack.top();
               frame->args.insert_or_assign("0", right);
@@ -550,8 +550,7 @@ namespace mavka::mama {
             if (left.v.object->properties.contains(MAG_LESSER)) {
               const auto diia_cell = ma_object_get(left.v.object, MAG_LESSER);
               if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_STRING("Неможливо викликати \"" +
-                                getcelltypename(diia_cell) + "\".")
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
               }
               const auto frame = M->call_stack.top();
               frame->args.insert_or_assign("0", right);
@@ -585,8 +584,7 @@ namespace mavka::mama {
               const auto diia_cell =
                   ma_object_get(left.v.object, MAG_LESSER_EQUAL);
               if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_STRING("Неможливо викликати \"" +
-                                getcelltypename(diia_cell) + "\".")
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
               }
               const auto frame = M->call_stack.top();
               frame->args.insert_or_assign("0", right);
@@ -628,8 +626,7 @@ namespace mavka::mama {
               const auto diia_cell =
                   ma_object_get(value.v.object, MAG_NEGATIVE);
               if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_STRING("Неможливо викликати \"" +
-                                getcelltypename(diia_cell) + "\".")
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
               }
               I = MaInstruction{OP_CALL};
               goto i_start;
@@ -650,8 +647,7 @@ namespace mavka::mama {
               const auto diia_cell =
                   ma_object_get(value.v.object, MAG_POSITIVE);
               if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_STRING("Неможливо викликати \"" +
-                                getcelltypename(diia_cell) + "\".")
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
               }
               I = MaInstruction{OP_CALL};
               goto i_start;
@@ -672,8 +668,7 @@ namespace mavka::mama {
             if (value.v.object->properties.contains(MAG_BW_NOT)) {
               const auto diia_cell = ma_object_get(value.v.object, MAG_BW_NOT);
               if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_STRING("Неможливо викликати \"" +
-                                getcelltypename(diia_cell) + "\".")
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
               }
               I = MaInstruction{OP_CALL};
               goto i_start;
