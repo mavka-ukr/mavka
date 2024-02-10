@@ -404,8 +404,8 @@ namespace mavka::mama {
           break;
         }
         case OP_EQ: {
-          POP_VALUE(left);
           POP_VALUE(right);
+          POP_VALUE(left);
           if (IS_EMPTY(left)) {
             if (IS_EMPTY(right)) {
               PUSH_YES();
@@ -458,8 +458,8 @@ namespace mavka::mama {
           break;
         }
         case OP_GT: {
-          POP_VALUE(left);
           POP_VALUE(right);
+          POP_VALUE(left);
           if (IS_EMPTY(left)) {
             if (IS_NUMBER(right)) {
               if (right.v.number > 0.0) {
@@ -539,89 +539,23 @@ namespace mavka::mama {
           DO_THROW_STRING("Неможливо додати " + getcelltypename(left_cell) +
                           " до " + getcelltypename(right_cell))
         }
-        case OP_SUB: {
-          const auto right_cell = M->stack.top();
-          M->stack.pop();
-          const auto left_cell = M->stack.top();
-          M->stack.pop();
 
-          if (left_cell.type == MA_CELL_NUMBER &&
-              right_cell.type == MA_CELL_NUMBER) {
-            M->stack.push(
-                MA_MAKE_NUBMER(left_cell.v.number - right_cell.v.number));
-            break;
-          }
-          DO_THROW_STRING("Неможливо відняти " + getcelltypename(left_cell) +
-                          " і " + getcelltypename(right_cell))
-        }
-        case OP_GE: {
-          const auto right = M->stack.top();
-          M->stack.pop();
-          const auto left = M->stack.top();
-          M->stack.pop();
-
-          if (left.type == MA_CELL_NUMBER && right.type == MA_CELL_NUMBER) {
-            if (left.v.number >= right.v.number) {
-              M->stack.push(MA_MAKE_YES());
-            } else {
-              M->stack.push(MA_MAKE_NO());
-            }
-          } else {
-            M->stack.push(MA_MAKE_NO());
-          }
-          break;
-        }
-        case OP_LT: {
-          const auto right = M->stack.top();
-          M->stack.pop();
-          const auto left = M->stack.top();
-          M->stack.pop();
-
-          if (left.type == MA_CELL_NUMBER && right.type == MA_CELL_NUMBER) {
-            if (left.v.number < right.v.number) {
-              M->stack.push(MA_MAKE_YES());
-            } else {
-              M->stack.push(MA_MAKE_NO());
-            }
-          } else {
-            M->stack.push(MA_MAKE_NO());
-          }
-          break;
-        }
-        case OP_LE: {
-          const auto right = M->stack.top();
-          M->stack.pop();
-          const auto left = M->stack.top();
-          M->stack.pop();
-
-          if (left.type == MA_CELL_NUMBER && right.type == MA_CELL_NUMBER) {
-            if (left.v.number <= right.v.number) {
-              M->stack.push(MA_MAKE_YES());
-            } else {
-              M->stack.push(MA_MAKE_NO());
-            }
-          } else {
-            M->stack.push(MA_MAKE_NO());
-          }
-          break;
-        }
         case OP_NOT: {
-          const auto value = M->stack.top();
-          M->stack.pop();
-          if (value.type == MA_CELL_EMPTY) {
-            M->stack.push(MA_MAKE_YES());
-          } else if (value.type == MA_CELL_NUMBER) {
+          POP_VALUE(value);
+          if (IS_EMPTY(value)) {
+            PUSH_YES();
+          } else if (IS_NUMBER(value)) {
             if (value.v.number == 0.0) {
-              M->stack.push(MA_MAKE_YES());
+              PUSH_YES();
             } else {
-              M->stack.push(MA_MAKE_NO());
+              PUSH_NO();
             }
-          } else if (value.type == MA_CELL_YES) {
-            M->stack.push(MA_MAKE_NO());
-          } else if (value.type == MA_CELL_NO) {
-            M->stack.push(MA_MAKE_YES());
+          } else if (IS_YES(value)) {
+            PUSH_NO();
+          } else if (IS_NO(value)) {
+            PUSH_YES();
           } else {
-            M->stack.push(MA_MAKE_NO());
+            PUSH_NO();
           }
           break;
         }
