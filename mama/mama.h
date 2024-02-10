@@ -12,11 +12,11 @@
 #include <variant>
 #include <vector>
 
-#include "../parser/ast.h"
-#include "../parser/parser.h"
+#include <tsl/ordered_map.h>
+#include "../lib/parser/ast.h"
+#include "../lib/parser/parser.h"
 #include "../utils/tools.h"
 #include "compiler/ops.h"
-#include <tsl/ordered_map.h>
 
 // Check windows
 #if _WIN32 || _WIN64

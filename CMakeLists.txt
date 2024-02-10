@@ -3,8 +3,8 @@ project(mavka)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_subdirectory(parser)
-add_subdirectory(ordered-map)
+add_subdirectory(lib/parser)
+add_subdirectory(lib/ordered-map)
 
 set(MAVKA_COMPILER_SRC
         mama/compiler/nodes/compile_anon_diia.cpp
