@@ -46,9 +46,6 @@ typedef enum {
   OP_GIVE,
   OP_MODULE_DONE,
 
-  OP_AND,
-  OP_OR,
-
   // todo: implement next
 
   OP_EQ,
@@ -139,10 +136,6 @@ inline std::string getopname(const OP op) {
       return "OP_GT";
     case OP_GE:
       return "OP_GE";
-    case OP_AND:
-      return "OP_AND";
-    case OP_OR:
-      return "OP_OR";
     case OP_CALL:
       return "OP_CALL";
     case OP_RETURN:
