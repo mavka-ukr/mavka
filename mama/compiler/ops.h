@@ -65,11 +65,11 @@ typedef enum {
   OP_MUL,
   OP_DIV,
   OP_MOD,
+  OP_DIVDIV,
+  OP_POW,
 
   // todo: implement next
 
-  OP_DIVDIV,
-  OP_POW,
   OP_XOR,
   OP_BOR,
   OP_BAND,
