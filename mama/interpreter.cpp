@@ -5,6 +5,11 @@
   I = MaInstruction{OP_THROW};       \
   goto i_start;
 
+#define DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(name, type)                    \
+  DO_THROW_STRING("Дію \"" + std::string(name) +                          \
+                  "\" не визначено для типу \"" + getcelltypename(type) + \
+                  "\".")
+
 #define IS_EMPTY(cell) ((cell).type == MA_CELL_EMPTY)
 #define IS_NUMBER(cell) ((cell).type == MA_CELL_NUMBER)
 #define IS_YES(cell) ((cell).type == MA_CELL_YES)
@@ -474,21 +479,20 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             if (left.v.object->properties.contains(MAG_GREATER)) {
-              const auto greater_diia_cell =
-                  ma_object_get(left.v.object, MAG_GREATER);
-              if (!initcall(M, greater_diia_cell, M->i + 1)) {
+              const auto diia_cell = ma_object_get(left.v.object, MAG_GREATER);
+              if (!initcall(M, diia_cell, M->i + 1)) {
                 DO_THROW_STRING("Неможливо викликати \"" +
-                                getcelltypename(greater_diia_cell) + "\".")
+                                getcelltypename(diia_cell) + "\".")
               }
               const auto frame = M->call_stack.top();
               frame->args.insert_or_assign("0", right);
               I = MaInstruction{OP_CALL};
               goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_GREATER, left);
             }
           } else {
-            DO_THROW_STRING("Дію \"" + std::string(MAG_GREATER) +
-                            "\" не визначено для типу \"" +
-                            getcelltypename(left) + "\".")
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_GREATER, left);
           }
           break;
         }
@@ -509,21 +513,21 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             if (left.v.object->properties.contains(MAG_GREATER_EQUAL)) {
-              const auto greater_diia_cell =
+              const auto diia_cell =
                   ma_object_get(left.v.object, MAG_GREATER_EQUAL);
-              if (!initcall(M, greater_diia_cell, M->i + 1)) {
+              if (!initcall(M, diia_cell, M->i + 1)) {
                 DO_THROW_STRING("Неможливо викликати \"" +
-                                getcelltypename(greater_diia_cell) + "\".")
+                                getcelltypename(diia_cell) + "\".")
               }
               const auto frame = M->call_stack.top();
               frame->args.insert_or_assign("0", right);
               I = MaInstruction{OP_CALL};
               goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_GREATER_EQUAL, left);
             }
           } else {
-            DO_THROW_STRING("Дію \"" + std::string(MAG_GREATER_EQUAL) +
-                            "\" не визначено для типу \"" +
-                            getcelltypename(left) + "\".")
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_GREATER_EQUAL, left);
           }
           break;
         }
@@ -544,21 +548,20 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             if (left.v.object->properties.contains(MAG_LESSER)) {
-              const auto greater_diia_cell =
-                  ma_object_get(left.v.object, MAG_LESSER);
-              if (!initcall(M, greater_diia_cell, M->i + 1)) {
+              const auto diia_cell = ma_object_get(left.v.object, MAG_LESSER);
+              if (!initcall(M, diia_cell, M->i + 1)) {
                 DO_THROW_STRING("Неможливо викликати \"" +
-                                getcelltypename(greater_diia_cell) + "\".")
+                                getcelltypename(diia_cell) + "\".")
               }
               const auto frame = M->call_stack.top();
               frame->args.insert_or_assign("0", right);
               I = MaInstruction{OP_CALL};
               goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_LESSER, left);
             }
           } else {
-            DO_THROW_STRING("Дію \"" + std::string(MAG_LESSER) +
-                            "\" не визначено для типу \"" +
-                            getcelltypename(left) + "\".")
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_LESSER, left);
           }
           break;
         }
@@ -579,21 +582,106 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             if (left.v.object->properties.contains(MAG_LESSER_EQUAL)) {
-              const auto greater_diia_cell =
+              const auto diia_cell =
                   ma_object_get(left.v.object, MAG_LESSER_EQUAL);
-              if (!initcall(M, greater_diia_cell, M->i + 1)) {
+              if (!initcall(M, diia_cell, M->i + 1)) {
                 DO_THROW_STRING("Неможливо викликати \"" +
-                                getcelltypename(greater_diia_cell) + "\".")
+                                getcelltypename(diia_cell) + "\".")
               }
               const auto frame = M->call_stack.top();
               frame->args.insert_or_assign("0", right);
               I = MaInstruction{OP_CALL};
               goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_LESSER_EQUAL, left);
             }
           } else {
-            DO_THROW_STRING("Дію \"" + std::string(MAG_LESSER_EQUAL) +
-                            "\" не визначено для типу \"" +
-                            getcelltypename(left) + "\".")
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_LESSER_EQUAL, left);
+          }
+          break;
+        }
+        case OP_NOT: {
+          POP_VALUE(value);
+          if (IS_EMPTY(value)) {
+            PUSH_YES();
+          } else if (IS_NUMBER(value)) {
+            if (value.v.number == 0.0) {
+              PUSH_YES();
+            } else {
+              PUSH_NO();
+            }
+          } else if (IS_YES(value)) {
+            PUSH_NO();
+          } else if (IS_NO(value)) {
+            PUSH_YES();
+          } else {
+            PUSH_NO();
+          }
+          break;
+        }
+        case OP_NEGATIVE: {
+          POP_VALUE(value);
+          if (IS_NUMBER(value)) {
+            PUSH_NUMBER(-value.v.number);
+          } else if (IS_OBJECT(value)) {
+            if (value.v.object->properties.contains(MAG_NEGATIVE)) {
+              const auto diia_cell =
+                  ma_object_get(value.v.object, MAG_NEGATIVE);
+              if (!initcall(M, diia_cell, M->i + 1)) {
+                DO_THROW_STRING("Неможливо викликати \"" +
+                                getcelltypename(diia_cell) + "\".")
+              }
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_NEGATIVE, value);
+            }
+          } else {
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_NEGATIVE, value);
+          }
+          break;
+        }
+        case OP_POSITIVE: {
+          POP_VALUE(value);
+          if (IS_NUMBER(value)) {
+            PUSH_NUMBER(value.v.number * -1);
+          } else if (IS_OBJECT(value)) {
+            if (value.v.object->properties.contains(MAG_POSITIVE)) {
+              const auto diia_cell =
+                  ma_object_get(value.v.object, MAG_POSITIVE);
+              if (!initcall(M, diia_cell, M->i + 1)) {
+                DO_THROW_STRING("Неможливо викликати \"" +
+                                getcelltypename(diia_cell) + "\".")
+              }
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_POSITIVE, value);
+            }
+          } else {
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_POSITIVE, value);
+          }
+          break;
+        }
+        case OP_BNOT: {
+          POP_VALUE(value);
+          if (IS_NUMBER(value)) {
+            PUSH_NUMBER(
+                static_cast<double>(~static_cast<long>(value.v.number)));
+          } else if (IS_OBJECT(value)) {
+            if (value.v.object->properties.contains(MAG_BW_NOT)) {
+              const auto diia_cell = ma_object_get(value.v.object, MAG_BW_NOT);
+              if (!initcall(M, diia_cell, M->i + 1)) {
+                DO_THROW_STRING("Неможливо викликати \"" +
+                                getcelltypename(diia_cell) + "\".")
+              }
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_NOT, value);
+            }
+          } else {
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_NOT, value);
           }
           break;
         }
@@ -621,26 +709,6 @@ namespace mavka::mama {
           }
           DO_THROW_STRING("Неможливо додати " + getcelltypename(left_cell) +
                           " до " + getcelltypename(right_cell))
-        }
-
-        case OP_NOT: {
-          POP_VALUE(value);
-          if (IS_EMPTY(value)) {
-            PUSH_YES();
-          } else if (IS_NUMBER(value)) {
-            if (value.v.number == 0.0) {
-              PUSH_YES();
-            } else {
-              PUSH_NO();
-            }
-          } else if (IS_YES(value)) {
-            PUSH_NO();
-          } else if (IS_NO(value)) {
-            PUSH_YES();
-          } else {
-            PUSH_NO();
-          }
-          break;
         }
         default: {
           std::cout << "unsupported instruction " << getopname(I.op)
