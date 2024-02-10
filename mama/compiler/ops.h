@@ -52,11 +52,10 @@ typedef enum {
   // todo: implement next
 
   OP_EQ,
-  OP_NE,
-  OP_LT,
-  OP_LE,
   OP_GT,
   OP_GE,
+  OP_LT,
+  OP_LE,
 
   OP_ADD,
   OP_SUB,
@@ -129,8 +128,6 @@ inline std::string getopname(const OP op) {
       return "OP_THROW";
     case OP_EQ:
       return "OP_EQ";
-    case OP_NE:
-      return "OP_NE";
     case OP_LT:
       return "OP_LT";
     case OP_LE:

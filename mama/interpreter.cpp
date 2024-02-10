@@ -5,7 +5,59 @@
   I = MaInstruction{OP_THROW};       \
   goto i_start;
 
+#define IS_EMPTY(cell) ((cell).type == MA_CELL_EMPTY)
+#define IS_NUMBER(cell) ((cell).type == MA_CELL_NUMBER)
+#define IS_YES(cell) ((cell).type == MA_CELL_YES)
+#define IS_NO(cell) ((cell).type == MA_CELL_NO)
+#define IS_OBJECT(cell) ((cell).type == MA_CELL_OBJECT)
+#define IS_OBJECT_STRING(cell) (cell).v.object->type == MA_OBJECT_STRING
+
+#define PUSH_EMPTY() M->stack.push(MA_MAKE_EMPTY())
+#define PUSH_NUMBER(v) M->stack.push(MA_MAKE_NUBMER((v)))
+#define PUSH_YES() M->stack.push(MA_MAKE_YES())
+#define PUSH_NO() M->stack.push(MA_MAKE_NO())
+
+#define POP_VALUE(name)             \
+  const auto name = M->stack.top(); \
+  M->stack.pop();
+
+#define OBJECT_STRING_DATA(cell) (cell).v.object->d.string->data
+
 namespace mavka::mama {
+  inline bool initcall(MaMa* M, MaCell cell, size_t return_index) {
+    const auto frame = M->call_stack.top();
+
+  repeat_op_initcall:
+    if (cell.type == MA_CELL_OBJECT) {
+      const auto object = cell.v.object;
+
+      if (object->type == MA_OBJECT_DIIA_NATIVE) {
+        M->call_stack.push(new MaCallFrame{.scope = frame->scope,
+                                           .diia_native = object,
+                                           .return_index = return_index});
+        return true;
+      }
+      if (object->type == MA_OBJECT_DIIA) {
+        M->call_stack.push(new MaCallFrame{.scope = frame->scope,
+                                           .diia = object,
+                                           .return_index = return_index});
+        return true;
+      }
+      if (object->type == MA_OBJECT_STRUCTURE) {
+        M->call_stack.push(new MaCallFrame{.scope = frame->scope,
+                                           .structure = object,
+                                           .return_index = return_index});
+        return true;
+      }
+      if (object->type == MA_OBJECT) {
+        cell = ma_object_get(object, MAG_CALL);
+        goto repeat_op_initcall;
+      }
+    }
+
+    return false;
+  }
+
   void run(MaMa* M) {
     M->i = 0;
     const auto size = M->code.size();
@@ -47,38 +99,8 @@ namespace mavka::mama {
         case OP_INITCALL: {
           auto cell = M->stack.top();
           M->stack.pop();
-
-          const auto frame = M->call_stack.top();
-
-        repeat_op_initcall:
-          if (cell.type == MA_CELL_OBJECT) {
-            const auto object = cell.v.object;
-
-            if (object->type == MA_OBJECT_DIIA_NATIVE) {
-              M->call_stack.push(
-                  new MaCallFrame{.scope = frame->scope,
-                                  .diia_native = object,
-                                  .return_index = I.args.initcall->index});
-              break;
-            }
-            if (object->type == MA_OBJECT_DIIA) {
-              M->call_stack.push(
-                  new MaCallFrame{.scope = frame->scope,
-                                  .diia = object,
-                                  .return_index = I.args.initcall->index});
-              break;
-            }
-            if (object->type == MA_OBJECT_STRUCTURE) {
-              M->call_stack.push(
-                  new MaCallFrame{.scope = frame->scope,
-                                  .structure = object,
-                                  .return_index = I.args.initcall->index});
-              break;
-            }
-            if (object->type == MA_OBJECT) {
-              cell = ma_object_get(object, MAG_CALL);
-              goto repeat_op_initcall;
-            }
+          if (initcall(M, cell, I.args.initcall->index)) {
+            break;
           }
           DO_THROW_STRING("Неможливо викликати \"" + getcelltypename(cell) +
                           "\".")
@@ -381,6 +403,117 @@ namespace mavka::mama {
           M->call_stack.pop();
           break;
         }
+        case OP_EQ: {
+          POP_VALUE(left);
+          POP_VALUE(right);
+          if (IS_EMPTY(left)) {
+            if (IS_EMPTY(right)) {
+              PUSH_YES();
+            } else {
+              PUSH_NO();
+            }
+          } else if (IS_YES(left)) {
+            if (IS_YES(right)) {
+              PUSH_YES();
+            } else {
+              PUSH_NO();
+            }
+          } else if (IS_NO(left)) {
+            if (IS_NO(right)) {
+              PUSH_YES();
+            } else {
+              PUSH_NO();
+            }
+          } else if (IS_NUMBER(left)) {
+            if (IS_NUMBER(right)) {
+              if (left.v.number == right.v.number) {
+                PUSH_YES();
+              } else {
+                PUSH_NO();
+              }
+            } else {
+              PUSH_NO();
+            }
+          } else if (IS_OBJECT(left)) {
+            if (IS_OBJECT_STRING(left)) {
+              if (IS_OBJECT(right) && IS_OBJECT_STRING(right)) {
+                if (OBJECT_STRING_DATA(left) == OBJECT_STRING_DATA(right)) {
+                  PUSH_YES();
+                } else {
+                  PUSH_NO();
+                }
+              } else {
+                PUSH_NO();
+              }
+            } else {
+              if (left.v.object == right.v.object) {
+                PUSH_YES();
+              } else {
+                PUSH_NO();
+              }
+            }
+          } else {
+            PUSH_NO();
+          }
+          break;
+        }
+        case OP_GT: {
+          POP_VALUE(left);
+          POP_VALUE(right);
+          if (IS_EMPTY(left)) {
+            if (IS_NUMBER(right)) {
+              if (right.v.number > 0.0) {
+                PUSH_NO();
+              } else {
+                PUSH_YES();
+              }
+            } else {
+              PUSH_NO();
+            }
+          } else if (IS_NUMBER(left)) {
+            if (IS_NUMBER(right)) {
+              if (left.v.number > right.v.number) {
+                PUSH_YES();
+              } else {
+                PUSH_NO();
+              }
+            } else {
+              PUSH_NO();
+            }
+          } else if (IS_YES(left)) {
+            PUSH_NO();
+          } else if (IS_NO(left)) {
+            if (right.type == MA_CELL_NUMBER) {
+              if (right.v.number > 0.0) {
+                PUSH_NO();
+              } else {
+                PUSH_YES();
+              }
+            } else {
+              PUSH_NO();
+            }
+          } else if (IS_OBJECT(left)) {
+            if (left.v.object->properties.contains(MAG_GREATER)) {
+              const auto greater_diia_cell =
+                  ma_object_get(left.v.object, MAG_GREATER);
+              if (!initcall(M, greater_diia_cell, M->i + 1)) {
+                DO_THROW_STRING("Неможливо викликати \"" +
+                                getcelltypename(greater_diia_cell) + "\".")
+              }
+              const auto frame = M->call_stack.top();
+              frame->args.insert_or_assign("0", right);
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            } else {
+              DO_THROW_STRING(
+                  "Дію \"чародія_більше\" не визначено для типу \"" +
+                  getcelltypename(left) + "\".")
+            }
+          } else {
+            PUSH_NO();
+          }
+          break;
+        }
 
         case OP_ADD: {
           const auto right_cell = M->stack.top();
@@ -420,44 +553,6 @@ namespace mavka::mama {
           }
           DO_THROW_STRING("Неможливо відняти " + getcelltypename(left_cell) +
                           " і " + getcelltypename(right_cell))
-        }
-        case OP_EQ: {
-          const auto right = M->stack.top();
-          M->stack.pop();
-          const auto left = M->stack.top();
-          M->stack.pop();
-
-          if (left.type == MA_CELL_NUMBER && right.type == MA_CELL_NUMBER) {
-            if (left.v.number == right.v.number) {
-              M->stack.push(MA_MAKE_YES());
-            } else {
-              M->stack.push(MA_MAKE_NO());
-            }
-          } else {
-            if (left.v.object == right.v.object) {
-              M->stack.push(MA_MAKE_YES());
-            } else {
-              M->stack.push(MA_MAKE_NO());
-            }
-          }
-          break;
-        }
-        case OP_GT: {
-          const auto right = M->stack.top();
-          M->stack.pop();
-          const auto left = M->stack.top();
-          M->stack.pop();
-
-          if (left.type == MA_CELL_NUMBER && right.type == MA_CELL_NUMBER) {
-            if (left.v.number > right.v.number) {
-              M->stack.push(MA_MAKE_YES());
-            } else {
-              M->stack.push(MA_MAKE_NO());
-            }
-          } else {
-            M->stack.push(MA_MAKE_NO());
-          }
-          break;
         }
         case OP_GE: {
           const auto right = M->stack.top();
@@ -513,18 +608,18 @@ namespace mavka::mama {
         case OP_NOT: {
           const auto value = M->stack.top();
           M->stack.pop();
-          if (value.type == MA_CELL_NUMBER) {
+          if (value.type == MA_CELL_EMPTY) {
+            M->stack.push(MA_MAKE_YES());
+          } else if (value.type == MA_CELL_NUMBER) {
             if (value.v.number == 0.0) {
               M->stack.push(MA_MAKE_YES());
             } else {
               M->stack.push(MA_MAKE_NO());
             }
-          } else if (value.type == MA_CELL_EMPTY) {
-            M->stack.push(MA_MAKE_YES());
-          } else if (value.type == MA_CELL_NO) {
-            M->stack.push(MA_MAKE_YES());
           } else if (value.type == MA_CELL_YES) {
             M->stack.push(MA_MAKE_NO());
+          } else if (value.type == MA_CELL_NO) {
+            M->stack.push(MA_MAKE_YES());
           } else {
             M->stack.push(MA_MAKE_NO());
           }
