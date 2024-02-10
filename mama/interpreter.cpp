@@ -584,6 +584,27 @@ namespace mavka::mama {
           }
           break;
         }
+        case OP_CONTAINS: {
+          POP_VALUE(right);
+          POP_VALUE(left);
+          if (IS_OBJECT(left)) {
+            if (left.v.object->properties.contains(MAG_CONTAINS)) {
+              const auto diia_cell = ma_object_get(left.v.object, MAG_CONTAINS);
+              if (!initcall(M, diia_cell, M->i + 1)) {
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
+              }
+              READ_TOP_FRAME();
+              frame->args.insert_or_assign("0", right);
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_CONTAINS, left);
+            }
+          } else {
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_CONTAINS, left);
+          }
+          break;
+        }
         case OP_NOT: {
           POP_VALUE(value);
           if (IS_EMPTY(value)) {

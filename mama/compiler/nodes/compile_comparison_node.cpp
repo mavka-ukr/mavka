@@ -31,6 +31,12 @@ namespace mavka::mama {
                comparison_node->op == "не більше" ||
                comparison_node->op == "небільше") {
       M->code.push_back(MaInstruction{OP_LE});
+    } else if (comparison_node->op == "містить") {
+      M->code.push_back(MaInstruction{OP_CONTAINS});
+    } else if (comparison_node->op == "не містить" ||
+               comparison_node->op == "немістить") {
+      M->code.push_back(MaInstruction{OP_CONTAINS});
+      M->code.push_back(MaInstruction{OP_NOT});
     } else {
       return error(mavka::ast::make_ast_some(comparison_node),
                    "Невідомий оператор порівняння: " + comparison_node->op);
