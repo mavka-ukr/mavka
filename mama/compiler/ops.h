@@ -30,6 +30,7 @@ typedef enum {
 
   OP_GET,
   OP_SET,
+  OP_E_SETR,
 
   OP_TRY,
   OP_TRY_DONE,

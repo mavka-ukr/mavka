@@ -14,7 +14,8 @@ namespace mavka::mama {
           {.store = new MaStoreInstructionArgs(assign_simple_node->name)}});
       return success();
     }
-    return error(mavka::ast::make_ast_some(assign_simple_node),
-                 "Not implemented");
+    return error(
+        mavka::ast::make_ast_some(assign_simple_node),
+        "Вказівка \"" + assign_simple_node->op + "\" тимчасово недоступна.");
   }
 } // namespace mavka::mama

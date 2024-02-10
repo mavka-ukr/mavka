@@ -5,6 +5,6 @@ namespace mavka::mama {
       MaMa* M,
       mavka::ast::PostIncrementNode* post_increment_node) {
     return error(mavka::ast::make_ast_some(post_increment_node),
-                 "Not implemented");
+                 "Вказівка збільшення тимчасово недоступна.");
   }
 } // namespace mavka::mama

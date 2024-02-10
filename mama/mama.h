@@ -410,7 +410,7 @@ namespace mavka::mama {
       MaMa* M,
       mavka::ast::TernaryNode* ternary_node);
   MaCompilationResult compile_test_node(MaMa* M,
-                                        const mavka::ast::TestNode* test_node);
+                                        mavka::ast::TestNode* test_node);
   MaCompilationResult compile_throw_node(
       MaMa* M,
       const mavka::ast::ThrowNode* throw_node);
