@@ -4,13 +4,13 @@ namespace mavka::mama {
   MaCompilationResult compile_comparison_node(
       MaMa* M,
       const mavka::ast::ComparisonNode* comparison_node) {
-    const auto right = compile_node(M, comparison_node->right);
-    if (right.error) {
-      return right;
-    }
     const auto left = compile_node(M, comparison_node->left);
     if (left.error) {
       return left;
+    }
+    const auto right = compile_node(M, comparison_node->right);
+    if (right.error) {
+      return right;
     }
     if (comparison_node->op == "==" || comparison_node->op == "рівно") {
       M->code.push_back(MaInstruction{OP_EQ});
