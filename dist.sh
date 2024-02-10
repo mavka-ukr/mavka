@@ -19,5 +19,6 @@ cd dist
 mkdir -p мавка-"$VERSION"
 cp ../build-Obin/мавка_оптимізовано мавка-"$VERSION"/мавка
 cp ../LICENSE мавка-"$VERSION"/Ліцензія
-zip -r -9 мавка-"$VERSION"-linux_x64.zip мавка-"$VERSION"
+echo -en "Документація тут: мавка.укр/документація" >мавка-"$VERSION"/Прочитайка
+zip -r -9 мавка-"$VERSION"-linux_64.zip мавка-"$VERSION"
 cd ..
