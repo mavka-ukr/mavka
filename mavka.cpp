@@ -113,17 +113,13 @@ int main(int argc, char** argv) {
   mavka::parser::MavkaParserResult program_parser_result;
   try {
     program_parser_result = mavka::parser::parse(source, filename);
-    if (program_parser_result.error) {
-      std::cout << program_parser_result.error->path << ":"
-                << program_parser_result.error->line << ":"
-                << program_parser_result.error->column << ": "
-                << program_parser_result.error->message << std::endl;
+    if (!program_parser_result.errors.empty()) {
+      for (const auto& error : program_parser_result.errors) {
+        std::cout << error.path << ":" << error.line << ":" << error.column
+                  << ": " << error.message << std::endl;
+      }
       return 1;
     }
-  } catch (mavka::parser::MavkaParserError& e) {
-    std::cout << e.path << ":" << e.line << ":" << e.column << ": " << e.message
-              << std::endl;
-    return 1;
   } catch (std::exception& e) {
     std::cout << "Помилка парсингу: " << e.what() << std::endl;
     return 1;
