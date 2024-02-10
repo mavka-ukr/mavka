@@ -1021,7 +1021,8 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             if (left.v.object->properties.contains(MAG_BW_SHIFT_RIGHT)) {
-              const auto diia_cell = ma_object_get(left.v.object, MAG_BW_SHIFT_RIGHT);
+              const auto diia_cell =
+                  ma_object_get(left.v.object, MAG_BW_SHIFT_RIGHT);
               if (!initcall(M, diia_cell, M->i + 1)) {
                 DO_THROW_CANNOT_CALL_CELL(diia_cell);
               }
@@ -1034,6 +1035,51 @@ namespace mavka::mama {
             }
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_SHIFT_RIGHT, left);
+          }
+          break;
+        }
+        case OP_GET_ELEMENT: {
+          POP_VALUE(right);
+          POP_VALUE(left);
+          if (IS_OBJECT(left)) {
+            if (left.v.object->properties.contains(MAG_GET_ELEMENT)) {
+              const auto diia_cell =
+                  ma_object_get(left.v.object, MAG_GET_ELEMENT);
+              if (!initcall(M, diia_cell, M->i + 1)) {
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
+              }
+              READ_TOP_FRAME();
+              frame->args.insert_or_assign("0", right);
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_GET_ELEMENT, left);
+            }
+          } else {
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_GET_ELEMENT, left);
+          }
+          break;
+        }
+        case OP_SET_ELEMENT: {
+          POP_VALUE(value);
+          POP_VALUE(right);
+          POP_VALUE(left);
+          if (IS_OBJECT(left)) {
+            if (left.v.object->properties.contains(MAG_SET_ELEMENT)) {
+              const auto diia_cell = ma_object_get(left.v.object, MAG_SET_ELEMENT);
+              if (!initcall(M, diia_cell, M->i + 1)) {
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
+              }
+              READ_TOP_FRAME();
+              frame->args.insert_or_assign("0", right);
+              frame->args.insert_or_assign("1", value);
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_SET_ELEMENT, left);
+            }
+          } else {
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_SET_ELEMENT, left);
           }
           break;
         }
