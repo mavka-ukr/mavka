@@ -680,30 +680,47 @@ namespace mavka::mama {
           }
           break;
         }
-
         case OP_ADD: {
-          const auto right_cell = M->stack.top();
-          M->stack.pop();
-          const auto left_cell = M->stack.top();
-          M->stack.pop();
-
-          if (left_cell.type == MA_CELL_NUMBER &&
-              right_cell.type == MA_CELL_NUMBER) {
-            M->stack.push(
-                MA_MAKE_NUBMER(left_cell.v.number + right_cell.v.number));
-            break;
-          }
-          if (left_cell.type == MA_CELL_OBJECT &&
-              right_cell.type == MA_CELL_OBJECT) {
-            if (left_cell.v.object->type == MA_OBJECT_STRING &&
-                right_cell.v.object->type == MA_OBJECT_STRING) {
-              M->stack.push(create_string(left_cell.v.object->d.string->data +
-                                          right_cell.v.object->d.string->data));
-              break;
+          POP_VALUE(right);
+          POP_VALUE(left);
+          if (IS_NUMBER(left)) {
+            if (IS_NUMBER(right)) {
+              PUSH_NUMBER(left.v.number + right.v.number);
+            } else {
+              DO_THROW_STRING("Дія \"" + std::string(MAG_ADD) +
+                              "\" для типу \"число\" "
+                              "очікує параметром значення типу \"число\".")
             }
+          } else if (IS_OBJECT(left)) {
+            if (IS_OBJECT_STRING(left)) {
+              if (IS_NUMBER(right)) {
+                M->stack.push(
+                    create_string(OBJECT_STRING_DATA(left) +
+                                  ma_number_to_string(right.v.number)));
+              } else if (IS_OBJECT(right) && IS_OBJECT_STRING(right)) {
+                M->stack.push(create_string(OBJECT_STRING_DATA(left) +
+                                            OBJECT_STRING_DATA(right)));
+              } else {
+                DO_THROW_STRING("Дія \"" + std::string(MAG_ADD) +
+                                "\" для типу \"текст\" "
+                                "очікує параметром значення типу \"текст\".")
+              }
+            } else if (left.v.object->properties.contains(MAG_ADD)) {
+              const auto diia_cell = ma_object_get(left.v.object, MAG_ADD);
+              if (!initcall(M, diia_cell, M->i + 1)) {
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
+              }
+              const auto frame = M->call_stack.top();
+              frame->args.insert_or_assign("0", right);
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_GREATER, left);
+            }
+          } else {
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_GREATER, left);
           }
-          DO_THROW_STRING("Неможливо додати " + getcelltypename(left_cell) +
-                          " до " + getcelltypename(right_cell))
+          break;
         }
         default: {
           std::cout << "unsupported instruction " << getopname(I.op)
