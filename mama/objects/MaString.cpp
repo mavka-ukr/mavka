@@ -1,14 +1,58 @@
+#include "../../external/utf8/utf8.h"
 #include "../mama.h"
 
 namespace mavka::mama {
-  std::size_t utf8_len(const std::string& utf8) {
+  std::size_t utf8_len(const std::string& str) {
     return std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}
-        .from_bytes(utf8)
+        .from_bytes(str)
+        .size();
+  }
+
+  std::string utf8_substr(const std::string& str,
+                          std::size_t start,
+                          std::size_t length) {
+    const auto utf32 =
+        std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}
+            .from_bytes(str);
+    return std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}
+        .to_bytes(utf32.substr(start, length));
+  }
+
+  std::vector<std::string> utf8_chars(const std::string& str) {
+    const auto utf32 =
+        std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}
+            .from_bytes(str);
+    std::vector<std::string> chars;
+    for (const auto& c : utf32) {
+      chars.push_back(
+          std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}
+              .to_bytes(c));
+    }
+    return chars;
+  }
+
+  size_t utf8_find_index(const std::string& str, const std::string& substr) {
+    const auto utf32 =
+        std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}
+            .from_bytes(str);
+    const auto utf32_substr =
+        std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}
+            .from_bytes(substr);
+    return std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}
+        .to_bytes(utf32.substr(0, utf32.find(utf32_substr)))
         .size();
   }
 
   size_t MaString::length() const {
     return utf8_len(this->data);
+  }
+
+  std::string MaString::substr(size_t start, size_t length) const {
+    return utf8_substr(this->data, start, length);
+  }
+
+  std::vector<std::string> MaString::split(const std::string& delim) const {
+    throw std::runtime_error("Not implemented");
   }
 
   MaCell ma_string_mag_add_diia_native_fn(MaMa* M,
@@ -51,10 +95,27 @@ namespace mavka::mama {
     if (cell.type == MA_CELL_NUMBER) {
       const auto i = cell.v.number;
       if (i < me->d.string->length()) {
-        const auto substr = me->d.string->data.substr(i, 1);
+        const auto substr = me->d.string->substr(i, 1);
         return create_string(substr);
       }
     }
     return MA_MAKE_EMPTY();
+  }
+
+  MaCell ma_string_split_diia_native_fn(MaMa* M,
+                                        MaObject* me,
+                                        std::map<std::string, MaCell>& args) {
+    MaCell delim{};
+    if (args.contains("0")) {
+      delim = args["0"];
+    } else {
+      delim = create_string("");
+    }
+    const auto list_cell = create_list();
+    const auto parts = me->d.string->split(delim.v.object->d.string->data);
+    for (const auto& part : parts) {
+      list_cell.v.object->d.list->append(create_string(part));
+    }
+    return list_cell;
   }
 } // namespace mavka::mama

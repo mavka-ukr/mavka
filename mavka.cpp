@@ -110,13 +110,29 @@ int main(int argc, char** argv) {
   M->call_stack.push(frame);
   init_print(M, S);
 
-  const auto program_parser_result = mavka::parser::parse(source, "");
-  if (program_parser_result->error) {
-    std::cout << program_parser_result->error->message << std::endl;
+  mavka::parser::MavkaParserResult program_parser_result;
+  try {
+    program_parser_result = mavka::parser::parse(source, filename);
+    if (program_parser_result.error) {
+      std::cout << program_parser_result.error->path << ":"
+                << program_parser_result.error->line << ":"
+                << program_parser_result.error->column << ": "
+                << program_parser_result.error->message << std::endl;
+      return 1;
+    }
+  } catch (mavka::parser::MavkaParserError& e) {
+    std::cout << e.path << ":" << e.line << ":" << e.column << ": " << e.message
+              << std::endl;
+    return 1;
+  } catch (std::exception& e) {
+    std::cout << "Помилка парсингу: " << e.what() << std::endl;
+    return 1;
+  } catch (...) {
+    std::cout << "Невідома помилка парсингу." << std::endl;
     return 1;
   }
 
-  for (const auto& node : program_parser_result->program_node->body) {
+  for (const auto& node : program_parser_result.program_node->body) {
     const auto result = compile_node(M, node);
     if (result.error) {
       std::cout << result.error->message << std::endl;
