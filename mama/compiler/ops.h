@@ -53,6 +53,7 @@ typedef enum {
   OP_GE,
   OP_LT,
   OP_LE,
+  OP_CONTAINS,
 
   OP_NOT,
 
@@ -134,6 +135,8 @@ inline std::string getopname(const OP op) {
       return "OP_LT";
     case OP_LE:
       return "OP_LE";
+    case OP_CONTAINS:
+      return "OP_CONTAINS";
     case OP_GT:
       return "OP_GT";
     case OP_GE:

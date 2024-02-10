@@ -46,6 +46,7 @@ class MaList final {
   void set(size_t index, MaCell cell);
   MaCell get(size_t index) const;
   size_t size() const;
+  bool contains(MaCell cell);
 };
 
 class MaDict final {
@@ -164,6 +165,9 @@ MaCell ma_list_set_element_diia_native_fn(MaMa* M,
 MaCell ma_list_append_diia_native_fn(MaMa* M,
                                      MaObject* list_me,
                                      std::map<std::string, MaCell>& args);
+MaCell ma_list_contains_diia_native_fn(MaMa* M,
+                                       MaObject* list_me,
+                                       std::map<std::string, MaCell>& args);
 
 inline MaCell create_list() {
   const auto ma_object = new MaObject();
@@ -180,6 +184,8 @@ inline MaCell create_list() {
       create_diia_native(ma_list_set_element_diia_native_fn, ma_object));
   ma_object_set(ma_object, "додати",
                 create_diia_native(ma_list_append_diia_native_fn, ma_object));
+  ma_object_set(ma_object, MAG_CONTAINS,
+                create_diia_native(ma_list_contains_diia_native_fn, ma_object));
   return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
 }
 

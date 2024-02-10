@@ -25,6 +25,46 @@ namespace mavka::mama {
     return this->data.size();
   }
 
+  bool MaList::contains(MaCell cell) {
+    for (const auto& item : this->data) {
+      if (item.type == MA_CELL_EMPTY) {
+        if (cell.type == MA_CELL_EMPTY) {
+          return true;
+        }
+      } else if (item.type == MA_CELL_NUMBER) {
+        if (cell.type == MA_CELL_NUMBER) {
+          if (item.v.number == cell.v.number) {
+            return true;
+          }
+        }
+      } else if (item.type == MA_CELL_YES) {
+        if (cell.type == MA_CELL_YES) {
+          return true;
+        }
+      } else if (item.type == MA_CELL_NO) {
+        if (cell.type == MA_CELL_NO) {
+          return true;
+        }
+      } else if (item.type == MA_CELL_OBJECT) {
+        if (cell.type == MA_CELL_OBJECT) {
+          if (item.v.object->type == MA_OBJECT_STRING) {
+            if (cell.v.object->type == MA_OBJECT_STRING) {
+              if (item.v.object->d.string->data ==
+                  cell.v.object->d.string->data) {
+                return true;
+              }
+            }
+          } else {
+            if (item.v.object == cell.v.object) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   MaCell ma_list_iterate_diia_native_fn(MaMa* M,
                                         MaObject* list_me,
                                         std::map<std::string, MaCell>& args) {
@@ -103,5 +143,20 @@ namespace mavka::mama {
       list_me->d.list->append(MA_MAKE_EMPTY());
     }
     return MA_MAKE_INTEGER(list_me->d.list->size());
+  }
+
+  MaCell ma_list_contains_diia_native_fn(MaMa* M,
+                                         MaObject* list_me,
+                                         std::map<std::string, MaCell>& args) {
+    if (args.contains("0")) {
+      if (list_me->d.list->contains(args["0"])) {
+        return MA_MAKE_YES();
+      }
+    } else {
+      if (list_me->d.list->contains(MA_MAKE_EMPTY())) {
+        return MA_MAKE_YES();
+      }
+    }
+    return MA_MAKE_NO();
   }
 } // namespace mavka::mama
