@@ -3,6 +3,9 @@
 namespace mavka::mama {
   MaCompilationResult compile_each_node(MaMa* M,
                                         mavka::ast::EachNode* each_node) {
+    std::vector<EachNodeJumps> jumps;
+    find_each_node_jumps(M, each_node->body, jumps);
+
     if (each_node->value->FromToSimpleNode ||
         each_node->value->FromToComplexNode) {
       if (!each_node->keyName.empty()) {
@@ -108,6 +111,8 @@ namespace mavka::mama {
         return result;
       }
 
+      const auto continue_index = M->code.size();
+
       M->code.push_back(MaInstruction{
           OP_LOAD, {.load = new MaLoadInstructionArgs(each_node->name)}});
       if (each_node->value->FromToSimpleNode) {
@@ -125,11 +130,20 @@ namespace mavka::mama {
 
       M->code.push_back(MaInstruction{OP_JUMP, {.jump = start_index}});
 
-      M->code[jump_out_instruction_index].args.jumpiftrue = M->code.size();
+      const auto break_index = M->code.size();
+      M->code[jump_out_instruction_index].args.jumpiftrue = break_index;
 
       M->code.push_back(MaInstruction{OP_EMPTY});
       M->code.push_back(MaInstruction{
           OP_STORE, {.store = new MaStoreInstructionArgs(each_node->name)}});
+
+      for (const auto& jump : jumps) {
+        if (jump.continue_node) {
+          M->code[jump.continue_node->code_index].args.jump = continue_index;
+        } else if (jump.break_node) {
+          M->code[jump.break_node->code_index].args.jump = break_index;
+        }
+      }
 
       return success();
     } else {
@@ -172,6 +186,8 @@ namespace mavka::mama {
           return body_result;
         }
 
+        const auto continue_index = M->code.size();
+
         M->code.push_back(MaInstruction{
             OP_LOAD, {.load = new MaLoadInstructionArgs(iterator_name)}});
         M->code.push_back(
@@ -183,7 +199,8 @@ namespace mavka::mama {
 
         M->code.push_back(MaInstruction{OP_JUMP, {.jump = start_index}});
 
-        M->code[jump_out_instruction_index].args.jumpiftrue = M->code.size();
+        const auto break_index = M->code.size();
+        M->code[jump_out_instruction_index].args.jumpiftrue = break_index;
 
         M->code.push_back(MaInstruction{OP_EMPTY});
         M->code.push_back(MaInstruction{
@@ -191,6 +208,14 @@ namespace mavka::mama {
         M->code.push_back(MaInstruction{OP_EMPTY});
         M->code.push_back(MaInstruction{
             OP_STORE, {.store = new MaStoreInstructionArgs(iterator_name)}});
+
+        for (const auto& jump : jumps) {
+          if (jump.continue_node) {
+            M->code[jump.continue_node->code_index].args.jump = continue_index;
+          } else if (jump.break_node) {
+            M->code[jump.break_node->code_index].args.jump = break_index;
+          }
+        }
 
         return success();
       }

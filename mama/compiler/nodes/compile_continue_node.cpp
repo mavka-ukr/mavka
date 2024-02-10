@@ -4,6 +4,8 @@ namespace mavka::mama {
   MaCompilationResult compile_continue_node(
       MaMa* M,
       mavka::ast::ContinueNode* continue_node) {
-    return error(mavka::ast::make_ast_some(continue_node), "Not implemented");
+    M->code.push_back(MaInstruction{OP_JUMP, {.jump = 0}});
+    continue_node->code_index = M->code.size() - 1;
+    return success();
   }
 } // namespace mavka::mama

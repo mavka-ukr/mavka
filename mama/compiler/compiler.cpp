@@ -237,6 +237,32 @@ namespace mavka::mama {
     return success();
   }
 
+  void find_each_node_jumps(MaMa* M,
+                            const std::vector<mavka::ast::ASTSome*>& body,
+                            std::vector<EachNodeJumps>& jumps) {
+    for (const auto node : body) {
+      if (!node) {
+        continue;
+      }
+      if (node->is_nullptr()) {
+        continue;
+      }
+      if (node->ContinueNode) {
+        jumps.push_back(EachNodeJumps{.continue_node = node->ContinueNode});
+      } else if (node->BreakNode) {
+        jumps.push_back(EachNodeJumps{.break_node = node->BreakNode});
+      }
+      if (node->IfNode) {
+        find_each_node_jumps(M, node->IfNode->body, jumps);
+        find_each_node_jumps(M, node->IfNode->else_body, jumps);
+      }
+      if (node->TryNode) {
+        find_each_node_jumps(M, node->TryNode->body, jumps);
+        find_each_node_jumps(M, node->TryNode->catch_body, jumps);
+      }
+    }
+  }
+
   MaCompilationResult error(mavka::ast::ASTSome* node,
                             const std::string& message) {
     const auto error = new MaCompilationError();
