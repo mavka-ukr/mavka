@@ -122,6 +122,7 @@ namespace mavka::mama {
   struct MaMa {
     std::vector<MaInstruction> code;
     size_t iterator_count;
+    std::vector<MaCell> constants;
 
     std::stack<MaCell> stack;
     size_t i;
@@ -200,7 +201,8 @@ namespace mavka::mama {
       size_t jump;
       size_t jumpiffalse;
       size_t jumpiftrue;
-      MaCell* constant;
+      size_t constant;
+      double number;
       MaStoreInstructionArgs* store;
       MaInitCallInstructionArgs* initcall;
       MaGetInstructionArgs* get;

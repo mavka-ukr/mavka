@@ -9,9 +9,9 @@ namespace mavka::mama {
     const auto ma_string = new MaString();
     ma_string->data = string_node->value;
     ma_object->d.string = ma_string;
-    const auto string_cell = new MaCell(MA_CELL_OBJECT, {.object = ma_object});
+    M->constants.push_back(MaCell{MA_CELL_OBJECT, {.object = ma_object}});
     M->code.push_back(
-        MaInstruction{OP_CONSTANT, {.constant = string_cell}});
+        MaInstruction{OP_CONSTANT, {.constant = M->constants.size() - 1}});
     return success();
   }
 } // namespace mavka::mama

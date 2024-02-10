@@ -4,10 +4,8 @@ namespace mavka::mama {
   MaCompilationResult compile_number_node(
       MaMa* M,
       const mavka::ast::NumberNode* number_node) {
-    const auto number_cell =
-        new MaCell(MA_CELL_NUMBER, {.number = std::stod(number_node->value)});
     M->code.push_back(
-        MaInstruction{OP_CONSTANT, {.constant = number_cell}});
+        MaInstruction{OP_NUMBER, {.number = std::stod(number_node->value)}});
     return success();
   }
 } // namespace mavka::mama
