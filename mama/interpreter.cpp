@@ -59,15 +59,15 @@ namespace mavka::mama {
                                     .return_index = return_index}));
         return true;
       }
+      if (ma_object_has(object, MAG_CALL)) {
+        cell = ma_object_get(object, MAG_CALL);
+        goto repeat_op_initcall;
+      }
       if (object->type == MA_OBJECT_STRUCTURE) {
         FRAME_PUSH((new MaCallFrame{.scope = frame->scope,
                                     .structure = object,
                                     .return_index = return_index}));
         return true;
-      }
-      if (object->type == MA_OBJECT) {
-        cell = ma_object_get(object, MAG_CALL);
-        goto repeat_op_initcall;
       }
     }
 
@@ -707,19 +707,7 @@ namespace mavka::mama {
                               "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
-            if (IS_OBJECT_STRING(left)) {
-              if (IS_NUMBER(right)) {
-                PUSH(create_string(OBJECT_STRING_DATA(left) +
-                                   ma_number_to_string(right.v.number)));
-              } else if (IS_OBJECT(right) && IS_OBJECT_STRING(right)) {
-                PUSH(create_string(OBJECT_STRING_DATA(left) +
-                                   OBJECT_STRING_DATA(right)));
-              } else {
-                DO_THROW_STRING("Дія \"" + std::string(MAG_ADD) +
-                                "\" для типу \"текст\" "
-                                "очікує параметром значення типу \"текст\".")
-              }
-            } else if (left.v.object->properties.contains(MAG_ADD)) {
+            if (left.v.object->properties.contains(MAG_ADD)) {
               const auto diia_cell = ma_object_get(left.v.object, MAG_ADD);
               if (!initcall(M, diia_cell, M->i + 1)) {
                 DO_THROW_CANNOT_CALL_CELL(diia_cell);

@@ -16,12 +16,48 @@ void init_number(MaMa* M, MaScope* gS) {
   gS->set_variable("число", number_structure_cell);
 }
 
+MaCell text_structure_object_mag_call_native_diia_fn(
+    MaMa* M,
+    MaObject* me,
+    std::map<std::string, MaCell>& args) {
+  if (args.empty()) {
+    return create_string("");
+  }
+  const auto cell = args.begin()->second;
+  if (cell.type == MA_CELL_EMPTY) {
+    return create_string("пусто");
+  } else if (cell.type == MA_CELL_NUMBER) {
+    return create_string(ma_number_to_string(cell.v.number));
+  } else if (cell.type == MA_CELL_YES) {
+    return create_string("так");
+  } else if (cell.type == MA_CELL_NO) {
+    return create_string("ні");
+  } else if (cell.type == MA_CELL_OBJECT) {
+    if (cell.v.object->type == MA_OBJECT_STRING) {
+      return cell;
+    }
+    if (cell.v.object->structure) {
+      return create_string(ma_object_get(cell.v.object->structure, "назва")
+                               .v.object->d.string->data);
+    }
+  }
+  return create_string("");
+}
+
 void init_text(MaMa* M, MaScope* gS) {
-  const auto ma_object = new MaObject();
-  ma_object->type = MA_OBJECT_STRUCTURE;
-  ma_object_set(ma_object, "назва", create_string("текст"));
+  const auto text_structure_object = new MaObject();
+  text_structure_object->type = MA_OBJECT_STRUCTURE;
+  ma_object_set(text_structure_object, "назва", create_string("текст"));
+  ma_object_set(
+      text_structure_object, MAG_CALL,
+      create_diia_native(text_structure_object_mag_call_native_diia_fn));
+
+  const auto text_structure = new MaStructure();
+  text_structure_object->d.structure = text_structure;
+
   const auto text_structure_cell =
-      MaCell{MA_CELL_OBJECT, {.object = ma_object}};
+      MaCell{MA_CELL_OBJECT, {.object = text_structure_object}};
+
   gS->set_variable("текст", text_structure_cell);
 }
 

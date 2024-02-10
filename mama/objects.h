@@ -98,11 +98,7 @@ inline std::string ma_number_to_string(const double number) {
 inline void ma_object_set(MaObject* object,
                           const std::string& name,
                           MaCell value) {
-  if (object->properties.contains(name)) {
-    object->properties.at(name) = value;
-  } else {
-    object->properties.insert({name, value});
-  }
+  object->properties.insert_or_assign(name, value);
 }
 
 inline MaCell ma_object_get(const MaObject* object, const std::string& name) {
@@ -144,12 +140,18 @@ inline MaCell create_diia_native(
   return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
 }
 
+MaCell ma_string_mag_diia_native_fn(MaMa* M,
+                                    MaObject* me,
+                                    std::map<std::string, MaCell>& args);
+
 inline MaCell create_string(const std::string& value) {
   const auto ma_object = new MaObject();
   ma_object->type = MA_OBJECT_STRING;
   const auto ma_string = new MaString();
   ma_string->data = value;
   ma_object->d.string = ma_string;
+  ma_object_set(ma_object, MAG_ADD,
+                create_diia_native(ma_string_mag_diia_native_fn, ma_object));
   return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
 }
 
