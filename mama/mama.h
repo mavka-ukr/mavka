@@ -3,8 +3,10 @@
 
 #include <algorithm>
 #include <cmath>
+#include <codecvt>
 #include <functional>
 #include <iostream>
+#include <locale>
 #include <map>
 #include <ostream>
 #include <sstream>
