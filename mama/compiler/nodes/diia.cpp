@@ -48,6 +48,7 @@ namespace mavka::mama {
   MaCompilationResult compile_method(
       MaMa* M,
       const std::string& structure,
+      bool ee,
       bool async,
       const std::vector<ast::GenericNode*>& generics,
       const std::string& name,
