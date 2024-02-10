@@ -68,8 +68,6 @@ typedef enum {
   OP_DIVDIV,
   OP_POW,
 
-  // todo: implement next
-
   OP_XOR,
   OP_BOR,
   OP_BAND,
