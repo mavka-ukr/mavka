@@ -29,7 +29,6 @@ typedef enum {
   OP_E_JUMP_IF_FALSE,
 
   OP_GET,
-  OP_GET1,
   OP_SET,
 
   OP_TRY,
@@ -61,13 +60,14 @@ typedef enum {
   OP_POSITIVE,
   OP_BNOT,
 
-  // todo: implement next
-
   OP_ADD,
   OP_SUB,
   OP_MUL,
   OP_DIV,
   OP_MOD,
+
+  // todo: implement next
+
   OP_DIVDIV,
   OP_POW,
   OP_XOR,
@@ -179,8 +179,6 @@ inline std::string getopname(const OP op) {
       return "OP_STRUCT_METHOD";
     case OP_MODULE_DONE:
       return "OP_MODULE_DONE";
-    case OP_GET1:
-      return "OP_GET1";
     case OP_STORE_ARG:
       return "OP_STORE_ARG";
     case OP_NUMBER:
