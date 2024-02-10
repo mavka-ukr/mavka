@@ -287,6 +287,10 @@ namespace mavka::mama {
         case OP_GET: {
           POP_VALUE(cell);
           if (cell.type == MA_CELL_OBJECT) {
+            if (cell.v.object->get) {
+              PUSH(cell.v.object->get(cell.v.object, I.args.set->name));
+              break;
+            }
             PUSH(ma_object_get(cell.v.object, I.args.get->name));
           } else {
             PUSH_EMPTY();
@@ -297,6 +301,13 @@ namespace mavka::mama {
           POP_VALUE(cell);
           POP_VALUE(value);
           if (IS_OBJECT(cell)) {
+            if (IS_OBJECT_STRING(cell)) {
+              break;
+            }
+            if (cell.v.object->set) {
+              cell.v.object->set(cell.v.object, I.args.set->name, value);
+              break;
+            }
             ma_object_set(cell.v.object, I.args.set->name, value);
           }
           break;

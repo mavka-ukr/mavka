@@ -21,6 +21,8 @@ struct MaObject {
   } d;
   MaObject* structure;
   tsl::ordered_map<std::string, MaCell> properties;
+  std::function<void(MaObject* me, const std::string& name, MaCell value)> set;
+  std::function<MaCell(MaObject* me, const std::string& name)> get;
 };
 
 union MaCellV {
@@ -36,6 +38,8 @@ struct MaCell {
 class MaString final {
  public:
   std::string data;
+
+  size_t length() const;
 };
 
 class MaList final {
@@ -140,9 +144,13 @@ inline MaCell create_diia_native(
   return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
 }
 
-MaCell ma_string_mag_diia_native_fn(MaMa* M,
-                                    MaObject* me,
-                                    std::map<std::string, MaCell>& args);
+MaCell ma_string_mag_add_diia_native_fn(MaMa* M,
+                                        MaObject* me,
+                                        std::map<std::string, MaCell>& args);
+MaCell ma_string_mag_get_element_diia_native_fn(
+    MaMa* M,
+    MaObject* me,
+    std::map<std::string, MaCell>& args);
 
 inline MaCell create_string(const std::string& value) {
   const auto ma_object = new MaObject();
@@ -150,8 +158,18 @@ inline MaCell create_string(const std::string& value) {
   const auto ma_string = new MaString();
   ma_string->data = value;
   ma_object->d.string = ma_string;
-  ma_object_set(ma_object, MAG_ADD,
-                create_diia_native(ma_string_mag_diia_native_fn, ma_object));
+  ma_object->get = [](MaObject* me, const std::string& name) {
+    if (name == "довжина") {
+      return MA_MAKE_INTEGER(me->d.string->length());
+    }
+    return ma_object_get(me, name);
+  };
+  ma_object_set(
+      ma_object, MAG_ADD,
+      create_diia_native(ma_string_mag_add_diia_native_fn, ma_object));
+  ma_object_set(
+      ma_object, MAG_GET_ELEMENT,
+      create_diia_native(ma_string_mag_get_element_diia_native_fn, ma_object));
   return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
 }
 
@@ -176,6 +194,12 @@ inline MaCell create_list() {
   ma_object->type = MA_OBJECT_LIST;
   const auto ma_list = new MaList();
   ma_object->d.list = ma_list;
+  ma_object->get = [](MaObject* me, const std::string& name) {
+    if (name == "довжина") {
+      return MA_MAKE_INTEGER(me->d.list->size());
+    }
+    return ma_object_get(me, name);
+  };
   ma_object_set(ma_object, MAG_ITERATOR,
                 create_diia_native(ma_list_iterate_diia_native_fn, ma_object));
   ma_object_set(
