@@ -881,6 +881,162 @@ namespace mavka::mama {
           }
           break;
         }
+        case OP_XOR: {
+          POP_VALUE(right);
+          POP_VALUE(left);
+          if (IS_NUMBER(left)) {
+            if (IS_NUMBER(right)) {
+              PUSH_NUMBER(
+                  static_cast<double>(static_cast<long>(left.v.number) ^
+                                      static_cast<long>(right.v.number)));
+            } else {
+              DO_THROW_STRING("Дія \"" + std::string(MAG_BW_XOR) +
+                              "\" для типу \"число\" "
+                              "очікує параметром значення типу \"число\".")
+            }
+          } else if (IS_OBJECT(left)) {
+            if (left.v.object->properties.contains(MAG_BW_XOR)) {
+              const auto diia_cell = ma_object_get(left.v.object, MAG_BW_XOR);
+              if (!initcall(M, diia_cell, M->i + 1)) {
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
+              }
+              READ_TOP_FRAME();
+              frame->args.insert_or_assign("0", right);
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_XOR, left);
+            }
+          } else {
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_XOR, left);
+          }
+          break;
+        }
+        case OP_BOR: {
+          POP_VALUE(right);
+          POP_VALUE(left);
+          if (IS_NUMBER(left)) {
+            if (IS_NUMBER(right)) {
+              PUSH_NUMBER(
+                  static_cast<double>(static_cast<long>(left.v.number) |
+                                      static_cast<long>(right.v.number)));
+            } else {
+              DO_THROW_STRING("Дія \"" + std::string(MAG_BW_OR) +
+                              "\" для типу \"число\" "
+                              "очікує параметром значення типу \"число\".")
+            }
+          } else if (IS_OBJECT(left)) {
+            if (left.v.object->properties.contains(MAG_BW_OR)) {
+              const auto diia_cell = ma_object_get(left.v.object, MAG_BW_OR);
+              if (!initcall(M, diia_cell, M->i + 1)) {
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
+              }
+              READ_TOP_FRAME();
+              frame->args.insert_or_assign("0", right);
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_OR, left);
+            }
+          } else {
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_OR, left);
+          }
+          break;
+        }
+        case OP_BAND: {
+          POP_VALUE(right);
+          POP_VALUE(left);
+          if (IS_NUMBER(left)) {
+            if (IS_NUMBER(right)) {
+              PUSH_NUMBER(
+                  static_cast<double>(static_cast<long>(left.v.number) &
+                                      static_cast<long>(right.v.number)));
+            } else {
+              DO_THROW_STRING("Дія \"" + std::string(MAG_BW_AND) +
+                              "\" для типу \"число\" "
+                              "очікує параметром значення типу \"число\".")
+            }
+          } else if (IS_OBJECT(left)) {
+            if (left.v.object->properties.contains(MAG_BW_AND)) {
+              const auto diia_cell = ma_object_get(left.v.object, MAG_BW_AND);
+              if (!initcall(M, diia_cell, M->i + 1)) {
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
+              }
+              READ_TOP_FRAME();
+              frame->args.insert_or_assign("0", right);
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_AND, left);
+            }
+          } else {
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_AND, left);
+          }
+          break;
+        }
+        case OP_SHL: {
+          POP_VALUE(right);
+          POP_VALUE(left);
+          if (IS_NUMBER(left)) {
+            if (IS_NUMBER(right)) {
+              PUSH_NUMBER(
+                  static_cast<double>(static_cast<long>(left.v.number)
+                                      << static_cast<long>(right.v.number)));
+            } else {
+              DO_THROW_STRING("Дія \"" + std::string(MAG_BW_SHIFT_LEFT) +
+                              "\" для типу \"число\" "
+                              "очікує параметром значення типу \"число\".")
+            }
+          } else if (IS_OBJECT(left)) {
+            if (left.v.object->properties.contains(MAG_BW_SHIFT_LEFT)) {
+              const auto diia_cell =
+                  ma_object_get(left.v.object, MAG_BW_SHIFT_LEFT);
+              if (!initcall(M, diia_cell, M->i + 1)) {
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
+              }
+              READ_TOP_FRAME();
+              frame->args.insert_or_assign("0", right);
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_SHIFT_LEFT, left);
+            }
+          } else {
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_SHIFT_LEFT, left);
+          }
+          break;
+        }
+        case OP_SHR: {
+          POP_VALUE(right);
+          POP_VALUE(left);
+          if (IS_NUMBER(left)) {
+            if (IS_NUMBER(right)) {
+              PUSH_NUMBER(
+                  static_cast<double>(static_cast<long>(left.v.number) >>
+                                      static_cast<long>(right.v.number)));
+            } else {
+              DO_THROW_STRING("Дія \"" + std::string(MAG_BW_SHIFT_RIGHT) +
+                              "\" для типу \"число\" "
+                              "очікує параметром значення типу \"число\".")
+            }
+          } else if (IS_OBJECT(left)) {
+            if (left.v.object->properties.contains(MAG_BW_SHIFT_RIGHT)) {
+              const auto diia_cell = ma_object_get(left.v.object, MAG_BW_SHIFT_RIGHT);
+              if (!initcall(M, diia_cell, M->i + 1)) {
+                DO_THROW_CANNOT_CALL_CELL(diia_cell);
+              }
+              READ_TOP_FRAME();
+              frame->args.insert_or_assign("0", right);
+              I = MaInstruction{OP_CALL};
+              goto i_start;
+            } else {
+              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_SHIFT_RIGHT, left);
+            }
+          } else {
+            DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_SHIFT_RIGHT, left);
+          }
+          break;
+        }
         default: {
           std::cout << "unsupported instruction " << getopname(I.op)
                     << std::endl;
