@@ -114,8 +114,8 @@ namespace mavka::mama {
     MaObject* diia_native;
     MaObject* structure;
     MaObject* module;
-    int return_index;
-    int catch_index;
+    size_t return_index;
+    size_t catch_index;
     std::map<std::string, MaCell> args;
   };
 
@@ -167,7 +167,7 @@ namespace mavka::mama {
   };
 
   struct MaTryInstructionArgs {
-    int catch_index;
+    size_t catch_index;
   };
 
   struct MaTryDoneInstructionArgs {
@@ -218,6 +218,7 @@ namespace mavka::mama {
       MaStoreArgInstructionArgs* storearg;
       MaModuleInstructionArgs* module;
       MaGiveInstructionArgs* give;
+      size_t lt;
     } args;
   };
 
