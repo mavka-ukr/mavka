@@ -138,7 +138,7 @@ namespace mavka::mama {
   };
 
   struct MaInitCallInstructionArgs {
-    int index;
+    size_t index;
   };
 
   struct MaGetInstructionArgs {
@@ -171,12 +171,12 @@ namespace mavka::mama {
   };
 
   struct MaTryDoneInstructionArgs {
-    int index;
+    size_t index;
   };
 
   struct MaStructInstructionArgs {
     std::string name;
-    int constructor_index;
+    size_t constructor_index;
   };
 
   struct MaStructParamInstructionArgs {
@@ -296,7 +296,7 @@ namespace mavka::mama {
       mavka::ast::AssignByIdentifierNode* assign_by_identifier_node);
   MaCompilationResult compile_assign_simple_node(
       MaMa* M,
-      const mavka::ast::AssignSimpleNode* assign_simple_node);
+      mavka::ast::AssignSimpleNode* assign_simple_node);
   MaCompilationResult compile_bitwise_node(
       MaMa* M,
       const mavka::ast::BitwiseNode* bitwise_node);
