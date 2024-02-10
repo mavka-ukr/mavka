@@ -399,7 +399,7 @@ namespace mavka::mama {
       const mavka::ast::StringNode* string_node);
   MaCompilationResult compile_structure_node(
       MaMa* M,
-      const mavka::ast::StructureNode* structure_node);
+      mavka::ast::StructureNode* structure_node);
   MaCompilationResult compile_take_module_node(
       MaMa* M,
       mavka::ast::TakeModuleNode* take_module_node);
