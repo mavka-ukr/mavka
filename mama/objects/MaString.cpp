@@ -123,7 +123,13 @@ namespace mavka::mama {
     if (name == "довжина") {
       return MA_MAKE_INTEGER(me->d.string->length());
     }
-    return ma_object_get(me, name);
+    if (!me->properties.contains(name)) {
+      M->stack.push(create_string(
+          M, "Властивість \"" + name + "\" не визначено для типу \"текст\"."));
+      M->need_to_throw = true;
+      return MA_MAKE_EMPTY();
+    }
+    return me->properties[name];
   }
 
   MaCell create_string(MaMa* M, const std::string& value) {
@@ -132,13 +138,14 @@ namespace mavka::mama {
     const auto string_cell =
         create_object(M, MA_OBJECT_STRING, M->text_structure_object, string);
     string_cell.v.object->get = ma_string_get_handler;
-    ma_object_set(string_cell.v.object, MAG_ADD,
-                  create_diia_native(M, ma_string_mag_add_diia_native_fn,
-                                     string_cell.v.object));
     ma_object_set(
-        string_cell.v.object, MAG_GET_ELEMENT,
-        create_diia_native(M, ma_string_mag_get_element_diia_native_fn,
+        string_cell.v.object, MAG_ADD,
+        create_diia_native(M, MAG_ADD, ma_string_mag_add_diia_native_fn,
                            string_cell.v.object));
+    ma_object_set(string_cell.v.object, MAG_GET_ELEMENT,
+                  create_diia_native(M, MAG_GET_ELEMENT,
+                                     ma_string_mag_get_element_diia_native_fn,
+                                     string_cell.v.object));
     return string_cell;
   }
 
@@ -174,7 +181,8 @@ namespace mavka::mama {
     M->text_structure_object = text_structure_cell.v.object;
     ma_object_set(
         text_structure_cell.v.object, MAG_CALL,
-        create_diia_native(M, text_structure_object_mag_call_native_diia_fn,
+        create_diia_native(M, MAG_CALL,
+                           text_structure_object_mag_call_native_diia_fn,
                            text_structure_cell.v.object));
   }
 } // namespace mavka::mama

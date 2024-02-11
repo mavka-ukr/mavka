@@ -33,7 +33,8 @@ namespace mavka::mama {
     M->number_structure_object = number_structure_cell.v.object;
     ma_object_set(
         number_structure_cell.v.object, MAG_CALL,
-        create_diia_native(M, number_structure_object_mag_call_native_diia_fn,
+        create_diia_native(M, MAG_CALL,
+                           number_structure_object_mag_call_native_diia_fn,
                            number_structure_cell.v.object));
   }
 } // namespace mavka::mama

@@ -18,13 +18,47 @@
   std::cout << "Не вдалось зловити: " << cell_to_string(M->stack.top()) \
             << std::endl;
 
-#define DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(name, type)                    \
-  DO_THROW_STRING("Дію \"" + std::string(name) +                          \
-                  "\" не визначено для типу \"" + getcelltypename(type) + \
+#define DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(varname, cell)                 \
+  DO_THROW_STRING("Дію \"" + std::string(varname) +                       \
+                  "\" не визначено для типу \"" + getcelltypename(cell) + \
+                  "\".")
+
+#define DO_THROW_PROP_NOT_DEFINED_FOR_TYPE(varname, cell)                 \
+  DO_THROW_STRING("Властивість \"" + std::string(varname) +               \
+                  "\" не визначено для типу \"" + getcelltypename(cell) + \
                   "\".")
 
 #define DO_THROW_CANNOT_CALL_CELL(cell) \
   DO_THROW_STRING("Неможливо викликати \"" + getcelltypename(cell) + "\".")
+
+#define OBJECT_GET(cell, varname, propname)                       \
+  MaCell varname{};                                               \
+  if ((cell).v.object->get) {                                     \
+    varname = (cell).v.object->get(M, (cell).v.object, propname); \
+    if (M->need_to_throw) {                                       \
+      M->need_to_throw = false;                                   \
+      HANDLE_THROW();                                             \
+      return;                                                     \
+    }                                                             \
+  } else {                                                        \
+    if ((cell).v.object->properties.contains(propname)) {         \
+      varname = (cell).v.object->properties[propname];            \
+    } else {                                                      \
+      DO_THROW_PROP_NOT_DEFINED_FOR_TYPE(propname, cell)          \
+    }                                                             \
+  }
+
+#define OBJECT_SET(cell, propname, value)                      \
+  if ((cell).v.object->set) {                                  \
+    (cell).v.object->set(M, (cell).v.object, propname, value); \
+    if (M->need_to_throw) {                                    \
+      M->need_to_throw = false;                                \
+      HANDLE_THROW();                                          \
+      return;                                                  \
+    }                                                          \
+  } else {                                                     \
+    (cell).v.object->properties[propname] = value;             \
+  }
 
 #define IS_EMPTY(cell) ((cell).type == MA_CELL_EMPTY)
 #define IS_NUMBER(cell) ((cell).type == MA_CELL_NUMBER)
@@ -82,8 +116,8 @@ namespace mavka::mama {
                                     .return_index = return_index}));
         return true;
       }
-      if (ma_object_has(object, MAG_CALL)) {
-        cell = ma_object_get(object, MAG_CALL);
+      if (object->properties.contains(MAG_CALL)) {
+        cell = object->properties[MAG_CALL];
         goto repeat_op_initcall;
       }
       if (object->type == MA_OBJECT_STRUCTURE) {
@@ -222,10 +256,9 @@ namespace mavka::mama {
         }
         case OP_DIIA: {
           READ_TOP_FRAME();
-          const auto diia_cell = create_diia(M, I.args.diia->index, nullptr);
+          const auto diia_cell =
+              create_diia(M, I.args.diia->name, I.args.diia->index, nullptr);
           diia_cell.v.object->d.diia->scope = frame->scope;
-          ma_object_set(diia_cell.v.object, "назва",
-                        create_string(M, I.args.diia->name));
           PUSH(diia_cell);
           break;
         }
@@ -316,14 +349,11 @@ namespace mavka::mama {
         case OP_GET: {
           POP_VALUE(cell);
           if (cell.type == MA_CELL_OBJECT) {
-            if (cell.v.object->get) {
-              PUSH(cell.v.object->get(M, cell.v.object, I.args.set->name));
-              break;
-            }
-            PUSH(ma_object_get(cell.v.object, I.args.get->name));
-          } else {
-            PUSH_EMPTY();
+            OBJECT_GET(cell, value, I.args.get->name);
+            PUSH(value);
+            break;
           }
+          DO_THROW_PROP_NOT_DEFINED_FOR_TYPE(I.args.get->name, cell);
           break;
         }
         case OP_SET: {
@@ -333,11 +363,8 @@ namespace mavka::mama {
             if (IS_OBJECT_STRING(cell)) {
               break;
             }
-            if (cell.v.object->set) {
-              cell.v.object->set(M, cell.v.object, I.args.set->name, value);
-              break;
-            }
-            ma_object_set(cell.v.object, I.args.set->name, value);
+            OBJECT_SET(cell, I.args.set->name, value);
+            break;
           }
           break;
         }
@@ -504,18 +531,14 @@ namespace mavka::mama {
                               "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
-            if (left.v.object->properties.contains(MAG_GREATER)) {
-              const auto diia_cell = ma_object_get(left.v.object, MAG_GREATER);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              READ_TOP_FRAME();
-              frame->args.insert_or_assign("0", right);
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_GREATER, left);
+            OBJECT_GET(left, diia_cell, MAG_GREATER);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            frame->args.insert_or_assign("0", right);
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_GREATER, left);
           }
@@ -537,19 +560,14 @@ namespace mavka::mama {
                               "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
-            if (left.v.object->properties.contains(MAG_GREATER_EQUAL)) {
-              const auto diia_cell =
-                  ma_object_get(left.v.object, MAG_GREATER_EQUAL);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              READ_TOP_FRAME();
-              frame->args.insert_or_assign("0", right);
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_GREATER_EQUAL, left);
+            OBJECT_GET(left, diia_cell, MAG_GREATER_EQUAL);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            frame->args.insert_or_assign("0", right);
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_GREATER_EQUAL, left);
           }
@@ -571,18 +589,14 @@ namespace mavka::mama {
                               "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
-            if (left.v.object->properties.contains(MAG_LESSER)) {
-              const auto diia_cell = ma_object_get(left.v.object, MAG_LESSER);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              READ_TOP_FRAME();
-              frame->args.insert_or_assign("0", right);
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_LESSER, left);
+            OBJECT_GET(left, diia_cell, MAG_LESSER);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            frame->args.insert_or_assign("0", right);
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_LESSER, left);
           }
@@ -604,19 +618,14 @@ namespace mavka::mama {
                               "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
-            if (left.v.object->properties.contains(MAG_LESSER_EQUAL)) {
-              const auto diia_cell =
-                  ma_object_get(left.v.object, MAG_LESSER_EQUAL);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              READ_TOP_FRAME();
-              frame->args.insert_or_assign("0", right);
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_LESSER_EQUAL, left);
+            OBJECT_GET(left, diia_cell, MAG_LESSER_EQUAL);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            frame->args.insert_or_assign("0", right);
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_LESSER_EQUAL, left);
           }
@@ -626,18 +635,14 @@ namespace mavka::mama {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_OBJECT(left)) {
-            if (left.v.object->properties.contains(MAG_CONTAINS)) {
-              const auto diia_cell = ma_object_get(left.v.object, MAG_CONTAINS);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              READ_TOP_FRAME();
-              frame->args.insert_or_assign("0", right);
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_CONTAINS, left);
+            OBJECT_GET(left, diia_cell, MAG_CONTAINS);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            frame->args.insert_or_assign("0", right);
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_CONTAINS, left);
           }
@@ -705,17 +710,13 @@ namespace mavka::mama {
           if (IS_NUMBER(value)) {
             PUSH_NUMBER(-value.v.number);
           } else if (IS_OBJECT(value)) {
-            if (value.v.object->properties.contains(MAG_NEGATIVE)) {
-              const auto diia_cell =
-                  ma_object_get(value.v.object, MAG_NEGATIVE);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_NEGATIVE, value);
+            OBJECT_GET(value, diia_cell, MAG_NEGATIVE);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_NEGATIVE, value);
           }
@@ -726,17 +727,13 @@ namespace mavka::mama {
           if (IS_NUMBER(value)) {
             PUSH_NUMBER(value.v.number * -1);
           } else if (IS_OBJECT(value)) {
-            if (value.v.object->properties.contains(MAG_POSITIVE)) {
-              const auto diia_cell =
-                  ma_object_get(value.v.object, MAG_POSITIVE);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_POSITIVE, value);
+            OBJECT_GET(value, diia_cell, MAG_POSITIVE);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_POSITIVE, value);
           }
@@ -748,16 +745,13 @@ namespace mavka::mama {
             PUSH_NUMBER(
                 static_cast<double>(~static_cast<long>(value.v.number)));
           } else if (IS_OBJECT(value)) {
-            if (value.v.object->properties.contains(MAG_BW_NOT)) {
-              const auto diia_cell = ma_object_get(value.v.object, MAG_BW_NOT);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_NOT, value);
+            OBJECT_GET(value, diia_cell, MAG_BW_NOT);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_NOT, value);
           }
@@ -775,18 +769,14 @@ namespace mavka::mama {
                               "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
-            if (left.v.object->properties.contains(MAG_ADD)) {
-              const auto diia_cell = ma_object_get(left.v.object, MAG_ADD);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              READ_TOP_FRAME();
-              frame->args.insert_or_assign("0", right);
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_ADD, left);
+            OBJECT_GET(left, diia_cell, MAG_ADD);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            frame->args.insert_or_assign("0", right);
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_ADD, left);
           }
@@ -804,18 +794,14 @@ namespace mavka::mama {
                               "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
-            if (left.v.object->properties.contains(MAG_SUB)) {
-              const auto diia_cell = ma_object_get(left.v.object, MAG_SUB);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              READ_TOP_FRAME();
-              frame->args.insert_or_assign("0", right);
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_SUB, left);
+            OBJECT_GET(left, diia_cell, MAG_SUB);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            frame->args.insert_or_assign("0", right);
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_SUB, left);
           }
@@ -833,18 +819,14 @@ namespace mavka::mama {
                               "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
-            if (left.v.object->properties.contains(MAG_MUL)) {
-              const auto diia_cell = ma_object_get(left.v.object, MAG_MUL);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              READ_TOP_FRAME();
-              frame->args.insert_or_assign("0", right);
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_MUL, left);
+            OBJECT_GET(left, diia_cell, MAG_MUL);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            frame->args.insert_or_assign("0", right);
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_MUL, left);
           }
@@ -862,18 +844,14 @@ namespace mavka::mama {
                               "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
-            if (left.v.object->properties.contains(MAG_DIV)) {
-              const auto diia_cell = ma_object_get(left.v.object, MAG_DIV);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              READ_TOP_FRAME();
-              frame->args.insert_or_assign("0", right);
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_DIV, left);
+            OBJECT_GET(left, diia_cell, MAG_DIV);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            frame->args.insert_or_assign("0", right);
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_DIV, left);
           }
@@ -891,18 +869,14 @@ namespace mavka::mama {
                               "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
-            if (left.v.object->properties.contains(MAG_MOD)) {
-              const auto diia_cell = ma_object_get(left.v.object, MAG_MOD);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              READ_TOP_FRAME();
-              frame->args.insert_or_assign("0", right);
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_MOD, left);
+            OBJECT_GET(left, diia_cell, MAG_MOD);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            frame->args.insert_or_assign("0", right);
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_MOD, left);
           }
@@ -920,18 +894,14 @@ namespace mavka::mama {
                               "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
-            if (left.v.object->properties.contains(MAG_DIVDIV)) {
-              const auto diia_cell = ma_object_get(left.v.object, MAG_DIVDIV);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              READ_TOP_FRAME();
-              frame->args.insert_or_assign("0", right);
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_DIVDIV, left);
+            OBJECT_GET(left, diia_cell, MAG_DIVDIV);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            frame->args.insert_or_assign("0", right);
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_DIVDIV, left);
           }
@@ -949,18 +919,14 @@ namespace mavka::mama {
                               "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
-            if (left.v.object->properties.contains(MAG_POW)) {
-              const auto diia_cell = ma_object_get(left.v.object, MAG_POW);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              READ_TOP_FRAME();
-              frame->args.insert_or_assign("0", right);
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_POW, left);
+            OBJECT_GET(left, diia_cell, MAG_POW);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            frame->args.insert_or_assign("0", right);
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_POW, left);
           }
@@ -980,18 +946,14 @@ namespace mavka::mama {
                               "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
-            if (left.v.object->properties.contains(MAG_BW_XOR)) {
-              const auto diia_cell = ma_object_get(left.v.object, MAG_BW_XOR);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              READ_TOP_FRAME();
-              frame->args.insert_or_assign("0", right);
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_XOR, left);
+            OBJECT_GET(left, diia_cell, MAG_BW_XOR);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            frame->args.insert_or_assign("0", right);
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_XOR, left);
           }
@@ -1011,18 +973,14 @@ namespace mavka::mama {
                               "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
-            if (left.v.object->properties.contains(MAG_BW_OR)) {
-              const auto diia_cell = ma_object_get(left.v.object, MAG_BW_OR);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              READ_TOP_FRAME();
-              frame->args.insert_or_assign("0", right);
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_OR, left);
+            OBJECT_GET(left, diia_cell, MAG_BW_OR);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            frame->args.insert_or_assign("0", right);
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_OR, left);
           }
@@ -1042,18 +1000,14 @@ namespace mavka::mama {
                               "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
-            if (left.v.object->properties.contains(MAG_BW_AND)) {
-              const auto diia_cell = ma_object_get(left.v.object, MAG_BW_AND);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              READ_TOP_FRAME();
-              frame->args.insert_or_assign("0", right);
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_AND, left);
+            OBJECT_GET(left, diia_cell, MAG_BW_AND);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            frame->args.insert_or_assign("0", right);
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_AND, left);
           }
@@ -1073,19 +1027,14 @@ namespace mavka::mama {
                               "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
-            if (left.v.object->properties.contains(MAG_BW_SHIFT_LEFT)) {
-              const auto diia_cell =
-                  ma_object_get(left.v.object, MAG_BW_SHIFT_LEFT);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              READ_TOP_FRAME();
-              frame->args.insert_or_assign("0", right);
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_SHIFT_LEFT, left);
+            OBJECT_GET(left, diia_cell, MAG_BW_SHIFT_LEFT);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            frame->args.insert_or_assign("0", right);
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_SHIFT_LEFT, left);
           }
@@ -1105,19 +1054,14 @@ namespace mavka::mama {
                               "очікує параметром значення типу \"число\".")
             }
           } else if (IS_OBJECT(left)) {
-            if (left.v.object->properties.contains(MAG_BW_SHIFT_RIGHT)) {
-              const auto diia_cell =
-                  ma_object_get(left.v.object, MAG_BW_SHIFT_RIGHT);
-              if (!initcall(M, diia_cell, M->i + 1)) {
-                DO_THROW_CANNOT_CALL_CELL(diia_cell);
-              }
-              READ_TOP_FRAME();
-              frame->args.insert_or_assign("0", right);
-              I = MaInstruction{OP_CALL};
-              goto i_start;
-            } else {
-              DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_SHIFT_RIGHT, left);
+            OBJECT_GET(left, diia_cell, MAG_BW_SHIFT_RIGHT);
+            if (!initcall(M, diia_cell, M->i + 1)) {
+              DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
+            READ_TOP_FRAME();
+            frame->args.insert_or_assign("0", right);
+            I = MaInstruction{OP_CALL};
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_SHIFT_RIGHT, left);
           }

@@ -7,7 +7,14 @@ namespace mavka::mama {
     if (name == "назва") {
       return create_string(M, me->d.structure->name);
     }
-    return ma_object_get(me, name);
+    if (!me->properties.contains(name)) {
+      M->stack.push(create_string(
+          M,
+          "Властивість \"" + name + "\" не визначено для типу \"Структура\"."));
+      M->need_to_throw = true;
+      return MA_MAKE_EMPTY();
+    }
+    return me->properties[name];
   }
 
   MaCell structure_structure_object_get_structure_native_diia_fn(
@@ -50,11 +57,11 @@ namespace mavka::mama {
   }
 
   void init_structure_2(MaMa* M) {
-    ma_object_set(
-        M->structure_structure_object, "дізнатись",
-        create_diia_native(
-            M, structure_structure_object_get_structure_native_diia_fn,
-            M->structure_structure_object));
+    ma_object_set(M->structure_structure_object, "дізнатись",
+                  create_diia_native(
+                      M, "дізнатись",
+                      structure_structure_object_get_structure_native_diia_fn,
+                      M->structure_structure_object));
 
   }
 } // namespace mavka::mama
