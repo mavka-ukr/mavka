@@ -76,9 +76,6 @@ typedef enum {
   OP_BAND,
   OP_SHL,
   OP_SHR,
-
-  OP_GET_ELEMENT,
-  OP_SET_ELEMENT,
 } OP;
 
 inline std::string getopname(const OP op) {
@@ -195,10 +192,6 @@ inline std::string getopname(const OP op) {
       return "OP_YES";
     case OP_NO:
       return "OP_NO";
-    case OP_GET_ELEMENT:
-      return "OP_GET_ELEMENT";
-    case OP_SET_ELEMENT:
-      return "OP_SET_ELEMENT";
     default:
       break;
   }

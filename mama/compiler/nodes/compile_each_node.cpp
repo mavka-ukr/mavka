@@ -26,10 +26,10 @@ namespace mavka::mama {
           step_op_i = MaInstruction{OP_ADD};
         } else if (toSymbol == ">=") {
           check_i = MaInstruction{OP_LT};
-          step_op_i = MaInstruction{OP_SUB};
+          step_op_i = MaInstruction{OP_ADD};
         } else if (toSymbol == ">") {
           check_i = MaInstruction{OP_LE};
-          step_op_i = MaInstruction{OP_SUB};
+          step_op_i = MaInstruction{OP_ADD};
         } else {
           return error(mavka::ast::make_ast_some(each_node),
                        "Невідомий символ: " + toSymbol);

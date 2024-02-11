@@ -8,6 +8,7 @@ class MaDict;
 class MaDiia;
 class MaStructure;
 class MaDiiaNative;
+class MaModule;
 struct MaCell;
 
 struct MaObject {
@@ -20,6 +21,7 @@ struct MaObject {
     MaDiia* diia;
     MaStructure* structure;
     MaDiiaNative* diia_native;
+    MaModule* module;
   } d;
   MaObject* structure;
   tsl::ordered_map<std::string, MaCell> properties;
@@ -77,6 +79,7 @@ class MaDiiaParam final {
 
 class MaDiia final {
  public:
+  std::string name;
   int index;
   MaObject* me;
   MaScope* scope;
@@ -96,8 +99,14 @@ typedef MaCell DiiaNativeFn(MaMa* M,
 
 class MaDiiaNative final {
  public:
+  std::string name;
   std::function<DiiaNativeFn> fn;
   MaObject* me;
+};
+
+class MaModule final {
+ public:
+  std::string name;
 };
 
 inline std::string ma_number_to_string(const double number) {
@@ -125,12 +134,15 @@ inline bool ma_object_has(const MaObject* object, const std::string& name) {
 
 void init_object(MaMa* M);
 void init_structure(MaMa* M);
+void init_structure_2(MaMa* M);
 void init_number(MaMa* M);
 void init_logical(MaMa* M);
 void init_text(MaMa* M);
 void init_list(MaMa* M);
 void init_dict(MaMa* M);
 void init_diia(MaMa* M);
+void init_module(MaMa* M);
+void init_object(MaMa* M);
 
 MaCell create_empty_object(MaMa* M);
 MaCell create_object(MaMa* M,

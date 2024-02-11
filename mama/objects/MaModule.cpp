@@ -2,11 +2,15 @@
 
 namespace mavka::mama {
   MaCell create_module(MaMa* M, const std::string& name) {
-    const auto ma_object = new MaObject();
-    ma_object->type = MA_OBJECT_MODULE;
-    const auto ma_structure = new MaStructure();
-    ma_object->d.structure = ma_structure;
-    ma_object_set(ma_object, "назва", create_string(M, name));
-    return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
+    const auto module = new MaModule();
+    module->name = name;
+    return create_object(M, MA_OBJECT_MODULE, M->module_structure_object,
+                         module);
+  }
+
+  void init_module(MaMa* M) {
+    const auto module_structure_cell = create_structure(M, "Модуль");
+    M->global_scope->set_variable("Модуль", module_structure_cell);
+    M->module_structure_object = module_structure_cell.v.object;
   }
 } // namespace mavka::mama

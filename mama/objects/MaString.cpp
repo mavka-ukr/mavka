@@ -130,7 +130,7 @@ namespace mavka::mama {
     const auto string = new MaString();
     string->data = value;
     const auto string_cell =
-        create_object(M, MA_OBJECT_STRING, M->list_structure_object, string);
+        create_object(M, MA_OBJECT_STRING, M->text_structure_object, string);
     string_cell.v.object->get = ma_string_get_handler;
     ma_object_set(string_cell.v.object, MAG_ADD,
                   create_diia_native(M, ma_string_mag_add_diia_native_fn,
