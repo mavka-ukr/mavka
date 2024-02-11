@@ -13,6 +13,7 @@ struct MaCell;
 struct MaObject {
   unsigned char type;
   union {
+    void* ptr;
     MaString* string;
     MaList* list;
     MaDict* dict;
@@ -22,8 +23,10 @@ struct MaObject {
   } d;
   MaObject* structure;
   tsl::ordered_map<std::string, MaCell> properties;
-  std::function<void(MaObject* me, const std::string& name, MaCell value)> set;
-  std::function<MaCell(MaObject* me, const std::string& name)> get;
+  std::function<
+      void(MaMa* M, MaObject* me, const std::string& name, MaCell value)>
+      set;
+  std::function<MaCell(MaMa* M, MaObject* me, const std::string& name)> get;
 };
 
 union MaCellV {
@@ -82,6 +85,7 @@ class MaDiia final {
 
 class MaStructure final {
  public:
+  std::string name;
   std::vector<MaDiiaParam> params;
   std::vector<MaObject*> methods;
 };
@@ -129,12 +133,12 @@ void init_dict(MaMa* M);
 void init_diia(MaMa* M);
 
 MaCell create_empty_object(MaMa* M);
-MaCell create_object(MaMa* M, MaObject* ma_structure_object);
+MaCell create_object(MaMa* M,
+                     unsigned char type,
+                     MaObject* structure_object,
+                     void* d);
 MaCell create_string(MaMa* M, const std::string& value);
-MaCell create_diia(MaMa* M, const int& index);
 MaCell create_diia(MaMa* M, const int& index, MaObject* me);
-MaCell create_diia_native(MaMa* M,
-                          const std::function<DiiaNativeFn>& diia_native_fn);
 MaCell create_diia_native(MaMa* M,
                           const std::function<DiiaNativeFn>& diia_native_fn,
                           MaObject* me);

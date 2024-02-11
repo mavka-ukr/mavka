@@ -13,7 +13,7 @@ void init_print(MaMa* M, MaScope* S) {
     }
     return MA_MAKE_EMPTY();
   };
-  const auto diia_cell = create_diia_native(M, diia_native_fn);
+  const auto diia_cell = create_diia_native(M, diia_native_fn, nullptr);
   ma_object_set(diia_cell.v.object, "назва", create_string(M, "друк"));
   S->set_variable("друк", diia_cell);
 }
@@ -41,10 +41,10 @@ int main(int argc, char** argv) {
   M->global_scope = S;
 
   init_structure(M);
+  init_diia(M);
   init_number(M);
   init_logical(M);
   init_text(M);
-  init_diia(M);
   init_list(M);
   init_dict(M);
 

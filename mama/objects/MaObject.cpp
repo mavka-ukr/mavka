@@ -1,8 +1,13 @@
 #include "../mama.h"
 
 namespace mavka::mama {
-  MaCell create_object(MaMa* M, MaObject* structure_object) {
+  MaCell create_object(MaMa* M,
+                       unsigned char type,
+                       MaObject* structure_object,
+                       void* d) {
     const auto object_object = new MaObject();
+    object_object->type = type;
+    object_object->d.ptr = d;
     object_object->structure = structure_object;
     for (const auto& method : structure_object->d.structure->methods) {
       const auto diia_name =
@@ -14,6 +19,6 @@ namespace mavka::mama {
   }
 
   MaCell create_empty_object(MaMa* M) {
-    return create_object(M, M->object_structure_object);
+    return create_object(M, MA_OBJECT, M->object_structure_object, nullptr);
   }
 } // namespace mavka::mama

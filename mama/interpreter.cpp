@@ -147,7 +147,7 @@ namespace mavka::mama {
             if (M->need_to_throw) {
               M->need_to_throw = false;
               HANDLE_THROW();
-              break;
+              return;
             }
             PUSH(result);
             frame->args.clear();
@@ -177,7 +177,8 @@ namespace mavka::mama {
             goto start;
           }
           if (frame->structure) {
-            const auto object_cell = create_object(M, frame->structure);
+            const auto object_cell =
+                create_object(M, MA_OBJECT, frame->structure, nullptr);
             for (int i = 0; i < frame->structure->d.structure->params.size();
                  ++i) {
               const auto& param = frame->structure->d.structure->params[i];
@@ -212,7 +213,7 @@ namespace mavka::mama {
         }
         case OP_DIIA: {
           READ_TOP_FRAME();
-          const auto diia_cell = create_diia(M, I.args.diia->index);
+          const auto diia_cell = create_diia(M, I.args.diia->index, nullptr);
           diia_cell.v.object->d.diia->scope = frame->scope;
           ma_object_set(diia_cell.v.object, "назва",
                         create_string(M, I.args.diia->name));
@@ -307,7 +308,7 @@ namespace mavka::mama {
           POP_VALUE(cell);
           if (cell.type == MA_CELL_OBJECT) {
             if (cell.v.object->get) {
-              PUSH(cell.v.object->get(cell.v.object, I.args.set->name));
+              PUSH(cell.v.object->get(M, cell.v.object, I.args.set->name));
               break;
             }
             PUSH(ma_object_get(cell.v.object, I.args.get->name));
@@ -324,7 +325,7 @@ namespace mavka::mama {
               break;
             }
             if (cell.v.object->set) {
-              cell.v.object->set(cell.v.object, I.args.set->name, value);
+              cell.v.object->set(M, cell.v.object, I.args.set->name, value);
               break;
             }
             ma_object_set(cell.v.object, I.args.set->name, value);
