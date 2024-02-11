@@ -150,8 +150,12 @@ MaCell create_object(MaMa* M,
                      MaObject* structure_object,
                      void* d);
 MaCell create_string(MaMa* M, const std::string& value);
-MaCell create_diia(MaMa* M, const int& index, MaObject* me);
+MaCell create_diia(MaMa* M,
+                   const std::string& name,
+                   const int& index,
+                   MaObject* me);
 MaCell create_diia_native(MaMa* M,
+                          const std::string& name,
                           const std::function<DiiaNativeFn>& diia_native_fn,
                           MaObject* me);
 MaCell bind_diia(MaMa* M, MaObject* diia, MaObject* object);
