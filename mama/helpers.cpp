@@ -22,8 +22,7 @@ namespace mavka::mama {
   std::string getcelltypename(MaCell cell) {
     if (cell.type == MA_CELL_OBJECT) {
       if (cell.v.object->structure) {
-        return ma_object_get(cell.v.object->structure, "назва")
-            .v.object->d.string->data;
+        return cell.v.object->structure->d.structure->name;
       }
     }
     return gettypename(cell.type);
@@ -31,8 +30,7 @@ namespace mavka::mama {
 
   std::string getcellstructurename(MaCell cell) {
     if (cell.type == MA_CELL_OBJECT) {
-      return ma_object_get(cell.v.object->structure, "назва")
-          .v.object->d.string->data;
+      return cell.v.object->structure->d.structure->name;
     }
     return "";
   }
@@ -58,23 +56,22 @@ namespace mavka::mama {
           const auto value = ma_object_get(cell.v.object, param.name);
           items.push_back(param.name + "=" + cell_to_string(value, depth + 1));
         }
-        const auto name = ma_object_get(cell.v.object->structure, "назва");
-        return name.v.object->d.string->data + "(" +
+        return cell.v.object->structure->d.structure->name + "(" +
                internal::tools::implode(items, ", ") + ")";
       }
       if (cell.v.object->type == MA_OBJECT_DIIA) {
-        const auto name_cell = ma_object_get(cell.v.object, "назва");
-        if (name_cell.type == MA_CELL_EMPTY) {
+        const auto name = cell.v.object->d.diia->name;
+        if (name == "") {
           return "<дія>";
         }
-        return "<дія " + name_cell.v.object->d.string->data + ">";
+        return "<дія " + name + ">";
       }
       if (cell.v.object->type == MA_OBJECT_DIIA_NATIVE) {
-        const auto name_cell = ma_object_get(cell.v.object, "назва");
-        if (name_cell.type == MA_CELL_EMPTY) {
+        const auto name = cell.v.object->d.diia_native->name;
+        if (name == "") {
           return "<дія>";
         }
-        return "<дія " + name_cell.v.object->d.string->data + ">";
+        return "<дія " + name + ">";
       }
       if (cell.v.object->type == MA_OBJECT_STRING) {
         if (depth > 0) {
@@ -98,13 +95,10 @@ namespace mavka::mama {
         return "(" + internal::tools::implode(items, ", ") + ")";
       }
       if (cell.v.object->type == MA_OBJECT_STRUCTURE) {
-        const auto name =
-            ma_object_get(cell.v.object, "назва").v.object->d.string->data;
-        return "<структура " + name + ">";
+        return "<структура " + cell.v.object->d.structure->name + ">";
       }
       if (cell.v.object->type == MA_OBJECT_MODULE) {
-        const auto name =
-            ma_object_get(cell.v.object, "назва").v.object->d.string->data;
+        const auto name = cell.v.object->d.module->name;
         std::vector<std::string> items;
         for (const auto& [k, v] : cell.v.object->properties) {
           if (k != "назва") {

@@ -21,4 +21,11 @@ namespace mavka::mama {
   MaCell create_empty_object(MaMa* M) {
     return create_object(M, MA_OBJECT, M->object_structure_object, nullptr);
   }
+
+  void init_object(MaMa* M) {
+    const auto object_structure_cell = create_structure(M, "обʼєкт");
+    M->global_scope->set_variable("обʼєкт", object_structure_cell);
+    M->object_structure_object = object_structure_cell.v.object;
+    M->structure_structure_object->structure = object_structure_cell.v.object;
+  }
 } // namespace mavka::mama

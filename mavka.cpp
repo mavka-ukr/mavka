@@ -41,12 +41,15 @@ int main(int argc, char** argv) {
   M->global_scope = S;
 
   init_structure(M);
+  init_object(M);
   init_diia(M);
+  init_module(M);
   init_number(M);
   init_logical(M);
   init_text(M);
   init_list(M);
   init_dict(M);
+  init_structure_2(M);
 
   const auto frame = new MaCallFrame();
   frame->scope = S;
@@ -71,12 +74,12 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  M->code.push_back(MaInstruction{OP_THROW});
-
   for (const auto& node : program_parser_result.program_node->body) {
     const auto result = compile_node(M, node);
     if (result.error) {
-      std::cout << result.error->message << std::endl;
+      std::cout << filename << ":" << result.error->line << ":"
+                << result.error->column << ": " << result.error->message
+                << std::endl;
       return 1;
     }
   }

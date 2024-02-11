@@ -140,6 +140,7 @@ namespace mavka::mama {
     MaObject* diia_structure_object;
     MaObject* list_structure_object;
     MaObject* dict_structure_object;
+    MaObject* module_structure_object;
   };
 
   struct MaStoreInstructionArgs {
