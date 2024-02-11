@@ -1,9 +1,23 @@
 #include "mama.h"
 
-#define DO_THROW_STRING(v)           \
-  M->stack.push(create_string((v))); \
-  I = MaInstruction{OP_THROW};       \
+#define DO_THROW_STRING(v)              \
+  M->stack.push(create_string(M, (v))); \
+  I = MaInstruction{OP_THROW};          \
   goto i_start;
+
+#define HANDLE_THROW()                                                  \
+  while (!M->call_stack.empty()) {                                      \
+    READ_TOP_FRAME();                                                   \
+    FRAME_POP();                                                        \
+    const auto catch_index = frame->catch_index;                        \
+    if (catch_index) {                                                  \
+      M->i = catch_index;                                               \
+      goto start;                                                       \
+    }                                                                   \
+  }                                                                     \
+  std::cout << "Не вдалось зловити: " << cell_to_string(M->stack.top()) \
+            << std::endl;                                               \
+  break;
 
 #define DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(name, type)                    \
   DO_THROW_STRING("Дію \"" + std::string(name) +                          \
@@ -75,7 +89,7 @@ namespace mavka::mama {
   }
 
   void run(MaMa* M) {
-    M->i = 0;
+    M->i = 1;
     const auto size = M->code.size();
     for (;;) {
     start:
@@ -130,6 +144,10 @@ namespace mavka::mama {
           if (frame->diia_native) {
             const auto result = frame->diia_native->d.diia_native->fn(
                 M, frame->diia_native->d.diia_native->me, frame->args);
+            if (M->need_to_throw) {
+              M->need_to_throw = false;
+              HANDLE_THROW();
+            }
             PUSH(result);
             frame->args.clear();
             FRAME_POP();
@@ -158,7 +176,7 @@ namespace mavka::mama {
             goto start;
           }
           if (frame->structure) {
-            const auto object_cell = create_object(frame->structure);
+            const auto object_cell = create_object(M, frame->structure);
             for (int i = 0; i < frame->structure->d.structure->params.size();
                  ++i) {
               const auto& param = frame->structure->d.structure->params[i];
@@ -193,10 +211,10 @@ namespace mavka::mama {
         }
         case OP_DIIA: {
           READ_TOP_FRAME();
-          const auto diia_cell = create_diia(I.args.diia->index);
+          const auto diia_cell = create_diia(M, I.args.diia->index);
           diia_cell.v.object->d.diia->scope = frame->scope;
           ma_object_set(diia_cell.v.object, "назва",
-                        create_string(I.args.diia->name));
+                        create_string(M, I.args.diia->name));
           PUSH(diia_cell);
           break;
         }
@@ -332,21 +350,11 @@ namespace mavka::mama {
           break;
         }
         case OP_THROW: {
-          while (!M->call_stack.empty()) {
-            READ_TOP_FRAME();
-            FRAME_POP();
-            const auto catch_index = frame->catch_index;
-            if (catch_index) {
-              M->i = catch_index;
-              goto start;
-            }
-          }
-          std::cout << "Не вдалось зловити: " << cell_to_string(M->stack.top())
-                    << std::endl;
+          HANDLE_THROW();
           return;
         }
         case OP_LIST: {
-          PUSH(create_list());
+          PUSH(create_list(M));
           break;
         }
         case OP_LIST_APPEND: {
@@ -356,18 +364,18 @@ namespace mavka::mama {
           break;
         }
         case OP_DICT: {
-          PUSH(create_dict());
+          PUSH(create_dict(M));
           break;
         }
         case OP_DICT_SET: {
           POP_VALUE(value);
           TOP_VALUE(dict_cell);
-          dict_cell.v.object->d.dict->set(create_string(I.args.dictset->key),
+          dict_cell.v.object->d.dict->set(create_string(M, I.args.dictset->key),
                                           value);
           break;
         }
         case OP_STRUCT: {
-          const auto structure_cell = create_structure(I.args.struct_->name);
+          const auto structure_cell = create_structure(M, I.args.struct_->name);
           PUSH(structure_cell);
           break;
         }
@@ -394,7 +402,7 @@ namespace mavka::mama {
         }
         case OP_MODULE: {
           READ_TOP_FRAME();
-          const auto module_cell = create_module(I.args.module->name);
+          const auto module_cell = create_module(M, I.args.module->name);
           const auto module_scope = new MaScope(frame->scope);
           FRAME_PUSH((new MaCallFrame{.scope = module_scope,
                                       .module = module_cell.v.object}));

@@ -126,13 +126,20 @@ namespace mavka::mama {
     size_t iterator_count;
     std::vector<MaCell> constants;
 
+    MaScope* global_scope;
     std::stack<MaCell> stack;
     size_t i;
     std::stack<MaCallFrame*> call_stack;
+    bool need_to_throw;
 
-    MaObject* number_structure_cell;
-    MaObject* boolean_structure_cell;
-    MaObject* text_structure_cell;
+    MaObject* object_structure_object;
+    MaObject* structure_structure_object;
+    MaObject* number_structure_object;
+    MaObject* logical_structure_object;
+    MaObject* text_structure_object;
+    MaObject* diia_structure_object;
+    MaObject* list_structure_object;
+    MaObject* dict_structure_object;
   };
 
   struct MaStoreInstructionArgs {

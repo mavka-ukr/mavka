@@ -68,7 +68,7 @@ namespace mavka::mama {
   MaCell ma_list_iterate_diia_native_fn(MaMa* M,
                                         MaObject* list_me,
                                         std::map<std::string, MaCell>& args) {
-    const auto iterator_object_cell = create_empty_object();
+    const auto iterator_object_cell = create_empty_object(M);
     const auto iterator_object = iterator_object_cell.v.object;
 
     ma_object_set(iterator_object, "_список",
@@ -80,6 +80,7 @@ namespace mavka::mama {
       ma_object_set(iterator_object, "завершено", MA_MAKE_NO());
       ma_object_set(iterator_object, "значення", list_me->d.list->data[0]);
       const auto next_diia_native_cell = create_diia_native(
+          M,
           [](MaMa* M, MaObject* iterator_me,
              std::map<std::string, MaCell>& args) {
             ma_object_set(iterator_me, "завершено", MA_MAKE_YES());
@@ -92,6 +93,7 @@ namespace mavka::mama {
       ma_object_set(iterator_object, "значення", list_me->d.list->data[0]);
       ma_object_set(iterator_object, "_індекс", MA_MAKE_NUBMER(1));
       const auto next_diia_native_cell = create_diia_native(
+          M,
           [](MaMa* M, MaObject* iterator_me,
              std::map<std::string, MaCell>& args) {
             const auto i = ma_object_get(iterator_me, "_індекс").v.number;
@@ -158,5 +160,48 @@ namespace mavka::mama {
       }
     }
     return MA_MAKE_NO();
+  }
+
+  MaCell create_list(MaMa* M) {
+    const auto list_object = new MaObject();
+    list_object->type = MA_OBJECT_LIST;
+    list_object->structure = M->list_structure_object;
+    const auto list = new MaList();
+    list_object->d.list = list;
+    list_object->get = [](MaObject* me, const std::string& name) {
+      if (name == "довжина") {
+        return MA_MAKE_INTEGER(me->d.list->size());
+      }
+      return ma_object_get(me, name);
+    };
+    ma_object_set(
+        list_object, MAG_ITERATOR,
+        create_diia_native(M, ma_list_iterate_diia_native_fn, list_object));
+    ma_object_set(
+        list_object, MAG_GET_ELEMENT,
+        create_diia_native(M, ma_list_get_element_diia_native_fn, list_object));
+    ma_object_set(
+        list_object, MAG_SET_ELEMENT,
+        create_diia_native(M, ma_list_set_element_diia_native_fn, list_object));
+    ma_object_set(
+        list_object, "додати",
+        create_diia_native(M, ma_list_append_diia_native_fn, list_object));
+    ma_object_set(
+        list_object, MAG_CONTAINS,
+        create_diia_native(M, ma_list_contains_diia_native_fn, list_object));
+    return MaCell{MA_CELL_OBJECT, {.object = list_object}};
+  }
+
+  void init_list(MaMa* M) {
+    const auto list_structure_object = new MaObject();
+    list_structure_object->type = MA_OBJECT_STRUCTURE;
+    list_structure_object->structure = M->structure_structure_object;
+    const auto list_structure = new MaStructure();
+    list_structure_object->d.structure = list_structure;
+    ma_object_set(list_structure_object, "назва", create_string(M, "список"));
+    const auto list_structure_cell =
+        MaCell{MA_CELL_OBJECT, {.object = list_structure_object}};
+    M->global_scope->set_variable("список", list_structure_cell);
+    M->list_structure_object = list_structure_object;
   }
 } // namespace mavka::mama
