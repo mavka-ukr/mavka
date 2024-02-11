@@ -17,12 +17,45 @@ void init_print(MaMa* M, MaScope* S) {
   S->set_variable("друк", diia_cell);
 }
 
+void print_help() {
+  std::cout << R"(Використання:
+  мавка [...опції] <модуль.м> [...аргументи]
+  мавка [...опції] <команда> [...аргументи]
+
+Доступні команди:
+  <модуль.м> — виконати модуль
+    Опції: немає
+
+  версія — показати версію Мавки
+    Опції: немає
+
+  допомога — показати це повідолення
+    Опції: немає)"
+            << std::endl;
+}
+
+void print_version() {
+  std::cout << "0.100.0" << std::endl;
+}
+
 int main(int argc, char** argv) {
   const auto args = std::vector<std::string>(argv, argv + argc);
 
   if (args.size() == 1) {
-    std::cout << "Використання: мавка <файл.м>" << std::endl;
+    print_help();
     return 1;
+  }
+
+  if (args.size() == 2) {
+    const auto command = args[1];
+    if (command == "допомога") {
+      print_help();
+      return 0;
+    }
+    if (command == "версія") {
+      print_version();
+      return 0;
+    }
   }
 
   const auto& filename = args[1];
