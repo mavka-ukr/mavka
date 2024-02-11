@@ -16,8 +16,7 @@
     }                                                                   \
   }                                                                     \
   std::cout << "Не вдалось зловити: " << cell_to_string(M->stack.top()) \
-            << std::endl;                                               \
-  break;
+            << std::endl;
 
 #define DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(name, type)                    \
   DO_THROW_STRING("Дію \"" + std::string(name) +                          \
@@ -33,6 +32,7 @@
 #define IS_NO(cell) ((cell).type == MA_CELL_NO)
 #define IS_OBJECT(cell) ((cell).type == MA_CELL_OBJECT)
 #define IS_OBJECT_STRING(cell) (cell).v.object->type == MA_OBJECT_STRING
+#define IS_OBJECT_STRUCTURE(cell) (cell).v.object->type == MA_OBJECT_STRUCTURE
 
 #define PUSH(cell) M->stack.push(cell)
 #define PUSH_EMPTY() PUSH(MA_MAKE_EMPTY())
@@ -147,6 +147,7 @@ namespace mavka::mama {
             if (M->need_to_throw) {
               M->need_to_throw = false;
               HANDLE_THROW();
+              break;
             }
             PUSH(result);
             frame->args.clear();
@@ -630,6 +631,44 @@ namespace mavka::mama {
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_CONTAINS, left);
           }
+          break;
+        }
+        case OP_IS: {
+          POP_VALUE(right);
+          POP_VALUE(left);
+          if (IS_EMPTY(left)) {
+            if (IS_EMPTY(right)) {
+              PUSH_YES();
+            } else {
+              PUSH_NO();
+            }
+            break;
+          }
+          if (IS_NUMBER(left)) {
+            if (right.v.object == M->number_structure_object) {
+              PUSH_YES();
+            } else {
+              PUSH_NO();
+            }
+            break;
+          }
+          if (IS_YES(left) || IS_NO(left)) {
+            if (right.v.object == M->logical_structure_object) {
+              PUSH_YES();
+            } else {
+              PUSH_NO();
+            }
+            break;
+          }
+          if (IS_OBJECT(right) && IS_OBJECT(left)) {
+            if (right.v.object == left.v.object->structure) {
+              PUSH_YES();
+            } else {
+              PUSH_NO();
+            }
+            break;
+          }
+          PUSH_NO();
           break;
         }
         case OP_NOT: {

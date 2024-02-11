@@ -120,27 +120,29 @@ namespace mavka::mama {
   }
 
   MaCell create_string(MaMa* M, const std::string& value) {
-    const auto ma_object = new MaObject();
-    ma_object->type = MA_OBJECT_STRING;
-    const auto ma_string = new MaString();
-    ma_string->data = value;
-    ma_object->d.string = ma_string;
-    ma_object->get = [](MaObject* me, const std::string& name) {
+    const auto string_object = new MaObject();
+    string_object->type = MA_OBJECT_STRING;
+    string_object->structure = M->text_structure_object;
+    const auto string = new MaString();
+    string->data = value;
+    string_object->d.string = string;
+    string_object->get = [](MaObject* me, const std::string& name) {
       if (name == "довжина") {
         return MA_MAKE_INTEGER(me->d.string->length());
       }
       return ma_object_get(me, name);
     };
     ma_object_set(
-        ma_object, MAG_ADD,
-        create_diia_native(M, ma_string_mag_add_diia_native_fn, ma_object));
-    ma_object_set(ma_object, MAG_GET_ELEMENT,
-                  create_diia_native(
-                      M, ma_string_mag_get_element_diia_native_fn, ma_object));
+        string_object, MAG_ADD,
+        create_diia_native(M, ma_string_mag_add_diia_native_fn, string_object));
     ma_object_set(
-        ma_object, "розбити",
-        create_diia_native(M, ma_string_split_diia_native_fn, ma_object));
-    return MaCell{MA_CELL_OBJECT, {.object = ma_object}};
+        string_object, MAG_GET_ELEMENT,
+        create_diia_native(M, ma_string_mag_get_element_diia_native_fn,
+                           string_object));
+    ma_object_set(
+        string_object, "розбити",
+        create_diia_native(M, ma_string_split_diia_native_fn, string_object));
+    return MaCell{MA_CELL_OBJECT, {.object = string_object}};
   }
 
   MaCell text_structure_object_mag_call_native_diia_fn(
