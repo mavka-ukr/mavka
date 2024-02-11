@@ -111,24 +111,13 @@ namespace mavka::mama {
   }
 
   MaCell create_dict(MaMa* M) {
-    const auto dict_object = new MaObject();
-    dict_object->type = MA_OBJECT_DICT;
-    dict_object->structure = M->dict_structure_object;
     const auto dict = new MaDict();
-    dict_object->d.dict = dict;
-    return MaCell{MA_CELL_OBJECT, {.object = dict_object}};
+    return create_object(M, MA_OBJECT_DICT, M->dict_structure_object, dict);
   }
 
   void init_dict(MaMa* M) {
-    const auto dict_structure_object = new MaObject();
-    dict_structure_object->type = MA_OBJECT_STRUCTURE;
-    dict_structure_object->structure = M->structure_structure_object;
-    const auto dict_structure = new MaStructure();
-    dict_structure_object->d.structure = dict_structure;
-    ma_object_set(dict_structure_object, "назва", create_string(M, "словник"));
-    const auto dict_structure_cell =
-        MaCell{MA_CELL_OBJECT, {.object = dict_structure_object}};
+    const auto dict_structure_cell = create_structure(M, "словник");
     M->global_scope->set_variable("словник", dict_structure_cell);
-    M->dict_structure_object = dict_structure_object;
+    M->dict_structure_object = dict_structure_cell.v.object;
   }
 } // namespace mavka::mama
