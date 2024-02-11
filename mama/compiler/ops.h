@@ -55,6 +55,7 @@ typedef enum {
   OP_LT,
   OP_LE,
   OP_CONTAINS,
+  OP_IS,
 
   OP_NOT,
 
