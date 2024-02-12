@@ -1,11 +1,8 @@
 set -e
 
-VERSION=$1
+VERSION=$(cat VERSION)
 
-if [ "$VERSION" = "" ]; then
-    echo "Usage: dist.sh <version>"
-    exit 1
-fi
+echo "Пакуємо Мавку $VERSION для Linux 64-біт"
 
 mkdir -p build-Obin
 cd build-Obin
