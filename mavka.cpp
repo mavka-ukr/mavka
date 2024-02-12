@@ -35,7 +35,7 @@ void print_help() {
 }
 
 void print_version() {
-  std::cout << "0.100.0" << std::endl;
+  std::cout << MAVKA_VERSION << std::endl;
 }
 
 int main(int argc, char** argv) {
