@@ -55,6 +55,50 @@ namespace mavka::mama {
     throw std::runtime_error("Not implemented");
   }
 
+  MaCell ma_string_split_diia_native_fn(MaMa* M,
+                                        MaObject* me,
+                                        std::map<std::string, MaCell>& args) {
+    M->stack.push(create_string(M, "Дія \"розбити\" тимчасово недоступна."));
+    M->need_to_throw = true;
+    return MA_MAKE_EMPTY();
+  }
+
+  MaCell ma_string_replace_diia_native_fn(MaMa* M,
+                                          MaObject* me,
+                                          std::map<std::string, MaCell>& args) {
+    M->stack.push(create_string(M, "Дія \"замінити\" тимчасово недоступна."));
+    M->need_to_throw = true;
+    return MA_MAKE_EMPTY();
+  }
+
+  MaCell ma_string_starts_with_diia_native_fn(
+      MaMa* M,
+      MaObject* me,
+      std::map<std::string, MaCell>& args) {
+    M->stack.push(
+        create_string(M, "Дія \"починається\" тимчасово недоступна."));
+    M->need_to_throw = true;
+    return MA_MAKE_EMPTY();
+  }
+
+  MaCell ma_string_ends_with_diia_native_fn(
+      MaMa* M,
+      MaObject* me,
+      std::map<std::string, MaCell>& args) {
+    M->stack.push(
+        create_string(M, "Дія \"закінчується\" тимчасово недоступна."));
+    M->need_to_throw = true;
+    return MA_MAKE_EMPTY();
+  }
+
+  MaCell ma_string_trim_diia_native_fn(MaMa* M,
+                                       MaObject* me,
+                                       std::map<std::string, MaCell>& args) {
+    M->stack.push(create_string(M, "Дія \"обтяти\" тимчасово недоступна."));
+    M->need_to_throw = true;
+    return MA_MAKE_EMPTY();
+  }
+
   MaCell ma_string_mag_add_diia_native_fn(MaMa* M,
                                           MaObject* me,
                                           std::map<std::string, MaCell>& args) {
@@ -84,6 +128,16 @@ namespace mavka::mama {
     return MA_MAKE_OBJECT(me);
   }
 
+  MaCell ma_string_mag_contains_diia_native_fn(
+      MaMa* M,
+      MaObject* me,
+      std::map<std::string, MaCell>& args) {
+    M->stack.push(
+        create_string(M, "Дія \"чародія_містить\" тимчасово недоступна."));
+    M->need_to_throw = true;
+    return MA_MAKE_EMPTY();
+  }
+
   MaCell ma_string_mag_get_element_diia_native_fn(
       MaMa* M,
       MaObject* me,
@@ -102,21 +156,24 @@ namespace mavka::mama {
     return MA_MAKE_EMPTY();
   }
 
-  MaCell ma_string_split_diia_native_fn(MaMa* M,
-                                        MaObject* me,
-                                        std::map<std::string, MaCell>& args) {
-    MaCell delim{};
-    if (args.contains("0")) {
-      delim = args["0"];
-    } else {
-      delim = create_string(M, "");
-    }
-    const auto list_cell = create_list(M);
-    const auto parts = me->d.string->split(delim.v.object->d.string->data);
-    for (const auto& part : parts) {
-      list_cell.v.object->d.list->append(create_string(M, part));
-    }
-    return list_cell;
+  MaCell ma_string_mag_iterator_diia_native_fn(
+      MaMa* M,
+      MaObject* me,
+      std::map<std::string, MaCell>& args) {
+    M->stack.push(
+        create_string(M, "Дія \"чародія_перебір\" тимчасово недоступна."));
+    M->need_to_throw = true;
+    return MA_MAKE_EMPTY();
+  }
+
+  MaCell ma_string_mag_number_diia_native_fn(
+      MaMa* M,
+      MaObject* me,
+      std::map<std::string, MaCell>& args) {
+    M->stack.push(
+        create_string(M, "Дія \"чародія_число\" тимчасово недоступна."));
+    M->need_to_throw = true;
+    return MA_MAKE_EMPTY();
   }
 
   MaCell ma_string_get_handler(MaMa* M, MaObject* me, const std::string& name) {
@@ -139,12 +196,43 @@ namespace mavka::mama {
         create_object(M, MA_OBJECT_STRING, M->text_structure_object, string);
     string_cell.v.object->get = ma_string_get_handler;
     ma_object_set(
+        string_cell.v.object, "розбити",
+        create_diia_native(M, "розбити", ma_string_split_diia_native_fn,
+                           string_cell.v.object));
+    ma_object_set(
+        string_cell.v.object, "замінити",
+        create_diia_native(M, "замінити", ma_string_replace_diia_native_fn,
+                           string_cell.v.object));
+    ma_object_set(string_cell.v.object, "починається",
+                  create_diia_native(M, "починається",
+                                     ma_string_starts_with_diia_native_fn,
+                                     string_cell.v.object));
+    ma_object_set(string_cell.v.object, "закінчується",
+                  create_diia_native(M, "закінчується",
+                                     ma_string_ends_with_diia_native_fn,
+                                     string_cell.v.object));
+    ma_object_set(string_cell.v.object, "обтяти",
+                  create_diia_native(M, "обтяти", ma_string_trim_diia_native_fn,
+                                     string_cell.v.object));
+    ma_object_set(
         string_cell.v.object, MAG_ADD,
         create_diia_native(M, MAG_ADD, ma_string_mag_add_diia_native_fn,
                            string_cell.v.object));
+    ma_object_set(string_cell.v.object, MAG_CONTAINS,
+                  create_diia_native(M, MAG_CONTAINS,
+                                     ma_string_mag_contains_diia_native_fn,
+                                     string_cell.v.object));
     ma_object_set(string_cell.v.object, MAG_GET_ELEMENT,
                   create_diia_native(M, MAG_GET_ELEMENT,
                                      ma_string_mag_get_element_diia_native_fn,
+                                     string_cell.v.object));
+    ma_object_set(string_cell.v.object, MAG_ITERATOR,
+                  create_diia_native(M, MAG_ITERATOR,
+                                     ma_string_mag_iterator_diia_native_fn,
+                                     string_cell.v.object));
+    ma_object_set(string_cell.v.object, "чародія_число",
+                  create_diia_native(M, "чародія_число",
+                                     ma_string_mag_number_diia_native_fn,
                                      string_cell.v.object));
     return string_cell;
   }
