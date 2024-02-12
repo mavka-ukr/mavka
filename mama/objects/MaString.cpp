@@ -1,6 +1,8 @@
 #include "../../external/utf8/utf8.h"
 #include "../mama.h"
 
+// TODO: переписати це все
+
 namespace mavka::mama {
   std::size_t utf8_len(const std::string& str) {
     return std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}
@@ -66,37 +68,85 @@ namespace mavka::mama {
   MaCell ma_string_replace_diia_native_fn(MaMa* M,
                                           MaObject* me,
                                           std::map<std::string, MaCell>& args) {
-    M->stack.push(create_string(M, "Дія \"замінити\" тимчасово недоступна."));
-    M->need_to_throw = true;
-    return MA_MAKE_EMPTY();
+    if (args.size() != 2) {
+      M->stack.push(
+          create_string(M, "Для дії \"замінити\" потрібно два аргументи."));
+      M->need_to_throw = true;
+      return MA_MAKE_EMPTY();
+    }
+    const auto first = args.begin()->second;
+    const auto second = (++args.begin())->second;
+    const auto first_string = first.v.object->d.string->data;
+    const auto second_string = second.v.object->d.string->data;
+    std::string new_string;
+    for (std::size_t i = 0; i < me->d.string->length(); i++) {
+      const auto substr = me->d.string->substr(i, 1);
+      if (substr == first_string) {
+        new_string += second_string;
+      } else {
+        new_string += substr;
+      }
+    }
+    return create_string(M, new_string);
   }
 
   MaCell ma_string_starts_with_diia_native_fn(
       MaMa* M,
       MaObject* me,
       std::map<std::string, MaCell>& args) {
-    M->stack.push(
-        create_string(M, "Дія \"починається\" тимчасово недоступна."));
-    M->need_to_throw = true;
-    return MA_MAKE_EMPTY();
+    if (args.empty()) {
+      M->stack.push(
+          create_string(M, "Для дії \"починається\" потрібен аргумент."));
+      M->need_to_throw = true;
+      return MA_MAKE_EMPTY();
+    }
+    const auto cell = args.begin()->second;
+    if (IS_STRING(cell)) {
+      if (me->d.string->data.find(cell.v.object->d.string->data) == 0) {
+        return MA_MAKE_YES();
+      }
+      return MA_MAKE_NO();
+    } else {
+      M->stack.push(create_string(
+          M, "Для дії \"починається\" потрібен текстовий аргумент."));
+      M->need_to_throw = true;
+      return MA_MAKE_EMPTY();
+    }
   }
 
   MaCell ma_string_ends_with_diia_native_fn(
       MaMa* M,
       MaObject* me,
       std::map<std::string, MaCell>& args) {
-    M->stack.push(
-        create_string(M, "Дія \"закінчується\" тимчасово недоступна."));
-    M->need_to_throw = true;
-    return MA_MAKE_EMPTY();
+    if (args.empty()) {
+      M->stack.push(
+          create_string(M, "Для дії \"закінчується\" потрібен аргумент."));
+      M->need_to_throw = true;
+      return MA_MAKE_EMPTY();
+    }
+    const auto cell = args.begin()->second;
+    if (IS_STRING(cell)) {
+      const auto str = cell.v.object->d.string;
+      if (me->d.string->length() < str->length()) {
+        return MA_MAKE_NO();
+      }
+      if (me->d.string->substr(me->d.string->length() - str->length(),
+                               str->length()) == str->data) {
+        return MA_MAKE_YES();
+      }
+      return MA_MAKE_NO();
+    } else {
+      M->stack.push(create_string(
+          M, "Для дії \"закінчується\" потрібен текстовий аргумент."));
+      M->need_to_throw = true;
+      return MA_MAKE_EMPTY();
+    }
   }
 
   MaCell ma_string_trim_diia_native_fn(MaMa* M,
                                        MaObject* me,
                                        std::map<std::string, MaCell>& args) {
-    M->stack.push(create_string(M, "Дія \"обтяти\" тимчасово недоступна."));
-    M->need_to_throw = true;
-    return MA_MAKE_EMPTY();
+    return create_string(M, internal::tools::trim(me->d.string->data));
   }
 
   MaCell ma_string_mag_add_diia_native_fn(MaMa* M,
@@ -132,10 +182,22 @@ namespace mavka::mama {
       MaMa* M,
       MaObject* me,
       std::map<std::string, MaCell>& args) {
-    M->stack.push(
-        create_string(M, "Дія \"чародія_містить\" тимчасово недоступна."));
-    M->need_to_throw = true;
-    return MA_MAKE_EMPTY();
+    if (args.empty()) {
+      return MA_MAKE_NO();
+    }
+    const auto cell = args.begin()->second;
+    if (IS_STRING(cell)) {
+      if (me->d.string->data.find(cell.v.object->d.string->data) !=
+          std::string::npos) {
+        return MA_MAKE_YES();
+      }
+      return MA_MAKE_NO();
+    } else {
+      M->stack.push(create_string(
+          M, "Для дії \"чародія_містить\" потрібен текстовий аргумент."));
+      M->need_to_throw = true;
+      return MA_MAKE_EMPTY();
+    }
   }
 
   MaCell ma_string_mag_get_element_diia_native_fn(

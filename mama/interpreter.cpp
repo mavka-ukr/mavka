@@ -60,14 +60,6 @@
     (cell).v.object->properties[propname] = value;             \
   }
 
-#define IS_EMPTY(cell) ((cell).type == MA_CELL_EMPTY)
-#define IS_NUMBER(cell) ((cell).type == MA_CELL_NUMBER)
-#define IS_YES(cell) ((cell).type == MA_CELL_YES)
-#define IS_NO(cell) ((cell).type == MA_CELL_NO)
-#define IS_OBJECT(cell) ((cell).type == MA_CELL_OBJECT)
-#define IS_OBJECT_STRING(cell) (cell).v.object->type == MA_OBJECT_STRING
-#define IS_OBJECT_STRUCTURE(cell) (cell).v.object->type == MA_OBJECT_STRUCTURE
-
 #define PUSH(cell) M->stack.push(cell)
 #define PUSH_EMPTY() PUSH(MA_MAKE_EMPTY())
 #define PUSH_NUMBER(v) PUSH(MA_MAKE_NUBMER((v)))

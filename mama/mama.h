@@ -101,6 +101,15 @@
 #define MA_MAKE_NO() (MaCell{MA_CELL_NO})
 #define MA_MAKE_OBJECT(value) (MaCell{MA_CELL_OBJECT, {.object = (value)}})
 
+#define IS_EMPTY(cell) ((cell).type == MA_CELL_EMPTY)
+#define IS_NUMBER(cell) ((cell).type == MA_CELL_NUMBER)
+#define IS_YES(cell) ((cell).type == MA_CELL_YES)
+#define IS_NO(cell) ((cell).type == MA_CELL_NO)
+#define IS_OBJECT(cell) ((cell).type == MA_CELL_OBJECT)
+#define IS_OBJECT_STRING(cell) (cell).v.object->type == MA_OBJECT_STRING
+#define IS_OBJECT_STRUCTURE(cell) (cell).v.object->type == MA_OBJECT_STRUCTURE
+#define IS_STRING(cell) IS_OBJECT(cell) && IS_OBJECT_STRING(cell)
+
 namespace mavka::mama {
   struct MaMa;
   struct MaCallFrame;
