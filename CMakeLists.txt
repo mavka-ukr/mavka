@@ -76,6 +76,7 @@ set(MAVKA_COMPILER_SRC
         mama/helpers.cpp
         mama/mama.cpp
         mama/mama.h
+        mama/MaScope.cpp
         mama/objects.h
         utils/chrono.h
         utils/tools.cpp
