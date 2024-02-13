@@ -53,10 +53,6 @@ namespace mavka::mama {
     return utf8_substr(this->data, start, length);
   }
 
-  std::vector<std::string> MaString::split(const std::string& delim) const {
-    throw std::runtime_error("Not implemented");
-  }
-
   MaCell ma_string_split_diia_native_fn(MaMa* M,
                                         MaObject* me,
                                         std::map<std::string, MaCell>& args) {
@@ -209,7 +205,10 @@ namespace mavka::mama {
             M, me->d.string->data + cell.v.object->d.string->data);
       }
     }
-    return MA_MAKE_OBJECT(me);
+    M->stack.push(create_string(M, "Неможливо додати до тексту обʼєкт типу \"" +
+                                       getcelltypename(cell) + "\"."));
+    M->need_to_throw = true;
+    return MA_MAKE_EMPTY();
   }
 
   MaCell ma_string_mag_contains_diia_native_fn(
