@@ -60,9 +60,43 @@ namespace mavka::mama {
   MaCell ma_string_split_diia_native_fn(MaMa* M,
                                         MaObject* me,
                                         std::map<std::string, MaCell>& args) {
-    M->stack.push(create_string(M, "Дія \"розбити\" тимчасово недоступна."));
-    M->need_to_throw = true;
-    return MA_MAKE_EMPTY();
+    if (args.empty()) {
+      M->stack.push(create_string(M, "Для дії \"розбити\" потрібен аргумент."));
+      M->need_to_throw = true;
+      return MA_MAKE_EMPTY();
+    }
+    const auto cell = args.begin()->second;
+    if (IS_STRING(cell)) {
+      const auto delim = cell.v.object->d.string->data;
+      if (delim.empty()) {
+        const auto list = create_list(M);
+        for (const auto& c : utf8_chars(me->d.string->data)) {
+          list.v.object->d.list->data.push_back(create_string(M, c));
+        }
+        return list;
+      }
+      std::vector<std::string> result;
+      std::string current;
+      for (const auto& c : utf8_chars(me->d.string->data)) {
+        if (c == delim) {
+          result.push_back(current);
+          current.clear();
+        } else {
+          current += c;
+        }
+      }
+      result.push_back(current);
+      const auto list = create_list(M);
+      for (const auto& s : result) {
+        list.v.object->d.list->data.push_back(create_string(M, s));
+      }
+      return list;
+    } else {
+      M->stack.push(
+          create_string(M, "Для дії \"розбити\" потрібен текстовий аргумент."));
+      M->need_to_throw = true;
+      return MA_MAKE_EMPTY();
+    }
   }
 
   MaCell ma_string_replace_diia_native_fn(MaMa* M,
