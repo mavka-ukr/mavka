@@ -47,7 +47,6 @@ class MaString final {
 
   size_t length() const;
   std::string substr(size_t start, size_t length) const;
-  std::vector<std::string> split(const std::string& delim) const;
 };
 
 class MaList final {
