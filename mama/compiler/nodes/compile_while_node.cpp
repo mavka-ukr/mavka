@@ -12,13 +12,13 @@ namespace mavka::mama {
     if (condition_result.error) {
       return condition_result;
     }
-    M->code.push_back(MaInstruction{OP_JUMP_IF_FALSE});
+    M->code.push_back(MaInstruction::jumpiffalse(0));
     const auto jump_if_false_instruction_index = M->code.size() - 1;
     const auto body_result = compile_body(M, while_node->body);
     if (body_result.error) {
       return body_result;
     }
-    M->code.push_back(MaInstruction{OP_JUMP, {.jump = continue_index}});
+    M->code.push_back(MaInstruction::jump(continue_index));
     const auto break_index = M->code.size();
     M->code[jump_if_false_instruction_index].args.jumpiffalse = break_index;
     for (const auto& jump : jumps) {

@@ -84,167 +84,166 @@ typedef enum {
 
 std::string getopname(const OP op);
 
-namespace mavka::mama {
-  struct MaStoreInstructionArgs {
-    std::string name;
-  };
+struct MaStoreInstructionArgs {
+  std::string name;
+};
 
-  struct MaInitCallInstructionArgs {
-    size_t return_index;
-    size_t line;
-    size_t column;
-  };
+struct MaInitCallInstructionArgs {
+  size_t return_index;
+  size_t line;
+  size_t column;
+};
 
-  struct MaGetInstructionArgs {
-    std::string name;
-  };
+struct MaGetInstructionArgs {
+  std::string name;
+};
 
-  struct MaSetInstructionArgs {
-    std::string name;
-  };
+struct MaSetInstructionArgs {
+  std::string name;
+};
 
-  struct MaDictSetInstructionArgs {
-    std::string key;
-  };
+struct MaDictSetInstructionArgs {
+  std::string key;
+};
 
-  struct MaLoadInstructionArgs {
-    std::string name;
-  };
+struct MaLoadInstructionArgs {
+  std::string name;
+};
 
-  struct MaDiiaInstructionArgs {
-    int index;
-    std::string name;
-  };
+struct MaDiiaInstructionArgs {
+  int index;
+  std::string name;
+};
 
-  struct MaDiiaParamInstructionArgs {
-    std::string name;
-  };
+struct MaDiiaParamInstructionArgs {
+  std::string name;
+};
 
-  struct MaTryInstructionArgs {
-    size_t catch_index;
-  };
+struct MaTryInstructionArgs {
+  size_t catch_index;
+};
 
-  struct MaTryDoneInstructionArgs {
-    size_t index;
-  };
+struct MaTryDoneInstructionArgs {
+  size_t index;
+};
 
-  struct MaStructInstructionArgs {
-    std::string name;
-    size_t constructor_index;
-  };
+struct MaStructInstructionArgs {
+  std::string name;
+  size_t constructor_index;
+};
 
-  struct MaStructParamInstructionArgs {
-    std::string name;
-  };
+struct MaStructParamInstructionArgs {
+  std::string name;
+};
 
-  struct MaStoreArgInstructionArgs {
-    std::string name;
-  };
+struct MaStoreArgInstructionArgs {
+  std::string name;
+};
 
-  struct MaModuleInstructionArgs {
-    std::string name;
-  };
+struct MaModuleInstructionArgs {
+  std::string name;
+};
 
-  struct MaGiveInstructionArgs {
-    std::string name;
-  };
+struct MaGiveInstructionArgs {
+  std::string name;
+};
 
-  struct MaTakeInstructionArgs {
-    size_t jump_to;
-    std::string path;
-  };
+struct MaTakeInstructionArgs {
+  size_t jump_to;
+  std::string path;
+};
 
-  struct MaModuleLoadInstructionArgs {
-    std::string name;
-    std::string as;
-  };
+struct MaModuleLoadInstructionArgs {
+  std::string name;
+  std::string as;
+};
 
-  struct MaInstruction {
-    OP op;
-    union {
-      size_t constant;
-      double number;
-      MaInitCallInstructionArgs* initcall;
-      MaStoreArgInstructionArgs* storearg;
-      MaDiiaInstructionArgs* diia;
-      MaDiiaParamInstructionArgs* diiaparam;
-      MaStoreInstructionArgs* store;
-      MaLoadInstructionArgs* load;
-      size_t jump;
-      size_t jumpiftrue;
-      size_t jumpiffalse;
-      MaGetInstructionArgs* get;
-      MaSetInstructionArgs* set;
-      MaTryInstructionArgs* try_;
-      MaTryDoneInstructionArgs* trydone;
-      MaDictSetInstructionArgs* dictset;
-      MaStructInstructionArgs* struct_;
-      MaStructParamInstructionArgs* structparam;
-      MaModuleInstructionArgs* module;
-      MaGiveInstructionArgs* give;
-      MaModuleLoadInstructionArgs* moduleload;
-      MaTakeInstructionArgs* take;
-    } args;
+struct MaInstruction {
+  OP op;
+  union {
+    size_t constant;
+    double number;
+    MaInitCallInstructionArgs* initcall;
+    MaStoreArgInstructionArgs* storearg;
+    MaDiiaInstructionArgs* diia;
+    MaDiiaParamInstructionArgs* diiaparam;
+    MaStoreInstructionArgs* store;
+    MaLoadInstructionArgs* load;
+    size_t jump;
+    size_t jumpiftrue;
+    size_t jumpiffalse;
+    MaGetInstructionArgs* get;
+    MaSetInstructionArgs* set;
+    MaTryInstructionArgs* try_;
+    MaTryDoneInstructionArgs* trydone;
+    MaDictSetInstructionArgs* dictset;
+    MaStructInstructionArgs* struct_;
+    MaStructParamInstructionArgs* structparam;
+    MaModuleInstructionArgs* module;
+    MaGiveInstructionArgs* give;
+    MaModuleLoadInstructionArgs* moduleload;
+    MaTakeInstructionArgs* take;
+  } args;
 
-    static MaInstruction pop();
-    static MaInstruction constant(size_t index);
-    static MaInstruction number(double value);
-    static MaInstruction empty();
-    static MaInstruction yes();
-    static MaInstruction no();
-    static MaInstruction initcall(MaInitCallInstructionArgs* args);
-    static MaInstruction storearg(MaStoreArgInstructionArgs* args);
-    static MaInstruction call();
-    static MaInstruction return_();
-    static MaInstruction diia(MaDiiaInstructionArgs* args);
-    static MaInstruction diiaparam(MaDiiaParamInstructionArgs* args);
-    static MaInstruction store(MaStoreInstructionArgs* args);
-    static MaInstruction load(MaLoadInstructionArgs* args);
-    static MaInstruction jump(size_t index);
-    static MaInstruction jumpiftrue(size_t index);
-    static MaInstruction jumpiffalse(size_t index);
-    static MaInstruction get(MaGetInstructionArgs* args);
-    static MaInstruction set(MaSetInstructionArgs* args);
-    static MaInstruction try_(MaTryInstructionArgs* args);
-    static MaInstruction trydone(MaTryDoneInstructionArgs* args);
-    static MaInstruction throw_();
-    static MaInstruction list();
-    static MaInstruction listappend();
-    static MaInstruction dict();
-    static MaInstruction dictset(MaDictSetInstructionArgs* args);
-    static MaInstruction struct_(MaStructInstructionArgs* args);
-    static MaInstruction structparam(MaStructParamInstructionArgs* args);
-    static MaInstruction structmethod();
-    static MaInstruction module(MaModuleInstructionArgs* args);
-    static MaInstruction give(MaGiveInstructionArgs* args);
-    static MaInstruction moduledone();
-    static MaInstruction keepmodule();
-    static MaInstruction loadmodule();
-    static MaInstruction moduleload(MaModuleLoadInstructionArgs* args);
-    static MaInstruction take(MaTakeInstructionArgs* args);
-    static MaInstruction eq();
-    static MaInstruction gt();
-    static MaInstruction ge();
-    static MaInstruction lt();
-    static MaInstruction le();
-    static MaInstruction contains();
-    static MaInstruction is();
-    static MaInstruction not_();
-    static MaInstruction negative();
-    static MaInstruction positive();
-    static MaInstruction bnot();
-    static MaInstruction add();
-    static MaInstruction sub();
-    static MaInstruction mul();
-    static MaInstruction div();
-    static MaInstruction mod();
-    static MaInstruction divdiv();
-    static MaInstruction pow();
-    static MaInstruction xor_();
-    static MaInstruction bor();
-    static MaInstruction band();
-    static MaInstruction shl();
-    static MaInstruction shr();
-  };
-} // namespace mavka::mama
+  static MaInstruction pop();
+  static MaInstruction constant(size_t index);
+  static MaInstruction number(double value);
+  static MaInstruction empty();
+  static MaInstruction yes();
+  static MaInstruction no();
+  static MaInstruction initcall(MaInitCallInstructionArgs* args);
+  static MaInstruction storearg(MaStoreArgInstructionArgs* args);
+  static MaInstruction call();
+  static MaInstruction return_();
+  static MaInstruction diia(MaDiiaInstructionArgs* args);
+  static MaInstruction diiaparam(MaDiiaParamInstructionArgs* args);
+  static MaInstruction store(MaStoreInstructionArgs* args);
+  static MaInstruction load(MaLoadInstructionArgs* args);
+  static MaInstruction jump(size_t index);
+  static MaInstruction jumpiftrue(size_t index);
+  static MaInstruction jumpiffalse(size_t index);
+  static MaInstruction get(MaGetInstructionArgs* args);
+  static MaInstruction set(MaSetInstructionArgs* args);
+  static MaInstruction try_(MaTryInstructionArgs* args);
+  static MaInstruction trydone(MaTryDoneInstructionArgs* args);
+  static MaInstruction throw_();
+  static MaInstruction list();
+  static MaInstruction listappend();
+  static MaInstruction dict();
+  static MaInstruction dictset(MaDictSetInstructionArgs* args);
+  static MaInstruction struct_(MaStructInstructionArgs* args);
+  static MaInstruction structparam(MaStructParamInstructionArgs* args);
+  static MaInstruction structmethod();
+  static MaInstruction module(MaModuleInstructionArgs* args);
+  static MaInstruction give(MaGiveInstructionArgs* args);
+  static MaInstruction moduledone();
+  static MaInstruction keepmodule();
+  static MaInstruction loadmodule();
+  static MaInstruction moduleload(MaModuleLoadInstructionArgs* args);
+  static MaInstruction take(MaTakeInstructionArgs* args);
+  static MaInstruction eq();
+  static MaInstruction gt();
+  static MaInstruction ge();
+  static MaInstruction lt();
+  static MaInstruction le();
+  static MaInstruction contains();
+  static MaInstruction is();
+  static MaInstruction not_();
+  static MaInstruction negative();
+  static MaInstruction positive();
+  static MaInstruction bnot();
+  static MaInstruction add();
+  static MaInstruction sub();
+  static MaInstruction mul();
+  static MaInstruction div();
+  static MaInstruction mod();
+  static MaInstruction divdiv();
+  static MaInstruction pow();
+  static MaInstruction xor_();
+  static MaInstruction bor();
+  static MaInstruction band();
+  static MaInstruction shl();
+  static MaInstruction shr();
+};
+
 #endif // MA_INSTRUCTION_H

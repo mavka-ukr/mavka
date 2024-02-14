@@ -8,11 +8,10 @@ namespace mavka::mama {
       return result;
     }
 
-    M->code.push_back(MaInstruction{OP_INITCALL,
-                                    {.initcall = new MaInitCallInstructionArgs({
-                                         .line = call_node->start_line,
-                                         .column = call_node->start_column,
-                                     })}});
+    M->code.push_back(MaInstruction::initcall(new MaInitCallInstructionArgs({
+        .line = call_node->start_line,
+        .column = call_node->start_column,
+    })));
     const auto initcall_instruction_index = M->code.size() - 1;
 
     for (const auto& arg : call_node->args) {
@@ -21,21 +20,18 @@ namespace mavka::mama {
         return arg_result;
       }
       if (arg->name.empty()) {
-        M->code.push_back(MaInstruction{
-            OP_STORE_ARG,
-            {.storearg =
-                 new MaStoreArgInstructionArgs(std::to_string(arg->index))}});
+        M->code.push_back(MaInstruction::storearg(
+            new MaStoreArgInstructionArgs(std::to_string(arg->index))));
       } else {
-        M->code.push_back(MaInstruction{
-            OP_STORE_ARG,
-            {.storearg = new MaStoreArgInstructionArgs(arg->name)}});
+        M->code.push_back(
+            MaInstruction::storearg(new MaStoreArgInstructionArgs(arg->name)));
       }
     }
 
     M->code[initcall_instruction_index].args.initcall->return_index =
         M->code.size() + 1;
 
-    M->code.push_back(MaInstruction{OP_CALL});
+    M->code.push_back(MaInstruction::call());
 
     return success();
   }

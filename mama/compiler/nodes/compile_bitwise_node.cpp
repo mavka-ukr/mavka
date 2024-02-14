@@ -13,15 +13,15 @@ namespace mavka::mama {
       return right;
     }
     if (bitwise_node->op == "^") {
-      M->code.push_back(MaInstruction{OP_XOR});
+      M->code.push_back(MaInstruction::xor_());
     } else if (bitwise_node->op == "|") {
-      M->code.push_back(MaInstruction{OP_BOR});
+      M->code.push_back(MaInstruction::bor());
     } else if (bitwise_node->op == "&") {
-      M->code.push_back(MaInstruction{OP_BAND});
+      M->code.push_back(MaInstruction::band());
     } else if (bitwise_node->op == "<<") {
-      M->code.push_back(MaInstruction{OP_SHL});
+      M->code.push_back(MaInstruction::shl());
     } else if (bitwise_node->op == ">>") {
-      M->code.push_back(MaInstruction{OP_SHR});
+      M->code.push_back(MaInstruction::shr());
     }
     return success();
   }

@@ -14,10 +14,8 @@ namespace mavka::mama {
       if (result.error) {
         return result;
       }
-      M->code.push_back(
-          MaInstruction{OP_SET,
-                        {.set = new MaSetInstructionArgs(
-                             assign_by_identifier_node->identifier)}});
+      M->code.push_back(MaInstruction::set(
+          new MaSetInstructionArgs(assign_by_identifier_node->identifier)));
       return success();
     }
     return error(mavka::ast::make_ast_some(assign_by_identifier_node),

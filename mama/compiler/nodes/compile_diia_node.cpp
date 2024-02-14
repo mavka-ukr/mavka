@@ -10,8 +10,8 @@ namespace mavka::mama {
       if (result.error) {
         return result;
       }
-      M->code.push_back(MaInstruction{
-          OP_STORE, {.store = new MaStoreInstructionArgs(diia_node->name)}});
+      M->code.push_back(
+          MaInstruction::store(new MaStoreInstructionArgs(diia_node->name)));
     } else {
       if (diia_node->ee) {
         const auto result = compile_diia(
@@ -20,11 +20,10 @@ namespace mavka::mama {
         if (result.error) {
           return result;
         }
-        M->code.push_back(MaInstruction{
-            OP_LOAD,
-            {.load = new MaLoadInstructionArgs(diia_node->structure)}});
-        M->code.push_back(MaInstruction{
-            OP_SET, {.set = new MaSetInstructionArgs(diia_node->name)}});
+        M->code.push_back(MaInstruction::load(
+            new MaLoadInstructionArgs(diia_node->structure)));
+        M->code.push_back(
+            MaInstruction::set(new MaSetInstructionArgs(diia_node->name)));
       } else {
         const auto result = compile_method(
             M, diia_node->structure, diia_node->ee, diia_node->async,

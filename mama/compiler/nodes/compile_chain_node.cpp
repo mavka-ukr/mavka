@@ -8,8 +8,8 @@ namespace mavka::mama {
     if (result.error) {
       return result;
     }
-    M->code.push_back(MaInstruction{
-        OP_GET, {.get = new MaGetInstructionArgs(chain_node->right->name)}});
+    M->code.push_back(
+        MaInstruction::get(new MaGetInstructionArgs(chain_node->right->name)));
     return success();
   }
 } // namespace mavka::mama
