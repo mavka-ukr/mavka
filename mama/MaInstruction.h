@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef MA_INSTRUCTION_H
 #define MA_INSTRUCTION_H
 

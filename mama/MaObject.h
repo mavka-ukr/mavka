@@ -1,5 +1,5 @@
-#ifndef OBJECTS_H
-#define OBJECTS_H
+#ifndef MA_OBJECT_H
+#define MA_OBJECT_H
 
 class MaString;
 class MaList;
@@ -162,4 +162,4 @@ MaCell create_dict(MaMa* M);
 MaCell create_structure(MaMa* M, const std::string& name);
 MaCell create_module(MaMa* M, const std::string& name);
 
-#endif // OBJECTS_H
+#endif // MA_OBJECT_H

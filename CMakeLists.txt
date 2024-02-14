@@ -71,13 +71,12 @@ set(MAVKA_COMPILER_SRC
         mama/objects/MaObject.cpp
         mama/objects/MaString.cpp
         mama/objects/MaStructure.cpp
-        mama/interpreter.cpp
-        mama/MaCallFrame.cpp
+        mama/MaFrame.cpp
         mama/MaInstruction.cpp
         mama/helpers.cpp
+        mama/mama.cpp
         mama/mama.h
         mama/MaScope.cpp
-        mama/objects.h
         utils/chrono.h
         utils/tools.cpp
         utils/tools.h
