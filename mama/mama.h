@@ -157,6 +157,7 @@ namespace mavka::mama {
     std::map<std::string, MaCell> args;
     size_t line;
     size_t column;
+    size_t stack_size;
   };
 
   struct MaMa {

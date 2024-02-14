@@ -359,9 +359,9 @@ namespace mavka::mama {
       if (result.error) {
         return result;
       }
-      if (node->is_popable() && !nopop) {
-        M->code.push_back(MaInstruction{OP_POP});
-      }
+      // if (node->is_popable() && !nopop) {
+      //   M->code.push_back(MaInstruction{OP_POP});
+      // }
     }
     return success();
   }
