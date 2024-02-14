@@ -110,22 +110,20 @@ namespace mavka::mama {
     return this->data.size();
   }
 
-  MaCell ma_dict_get_element_diia_native_fn(
-      MaMa* M,
-      MaObject* list_me,
-      std::map<std::string, MaCell>& args) {
+  void ma_dict_get_element_diia_native_fn(MaMa* M,
+                                          MaObject* list_me,
+                                          std::map<std::string, MaCell>& args) {
     const auto key = args["0"];
-    return list_me->d.dict->get(key);
+    M->stack.push(list_me->d.dict->get(key));
   }
 
-  MaCell ma_dict_set_element_diia_native_fn(
-      MaMa* M,
-      MaObject* list_me,
-      std::map<std::string, MaCell>& args) {
+  void ma_dict_set_element_diia_native_fn(MaMa* M,
+                                          MaObject* list_me,
+                                          std::map<std::string, MaCell>& args) {
     const auto key = args["0"];
     const auto value = args["1"];
     list_me->d.dict->set(key, value);
-    return MA_MAKE_EMPTY();
+    M->stack.push(MA_MAKE_EMPTY());
   }
 
   MaCell create_dict(MaMa* M) {

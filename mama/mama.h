@@ -77,6 +77,11 @@
 #define MAG_SET_ELEMENT "чародія_покласти"
 #define MAG_CALL "чародія_викликати"
 #define MAG_ITERATOR "чародія_перебір"
+#define MAG_NUMBER "чародія_число"
+#define MAG_TEXT "чародія_текст"
+#define MAG_LOGICAL "чародія_логічне"
+#define MAG_BYTES "чародія_байти"
+#define MAG_BYTES "чародія_байти"
 
 #define MA_CELL_EMPTY 0
 #define MA_CELL_NUMBER 1
@@ -110,6 +115,25 @@
 #define IS_OBJECT_STRUCTURE(cell) (cell).v.object->type == MA_OBJECT_STRUCTURE
 #define IS_STRING(cell) IS_OBJECT(cell) && IS_OBJECT_STRING(cell)
 
+#define PUSH(cell) M->stack.push(cell)
+#define PUSH_EMPTY() PUSH(MA_MAKE_EMPTY())
+#define PUSH_NUMBER(v) PUSH(MA_MAKE_NUBMER((v)))
+#define PUSH_YES() PUSH(MA_MAKE_YES())
+#define PUSH_NO() PUSH(MA_MAKE_NO())
+
+#define TOP() M->stack.top();
+#define TOP_VALUE(name) const auto name = TOP();
+#define POP() M->stack.pop();
+#define POP_VALUE(name)    \
+  const auto name = TOP(); \
+  POP();
+
+#define OBJECT_STRING_DATA(cell) (cell).v.object->d.string->data
+
+#define READ_TOP_FRAME() const auto frame = M->call_stack.top();
+#define FRAME_POP() M->call_stack.pop();
+#define FRAME_PUSH(frame) M->call_stack.push(frame);
+
 namespace mavka::mama {
   struct MaMa;
   struct MaCallFrame;
@@ -127,8 +151,11 @@ namespace mavka::mama {
     MaObject* structure;
     MaObject* module;
     size_t return_index;
+    std::function<void(MaMa* M)> return_callback;
     size_t catch_index;
     std::map<std::string, MaCell> args;
+    size_t line;
+    size_t column;
   };
 
   struct MaMa {
@@ -141,6 +168,7 @@ namespace mavka::mama {
     size_t i;
     std::stack<MaCallFrame*> call_stack;
     bool need_to_throw;
+    std::function<bool(MaMa* M, MaInstruction& I)> diia_native_redirect;
 
     MaObject* object_structure_object;
     MaObject* structure_structure_object;
@@ -371,6 +399,46 @@ namespace mavka::mama {
   void print_code(MaMa* M);
 
   void run(MaMa* M);
+
+  inline bool initcall(MaMa* M,
+                       MaCell cell,
+                       const size_t return_index,
+                       const std::function<void(MaMa*)>& return_callback) {
+    READ_TOP_FRAME();
+
+  repeat_op_initcall:
+    if (cell.type == MA_CELL_OBJECT) {
+      const auto object = cell.v.object;
+
+      if (object->type == MA_OBJECT_DIIA_NATIVE) {
+        FRAME_PUSH(new MaCallFrame({.scope = frame->scope,
+                                    .diia_native = object,
+                                    .return_index = return_index,
+                                    .return_callback = return_callback}));
+        return true;
+      }
+      if (object->type == MA_OBJECT_DIIA) {
+        FRAME_PUSH(new MaCallFrame({.scope = frame->scope,
+                                    .diia = object,
+                                    .return_index = return_index,
+                                    .return_callback = return_callback}));
+        return true;
+      }
+      if (object->properties.contains(MAG_CALL)) {
+        cell = object->properties[MAG_CALL];
+        goto repeat_op_initcall;
+      }
+      if (object->type == MA_OBJECT_STRUCTURE) {
+        FRAME_PUSH((new MaCallFrame{.scope = frame->scope,
+                                  .structure = object,
+                                  .return_index = return_index,
+                                  .return_callback = return_callback}));
+          return true;
+        }
+      }
+
+    return false;
+  }
 } // namespace mavka::mama
 
 #endif // MAMA_H

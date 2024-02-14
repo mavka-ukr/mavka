@@ -8,8 +8,11 @@ namespace mavka::mama {
       return result;
     }
 
-    M->code.push_back(MaInstruction{
-        OP_INITCALL, {.initcall = new MaInitCallInstructionArgs()}});
+    M->code.push_back(MaInstruction{OP_INITCALL,
+                                    {.initcall = new MaInitCallInstructionArgs({
+                                         .line = call_node->start_line,
+                                         .column = call_node->start_column,
+                                     })}});
     const auto initcall_instruction_index = M->code.size() - 1;
 
     for (const auto& arg : call_node->args) {

@@ -12,6 +12,8 @@ namespace mavka::mama {
 
   struct MaInitCallInstructionArgs {
     size_t index;
+    size_t line;
+    size_t column;
   };
 
   struct MaGetInstructionArgs {
