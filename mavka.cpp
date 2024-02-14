@@ -11,7 +11,8 @@ void init_print(MaMa* M, MaScope* S) {
     for (const auto& [key, value] : args) {
       std::cout << cell_to_string(value) << std::endl;
     }
-    return MA_MAKE_EMPTY();
+    M->stack.push(MA_MAKE_EMPTY());
+    return;
   };
   const auto diia_cell = create_diia_native(M, "друк", diia_native_fn, nullptr);
   S->set_variable("друк", diia_cell);

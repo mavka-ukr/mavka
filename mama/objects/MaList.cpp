@@ -65,9 +65,9 @@ namespace mavka::mama {
     return false;
   }
 
-  MaCell ma_list_iterate_diia_native_fn(MaMa* M,
-                                        MaObject* list_me,
-                                        std::map<std::string, MaCell>& args) {
+  void ma_list_iterate_diia_native_fn(MaMa* M,
+                                      MaObject* list_me,
+                                      std::map<std::string, MaCell>& args) {
     const auto iterator_object_cell = create_empty_object(M);
     const auto iterator_object = iterator_object_cell.v.object;
 
@@ -111,55 +111,55 @@ namespace mavka::mama {
           iterator_object);
       ma_object_set(iterator_object, "далі", next_diia_native_cell);
     }
-
-    return iterator_object_cell;
+    M->stack.push(iterator_object_cell);
   }
 
-  MaCell ma_list_get_element_diia_native_fn(
-      MaMa* M,
-      MaObject* list_me,
-      std::map<std::string, MaCell>& args) {
+  void ma_list_get_element_diia_native_fn(MaMa* M,
+                                          MaObject* list_me,
+                                          std::map<std::string, MaCell>& args) {
     const auto key = args["0"];
     if (key.type == MA_CELL_NUMBER) {
-      return list_me->d.list->get(key.v.number);
+      M->stack.push(list_me->d.list->get(key.v.number));
+      return;
     }
-    return MA_MAKE_EMPTY();
+    M->stack.push(MA_MAKE_EMPTY());
   }
 
-  MaCell ma_list_set_element_diia_native_fn(
-      MaMa* M,
-      MaObject* list_me,
-      std::map<std::string, MaCell>& args) {
+  void ma_list_set_element_diia_native_fn(MaMa* M,
+                                          MaObject* list_me,
+                                          std::map<std::string, MaCell>& args) {
     const auto key = args["0"];
     const auto value = args["1"];
     list_me->d.list->set(key.v.number, value);
-    return MA_MAKE_EMPTY();
+    M->stack.push(MA_MAKE_EMPTY());
   }
 
-  MaCell ma_list_append_diia_native_fn(MaMa* M,
-                                       MaObject* list_me,
-                                       std::map<std::string, MaCell>& args) {
+  void ma_list_append_diia_native_fn(MaMa* M,
+                                     MaObject* list_me,
+                                     std::map<std::string, MaCell>& args) {
     if (args.contains("0")) {
       list_me->d.list->append(args["0"]);
     } else {
       list_me->d.list->append(MA_MAKE_EMPTY());
     }
-    return MA_MAKE_INTEGER(list_me->d.list->size());
+    M->stack.push(MA_MAKE_INTEGER(list_me->d.list->size()));
   }
 
-  MaCell ma_list_contains_diia_native_fn(MaMa* M,
-                                         MaObject* list_me,
-                                         std::map<std::string, MaCell>& args) {
+  void ma_list_contains_diia_native_fn(MaMa* M,
+                                       MaObject* list_me,
+                                       std::map<std::string, MaCell>& args) {
     if (args.contains("0")) {
       if (list_me->d.list->contains(args["0"])) {
-        return MA_MAKE_YES();
+        M->stack.push(MA_MAKE_YES());
+        return;
       }
     } else {
       if (list_me->d.list->contains(MA_MAKE_EMPTY())) {
-        return MA_MAKE_YES();
+        M->stack.push(MA_MAKE_YES());
+        return;
       }
     }
-    return MA_MAKE_NO();
+    M->stack.push(MA_MAKE_NO());
   }
 
   MaCell ma_list_get_handler(MaMa* M, MaObject* me, const std::string& name) {

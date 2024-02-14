@@ -17,24 +17,29 @@ namespace mavka::mama {
     return me->properties[name];
   }
 
-  MaCell structure_structure_object_get_structure_native_diia_fn(
+  void structure_structure_object_get_structure_diia_native_fn(
       MaMa* M,
       MaObject* me,
       std::map<std::string, MaCell>& args) {
     if (args.empty()) {
-      return MA_MAKE_EMPTY();
+      M->stack.push(MA_MAKE_EMPTY());
+      return;
     }
     const auto cell = args.begin()->second;
     if (cell.type == MA_CELL_EMPTY) {
-      return MA_MAKE_EMPTY();
+      M->stack.push(MA_MAKE_EMPTY());
+      return;
     }
     if (cell.type == MA_CELL_NUMBER) {
-      return MA_MAKE_OBJECT(M->number_structure_object);
+      M->stack.push(MA_MAKE_OBJECT(M->number_structure_object));
+      return;
     }
     if (cell.type == MA_CELL_YES || cell.type == MA_CELL_NO) {
-      return MA_MAKE_OBJECT(M->logical_structure_object);
+      M->stack.push(MA_MAKE_OBJECT(M->logical_structure_object));
+      return;
     }
-    return MA_MAKE_OBJECT(cell.v.object->structure);
+    M->stack.push(MA_MAKE_OBJECT(cell.v.object->structure));
+    return;
   }
 
   MaCell create_structure(MaMa* M, const std::string& name) {
@@ -60,7 +65,7 @@ namespace mavka::mama {
     ma_object_set(M->structure_structure_object, "дізнатись",
                   create_diia_native(
                       M, "дізнатись",
-                      structure_structure_object_get_structure_native_diia_fn,
+                      structure_structure_object_get_structure_diia_native_fn,
                       M->structure_structure_object));
 
   }

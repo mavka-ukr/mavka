@@ -1,30 +1,45 @@
 #include "../mama.h"
 
 namespace mavka::mama {
-  MaCell number_structure_object_mag_call_native_diia_fn(
+  void number_structure_object_mag_call_diia_native_fn(
       MaMa* M,
       MaObject* me,
       std::map<std::string, MaCell>& args) {
     if (args.empty()) {
-      return MA_MAKE_NUBMER(0);
+      M->stack.push(MA_MAKE_NUBMER(0));
+      return;
     }
     const auto cell = args.begin()->second;
     if (cell.type == MA_CELL_EMPTY) {
-      return MA_MAKE_NUBMER(0);
+      M->stack.push(MA_MAKE_NUBMER(0));
+      return;
     } else if (cell.type == MA_CELL_NUMBER) {
-      return cell;
+      M->stack.push(cell);
+      return;
     } else if (cell.type == MA_CELL_YES) {
-      return MA_MAKE_NUBMER(1);
+      M->stack.push(MA_MAKE_NUBMER(1));
+      return;
     } else if (cell.type == MA_CELL_NO) {
-      return MA_MAKE_NUBMER(0);
+      M->stack.push(MA_MAKE_NUBMER(0));
+      return;
     } else if (cell.type == MA_CELL_OBJECT) {
-      if (cell.v.object->type == MA_OBJECT_STRING) {
-        return MA_MAKE_NUBMER(std::stod(cell.v.object->d.string->data));
+      if (cell.v.object->properties.contains(MAG_NUMBER)) {
+        M->stack.push(cell.v.object->properties[MAG_NUMBER]);
+        M->diia_native_redirect = [](MaMa* M, MaInstruction& I) {
+          POP_VALUE(mag_number_diia_cell);
+          if (!initcall(M, mag_number_diia_cell, M->i + 1, nullptr)) {
+            M->stack.push(create_string(M, "Неможливо перетворити на число."));
+            M->need_to_throw = true;
+            return false;
+          }
+          I = MaInstruction{OP_CALL};
+          return true;
+        };
+        return;
       }
     }
     M->stack.push(create_string(M, "Неможливо перетворити на число."));
     M->need_to_throw = true;
-    return MA_MAKE_EMPTY();
   }
 
   void init_number(MaMa* M) {
@@ -34,7 +49,7 @@ namespace mavka::mama {
     ma_object_set(
         number_structure_cell.v.object, MAG_CALL,
         create_diia_native(M, MAG_CALL,
-                           number_structure_object_mag_call_native_diia_fn,
+                           number_structure_object_mag_call_diia_native_fn,
                            number_structure_cell.v.object));
   }
 } // namespace mavka::mama
