@@ -55,9 +55,9 @@ git submodule update --init --recursive
 ### Запуск
 
 ```shell
-./build-bin/мавка тест.м
+./build-bin/мавка старт.м
 # або
-./build-Obin/мавка_оптимізовано тест.м
+./build-Obin/мавка_оптимізовано старт.м
 ```
 
 ### Тестування

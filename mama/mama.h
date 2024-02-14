@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include <codecvt>
+#include <filesystem>
 #include <functional>
 #include <iostream>
 #include <locale>
@@ -159,9 +160,11 @@ namespace mavka::mama {
   };
 
   struct MaMa {
+    std::string cwd;
     std::vector<MaInstruction> code;
     size_t iterator_count;
     std::vector<MaCell> constants;
+    std::unordered_map<std::string, MaObject*> loaded_file_modules;
 
     MaScope* global_scope;
     std::stack<MaCell> stack;

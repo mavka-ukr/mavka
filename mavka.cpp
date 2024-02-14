@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -41,6 +42,7 @@ void print_version() {
 
 int main(int argc, char** argv) {
   const auto args = std::vector<std::string>(argv, argv + argc);
+  const auto cwd = std::filesystem::current_path();
 
   if (args.size() == 1) {
     print_help();
@@ -59,17 +61,10 @@ int main(int argc, char** argv) {
     }
   }
 
-  const auto& filename = args[1];
-
-  auto file = std::ifstream(filename);
-  if (!file.is_open()) {
-    std::cout << "Не вдалося прочитати файл " << filename << std::endl;
-    return 1;
-  }
-  const auto source = std::string(std::istreambuf_iterator<char>(file),
-                                  std::istreambuf_iterator<char>());
+  const auto& path = args[1];
 
   const auto M = new MaMa();
+  M->cwd = cwd;
   const auto S = new MaScope(nullptr);
   M->global_scope = S;
 
@@ -89,47 +84,10 @@ int main(int argc, char** argv) {
   M->call_stack.push(frame);
   init_print(M, S);
 
-  mavka::parser::MavkaParserResult program_parser_result;
-  try {
-    program_parser_result = mavka::parser::parse(source, filename);
-    if (!program_parser_result.errors.empty()) {
-      for (const auto& error : program_parser_result.errors) {
-        std::cout << error.path << ":" << error.line << ":" << error.column
-                  << ": " << error.message << std::endl;
-      }
-      return 1;
-    }
-  } catch (std::exception& e) {
-    std::cout << "Помилка парсингу: " << e.what() << std::endl;
-    return 1;
-  } catch (...) {
-    std::cout << "Невідома помилка парсингу." << std::endl;
-    return 1;
-  }
-
-  for (const auto& node : program_parser_result.program_node->body) {
-    const auto result = compile_node(M, node);
-    if (result.error) {
-      std::cout << filename << ":" << result.error->line << ":"
-                << result.error->column << ": " << result.error->message
-                << std::endl;
-      return 1;
-    }
-  }
-
-  DEBUG_DO({
-    print_code(M);
-    std::cout << "---" << std::endl;
-    M;
-  })
+  M->code.push_back(
+      MaInstruction{OP_TAKE, {.take = new MaTakeInstructionArgs(INT64_MAX,path)}});
 
   mavka::mama::run(M);
-
-  // while (M->stack.size()) {
-  //   const auto value = M->stack.top();
-  //   M->stack.pop();
-  //   print_cell(value);
-  // }
 
   return 0;
 }

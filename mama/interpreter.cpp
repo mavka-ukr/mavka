@@ -80,7 +80,7 @@ namespace mavka::mama {
 
   void run(MaMa* M) {
     M->i = 0;
-    const auto size = M->code.size();
+    auto size = M->code.size();
     for (;;) {
     start:
       if (M->i >= size) {
@@ -1029,6 +1029,87 @@ namespace mavka::mama {
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_SHIFT_RIGHT, left);
           }
+          break;
+        }
+        case OP_TAKE: {
+          const auto rawpath = I.args.take->path;
+          if (!std::filesystem::exists(rawpath)) {
+            DO_THROW_STRING("Не вдалося прочитати файл \"" + rawpath + "\".");
+            return;
+          }
+          const auto path =
+              std::filesystem::canonical(I.args.take->path).string();
+          const auto stdpath = std::filesystem::path(path);
+          if (!stdpath.has_filename()) {
+            DO_THROW_STRING("Не вдалося прочитати файл \"" + path + "\".");
+            return;
+          }
+          const auto name = stdpath.stem().string();
+
+          if (M->loaded_file_modules.contains(name)) {
+            PUSH(MA_MAKE_OBJECT(M->loaded_file_modules[name]));
+            break;
+          } else {
+            auto file = std::ifstream(path);
+            if (!file.is_open()) {
+              DO_THROW_STRING("Не вдалося прочитати файл \"" + path + "\".");
+              return;
+            }
+            const auto source = std::string(std::istreambuf_iterator(file),
+                                            std::istreambuf_iterator<char>());
+            const auto parser_result = parser::parse(source, path);
+            if (!parser_result.errors.empty()) {
+              const auto error = parser_result.errors[0];
+              DO_THROW_STRING(error.path + ":" + std::to_string(error.line) +
+                              ":" + std::to_string(error.column) + ": " +
+                              error.message);
+              return;
+            }
+            M->code.push_back({OP_JUMP});
+            const auto jump_out_of_module_index = M->code.size() - 1;
+            const auto module_code_index = M->code.size();
+            M->code.push_back(MaInstruction{
+                OP_MODULE, {.module = new MaModuleInstructionArgs(name)}});
+            M->code.push_back(MaInstruction{OP_KEEP_MODULE});
+            const auto body_compilation_result =
+                compile_body(M, parser_result.program_node->body);
+            if (body_compilation_result.error) {
+              DO_THROW_STRING(
+                  path + ":" +
+                  std::to_string(body_compilation_result.error->line) + ":" +
+                  std::to_string(body_compilation_result.error->column) + ": " +
+                  body_compilation_result.error->message);
+              return;
+            }
+            M->code.push_back({OP_LOAD_MODULE});
+            M->code.push_back(MaInstruction{OP_MODULE_DONE});
+            if (I.args.take->jump_to) {
+              M->code.push_back(
+                  MaInstruction{OP_JUMP, {.jump = I.args.take->jump_to}});
+            }
+            M->code[jump_out_of_module_index].args.jump = M->code.size();
+            size = M->code.size();
+            M->i = module_code_index;
+            goto start;
+          }
+          break;
+        }
+        case OP_KEEP_MODULE: {
+          READ_TOP_FRAME();
+          const auto current_module_path = frame->module->d.module->name;
+          M->loaded_file_modules.insert_or_assign(current_module_path, frame->module);
+          break;
+        }
+        case OP_LOAD_MODULE: {
+          READ_TOP_FRAME();
+          PUSH(MA_MAKE_OBJECT(frame->module));
+          break;
+        }
+        case OP_MODULE_LOAD: {
+          TOP_VALUE(module_cell);
+          OBJECT_GET(module_cell, value, I.args.moduleload->name);
+          READ_TOP_FRAME();
+          frame->scope->set_variable(I.args.moduleload->as, value);
           break;
         }
         default: {
