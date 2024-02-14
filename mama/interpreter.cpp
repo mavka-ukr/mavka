@@ -177,7 +177,7 @@ namespace mavka::mama {
                 frame->scope->set_variable(param.name, param.default_value);
               }
             }
-            M->i = frame->diia->d.diia->index;
+            run(M, frame->diia->d.diia->code);
             goto start;
           }
           if (frame->structure) {
@@ -221,7 +221,8 @@ namespace mavka::mama {
         case OP_DIIA: {
           READ_TOP_FRAME();
           const auto diia_cell =
-              create_diia(M, I.args.diia->name, I.args.diia->index, nullptr);
+              create_diia(M, I.args.diia->name,
+                          M->diia_bodies[I.args.diia->code_index], nullptr);
           diia_cell.v.object->d.diia->scope = frame->scope;
           PUSH(diia_cell);
           break;
