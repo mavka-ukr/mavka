@@ -70,6 +70,16 @@ namespace mavka::mama {
     std::string name;
   };
 
+  struct MaTakeInstructionArgs {
+    size_t jump_to;
+    std::string path;
+  };
+
+  struct MaModuleLoadInstructionArgs {
+    std::string name;
+    std::string as;
+  };
+
   struct MaInstruction {
     OP op;
     union {
@@ -94,6 +104,8 @@ namespace mavka::mama {
       MaModuleInstructionArgs* module;
       MaGiveInstructionArgs* give;
       size_t lt;
+      MaTakeInstructionArgs* take;
+      MaModuleLoadInstructionArgs* moduleload;
     } args;
   };
 } // namespace mavka::mama
