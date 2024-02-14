@@ -1,6 +1,5 @@
 #ifndef OBJECTS_H
 #define OBJECTS_H
-#include "mama.h"
 
 class MaString;
 class MaList;

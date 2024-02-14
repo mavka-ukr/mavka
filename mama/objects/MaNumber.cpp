@@ -25,21 +25,20 @@ namespace mavka::mama {
     } else if (cell.type == MA_CELL_OBJECT) {
       if (cell.v.object->properties.contains(MAG_NUMBER)) {
         M->stack.push(cell.v.object->properties[MAG_NUMBER]);
-        M->diia_native_redirect = [](MaMa* M, MaInstruction& I) {
+        M->diia_native_redirect = [](MaMa* M) {
           POP_VALUE(mag_number_diia_cell);
-          if (!initcall(M, mag_number_diia_cell, M->i + 1, nullptr)) {
+          if (!initcall(M, mag_number_diia_cell, {.return_index = M->i + 1})) {
             M->stack.push(create_string(M, "Неможливо перетворити на число."));
-            M->need_to_throw = true;
+            M->diia_native_throw = true;
             return false;
           }
-          I = MaInstruction{OP_CALL};
           return true;
         };
         return;
       }
     }
     M->stack.push(create_string(M, "Неможливо перетворити на число."));
-    M->need_to_throw = true;
+    M->diia_native_throw = true;
   }
 
   void init_number(MaMa* M) {

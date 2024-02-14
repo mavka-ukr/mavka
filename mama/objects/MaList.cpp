@@ -169,7 +169,7 @@ namespace mavka::mama {
     if (!me->properties.contains(name)) {
       M->stack.push(create_string(
           M, "Властивість \"" + name + "\" не визначено для типу \"список\"."));
-      M->need_to_throw = true;
+      M->diia_native_throw = true;
       return MA_MAKE_EMPTY();
     }
     return me->properties[name];

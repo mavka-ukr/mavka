@@ -11,7 +11,7 @@ namespace mavka::mama {
       M->stack.push(create_string(
           M,
           "Властивість \"" + name + "\" не визначено для типу \"Структура\"."));
-      M->need_to_throw = true;
+      M->diia_native_throw = true;
       return MA_MAKE_EMPTY();
     }
     return me->properties[name];
@@ -67,6 +67,5 @@ namespace mavka::mama {
                       M, "дізнатись",
                       structure_structure_object_get_structure_diia_native_fn,
                       M->structure_structure_object));
-
   }
 } // namespace mavka::mama

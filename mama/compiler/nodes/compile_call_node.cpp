@@ -32,7 +32,7 @@ namespace mavka::mama {
       }
     }
 
-    M->code[initcall_instruction_index].args.initcall->index =
+    M->code[initcall_instruction_index].args.initcall->return_index =
         M->code.size() + 1;
 
     M->code.push_back(MaInstruction{OP_CALL});
