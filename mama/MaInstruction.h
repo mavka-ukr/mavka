@@ -33,7 +33,7 @@ namespace mavka::mama {
   };
 
   struct MaDiiaInstructionArgs {
-    size_t code_index;
+    int index;
     std::string name;
   };
 

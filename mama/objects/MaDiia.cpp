@@ -3,11 +3,11 @@
 namespace mavka::mama {
   MaCell create_diia(MaMa* M,
                      const std::string& name,
-                     MaCode* code,
+                     const int& index,
                      MaObject* me) {
     const auto diia = new MaDiia();
     diia->name = name;
-    diia->code = code;
+    diia->index = index;
     diia->me = me;
     return create_object(M, MA_OBJECT_DIIA, M->diia_structure_object, diia);
   }
@@ -26,7 +26,7 @@ namespace mavka::mama {
 
   MaCell bind_diia(MaMa* M, MaObject* diia, MaObject* object) {
     const auto diia_cell =
-        create_diia(M, diia->d.diia->name, diia->d.diia->code, object);
+        create_diia(M, diia->d.diia->name, diia->d.diia->index, object);
     diia_cell.v.object->d.diia->scope = diia->d.diia->scope;
     diia_cell.v.object->d.diia->params = diia->d.diia->params;
     return diia_cell;
