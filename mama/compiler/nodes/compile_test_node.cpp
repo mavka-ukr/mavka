@@ -10,7 +10,7 @@ namespace mavka::mama {
       }
       M->code.push_back(MaInstruction{OP_E_JUMP_IF_FALSE});
       const auto jump_if_false_instruction_index = M->code.size() - 1;
-      M->code.push_back(MaInstruction{OP_POP});
+      M->code.push_back(MaInstruction::pop());
       const auto right = compile_node(M, test_node->right);
       if (right.error) {
         return right;
@@ -24,7 +24,7 @@ namespace mavka::mama {
       }
       M->code.push_back(MaInstruction{OP_E_JUMP_IF_TRUE});
       const auto jump_if_true_instruction_index = M->code.size() - 1;
-      M->code.push_back(MaInstruction{OP_POP});
+      M->code.push_back(MaInstruction::pop());
       const auto right = compile_node(M, test_node->right);
       if (right.error) {
         return right;

@@ -13,19 +13,19 @@ namespace mavka::mama {
       return right;
     }
     if (arithmetic_node->op == "+") {
-      M->code.push_back(MaInstruction{OP_ADD});
+      M->code.push_back(MaInstruction::add());
     } else if (arithmetic_node->op == "-") {
-      M->code.push_back(MaInstruction{OP_SUB});
+      M->code.push_back(MaInstruction::sub());
     } else if (arithmetic_node->op == "*") {
-      M->code.push_back(MaInstruction{OP_MUL});
+      M->code.push_back(MaInstruction::mul());
     } else if (arithmetic_node->op == "/") {
-      M->code.push_back(MaInstruction{OP_DIV});
+      M->code.push_back(MaInstruction::div());
     } else if (arithmetic_node->op == "%") {
-      M->code.push_back(MaInstruction{OP_MOD});
+      M->code.push_back(MaInstruction::mod());
     } else if (arithmetic_node->op == "//") {
-      M->code.push_back(MaInstruction{OP_DIVDIV});
+      M->code.push_back(MaInstruction::divdiv());
     } else if (arithmetic_node->op == "**") {
-      M->code.push_back(MaInstruction{OP_POW});
+      M->code.push_back(MaInstruction::pop());
     }
     return success();
   }

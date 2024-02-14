@@ -13,35 +13,35 @@ namespace mavka::mama {
       return right;
     }
     if (comparison_node->op == "==" || comparison_node->op == "рівно") {
-      M->code.push_back(MaInstruction{OP_EQ});
+      M->code.push_back(MaInstruction::eq());
     } else if (comparison_node->op == "!=" ||
                comparison_node->op == "не рівно" ||
                comparison_node->op == "нерівно") {
-      M->code.push_back(MaInstruction{OP_EQ});
-      M->code.push_back(MaInstruction{OP_NOT});
+      M->code.push_back(MaInstruction::eq());
+      M->code.push_back(MaInstruction::not_());
     } else if (comparison_node->op == ">" || comparison_node->op == "більше") {
-      M->code.push_back(MaInstruction{OP_GT});
+      M->code.push_back(MaInstruction::gt());
     } else if (comparison_node->op == ">=" ||
                comparison_node->op == "не менше" ||
                comparison_node->op == "неменше") {
-      M->code.push_back(MaInstruction{OP_GE});
+      M->code.push_back(MaInstruction::ge());
     } else if (comparison_node->op == "<" || comparison_node->op == "менше") {
-      M->code.push_back(MaInstruction{OP_LT});
+      M->code.push_back(MaInstruction::lt());
     } else if (comparison_node->op == "<=" ||
                comparison_node->op == "не більше" ||
                comparison_node->op == "небільше") {
-      M->code.push_back(MaInstruction{OP_LE});
+      M->code.push_back(MaInstruction::le());
     } else if (comparison_node->op == "містить") {
-      M->code.push_back(MaInstruction{OP_CONTAINS});
+      M->code.push_back(MaInstruction::contains());
     } else if (comparison_node->op == "не містить" ||
                comparison_node->op == "немістить") {
-      M->code.push_back(MaInstruction{OP_CONTAINS});
-      M->code.push_back(MaInstruction{OP_NOT});
+      M->code.push_back(MaInstruction::contains());
+      M->code.push_back(MaInstruction::not_());
     } else if (comparison_node->op == "є") {
-      M->code.push_back(MaInstruction{OP_IS});
+      M->code.push_back(MaInstruction::is());
     } else if (comparison_node->op == "не є" || comparison_node->op == "неє") {
-      M->code.push_back(MaInstruction{OP_IS});
-      M->code.push_back(MaInstruction{OP_NOT});
+      M->code.push_back(MaInstruction::is());
+      M->code.push_back(MaInstruction::not_());
     } else {
       return error(mavka::ast::make_ast_some(comparison_node),
                    "Невідомий оператор порівняння: " + comparison_node->op);

@@ -7,13 +7,13 @@ namespace mavka::mama {
     if (condition_result.error) {
       return condition_result;
     }
-    M->code.push_back(MaInstruction{OP_JUMP_IF_FALSE});
+    M->code.push_back(MaInstruction::jumpiffalse(0));
     const auto jump_if_instruction_index = M->code.size() - 1;
     const auto body_result = compile_body(M, if_node->body);
     if (body_result.error) {
       return body_result;
     }
-    M->code.push_back(MaInstruction{OP_JUMP});
+    M->code.push_back(MaInstruction::jump(0));
     const auto jump_out_else_instruction_index = M->code.size() - 1;
     M->code[jump_if_instruction_index].args.jumpiffalse = M->code.size();
     const auto else_body_result = compile_body(M, if_node->else_body);

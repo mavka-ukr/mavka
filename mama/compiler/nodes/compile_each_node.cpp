@@ -19,17 +19,17 @@ namespace mavka::mama {
       if (each_node->value->FromToSimpleNode) {
         const auto toSymbol = each_node->value->FromToSimpleNode->toSymbol;
         if (toSymbol == "<=") {
-          check_i = MaInstruction{OP_GT};
-          step_op_i = MaInstruction{OP_ADD};
+          check_i = MaInstruction::gt();
+          step_op_i = MaInstruction::add();
         } else if (toSymbol == "<") {
-          check_i = MaInstruction{OP_GE};
-          step_op_i = MaInstruction{OP_ADD};
+          check_i = MaInstruction::ge();
+          step_op_i = MaInstruction::add();
         } else if (toSymbol == ">=") {
-          check_i = MaInstruction{OP_LT};
-          step_op_i = MaInstruction{OP_ADD};
+          check_i = MaInstruction::lt();
+          step_op_i = MaInstruction::add();
         } else if (toSymbol == ">") {
-          check_i = MaInstruction{OP_LE};
-          step_op_i = MaInstruction{OP_ADD};
+          check_i = MaInstruction::le();
+          step_op_i = MaInstruction::add();
         } else {
           return error(mavka::ast::make_ast_some(each_node),
                        "Невідомий символ: " + toSymbol);
@@ -37,32 +37,32 @@ namespace mavka::mama {
       } else if (each_node->value->FromToComplexNode) {
         const auto toSymbol = each_node->value->FromToComplexNode->toSymbol;
         if (toSymbol == "<=") {
-          check_i = MaInstruction{OP_GT};
+          check_i = MaInstruction::gt();
         } else if (toSymbol == "<") {
-          check_i = MaInstruction{OP_GE};
+          check_i = MaInstruction::ge();
         } else if (toSymbol == ">=") {
-          check_i = MaInstruction{OP_LT};
+          check_i = MaInstruction::lt();
         } else if (toSymbol == ">") {
-          check_i = MaInstruction{OP_LE};
+          check_i = MaInstruction::le();
         } else {
           return error(mavka::ast::make_ast_some(each_node),
                        "Невідомий символ: " + toSymbol);
         }
         const auto stepSymbol = each_node->value->FromToComplexNode->stepSymbol;
         if (stepSymbol == "+") {
-          step_op_i = MaInstruction{OP_ADD};
+          step_op_i = MaInstruction::add();
         } else if (stepSymbol == "-") {
-          step_op_i = MaInstruction{OP_SUB};
+          step_op_i = MaInstruction::sub();
         } else if (stepSymbol == "*") {
-          step_op_i = MaInstruction{OP_MUL};
+          step_op_i = MaInstruction::mul();
         } else if (stepSymbol == "/") {
-          step_op_i = MaInstruction{OP_DIV};
+          step_op_i = MaInstruction::div();
         } else if (stepSymbol == "%") {
-          step_op_i = MaInstruction{OP_MOD};
+          step_op_i = MaInstruction::mod();
         } else if (stepSymbol == "//") {
-          step_op_i = MaInstruction{OP_DIVDIV};
+          step_op_i = MaInstruction::divdiv();
         } else if (stepSymbol == "**") {
-          step_op_i = MaInstruction{OP_POW};
+          step_op_i = MaInstruction::pow();
         } else {
           return error(mavka::ast::make_ast_some(each_node),
                        "Невідомий символ: " + stepSymbol);
@@ -82,13 +82,13 @@ namespace mavka::mama {
           return from_result;
         }
       }
-      M->code.push_back(MaInstruction{
-          OP_STORE, {.store = new MaStoreInstructionArgs(each_node->name)}});
+      M->code.push_back(
+          MaInstruction::store(new MaStoreInstructionArgs(each_node->name)));
 
       const auto start_index = M->code.size();
 
-      M->code.push_back(MaInstruction{
-          OP_LOAD, {.load = new MaLoadInstructionArgs(each_node->name)}});
+      M->code.push_back(
+          MaInstruction::load(new MaLoadInstructionArgs(each_node->name)));
       if (each_node->value->FromToSimpleNode) {
         const auto to_result =
             compile_node(M, each_node->value->FromToSimpleNode->to);
@@ -103,7 +103,7 @@ namespace mavka::mama {
         }
       }
       M->code.push_back(check_i);
-      M->code.push_back(MaInstruction{OP_JUMP_IF_TRUE});
+      M->code.push_back(MaInstruction::jumpiftrue(0));
       const auto jump_out_instruction_index = M->code.size() - 1;
 
       const auto result = compile_body(M, each_node->body);
@@ -113,10 +113,10 @@ namespace mavka::mama {
 
       const auto continue_index = M->code.size();
 
-      M->code.push_back(MaInstruction{
-          OP_LOAD, {.load = new MaLoadInstructionArgs(each_node->name)}});
+      M->code.push_back(
+          MaInstruction::load(new MaLoadInstructionArgs(each_node->name)));
       if (each_node->value->FromToSimpleNode) {
-        M->code.push_back(MaInstruction{OP_NUMBER, {.number = 1}});
+        M->code.push_back(MaInstruction::number(1));
       } else if (each_node->value->FromToComplexNode) {
         const auto step_result =
             compile_node(M, each_node->value->FromToComplexNode->step);
@@ -125,17 +125,17 @@ namespace mavka::mama {
         }
       }
       M->code.push_back(step_op_i);
-      M->code.push_back(MaInstruction{
-          OP_STORE, {.store = new MaStoreInstructionArgs(each_node->name)}});
+      M->code.push_back(
+          MaInstruction::store(new MaStoreInstructionArgs(each_node->name)));
 
-      M->code.push_back(MaInstruction{OP_JUMP, {.jump = start_index}});
+      M->code.push_back(MaInstruction::jump(start_index));
 
       const auto break_index = M->code.size();
       M->code[jump_out_instruction_index].args.jumpiftrue = break_index;
 
-      M->code.push_back(MaInstruction{OP_EMPTY});
-      M->code.push_back(MaInstruction{
-          OP_STORE, {.store = new MaStoreInstructionArgs(each_node->name)}});
+      M->code.push_back(MaInstruction::empty());
+      M->code.push_back(
+          MaInstruction::store(new MaStoreInstructionArgs(each_node->name)));
 
       for (const auto& jump : jumps) {
         if (jump.continue_node) {
@@ -154,32 +154,32 @@ namespace mavka::mama {
         if (result.error) {
           return result;
         }
-        M->code.push_back(MaInstruction{
-            OP_GET, {.get = new MaGetInstructionArgs(MAG_ITERATOR)}});
-        M->code.push_back(MaInstruction{
-            OP_INITCALL, {.initcall = new MaInitCallInstructionArgs()}});
+        M->code.push_back(
+            MaInstruction::get(new MaGetInstructionArgs(MAG_ITERATOR)));
+        M->code.push_back(
+            MaInstruction::initcall(new MaInitCallInstructionArgs()));
         const auto initcall_instruction_index = M->code.size() - 1;
         M->code[initcall_instruction_index].args.initcall->return_index =
             M->code.size() + 1;
-        M->code.push_back(MaInstruction{OP_CALL});
-        M->code.push_back(MaInstruction{
-            OP_STORE, {.store = new MaStoreInstructionArgs(iterator_name)}});
+        M->code.push_back(MaInstruction::call());
+        M->code.push_back(
+            MaInstruction::store(new MaStoreInstructionArgs(iterator_name)));
 
         const auto start_index = M->code.size();
 
-        M->code.push_back(MaInstruction{
-            OP_LOAD, {.load = new MaLoadInstructionArgs(iterator_name)}});
-        M->code.push_back(MaInstruction{
-            OP_GET, {.get = new MaGetInstructionArgs("завершено")}});
-        M->code.push_back(MaInstruction{OP_JUMP_IF_TRUE});
+        M->code.push_back(
+            MaInstruction::load(new MaLoadInstructionArgs(iterator_name)));
+        M->code.push_back(
+            MaInstruction::get(new MaGetInstructionArgs("завершено")));
+        M->code.push_back(MaInstruction::jumpiftrue(0));
         const auto jump_out_instruction_index = M->code.size() - 1;
 
-        M->code.push_back(MaInstruction{
-            OP_LOAD, {.load = new MaLoadInstructionArgs(iterator_name)}});
-        M->code.push_back(MaInstruction{
-            OP_GET, {.get = new MaGetInstructionArgs("значення")}});
-        M->code.push_back(MaInstruction{
-            OP_STORE, {.store = new MaStoreInstructionArgs(each_node->name)}});
+        M->code.push_back(
+            MaInstruction::load(new MaLoadInstructionArgs(iterator_name)));
+        M->code.push_back(
+            MaInstruction::get(new MaGetInstructionArgs("значення")));
+        M->code.push_back(
+            MaInstruction::store(new MaStoreInstructionArgs(each_node->name)));
 
         const auto body_result = compile_body(M, each_node->body);
         if (body_result.error) {
@@ -188,26 +188,24 @@ namespace mavka::mama {
 
         const auto continue_index = M->code.size();
 
-        M->code.push_back(MaInstruction{
-            OP_LOAD, {.load = new MaLoadInstructionArgs(iterator_name)}});
         M->code.push_back(
-            MaInstruction{OP_GET, {.get = new MaGetInstructionArgs("далі")}});
-        M->code.push_back(MaInstruction{
-            OP_INITCALL,
-            {.initcall = new MaInitCallInstructionArgs(M->code.size() + 2)}});
-        M->code.push_back(MaInstruction{OP_CALL});
+            MaInstruction::load(new MaLoadInstructionArgs(iterator_name)));
+        M->code.push_back(MaInstruction::get(new MaGetInstructionArgs("далі")));
+        M->code.push_back(MaInstruction::initcall(
+            new MaInitCallInstructionArgs(M->code.size() + 2)));
+        M->code.push_back(MaInstruction::call());
 
-        M->code.push_back(MaInstruction{OP_JUMP, {.jump = start_index}});
+        M->code.push_back(MaInstruction::jump(start_index));
 
         const auto break_index = M->code.size();
         M->code[jump_out_instruction_index].args.jumpiftrue = break_index;
 
-        M->code.push_back(MaInstruction{OP_EMPTY});
-        M->code.push_back(MaInstruction{
-            OP_STORE, {.store = new MaStoreInstructionArgs(each_node->name)}});
-        M->code.push_back(MaInstruction{OP_EMPTY});
-        M->code.push_back(MaInstruction{
-            OP_STORE, {.store = new MaStoreInstructionArgs(iterator_name)}});
+        M->code.push_back(MaInstruction::empty());
+        M->code.push_back(
+            MaInstruction::store(new MaStoreInstructionArgs(each_node->name)));
+        M->code.push_back(MaInstruction::empty());
+        M->code.push_back(
+            MaInstruction::store(new MaStoreInstructionArgs(iterator_name)));
 
         for (const auto& jump : jumps) {
           if (jump.continue_node) {
@@ -221,6 +219,7 @@ namespace mavka::mama {
       }
     }
 
-    return error(mavka::ast::make_ast_some(each_node), "Перебір з ключем тимчасово недоступний.");
+    return error(mavka::ast::make_ast_some(each_node),
+                 "Перебір з ключем тимчасово недоступний.");
   }
 } // namespace mavka::mama

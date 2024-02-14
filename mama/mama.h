@@ -19,7 +19,6 @@
 #include "../external/parser/ast.h"
 #include "../external/parser/parser.h"
 #include "../utils/tools.h"
-#include "MaInstruction.h"
 
 // Check windows
 #if _WIN32 || _WIN64
@@ -152,6 +151,7 @@ namespace mavka::mama {
   struct MaObject;
 
 #include "MaCallFrame.h"
+#include "MaInstruction.h"
 #include "objects.h"
 
   struct MaMa {

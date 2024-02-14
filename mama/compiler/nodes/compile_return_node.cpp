@@ -8,7 +8,7 @@ namespace mavka::mama {
     if (result.error) {
       return result;
     }
-    M->code.push_back(MaInstruction{OP_RETURN});
+    M->code.push_back(MaInstruction::return_());
     return success();
   }
 } // namespace mavka::mama
