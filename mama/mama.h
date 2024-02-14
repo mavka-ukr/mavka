@@ -80,7 +80,7 @@
 #define MA_OBJECT_MODULE 7
 
 #define MA_MAKE_EMPTY() (MaCell{MA_CELL_EMPTY})
-#define MA_MAKE_NUBMER(value) (MaCell{MA_CELL_NUMBER, {.number = (value)}})
+#define MA_MAKE_NUMBER(value) (MaCell{MA_CELL_NUMBER, {.number = (value)}})
 #define MA_MAKE_INTEGER(value) \
   (MaCell{MA_CELL_NUMBER, {.number = ((double)(value))}})
 #define MA_MAKE_YES() (MaCell{MA_CELL_YES})
@@ -98,7 +98,7 @@
 
 #define PUSH(cell) M->stack.push(cell)
 #define PUSH_EMPTY() PUSH(MA_MAKE_EMPTY())
-#define PUSH_NUMBER(v) PUSH(MA_MAKE_NUBMER((v)))
+#define PUSH_NUMBER(v) PUSH(MA_MAKE_NUMBER((v)))
 #define PUSH_YES() PUSH(MA_MAKE_YES())
 #define PUSH_NO() PUSH(MA_MAKE_NO())
 
@@ -139,6 +139,7 @@ namespace mavka::mama {
 #include "MaObject.h"
 #include "MaScope.h"
 #include "compiler/compiler.h"
+#include "helpers.h"
 
   struct MaMa {
     std::string cwd;
@@ -167,20 +168,6 @@ namespace mavka::mama {
 
     size_t iterator_count;
   };
-
-  std::string gettypename(size_t type);
-
-  std::string getcelltypename(MaCell cell);
-
-  std::string getcellstructurename(MaCell cell);
-
-  std::string cell_to_string(MaCell cell, int depth = 0);
-
-  void print_cell(MaCell* cell);
-
-  void print_instruction_with_index(int index, MaInstruction instruction);
-
-  void print_code(MaMa* M);
 
   void run(MaMa* M, size_t start_index = 0);
 

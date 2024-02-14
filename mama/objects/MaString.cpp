@@ -283,7 +283,7 @@ namespace mavka::mama {
       MaMa* M,
       MaObject* me,
       std::map<std::string, MaCell>& args) {
-    M->stack.push(MA_MAKE_NUBMER(std::stod(me->d.string->data)));
+    M->stack.push(MA_MAKE_NUMBER(std::stod(me->d.string->data)));
   }
 
   MaCell ma_string_get_handler(MaMa* M, MaObject* me, const std::string& name) {

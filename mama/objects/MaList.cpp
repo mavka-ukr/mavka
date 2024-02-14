@@ -91,7 +91,7 @@ namespace mavka::mama {
     } else {
       ma_object_set(iterator_object, "завершено", MA_MAKE_NO());
       ma_object_set(iterator_object, "значення", list_me->d.list->data[0]);
-      ma_object_set(iterator_object, "_індекс", MA_MAKE_NUBMER(1));
+      ma_object_set(iterator_object, "_індекс", MA_MAKE_NUMBER(1));
       const auto next_diia_native_cell = create_diia_native(
           M, "далі",
           [](MaMa* M, MaObject* iterator_me,
@@ -102,7 +102,7 @@ namespace mavka::mama {
             if (i < list->size()) {
               ma_object_set(iterator_me, "завершено", MA_MAKE_NO());
               ma_object_set(iterator_me, "значення", list->data[i]);
-              ma_object_set(iterator_me, "_індекс", MA_MAKE_NUBMER(i + 1));
+              ma_object_set(iterator_me, "_індекс", MA_MAKE_NUMBER(i + 1));
             } else {
               ma_object_set(iterator_me, "завершено", MA_MAKE_YES());
             }

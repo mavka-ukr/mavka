@@ -6,21 +6,21 @@ namespace mavka::mama {
       MaObject* me,
       std::map<std::string, MaCell>& args) {
     if (args.empty()) {
-      M->stack.push(MA_MAKE_NUBMER(0));
+      M->stack.push(MA_MAKE_NUMBER(0));
       return;
     }
     const auto cell = args.begin()->second;
     if (cell.type == MA_CELL_EMPTY) {
-      M->stack.push(MA_MAKE_NUBMER(0));
+      M->stack.push(MA_MAKE_NUMBER(0));
       return;
     } else if (cell.type == MA_CELL_NUMBER) {
       M->stack.push(cell);
       return;
     } else if (cell.type == MA_CELL_YES) {
-      M->stack.push(MA_MAKE_NUBMER(1));
+      M->stack.push(MA_MAKE_NUMBER(1));
       return;
     } else if (cell.type == MA_CELL_NO) {
-      M->stack.push(MA_MAKE_NUBMER(0));
+      M->stack.push(MA_MAKE_NUMBER(0));
       return;
     } else if (cell.type == MA_CELL_OBJECT) {
       if (cell.v.object->properties.contains(MAG_NUMBER)) {
