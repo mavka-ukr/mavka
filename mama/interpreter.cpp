@@ -68,16 +68,12 @@
     (cell).v.object->properties[propname] = value;             \
   }
 
-namespace mavka::mama {
-  void print_stack(std::stack<MaCell> stack) {
-    std::cout << "--- STACK ---" << std::endl;
-    while (!stack.empty()) {
-      std::cout << cell_to_string(stack.top()) << std::endl;
-      stack.pop();
-    }
-    std::cout << "--- END STACK ---" << std::endl;
+#define CLEAN_STACK()                           \
+  while (M->stack.size() > frame->stack_size) { \
+    M->stack.pop();                             \
   }
 
+namespace mavka::mama {
   void run(MaMa* M, size_t start_index) {
     M->i = start_index;
     auto size = M->code.size();
@@ -122,6 +118,7 @@ namespace mavka::mama {
             READ_TOP_FRAME();
             frame->line = I.args.initcall->line;
             frame->column = I.args.initcall->column;
+            frame->stack_size = M->stack.size();
             break;
           }
           DO_THROW_CANNOT_CALL_CELL(cell);
@@ -137,6 +134,9 @@ namespace mavka::mama {
           if (frame->diia_native) {
             frame->diia_native->d.diia_native->fn(
                 M, frame->diia_native->d.diia_native->me, frame->args);
+            const auto result = M->stack.top();
+            CLEAN_STACK();
+            PUSH(result);
             if (M->need_to_throw) {
               M->need_to_throw = false;
               HANDLE_THROW();
@@ -210,10 +210,9 @@ namespace mavka::mama {
             frame = M->call_stack.top();
             FRAME_POP();
           }
-          if (frame->return_callback) {
-            frame->return_callback(M);
-            break;
-          }
+          const auto result = M->stack.top();
+          CLEAN_STACK();
+          PUSH(result);
           DEBUG_LOG("returning to " + std::to_string(M->i));
           M->i = frame->return_index;
           goto start;
