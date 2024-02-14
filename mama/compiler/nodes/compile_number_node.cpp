@@ -2,9 +2,9 @@
 
 namespace mavka::mama {
   MaCompilationResult compile_number_node(
-      MaMa* M, MaCode* code,
+      MaMa* M,
       const mavka::ast::NumberNode* number_node) {
-    code->instructions.push_back(
+    M->code.push_back(
         MaInstruction{OP_NUMBER, {.number = std::stod(number_node->value)}});
     return success();
   }

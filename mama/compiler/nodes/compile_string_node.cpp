@@ -2,10 +2,10 @@
 
 namespace mavka::mama {
   MaCompilationResult compile_string_node(
-      MaMa* M, MaCode* code,
+      MaMa* M,
       const mavka::ast::StringNode* string_node) {
     M->constants.push_back(create_string(M, string_node->value));
-    code->instructions.push_back(
+    M->code.push_back(
         MaInstruction{OP_CONSTANT, {.constant = M->constants.size() - 1}});
     return success();
   }

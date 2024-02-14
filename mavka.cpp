@@ -107,9 +107,8 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  const auto code = new MaCode();
   for (const auto& node : program_parser_result.program_node->body) {
-    const auto result = compile_node(M, code, node);
+    const auto result = compile_node(M, node);
     if (result.error) {
       std::cout << filename << ":" << result.error->line << ":"
                 << result.error->column << ": " << result.error->message
@@ -124,7 +123,7 @@ int main(int argc, char** argv) {
     M;
   })
 
-  mavka::mama::run(M, code);
+  mavka::mama::run(M);
 
   // while (M->stack.size()) {
   //   const auto value = M->stack.top();

@@ -3,30 +3,27 @@
 namespace mavka::mama {
   MaCompilationResult compile_diia(
       MaMa* M,
-      MaCode* code,
       bool async,
       const std::vector<ast::GenericNode*>& generics,
       const std::string& name,
       const std::vector<ast::ParamNode*>& params,
       const std::vector<ast::TypeValueSingleNode*>& return_types,
       const std::vector<ast::ASTSome*>& body) {
-    code->instructions.push_back(MaInstruction{OP_JUMP});
-    const auto jump_out_of_diia_body_instruction_index =
-        code->instructions.size() - 1;
+    M->code.push_back(MaInstruction{OP_JUMP});
+    const auto jump_out_of_diia_body_instruction_index = M->code.size() - 1;
 
-    const auto diia_index = code->instructions.size();
+    const auto diia_index = M->code.size();
 
-    const auto body_result = compile_body(M, code, body);
+    const auto body_result = compile_body(M, body);
     if (body_result.error) {
       return body_result;
     }
-    code->instructions.push_back(MaInstruction{OP_EMPTY});
-    code->instructions.push_back(MaInstruction{OP_RETURN});
+    M->code.push_back(MaInstruction{OP_EMPTY});
+    M->code.push_back(MaInstruction{OP_RETURN});
 
-    code->instructions[jump_out_of_diia_body_instruction_index].args.jump =
-        code->instructions.size();
+    M->code[jump_out_of_diia_body_instruction_index].args.jump = M->code.size();
 
-    code->instructions.push_back(MaInstruction{
+    M->code.push_back(MaInstruction{
         OP_DIIA, {.diia = new MaDiiaInstructionArgs(diia_index, name)}});
     for (const auto& param : params) {
       if (param->variadic) {
@@ -34,14 +31,14 @@ namespace mavka::mama {
                      "Варіативні параметри наразі не підтримуються.");
       }
       if (param->value) {
-        const auto value_result = compile_node(M, code, param->value);
+        const auto value_result = compile_node(M, param->value);
         if (value_result.error) {
           return value_result;
         }
       } else {
-        code->instructions.push_back(MaInstruction{OP_EMPTY});
+        M->code.push_back(MaInstruction{OP_EMPTY});
       }
-      code->instructions.push_back(MaInstruction{
+      M->code.push_back(MaInstruction{
           OP_DIIA_PARAM,
           {.diiaparam = new MaDiiaParamInstructionArgs(param->name)}});
     }
@@ -50,7 +47,6 @@ namespace mavka::mama {
 
   MaCompilationResult compile_method(
       MaMa* M,
-      MaCode* code,
       const std::string& structure,
       bool ee,
       bool async,
@@ -59,14 +55,14 @@ namespace mavka::mama {
       const std::vector<ast::ParamNode*>& params,
       const std::vector<ast::TypeValueSingleNode*>& return_types,
       const std::vector<ast::ASTSome*>& body) {
-    code->instructions.push_back(
+    M->code.push_back(
         MaInstruction{OP_LOAD, {.load = new MaLoadInstructionArgs(structure)}});
-    const auto result = compile_diia(M, code, async, generics, name, params,
-                                     return_types, body);
+    const auto result =
+        compile_diia(M, async, generics, name, params, return_types, body);
     if (result.error) {
       return result;
     }
-    code->instructions.push_back(MaInstruction{OP_STRUCT_METHOD});
+    M->code.push_back(MaInstruction{OP_STRUCT_METHOD});
     return success();
   }
 } // namespace mavka::mama
