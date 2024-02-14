@@ -79,7 +79,7 @@ class MaDiiaParam final {
 class MaDiia final {
  public:
   std::string name;
-  MaCode* code;
+  int index;
   MaObject* me;
   MaScope* scope;
   std::vector<MaDiiaParam> params;
@@ -151,7 +151,7 @@ MaCell create_object(MaMa* M,
 MaCell create_string(MaMa* M, const std::string& value);
 MaCell create_diia(MaMa* M,
                    const std::string& name,
-                   MaCode* code,
+                   const int& index,
                    MaObject* me);
 MaCell create_diia_native(MaMa* M,
                           const std::string& name,
