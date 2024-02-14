@@ -44,25 +44,6 @@ int main(int argc, char** argv) {
   const auto args = std::vector<std::string>(argv, argv + argc);
   const auto cwd = std::filesystem::current_path();
 
-  if (args.size() == 1) {
-    print_help();
-    return 1;
-  }
-
-  if (args.size() == 2) {
-    const auto command = args[1];
-    if (command == "допомога") {
-      print_help();
-      return 0;
-    }
-    if (command == "версія") {
-      print_version();
-      return 0;
-    }
-  }
-
-  const auto& path = args[1];
-
   const auto M = new MaMa();
   M->cwd = cwd;
   const auto S = new MaScope(nullptr);
@@ -84,10 +65,60 @@ int main(int argc, char** argv) {
   M->call_stack.push(frame);
   init_print(M, S);
 
-  M->code.push_back(
-      MaInstruction{OP_TAKE, {.take = new MaTakeInstructionArgs(INT64_MAX,path)}});
+  if (args.size() == 1) {
+    std::cout << "Експериментальна Мавка " << MAVKA_VERSION << std::endl;
+    std::string line;
+    do {
+      std::cout << "› ";
+      std::getline(std::cin, line);
+      if (line == "вийти") {
+        return 0;
+      }
+      const auto parser_result = mavka::parser::parse(line, "[консоль]");
+      if (!parser_result.errors.empty()) {
+        const auto error = parser_result.errors[0];
+        std::cout << error.path + ":" + std::to_string(error.line) + ":" +
+                         std::to_string(error.column) + ": " + error.message
+                  << std::endl;
+        continue;
+      }
+      const auto start_index = M->code.size();
+      const auto body_compilation_result =
+          compile_body(M, parser_result.program_node->body, true);
+      if (body_compilation_result.error) {
+        std::cout << "[консоль]:" +
+                         std::to_string(body_compilation_result.error->line) +
+                         ":" +
+                         std::to_string(body_compilation_result.error->column) +
+                         ": " + body_compilation_result.error->message
+                  << std::endl;
+        continue;
+      }
+      mavka::mama::run(M, start_index);
+      std::cout << cell_to_string(M->stack.top()) << std::endl;
+    } while (true);
+    return 1;
+  } else if (args.size() == 2) {
+    const auto command = args[1];
+    if (command == "допомога") {
+      print_help();
+      return 0;
+    }
+    if (command == "версія") {
+      print_version();
+      return 0;
+    }
 
-  mavka::mama::run(M);
+    const auto& path = args[1];
+
+    M->code.push_back(
+        MaInstruction{OP_TAKE, {.take = new MaTakeInstructionArgs(INT64_MAX,path)}});
+
+    mavka::mama::run(M);
+  } else {
+    print_help();
+    return 1;
+  }
 
   return 0;
 }

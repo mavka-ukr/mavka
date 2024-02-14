@@ -78,8 +78,8 @@ namespace mavka::mama {
     std::cout << "--- END STACK ---" << std::endl;
   }
 
-  void run(MaMa* M) {
-    M->i = 0;
+  void run(MaMa* M, size_t start_index) {
+    M->i = start_index;
     auto size = M->code.size();
     for (;;) {
     start:

@@ -346,7 +346,8 @@ namespace mavka::mama {
 
   MaCompilationResult compile_body(
       MaMa* M,
-      const std::vector<mavka::ast::ASTSome*>& body) {
+      const std::vector<mavka::ast::ASTSome*>& body,
+      bool nopop) {
     for (const auto node : body) {
       if (!node) {
         continue;
@@ -358,7 +359,7 @@ namespace mavka::mama {
       if (result.error) {
         return result;
       }
-      if (node->is_popable()) {
+      if (node->is_popable() && !nopop) {
         M->code.push_back(MaInstruction{OP_POP});
       }
     }

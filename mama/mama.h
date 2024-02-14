@@ -223,7 +223,8 @@ namespace mavka::mama {
   MaCompilationResult compile_node(MaMa* M, mavka::ast::ASTSome* node);
   MaCompilationResult compile_body(
       MaMa* M,
-      const std::vector<mavka::ast::ASTSome*>& body);
+      const std::vector<mavka::ast::ASTSome*>& body,
+      bool nopop = false);
   void find_each_node_jumps(MaMa* M,
                             const std::vector<mavka::ast::ASTSome*>& body,
                             std::vector<EachNodeJumps>& jumps);
@@ -401,7 +402,7 @@ namespace mavka::mama {
 
   void print_code(MaMa* M);
 
-  void run(MaMa* M);
+  void run(MaMa* M, size_t start_index = 0);
 
   inline bool initcall(MaMa* M,
                        MaCell cell,
