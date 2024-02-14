@@ -2,6 +2,7 @@
 
 namespace mavka::mama {
   MaCompilationResult compile_each_node(MaMa* M,
+                                        MaCode* code,
                                         mavka::ast::EachNode* each_node) {
     std::vector<EachNodeJumps> jumps;
     find_each_node_jumps(M, each_node->body, jumps);
@@ -71,77 +72,81 @@ namespace mavka::mama {
 
       if (each_node->value->FromToSimpleNode) {
         const auto from_result =
-            compile_node(M, each_node->value->FromToSimpleNode->from);
+            compile_node(M, code, each_node->value->FromToSimpleNode->from);
         if (from_result.error) {
           return from_result;
         }
       } else if (each_node->value->FromToComplexNode) {
         const auto from_result =
-            compile_node(M, each_node->value->FromToComplexNode->from);
+            compile_node(M, code, each_node->value->FromToComplexNode->from);
         if (from_result.error) {
           return from_result;
         }
       }
-      M->code.push_back(MaInstruction{
+      code->instructions.push_back(MaInstruction{
           OP_STORE, {.store = new MaStoreInstructionArgs(each_node->name)}});
 
-      const auto start_index = M->code.size();
+      const auto start_index = code->instructions.size();
 
-      M->code.push_back(MaInstruction{
+      code->instructions.push_back(MaInstruction{
           OP_LOAD, {.load = new MaLoadInstructionArgs(each_node->name)}});
       if (each_node->value->FromToSimpleNode) {
         const auto to_result =
-            compile_node(M, each_node->value->FromToSimpleNode->to);
+            compile_node(M, code, each_node->value->FromToSimpleNode->to);
         if (to_result.error) {
           return to_result;
         }
       } else if (each_node->value->FromToComplexNode) {
         const auto to_result =
-            compile_node(M, each_node->value->FromToComplexNode->to);
+            compile_node(M, code, each_node->value->FromToComplexNode->to);
         if (to_result.error) {
           return to_result;
         }
       }
-      M->code.push_back(check_i);
-      M->code.push_back(MaInstruction{OP_JUMP_IF_TRUE});
-      const auto jump_out_instruction_index = M->code.size() - 1;
+      code->instructions.push_back(check_i);
+      code->instructions.push_back(MaInstruction{OP_JUMP_IF_TRUE});
+      const auto jump_out_instruction_index = code->instructions.size() - 1;
 
-      const auto result = compile_body(M, each_node->body);
+      const auto result = compile_body(M, code, each_node->body);
       if (result.error) {
         return result;
       }
 
-      const auto continue_index = M->code.size();
+      const auto continue_index = code->instructions.size();
 
-      M->code.push_back(MaInstruction{
+      code->instructions.push_back(MaInstruction{
           OP_LOAD, {.load = new MaLoadInstructionArgs(each_node->name)}});
       if (each_node->value->FromToSimpleNode) {
-        M->code.push_back(MaInstruction{OP_NUMBER, {.number = 1}});
+        code->instructions.push_back(MaInstruction{OP_NUMBER, {.number = 1}});
       } else if (each_node->value->FromToComplexNode) {
         const auto step_result =
-            compile_node(M, each_node->value->FromToComplexNode->step);
+            compile_node(M, code, each_node->value->FromToComplexNode->step);
         if (step_result.error) {
           return step_result;
         }
       }
-      M->code.push_back(step_op_i);
-      M->code.push_back(MaInstruction{
+      code->instructions.push_back(step_op_i);
+      code->instructions.push_back(MaInstruction{
           OP_STORE, {.store = new MaStoreInstructionArgs(each_node->name)}});
 
-      M->code.push_back(MaInstruction{OP_JUMP, {.jump = start_index}});
+      code->instructions.push_back(
+          MaInstruction{OP_JUMP, {.jump = start_index}});
 
-      const auto break_index = M->code.size();
-      M->code[jump_out_instruction_index].args.jumpiftrue = break_index;
+      const auto break_index = code->instructions.size();
+      code->instructions[jump_out_instruction_index].args.jumpiftrue =
+          break_index;
 
-      M->code.push_back(MaInstruction{OP_EMPTY});
-      M->code.push_back(MaInstruction{
+      code->instructions.push_back(MaInstruction{OP_EMPTY});
+      code->instructions.push_back(MaInstruction{
           OP_STORE, {.store = new MaStoreInstructionArgs(each_node->name)}});
 
       for (const auto& jump : jumps) {
         if (jump.continue_node) {
-          M->code[jump.continue_node->code_index].args.jump = continue_index;
+          code->instructions[jump.continue_node->code_index].args.jump =
+              continue_index;
         } else if (jump.break_node) {
-          M->code[jump.break_node->code_index].args.jump = break_index;
+          code->instructions[jump.break_node->code_index].args.jump =
+              break_index;
         }
       }
 
@@ -150,70 +155,75 @@ namespace mavka::mama {
       if (each_node->keyName.empty()) {
         M->iterator_count += 1;
         const auto iterator_name = std::to_string(M->iterator_count) + "_п";
-        const auto result = compile_node(M, each_node->value);
+        const auto result = compile_node(M, code, each_node->value);
         if (result.error) {
           return result;
         }
-        M->code.push_back(MaInstruction{
+        code->instructions.push_back(MaInstruction{
             OP_GET, {.get = new MaGetInstructionArgs(MAG_ITERATOR)}});
-        M->code.push_back(MaInstruction{
+        code->instructions.push_back(MaInstruction{
             OP_INITCALL, {.initcall = new MaInitCallInstructionArgs()}});
-        const auto initcall_instruction_index = M->code.size() - 1;
-        M->code[initcall_instruction_index].args.initcall->index =
-            M->code.size() + 1;
-        M->code.push_back(MaInstruction{OP_CALL});
-        M->code.push_back(MaInstruction{
+        const auto initcall_instruction_index = code->instructions.size() - 1;
+        code->instructions[initcall_instruction_index].args.initcall->index =
+            code->instructions.size() + 1;
+        code->instructions.push_back(MaInstruction{OP_CALL});
+        code->instructions.push_back(MaInstruction{
             OP_STORE, {.store = new MaStoreInstructionArgs(iterator_name)}});
 
-        const auto start_index = M->code.size();
+        const auto start_index = code->instructions.size();
 
-        M->code.push_back(MaInstruction{
+        code->instructions.push_back(MaInstruction{
             OP_LOAD, {.load = new MaLoadInstructionArgs(iterator_name)}});
-        M->code.push_back(MaInstruction{
+        code->instructions.push_back(MaInstruction{
             OP_GET, {.get = new MaGetInstructionArgs("завершено")}});
-        M->code.push_back(MaInstruction{OP_JUMP_IF_TRUE});
-        const auto jump_out_instruction_index = M->code.size() - 1;
+        code->instructions.push_back(MaInstruction{OP_JUMP_IF_TRUE});
+        const auto jump_out_instruction_index = code->instructions.size() - 1;
 
-        M->code.push_back(MaInstruction{
+        code->instructions.push_back(MaInstruction{
             OP_LOAD, {.load = new MaLoadInstructionArgs(iterator_name)}});
-        M->code.push_back(MaInstruction{
+        code->instructions.push_back(MaInstruction{
             OP_GET, {.get = new MaGetInstructionArgs("значення")}});
-        M->code.push_back(MaInstruction{
+        code->instructions.push_back(MaInstruction{
             OP_STORE, {.store = new MaStoreInstructionArgs(each_node->name)}});
 
-        const auto body_result = compile_body(M, each_node->body);
+        const auto body_result = compile_body(M, code, each_node->body);
         if (body_result.error) {
           return body_result;
         }
 
-        const auto continue_index = M->code.size();
+        const auto continue_index = code->instructions.size();
 
-        M->code.push_back(MaInstruction{
+        code->instructions.push_back(MaInstruction{
             OP_LOAD, {.load = new MaLoadInstructionArgs(iterator_name)}});
-        M->code.push_back(
+        code->instructions.push_back(
             MaInstruction{OP_GET, {.get = new MaGetInstructionArgs("далі")}});
-        M->code.push_back(MaInstruction{
-            OP_INITCALL,
-            {.initcall = new MaInitCallInstructionArgs(M->code.size() + 2)}});
-        M->code.push_back(MaInstruction{OP_CALL});
+        code->instructions.push_back(
+            MaInstruction{OP_INITCALL,
+                          {.initcall = new MaInitCallInstructionArgs(
+                               code->instructions.size() + 2)}});
+        code->instructions.push_back(MaInstruction{OP_CALL});
 
-        M->code.push_back(MaInstruction{OP_JUMP, {.jump = start_index}});
+        code->instructions.push_back(
+            MaInstruction{OP_JUMP, {.jump = start_index}});
 
-        const auto break_index = M->code.size();
-        M->code[jump_out_instruction_index].args.jumpiftrue = break_index;
+        const auto break_index = code->instructions.size();
+        code->instructions[jump_out_instruction_index].args.jumpiftrue =
+            break_index;
 
-        M->code.push_back(MaInstruction{OP_EMPTY});
-        M->code.push_back(MaInstruction{
+        code->instructions.push_back(MaInstruction{OP_EMPTY});
+        code->instructions.push_back(MaInstruction{
             OP_STORE, {.store = new MaStoreInstructionArgs(each_node->name)}});
-        M->code.push_back(MaInstruction{OP_EMPTY});
-        M->code.push_back(MaInstruction{
+        code->instructions.push_back(MaInstruction{OP_EMPTY});
+        code->instructions.push_back(MaInstruction{
             OP_STORE, {.store = new MaStoreInstructionArgs(iterator_name)}});
 
         for (const auto& jump : jumps) {
           if (jump.continue_node) {
-            M->code[jump.continue_node->code_index].args.jump = continue_index;
+            code->instructions[jump.continue_node->code_index].args.jump =
+                continue_index;
           } else if (jump.break_node) {
-            M->code[jump.break_node->code_index].args.jump = break_index;
+            code->instructions[jump.break_node->code_index].args.jump =
+                break_index;
           }
         }
 

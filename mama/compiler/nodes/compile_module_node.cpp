@@ -3,14 +3,15 @@
 namespace mavka::mama {
   MaCompilationResult compile_module_node(
       MaMa* M,
+      MaCode* code,
       const mavka::ast::ModuleNode* module_node) {
-    M->code.push_back(MaInstruction{
+    code->instructions.push_back(MaInstruction{
         OP_MODULE, {.module = new MaModuleInstructionArgs(module_node->name)}});
-    const auto body_result = compile_body(M, module_node->body);
+    const auto body_result = compile_body(M, code, module_node->body);
     if (body_result.error) {
       return body_result;
     }
-    M->code.push_back(MaInstruction{OP_MODULE_DONE});
+    code->instructions.push_back(MaInstruction{OP_MODULE_DONE});
     return success();
   }
 } // namespace mavka::mama

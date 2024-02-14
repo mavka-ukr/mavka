@@ -3,18 +3,20 @@
 namespace mavka::mama {
   MaCompilationResult compile_assign_by_identifier_node(
       MaMa* M,
+      MaCode* code,
       mavka::ast::AssignByIdentifierNode* assign_by_identifier_node) {
     if (assign_by_identifier_node->op == "=") {
       const auto value_result =
-          compile_node(M, assign_by_identifier_node->value);
+          compile_node(M, code, assign_by_identifier_node->value);
       if (value_result.error) {
         return value_result;
       }
-      const auto result = compile_node(M, assign_by_identifier_node->left);
+      const auto result =
+          compile_node(M, code, assign_by_identifier_node->left);
       if (result.error) {
         return result;
       }
-      M->code.push_back(
+      code->instructions.push_back(
           MaInstruction{OP_SET,
                         {.set = new MaSetInstructionArgs(
                              assign_by_identifier_node->identifier)}});
