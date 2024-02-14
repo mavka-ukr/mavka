@@ -2,10 +2,10 @@
 
 namespace mavka::mama {
   MaCompilationResult compile_continue_node(
-      MaMa* M, MaCode* code,
+      MaMa* M,
       mavka::ast::ContinueNode* continue_node) {
-    code->instructions.push_back(MaInstruction{OP_JUMP, {.jump = 0}});
-    continue_node->code_index = code->instructions.size() - 1;
+    M->code.push_back(MaInstruction{OP_JUMP, {.jump = 0}});
+    continue_node->code_index = M->code.size() - 1;
     return success();
   }
 } // namespace mavka::mama
