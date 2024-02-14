@@ -43,9 +43,9 @@
   MaCell varname{};                                               \
   if ((cell).v.object->get) {                                     \
     varname = (cell).v.object->get(M, (cell).v.object, propname); \
-    if (M->need_to_throw) {                                       \
-      M->need_to_throw = false;                                   \
-      HANDLE_THROW();                                             \
+    if (M->diia_native_throw) {                                   \
+      M->diia_native_throw = false;                               \
+      throw std::runtime_error("shit");                           \
       return;                                                     \
     }                                                             \
   } else {                                                        \
@@ -59,21 +59,22 @@
 #define OBJECT_SET(cell, propname, value)                      \
   if ((cell).v.object->set) {                                  \
     (cell).v.object->set(M, (cell).v.object, propname, value); \
-    if (M->need_to_throw) {                                    \
-      M->need_to_throw = false;                                \
-      HANDLE_THROW();                                          \
+    if (M->diia_native_throw) {                                \
+      M->diia_native_throw = false;                            \
+      throw std::runtime_error("shit");                        \
       return;                                                  \
     }                                                          \
   } else {                                                     \
     (cell).v.object->properties[propname] = value;             \
   }
 
-#define CLEAN_STACK()                           \
-  while (M->stack.size() > frame->stack_size) { \
-    M->stack.pop();                             \
+namespace mavka::mama {
+  inline void restore_stack(MaMa* M, size_t stack_size) {
+    while (M->stack.size() > stack_size) {
+      M->stack.pop();
+    }
   }
 
-namespace mavka::mama {
   void run(MaMa* M, size_t start_index) {
     M->i = start_index;
     auto size = M->code.size();
@@ -114,11 +115,10 @@ namespace mavka::mama {
         }
         case OP_INITCALL: {
           POP_VALUE(cell);
-          if (initcall(M, cell, I.args.initcall->index, nullptr)) {
-            READ_TOP_FRAME();
-            frame->line = I.args.initcall->line;
-            frame->column = I.args.initcall->column;
-            frame->stack_size = M->stack.size();
+          if (initcall(M, cell,
+                       {.return_index = I.args.initcall->return_index,
+                        .line = I.args.initcall->line,
+                        .column = I.args.initcall->column})) {
             break;
           }
           DO_THROW_CANNOT_CALL_CELL(cell);
@@ -126,72 +126,71 @@ namespace mavka::mama {
         case OP_STORE_ARG: {
           POP_VALUE(value);
           READ_TOP_FRAME();
-          frame->args.insert_or_assign(I.args.store->name, value);
+          cf_set_arg(frame, I.args.store->name, value);
           break;
         }
         case OP_CALL: {
           READ_TOP_FRAME();
-          if (frame->diia_native) {
-            frame->diia_native->d.diia_native->fn(
-                M, frame->diia_native->d.diia_native->me, frame->args);
-            const auto result = M->stack.top();
-            CLEAN_STACK();
-            PUSH(result);
-            if (M->need_to_throw) {
-              M->need_to_throw = false;
-              HANDLE_THROW();
-              return;
+          const auto call_data = frame->data.call;
+          if (call_data->type == CF_CALL_TYPE_DIIA) {
+            const auto diia = call_data->o.diia;
+            if (diia->d.diia->me) {
+              frame->scope->set_variable("я", MA_MAKE_OBJECT(diia->d.diia->me));
             }
-            FRAME_POP();
-            if (M->diia_native_redirect) {
-              const auto diia_native_redirect = M->diia_native_redirect;
-              M->diia_native_redirect = nullptr;
-              const auto diia_native_redirect_result =
-                  diia_native_redirect(M, I);
-              if (M->need_to_throw) {
-                M->need_to_throw = false;
-                HANDLE_THROW();
-                return;
-              }
-              if (diia_native_redirect_result) {
-                goto i_start;
-              }
-            }
-            break;
-          }
-          if (frame->diia) {
-            frame->scope = new MaScope(frame->diia->d.diia->scope);
-            if (frame->diia->d.diia->me) {
-              frame->scope->set_variable(
-                  "я",
-                  MaCell{MA_CELL_OBJECT, {.object = frame->diia->d.diia->me}});
-            }
-            for (int i = 0; i < frame->diia->d.diia->params.size(); ++i) {
-              const auto& param = frame->diia->d.diia->params[i];
-              if (frame->args.contains(std::to_string(i))) {
+            for (int i = 0; i < diia->d.diia->params.size(); ++i) {
+              const auto& param = diia->d.diia->params[i];
+              if (call_data->args.contains(std::to_string(i))) {
                 frame->scope->set_variable(param.name,
-                                           frame->args[std::to_string(i)]);
-              } else if (frame->args.contains(param.name)) {
-                frame->scope->set_variable(param.name, frame->args[param.name]);
+                                           call_data->args[std::to_string(i)]);
+              } else if (call_data->args.contains(param.name)) {
+                frame->scope->set_variable(param.name,
+                                           call_data->args[param.name]);
               } else {
                 frame->scope->set_variable(param.name, param.default_value);
               }
             }
-            M->i = frame->diia->d.diia->index;
+            M->i = diia->d.diia->index;
             goto start;
           }
-          if (frame->structure) {
+          if (call_data->type == CF_CALL_TYPE_DIIA_NATIVE) {
+            const auto diia_native = call_data->o.diia_native;
+            diia_native->d.diia_native->fn(M, diia_native->d.diia_native->me,
+                                           call_data->args);
+          check_diia_native_result:
+            if (M->diia_native_throw) {
+              M->diia_native_throw = false;
+              throw std::runtime_error("shit");
+              return;
+            }
+            FRAME_POP();
+            const auto result = M->stack.top();
+            restore_stack(M, call_data->restore_stack_size);
+            PUSH(result);
+            if (M->diia_native_redirect) {
+              const auto diia_native_redirect = M->diia_native_redirect;
+              M->diia_native_redirect = nullptr;
+              const auto diia_native_redirect_result = diia_native_redirect(M);
+              if (diia_native_redirect_result) {
+                I = MaInstruction{OP_CALL};
+                goto i_start;
+              } else {
+                goto check_diia_native_result;
+              }
+            }
+            break;
+          }
+          if (call_data->type == CF_CALL_TYPE_STRUCTURE) {
+            const auto structure = call_data->o.structure;
             const auto object_cell =
-                create_object(M, MA_OBJECT, frame->structure, nullptr);
-            for (int i = 0; i < frame->structure->d.structure->params.size();
-                 ++i) {
-              const auto& param = frame->structure->d.structure->params[i];
-              if (frame->args.contains(std::to_string(i))) {
+                create_object(M, MA_OBJECT, structure, nullptr);
+            for (int i = 0; i < structure->d.structure->params.size(); ++i) {
+              const auto& param = structure->d.structure->params[i];
+              if (call_data->args.contains(std::to_string(i))) {
                 ma_object_set(object_cell.v.object, param.name,
-                              frame->args[std::to_string(i)]);
-              } else if (frame->args.contains(param.name)) {
+                              call_data->args[std::to_string(i)]);
+              } else if (call_data->args.contains(param.name)) {
                 ma_object_set(object_cell.v.object, param.name,
-                              frame->args[param.name]);
+                              call_data->args[param.name]);
               } else {
                 ma_object_set(object_cell.v.object, param.name,
                               param.default_value);
@@ -206,15 +205,15 @@ namespace mavka::mama {
         case OP_RETURN: {
           auto frame = M->call_stack.top();
           FRAME_POP();
-          while (frame->catch_index != 0) {
+          while (frame->type != CF_TYPE_CALL) {
             frame = M->call_stack.top();
             FRAME_POP();
           }
           const auto result = M->stack.top();
-          CLEAN_STACK();
+          restore_stack(M, frame->data.call->restore_stack_size);
           PUSH(result);
           DEBUG_LOG("returning to " + std::to_string(M->i));
-          M->i = frame->return_index;
+          M->i = frame->data.call->return_index;
           goto start;
         }
         case OP_DIIA: {
@@ -341,8 +340,9 @@ namespace mavka::mama {
         }
         case OP_TRY: {
           READ_TOP_FRAME();
-          FRAME_PUSH((new MaCallFrame{
-              .scope = frame->scope, .catch_index = I.args.try_->catch_index}));
+          const auto cf_data =
+              new MaCallFrameTryArgs{.catch_index = I.args.try_->catch_index};
+          FRAME_PUSH(MaCallFrame::try_(frame->scope, cf_data));
           break;
         }
         case OP_TRY_DONE: {
@@ -351,7 +351,7 @@ namespace mavka::mama {
           break;
         }
         case OP_THROW: {
-          HANDLE_THROW();
+          throw std::runtime_error("shit");
           return;
         }
         case OP_LIST: {
@@ -405,17 +405,19 @@ namespace mavka::mama {
           READ_TOP_FRAME();
           const auto module_cell = create_module(M, I.args.module->name);
           const auto module_scope = new MaScope(frame->scope);
-          FRAME_PUSH((new MaCallFrame{.scope = module_scope,
-                                      .module = module_cell.v.object}));
+          const auto cf_data =
+              new MaCallFrameModuleArgs{.module = module_cell.v.object,
+                                        .restore_stack_size = M->stack.size()};
+          FRAME_PUSH(MaCallFrame::module(module_scope, cf_data));
           frame->scope->set_variable(I.args.module->name, module_cell);
           break;
         }
         case OP_GIVE: {
           POP_VALUE(value);
           READ_TOP_FRAME();
-          if (frame->module) {
-            frame->module->properties.insert_or_assign(I.args.give->name,
-                                                       value);
+          if (frame->type == CF_TYPE_MODULE) {
+            frame->data.module->module->properties.insert_or_assign(
+                I.args.give->name, value);
             break;
           }
           DO_THROW_STRING("Неможливо дати \"" + I.args.give->name + "\".")
@@ -495,11 +497,11 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_GREATER);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            frame->args.insert_or_assign("0", right);
+            cf_set_arg(frame, "0", right);
             I = MaInstruction{OP_CALL};
             goto i_start;
           } else {
@@ -524,11 +526,11 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_GREATER_EQUAL);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            frame->args.insert_or_assign("0", right);
+            cf_set_arg(frame, "0", right);
             I = MaInstruction{OP_CALL};
             goto i_start;
           } else {
@@ -553,11 +555,11 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_LESSER);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            frame->args.insert_or_assign("0", right);
+            cf_set_arg(frame, "0", right);
             I = MaInstruction{OP_CALL};
             goto i_start;
           } else {
@@ -582,11 +584,11 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_LESSER_EQUAL);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            frame->args.insert_or_assign("0", right);
+            cf_set_arg(frame, "0", right);
             I = MaInstruction{OP_CALL};
             goto i_start;
           } else {
@@ -599,11 +601,11 @@ namespace mavka::mama {
           POP_VALUE(left);
           if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_CONTAINS);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            frame->args.insert_or_assign("0", right);
+            cf_set_arg(frame, "0", right);
             I = MaInstruction{OP_CALL};
             goto i_start;
           } else {
@@ -674,7 +676,7 @@ namespace mavka::mama {
             PUSH_NUMBER(-value.v.number);
           } else if (IS_OBJECT(value)) {
             OBJECT_GET(value, diia_cell, MAG_NEGATIVE);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
@@ -691,7 +693,7 @@ namespace mavka::mama {
             PUSH_NUMBER(value.v.number * -1);
           } else if (IS_OBJECT(value)) {
             OBJECT_GET(value, diia_cell, MAG_POSITIVE);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
@@ -709,7 +711,7 @@ namespace mavka::mama {
                 static_cast<double>(~static_cast<long>(value.v.number)));
           } else if (IS_OBJECT(value)) {
             OBJECT_GET(value, diia_cell, MAG_BW_NOT);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
@@ -733,11 +735,11 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_ADD);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            frame->args.insert_or_assign("0", right);
+            cf_set_arg(frame, "0", right);
             I = MaInstruction{OP_CALL};
             goto i_start;
           } else {
@@ -758,11 +760,11 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_SUB);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            frame->args.insert_or_assign("0", right);
+            cf_set_arg(frame, "0", right);
             I = MaInstruction{OP_CALL};
             goto i_start;
           } else {
@@ -783,11 +785,11 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_MUL);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            frame->args.insert_or_assign("0", right);
+            cf_set_arg(frame, "0", right);
             I = MaInstruction{OP_CALL};
             goto i_start;
           } else {
@@ -808,11 +810,11 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_DIV);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            frame->args.insert_or_assign("0", right);
+            cf_set_arg(frame, "0", right);
             I = MaInstruction{OP_CALL};
             goto i_start;
           } else {
@@ -833,11 +835,11 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_MOD);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            frame->args.insert_or_assign("0", right);
+            cf_set_arg(frame, "0", right);
             I = MaInstruction{OP_CALL};
             goto i_start;
           } else {
@@ -858,11 +860,11 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_DIVDIV);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            frame->args.insert_or_assign("0", right);
+            cf_set_arg(frame, "0", right);
             I = MaInstruction{OP_CALL};
             goto i_start;
           } else {
@@ -883,11 +885,11 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_POW);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            frame->args.insert_or_assign("0", right);
+            cf_set_arg(frame, "0", right);
             I = MaInstruction{OP_CALL};
             goto i_start;
           } else {
@@ -910,11 +912,11 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_BW_XOR);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            frame->args.insert_or_assign("0", right);
+            cf_set_arg(frame, "0", right);
             I = MaInstruction{OP_CALL};
             goto i_start;
           } else {
@@ -937,11 +939,11 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_BW_OR);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            frame->args.insert_or_assign("0", right);
+            cf_set_arg(frame, "0", right);
             I = MaInstruction{OP_CALL};
             goto i_start;
           } else {
@@ -964,11 +966,11 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_BW_AND);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            frame->args.insert_or_assign("0", right);
+            cf_set_arg(frame, "0", right);
             I = MaInstruction{OP_CALL};
             goto i_start;
           } else {
@@ -991,11 +993,11 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_BW_SHIFT_LEFT);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            frame->args.insert_or_assign("0", right);
+            cf_set_arg(frame, "0", right);
             I = MaInstruction{OP_CALL};
             goto i_start;
           } else {
@@ -1018,11 +1020,11 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_BW_SHIFT_RIGHT);
-            if (!initcall(M, diia_cell, M->i + 1, nullptr)) {
+            if (!initcall(M, diia_cell, {.return_index = M->i + 1})) {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            frame->args.insert_or_assign("0", right);
+            cf_set_arg(frame, "0", right);
             I = MaInstruction{OP_CALL};
             goto i_start;
           } else {
@@ -1095,13 +1097,15 @@ namespace mavka::mama {
         }
         case OP_KEEP_MODULE: {
           READ_TOP_FRAME();
-          const auto current_module_path = frame->module->d.module->name;
-          M->loaded_file_modules.insert_or_assign(current_module_path, frame->module);
+          const auto current_module_path =
+              frame->data.module->module->d.module->name;
+          M->loaded_file_modules.insert_or_assign(current_module_path,
+                                                  frame->data.module->module);
           break;
         }
         case OP_LOAD_MODULE: {
           READ_TOP_FRAME();
-          PUSH(MA_MAKE_OBJECT(frame->module));
+          PUSH(MA_MAKE_OBJECT(frame->data.module->module));
           break;
         }
         case OP_MODULE_LOAD: {

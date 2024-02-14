@@ -63,7 +63,7 @@ namespace mavka::mama {
                                       std::map<std::string, MaCell>& args) {
     if (args.empty()) {
       M->stack.push(create_string(M, "Для дії \"розбити\" потрібен аргумент."));
-      M->need_to_throw = true;
+      M->diia_native_throw = true;
       M->stack.push(MA_MAKE_EMPTY());
       return;
     }
@@ -97,7 +97,7 @@ namespace mavka::mama {
     } else {
       M->stack.push(
           create_string(M, "Для дії \"розбити\" потрібен текстовий аргумент."));
-      M->need_to_throw = true;
+      M->diia_native_throw = true;
     }
   }
 
@@ -107,7 +107,7 @@ namespace mavka::mama {
     if (args.size() != 2) {
       M->stack.push(
           create_string(M, "Для дії \"замінити\" потрібно два аргументи."));
-      M->need_to_throw = true;
+      M->diia_native_throw = true;
       return;
     }
     const auto first = args.begin()->second;
@@ -133,7 +133,7 @@ namespace mavka::mama {
     if (args.empty()) {
       M->stack.push(
           create_string(M, "Для дії \"починається\" потрібен аргумент."));
-      M->need_to_throw = true;
+      M->diia_native_throw = true;
       M->stack.push(MA_MAKE_EMPTY());
       return;
     }
@@ -148,7 +148,7 @@ namespace mavka::mama {
     } else {
       M->stack.push(create_string(
           M, "Для дії \"починається\" потрібен текстовий аргумент."));
-      M->need_to_throw = true;
+      M->diia_native_throw = true;
     }
   }
 
@@ -158,7 +158,7 @@ namespace mavka::mama {
     if (args.empty()) {
       M->stack.push(
           create_string(M, "Для дії \"закінчується\" потрібен аргумент."));
-      M->need_to_throw = true;
+      M->diia_native_throw = true;
       M->stack.push(MA_MAKE_EMPTY());
       return;
     }
@@ -179,7 +179,7 @@ namespace mavka::mama {
     } else {
       M->stack.push(create_string(
           M, "Для дії \"закінчується\" потрібен текстовий аргумент."));
-      M->need_to_throw = true;
+      M->diia_native_throw = true;
     }
   }
 
@@ -223,7 +223,7 @@ namespace mavka::mama {
     }
     M->stack.push(create_string(M, "Неможливо додати до тексту обʼєкт типу \"" +
                                        getcelltypename(cell) + "\"."));
-    M->need_to_throw = true;
+    M->diia_native_throw = true;
   }
 
   void ma_string_mag_contains_diia_native_fn(
@@ -246,7 +246,7 @@ namespace mavka::mama {
     } else {
       M->stack.push(create_string(
           M, "Для дії \"чародія_містить\" потрібен текстовий аргумент."));
-      M->need_to_throw = true;
+      M->diia_native_throw = true;
     }
   }
 
@@ -276,7 +276,7 @@ namespace mavka::mama {
       std::map<std::string, MaCell>& args) {
     M->stack.push(create_string(
         M, "Дія \"" + std::string(MAG_ITERATOR) + "\" тимчасово недоступна."));
-    M->need_to_throw = true;
+    M->diia_native_throw = true;
   }
 
   void ma_string_mag_number_diia_native_fn(
@@ -293,7 +293,7 @@ namespace mavka::mama {
     if (!me->properties.contains(name)) {
       M->stack.push(create_string(
           M, "Властивість \"" + name + "\" не визначено для типу \"текст\"."));
-      M->need_to_throw = true;
+      M->diia_native_throw = true;
       return MA_MAKE_EMPTY();
     }
     return me->properties[name];
@@ -374,21 +374,20 @@ namespace mavka::mama {
         return;
       } else if (cell.v.object->properties.contains(MAG_TEXT)) {
         M->stack.push(cell.v.object->properties[MAG_TEXT]);
-        M->diia_native_redirect = [](MaMa* M, MaInstruction& I) {
+        M->diia_native_redirect = [](MaMa* M) {
           POP_VALUE(mag_number_diia_cell);
-          if (!initcall(M, mag_number_diia_cell, M->i + 1, nullptr)) {
+          if (!initcall(M, mag_number_diia_cell, {.return_index = M->i + 1})) {
             M->stack.push(create_string(M, "Неможливо перетворити на текст."));
-            M->need_to_throw = true;
+            M->diia_native_throw = true;
             return false;
           }
-          I = MaInstruction{OP_CALL};
           return true;
         };
         return;
       }
     }
     M->stack.push(create_string(M, "Неможливо перетворити на текст."));
-    M->need_to_throw = true;
+    M->diia_native_throw = true;
   }
 
   void init_text(MaMa* M) {

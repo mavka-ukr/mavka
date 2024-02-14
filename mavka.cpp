@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
     } while (true);
     return 1;
   } else if (args.size() == 2) {
-    const auto command = args[1];
+    const auto& command = args[1];
     if (command == "допомога") {
       print_help();
       return 0;
@@ -111,8 +111,8 @@ int main(int argc, char** argv) {
 
     const auto& path = args[1];
 
-    M->code.push_back(
-        MaInstruction{OP_TAKE, {.take = new MaTakeInstructionArgs(INT64_MAX,path)}});
+    M->code.push_back(MaInstruction{
+        OP_TAKE, {.take = new MaTakeInstructionArgs(INT64_MAX, path)}});
 
     mavka::mama::run(M);
   } else {

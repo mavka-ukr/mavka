@@ -20,7 +20,6 @@
 #include "../external/parser/parser.h"
 #include "../utils/tools.h"
 #include "MaInstruction.h"
-#include "compiler/ops.h"
 
 // Check windows
 #if _WIN32 || _WIN64
@@ -40,7 +39,7 @@
 #endif
 #endif
 
-#define MAMA_DEBUG 0
+#define MAMA_DEBUG 1
 
 #if MAMA_DEBUG == 0
 #define DEBUG_LOG(value)
@@ -142,37 +141,33 @@ namespace mavka::mama {
   class MaScope;
   class MaCompilationError;
   class MaCompilationResult;
+  class MaString;
+  class MaList;
+  class MaDict;
+  class MaDiia;
+  class MaStructure;
+  class MaDiiaNative;
+  class MaModule;
+  struct MaCell;
+  struct MaObject;
 
+#include "MaCallFrame.h"
 #include "objects.h"
-
-  struct MaCallFrame {
-    MaScope* scope;
-    MaObject* diia;
-    MaObject* diia_native;
-    MaObject* structure;
-    MaObject* module;
-    size_t return_index;
-    std::function<void(MaMa* M)> return_callback;
-    size_t catch_index;
-    std::map<std::string, MaCell> args;
-    size_t line;
-    size_t column;
-    size_t stack_size;
-  };
 
   struct MaMa {
     std::string cwd;
+
     std::vector<MaInstruction> code;
-    size_t iterator_count;
     std::vector<MaCell> constants;
+    MaScope* global_scope;
     std::unordered_map<std::string, MaObject*> loaded_file_modules;
 
-    MaScope* global_scope;
-    std::stack<MaCell> stack;
     size_t i;
+    std::stack<MaCell> stack;
     std::stack<MaCallFrame*> call_stack;
-    bool need_to_throw;
-    std::function<bool(MaMa* M, MaInstruction& I)> diia_native_redirect;
+
+    bool diia_native_throw;
+    std::function<bool(MaMa* M)> diia_native_redirect;
 
     MaObject* object_structure_object;
     MaObject* structure_structure_object;
@@ -183,6 +178,8 @@ namespace mavka::mama {
     MaObject* list_structure_object;
     MaObject* dict_structure_object;
     MaObject* module_structure_object;
+
+    size_t iterator_count;
   };
 
   class MaScope final {
@@ -405,28 +402,60 @@ namespace mavka::mama {
 
   void run(MaMa* M, size_t start_index = 0);
 
-  inline bool initcall(MaMa* M,
-                       MaCell cell,
-                       const size_t return_index,
-                       const std::function<void(MaMa*)>& return_callback) {
+  struct MaInitcallOptions {
+    size_t return_index;
+    size_t line;
+    size_t column;
+  };
+
+  inline void cf_set_arg(MaCallFrame* cf,
+                         const std::string& name,
+                         MaCell value) {
+    switch (cf->type) {
+      case CF_TYPE_CALL:
+        cf->data.call->args[name] = value;
+        break;
+      default:
+        return;
+    }
+  }
+
+  inline bool initcall(MaMa* M, MaCell cell, MaInitcallOptions options) {
     READ_TOP_FRAME();
 
   repeat_op_initcall:
     if (cell.type == MA_CELL_OBJECT) {
       const auto object = cell.v.object;
 
-      if (object->type == MA_OBJECT_DIIA_NATIVE) {
-        FRAME_PUSH(new MaCallFrame({.scope = frame->scope,
-                                    .diia_native = object,
-                                    .return_index = return_index,
-                                    .return_callback = return_callback}));
+      if (object->type == MA_OBJECT_DIIA) {
+        const auto cf_data = new MaCallFrameCallArgs({
+            .type = CF_CALL_TYPE_DIIA,
+            .o =
+                {
+                    .diia = object,
+                },
+            .return_index = options.return_index,
+            .line = options.line,
+            .column = options.column,
+            .restore_stack_size = M->stack.size(),
+        });
+        const auto scope = new MaScope(object->d.diia->scope);
+        FRAME_PUSH(MaCallFrame::call(scope, cf_data));
         return true;
       }
-      if (object->type == MA_OBJECT_DIIA) {
-        FRAME_PUSH(new MaCallFrame({.scope = frame->scope,
-                                    .diia = object,
-                                    .return_index = return_index,
-                                    .return_callback = return_callback}));
+      if (object->type == MA_OBJECT_DIIA_NATIVE) {
+        const auto cf_data = new MaCallFrameCallArgs({
+            .type = CF_CALL_TYPE_DIIA_NATIVE,
+            .o =
+                {
+                    .diia_native = object,
+                },
+            .return_index = options.return_index,
+            .line = options.line,
+            .column = options.column,
+            .restore_stack_size = M->stack.size(),
+        });
+        FRAME_PUSH(MaCallFrame::call(frame->scope, cf_data));
         return true;
       }
       if (object->properties.contains(MAG_CALL)) {
@@ -434,13 +463,21 @@ namespace mavka::mama {
         goto repeat_op_initcall;
       }
       if (object->type == MA_OBJECT_STRUCTURE) {
-        FRAME_PUSH((new MaCallFrame{.scope = frame->scope,
-                                  .structure = object,
-                                  .return_index = return_index,
-                                  .return_callback = return_callback}));
-          return true;
-        }
+        const auto cf_data = new MaCallFrameCallArgs({
+            .type = CF_CALL_TYPE_STRUCTURE,
+            .o =
+                {
+                    .structure = object,
+                },
+            .return_index = options.return_index,
+            .line = options.line,
+            .column = options.column,
+            .restore_stack_size = M->stack.size(),
+        });
+        FRAME_PUSH(MaCallFrame::call(frame->scope, cf_data));
+        return true;
       }
+    }
 
     return false;
   }

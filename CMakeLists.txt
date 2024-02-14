@@ -62,7 +62,6 @@ set(MAVKA_COMPILER_SRC
         mama/compiler/nodes/compile_while_node.cpp
         mama/compiler/nodes/diia.cpp
         mama/compiler/compiler.cpp
-        mama/compiler/ops.h
         mama/objects/MaDict.cpp
         mama/objects/MaDiia.cpp
         mama/objects/MaList.cpp
@@ -73,8 +72,9 @@ set(MAVKA_COMPILER_SRC
         mama/objects/MaString.cpp
         mama/objects/MaStructure.cpp
         mama/interpreter.cpp
+        mama/MaCallFrame.cpp
+        mama/MaInstruction.cpp
         mama/helpers.cpp
-        mama/mama.cpp
         mama/mama.h
         mama/MaScope.cpp
         mama/objects.h
