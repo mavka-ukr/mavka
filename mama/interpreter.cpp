@@ -78,15 +78,15 @@ namespace mavka::mama {
     std::cout << "--- END STACK ---" << std::endl;
   }
 
-  void run(MaMa* M) {
+  void run(MaMa* M, MaCode* code) {
     M->i = 0;
-    const auto size = M->code.size();
+    const auto size = code->instructions.size();
     for (;;) {
     start:
       if (M->i >= size) {
         return;
       }
-      auto I = M->code[M->i];
+      auto I = code->instructions[M->i];
 
     i_start:
       DEBUG_DO(print_instruction_with_index(M->i, I))
