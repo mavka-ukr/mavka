@@ -10,24 +10,18 @@ namespace mavka::mama {
       const std::vector<ast::ParamNode*>& params,
       const std::vector<ast::TypeValueSingleNode*>& return_types,
       const std::vector<ast::ASTSome*>& body) {
-    code->instructions.push_back(MaInstruction{OP_JUMP});
-    const auto jump_out_of_diia_body_instruction_index =
-        code->instructions.size() - 1;
-
-    const auto diia_index = code->instructions.size();
-
-    const auto body_result = compile_body(M, code, body);
+    const auto diia_code = new MaCode();
+    M->diia_bodies.push_back(diia_code);
+    const auto diia_code_index = M->diia_bodies.size() - 1;
+    const auto body_result = compile_body(M, diia_code, body);
     if (body_result.error) {
       return body_result;
     }
-    code->instructions.push_back(MaInstruction{OP_EMPTY});
-    code->instructions.push_back(MaInstruction{OP_RETURN});
+    diia_code->instructions.push_back(MaInstruction{OP_EMPTY});
+    diia_code->instructions.push_back(MaInstruction{OP_RETURN});
+    diia_code->instructions.push_back(MaInstruction{
+        OP_DIIA, {.diia = new MaDiiaInstructionArgs(diia_code_index, name)}});
 
-    code->instructions[jump_out_of_diia_body_instruction_index].args.jump =
-        code->instructions.size();
-
-    code->instructions.push_back(MaInstruction{
-        OP_DIIA, {.diia = new MaDiiaInstructionArgs(diia_index, name)}});
     for (const auto& param : params) {
       if (param->variadic) {
         return error(ast::make_ast_some(param),

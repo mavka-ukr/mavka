@@ -137,6 +137,7 @@
 namespace mavka::mama {
   struct MaMa;
   struct MaCallFrame;
+  struct MaCode;
   struct MaInstruction;
   class MaScope;
   class MaCompilationError;
@@ -166,6 +167,7 @@ namespace mavka::mama {
     std::vector<MaInstruction> code;
     size_t iterator_count;
     std::vector<MaCell> constants;
+    std::vector<MaCode*> diia_bodies;
 
     MaScope* global_scope;
     std::stack<MaCell> stack;
