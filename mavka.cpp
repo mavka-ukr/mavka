@@ -60,9 +60,9 @@ int main(int argc, char** argv) {
   init_dict(M);
   init_structure_2(M);
 
-  const auto frame = new MaCallFrame();
+  const auto frame = new MaFrame();
   frame->scope = S;
-  M->call_stack.push(frame);
+  M->frames.push(frame);
   init_print(M, S);
 
   if (args.size() == 1) {

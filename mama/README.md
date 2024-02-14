@@ -11,8 +11,3 @@
 ## Памʼять
 
 TODO: втілити сміттєсос.
-
-## Примітки
-
-- Список підвказівок: [compiler/ops.h](./compiler/ops.h)
-- Виконувач: [interpreter.cpp](./interpreter.cpp)
