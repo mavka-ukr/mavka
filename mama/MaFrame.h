@@ -1,7 +1,12 @@
 #ifndef MA_FRAME_H
 #define MA_FRAME_H
 
-enum MaFrameType { FRAME_TYPE_CALL, FRAME_TYPE_MODULE, FRAME_TYPE_TRY };
+enum MaFrameType {
+  FRAME_TYPE_ROOT,
+  FRAME_TYPE_CALL,
+  FRAME_TYPE_MODULE,
+  FRAME_TYPE_TRY
+};
 enum MaFrameCallType {
   FRAME_CALL_TYPE_DIIA,
   FRAME_CALL_TYPE_DIIA_NATIVE,
@@ -26,7 +31,7 @@ struct MaArgs {
        : ((args)->positioned.size() > (index) ? (args)->positioned[(index)] \
                                               : (default_value)))
 
-struct MaCallFrameCallArgs {
+struct MaCallFrameCallData {
   MaFrameCallType type;
   union {
     MaObject* diia;
@@ -40,12 +45,12 @@ struct MaCallFrameCallArgs {
   size_t restore_stack_size;
 };
 
-struct MaFrameModuleArgs {
+struct MaFrameModuleData {
   MaObject* module;
   size_t restore_stack_size;
 };
 
-struct MaFrameTryArgs {
+struct MaFrameTryData {
   size_t catch_index;
 };
 
@@ -53,14 +58,14 @@ struct MaFrame {
   MaFrameType type;
   MaScope* scope;
   union {
-    MaCallFrameCallArgs* call;
-    MaFrameModuleArgs* module;
-    MaFrameTryArgs* try_;
+    MaCallFrameCallData* call;
+    MaFrameModuleData* module;
+    MaFrameTryData* try_;
   } data;
 
-  static MaFrame* call(MaScope* scope, MaCallFrameCallArgs* data);
-  static MaFrame* module(MaScope* scope, MaFrameModuleArgs* data);
-  static MaFrame* try_(MaScope* scope, MaFrameTryArgs* data);
+  static MaFrame* call(MaScope* scope, MaCallFrameCallData* data);
+  static MaFrame* module(MaScope* scope, MaFrameModuleData* data);
+  static MaFrame* try_(MaScope* scope, MaFrameTryData* data);
 };
 
 #endif // MA_FRAME_H
