@@ -67,7 +67,7 @@ namespace mavka::mama {
         for (const auto& c : utf8_chars(me->d.string->data)) {
           list.v.object->d.list->data.push_back(create_string(M, c));
         }
-        M->stack.push(list);
+        PUSH(list);
         return;
       }
       std::vector<std::string> result;
@@ -85,9 +85,9 @@ namespace mavka::mama {
       for (const auto& s : result) {
         list.v.object->d.list->data.push_back(create_string(M, s));
       }
-      M->stack.push(list);
+      PUSH(list);
     } else {
-      M->stack.push(
+      PUSH(
           create_string(M, "Для дії \"розбити\" потрібен текстовий аргумент."));
       M->diia_native_throw = true;
     }
@@ -96,14 +96,14 @@ namespace mavka::mama {
   void ma_string_replace_diia_native_fn(MaMa* M, MaObject* me, MaArgs* args) {
     const auto first = FRAME_GET_ARG(args, 0, "старе", MA_MAKE_EMPTY());
     if (!IS_STRING(first)) {
-      M->stack.push(create_string(
+      PUSH(create_string(
           M, "Для дії \"замінити\" перший аргумент повинен бути текстом."));
       M->diia_native_throw = true;
       return;
     }
     const auto second = FRAME_GET_ARG(args, 1, "нове", MA_MAKE_EMPTY());
     if (!IS_STRING(second)) {
-      M->stack.push(create_string(
+      PUSH(create_string(
           M, "Для дії \"замінити\" другий аргумент повинен бути текстом."));
       M->diia_native_throw = true;
       return;
@@ -119,7 +119,7 @@ namespace mavka::mama {
         new_string += substr;
       }
     }
-    M->stack.push(create_string(M, new_string));
+    PUSH(create_string(M, new_string));
   }
 
   void ma_string_starts_with_diia_native_fn(MaMa* M,
@@ -128,13 +128,13 @@ namespace mavka::mama {
     const auto cell = FRAME_GET_ARG(args, 0, "значення", MA_MAKE_EMPTY());
     if (IS_STRING(cell)) {
       if (me->d.string->data.find(cell.v.object->d.string->data) == 0) {
-        M->stack.push(MA_MAKE_YES());
+        PUSH_YES();
         return;
       }
-      M->stack.push(MA_MAKE_NO());
+      PUSH_NO();
       return;
     } else {
-      M->stack.push(create_string(
+      PUSH(create_string(
           M, "Для дії \"починається\" потрібен текстовий аргумент."));
       M->diia_native_throw = true;
     }
@@ -145,55 +145,55 @@ namespace mavka::mama {
     if (IS_STRING(cell)) {
       const auto str = cell.v.object->d.string;
       if (me->d.string->length() < str->length()) {
-        M->stack.push(MA_MAKE_NO());
+        PUSH_NO();
         return;
       }
       if (me->d.string->substr(me->d.string->length() - str->length(),
                                str->length()) == str->data) {
-        M->stack.push(MA_MAKE_YES());
+        PUSH(MA_MAKE_YES());
         return;
       }
-      M->stack.push(MA_MAKE_NO());
+      PUSH_NO();
       return;
     } else {
-      M->stack.push(create_string(
+      PUSH(create_string(
           M, "Для дії \"закінчується\" потрібен текстовий аргумент."));
       M->diia_native_throw = true;
     }
   }
 
   void ma_string_trim_diia_native_fn(MaMa* M, MaObject* me, MaArgs* args) {
-    M->stack.push(create_string(M, internal::tools::trim(me->d.string->data)));
+    PUSH(create_string(M, internal::tools::trim(me->d.string->data)));
   }
 
   void ma_string_mag_add_diia_native_fn(MaMa* M, MaObject* me, MaArgs* args) {
     const auto cell = FRAME_GET_ARG(args, 0, "значення", MA_MAKE_EMPTY());
-    if (cell.type == MA_CELL_EMPTY) {
-      M->stack.push(create_string(M, me->d.string->data + "пусто"));
+    if (IS_EMPTY(cell)) {
+      PUSH(create_string(M, me->d.string->data + "пусто"));
       return;
     }
-    if (cell.type == MA_CELL_NUMBER) {
-      M->stack.push(create_string(
+    if (IS_NUMBER(cell)) {
+      PUSH(create_string(
           M, me->d.string->data + ma_number_to_string(cell.v.number)));
       return;
     }
-    if (cell.type == MA_CELL_YES) {
-      M->stack.push(create_string(M, me->d.string->data + "так"));
+    if (IS_YES(cell)) {
+      PUSH(create_string(M, me->d.string->data + "так"));
       return;
     }
-    if (cell.type == MA_CELL_NO) {
-      M->stack.push(create_string(M, me->d.string->data + "ні"));
+    if (IS_NO(cell)) {
+      PUSH(create_string(M, me->d.string->data + "ні"));
       return;
     }
-    if (cell.type == MA_CELL_OBJECT) {
-      if (cell.v.object->type == MA_OBJECT_STRING) {
-        M->stack.push(create_string(
-            M, me->d.string->data + cell.v.object->d.string->data));
+    if (IS_OBJECT(cell)) {
+      if (IS_OBJECT_STRING(cell)) {
+        PUSH(create_string(M,
+                           me->d.string->data + cell.v.object->d.string->data));
         return;
       }
     }
-    M->stack.push(create_string(M, "Неможливо додати до тексту обʼєкт типу \"" +
-                                       getcelltypename(cell) + "\"."));
+    PUSH(create_string(M, "Неможливо додати до тексту обʼєкт типу \"" +
+                              getcelltypename(cell) + "\"."));
     M->diia_native_throw = true;
   }
 
@@ -204,13 +204,13 @@ namespace mavka::mama {
     if (IS_STRING(cell)) {
       if (me->d.string->data.find(cell.v.object->d.string->data) !=
           std::string::npos) {
-        M->stack.push(MA_MAKE_YES());
+        PUSH(MA_MAKE_YES());
         return;
       }
-      M->stack.push(MA_MAKE_NO());
+      PUSH_NO();
       return;
     } else {
-      M->stack.push(create_string(
+      PUSH(create_string(
           M, "Для дії \"чародія_містить\" потрібен текстовий аргумент."));
       M->diia_native_throw = true;
     }
@@ -220,21 +220,21 @@ namespace mavka::mama {
                                                 MaObject* me,
                                                 MaArgs* args) {
     const auto cell = FRAME_GET_ARG(args, 0, "позиція", MA_MAKE_EMPTY());
-    if (cell.type == MA_CELL_NUMBER) {
+    if (IS_NUMBER(cell)) {
       const auto i = cell.v.number;
       if (i < me->d.string->length()) {
         const auto substr = me->d.string->substr(i, 1);
-        M->stack.push(create_string(M, substr));
+        PUSH(create_string(M, substr));
         return;
       }
     }
-    M->stack.push(MA_MAKE_EMPTY());
+    PUSH_EMPTY();
   }
 
   void ma_string_mag_iterator_diia_native_fn(MaMa* M,
                                              MaObject* me,
                                              MaArgs* args) {
-    M->stack.push(create_string(
+    PUSH(create_string(
         M, "Дія \"" + std::string(MAG_ITERATOR) + "\" тимчасово недоступна."));
     M->diia_native_throw = true;
   }
@@ -242,7 +242,7 @@ namespace mavka::mama {
   void ma_string_mag_number_diia_native_fn(MaMa* M,
                                            MaObject* me,
                                            MaArgs* args) {
-    M->stack.push(MA_MAKE_NUMBER(std::stod(me->d.string->data)));
+    PUSH_NUMBER(std::stod(me->d.string->data));
   }
 
   MaCell ma_string_get_handler(MaMa* M, MaObject* me, const std::string& name) {
@@ -250,7 +250,7 @@ namespace mavka::mama {
       return MA_MAKE_INTEGER(me->d.string->length());
     }
     if (!me->properties.contains(name)) {
-      M->stack.push(create_string(
+      PUSH(create_string(
           M, "Властивість \"" + name + "\" не визначено для типу \"текст\"."));
       M->diia_native_throw = true;
       return MA_MAKE_EMPTY();
@@ -348,7 +348,7 @@ namespace mavka::mama {
         return;
       }
     }
-    M->stack.push(create_string(M, "Неможливо перетворити на текст."));
+    PUSH(create_string(M, "Неможливо перетворити на текст."));
     M->diia_native_throw = true;
   }
 
