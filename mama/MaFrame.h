@@ -15,6 +15,10 @@ struct MaArgs {
   std::vector<MaCell> positioned;
 };
 
+#define FRAME_SET_ARG(f, name, value) \
+  (f)->data.call->args->named.insert({(name), (value)});
+#define FRAME_PUSH_ARG(f, value) \
+  (f)->data.call->args->positioned.push_back((value));
 #define FRAME_GET_ARG(args, index, name, default_value)                     \
   ((args)->type == MA_ARGS_NAMED                                            \
        ? ((args)->named.contains((name)) ? (args)->named[(name)]            \
