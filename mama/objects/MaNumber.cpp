@@ -1,38 +1,41 @@
 #include "../mama.h"
 
 namespace mavka::mama {
-  void number_structure_object_mag_call_diia_native_fn(
-      MaMa* M,
-      MaObject* me,
-      std::map<std::string, MaCell>& args) {
-    if (args.empty()) {
-      M->stack.push(MA_MAKE_NUMBER(0));
+  void number_structure_object_mag_call_diia_native_fn(MaMa* M,
+                                                       MaObject* me,
+                                                       MaArgs* args) {
+    const auto cell = FRAME_GET_ARG(args, 0, "значення", MA_MAKE_EMPTY());
+    if (IS_EMPTY(cell)) {
+      PUSH_NUMBER(0);
       return;
     }
-    const auto cell = args.begin()->second;
-    if (cell.type == MA_CELL_EMPTY) {
-      M->stack.push(MA_MAKE_NUMBER(0));
+    if (IS_NUMBER(cell)) {
+      PUSH(cell);
       return;
-    } else if (cell.type == MA_CELL_NUMBER) {
-      M->stack.push(cell);
+    }
+    if (IS_YES(cell)) {
+      PUSH_NUMBER(1);
       return;
-    } else if (cell.type == MA_CELL_YES) {
-      M->stack.push(MA_MAKE_NUMBER(1));
+    }
+    if (IS_NO(cell)) {
+      PUSH_NUMBER(0);
       return;
-    } else if (cell.type == MA_CELL_NO) {
-      M->stack.push(MA_MAKE_NUMBER(0));
-      return;
-    } else if (cell.type == MA_CELL_OBJECT) {
-      if (cell.v.object->properties.contains(MAG_NUMBER)) {
-        M->stack.push(cell.v.object->properties[MAG_NUMBER]);
-        M->diia_native_redirect = [](MaMa* M) {
+    }
+    if (IS_OBJECT(cell)) {
+      if (OBJECT_HAS(cell.v.object, MAG_NUMBER)) {
+        PUSH(cell.v.object->properties[MAG_NUMBER]);
+        M->diia_native_callback = [](MaMa* M) {
           POP_VALUE(mag_number_diia_cell);
-          if (!initcall(M, mag_number_diia_cell, {.return_index = M->i + 1})) {
+          READ_TOP_FRAME();
+          if (initcall(M, MA_ARGS_POSITIONED, mag_number_diia_cell,
+                       {.return_index = frame->data.call->return_index,
+                        .line = frame->data.call->line,
+                        .column = frame->data.call->column})) {
+            M->diia_native_repeat = true;
+          } else {
             M->stack.push(create_string(M, "Неможливо перетворити на число."));
             M->diia_native_throw = true;
-            return false;
           }
-          return true;
         };
         return;
       }

@@ -17,15 +17,10 @@ namespace mavka::mama {
     return me->properties[name];
   }
 
-  void structure_structure_object_get_structure_diia_native_fn(
-      MaMa* M,
-      MaObject* me,
-      std::map<std::string, MaCell>& args) {
-    if (args.empty()) {
-      M->stack.push(MA_MAKE_EMPTY());
-      return;
-    }
-    const auto cell = args.begin()->second;
+  void structure_structure_object_get_structure_diia_native_fn(MaMa* M,
+                                                               MaObject* me,
+                                                               MaArgs* args) {
+    const auto cell = FRAME_GET_ARG(args, 0, "значення", MA_MAKE_EMPTY());
     if (cell.type == MA_CELL_EMPTY) {
       M->stack.push(MA_MAKE_EMPTY());
       return;

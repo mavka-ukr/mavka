@@ -7,6 +7,20 @@ enum MaFrameCallType {
   FRAME_CALL_TYPE_DIIA_NATIVE,
   FRAME_CALL_TYPE_STRUCTURE
 };
+enum MaArgsType { MA_ARGS_NAMED, MA_ARGS_POSITIONED };
+
+struct MaArgs {
+  MaArgsType type;
+  std::unordered_map<std::string, MaCell> named;
+  std::vector<MaCell> positioned;
+};
+
+#define FRAME_GET_ARG(args, index, name, default_value)                     \
+  ((args)->type == MA_ARGS_NAMED                                            \
+       ? ((args)->named.contains((name)) ? (args)->named[(name)]            \
+                                         : (default_value))                 \
+       : ((args)->positioned.size() > (index) ? (args)->positioned[(index)] \
+                                              : (default_value)))
 
 struct MaCallFrameCallArgs {
   MaFrameCallType type;
@@ -16,7 +30,7 @@ struct MaCallFrameCallArgs {
     MaObject* structure;
   } o;
   size_t return_index;
-  std::map<std::string, MaCell> args;
+  MaArgs* args;
   size_t line;
   size_t column;
   size_t restore_stack_size;

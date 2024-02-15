@@ -156,8 +156,8 @@ namespace mavka::mama {
         }
         M->code.push_back(
             MaInstruction::get(new MaGetInstructionArgs(MAG_ITERATOR)));
-        M->code.push_back(
-            MaInstruction::initcall(new MaInitCallInstructionArgs()));
+        M->code.push_back(MaInstruction::initcall(
+            new MaInitCallInstructionArgs(MA_ARGS_POSITIONED)));
         const auto initcall_instruction_index = M->code.size() - 1;
         M->code[initcall_instruction_index].args.initcall->return_index =
             M->code.size() + 1;
@@ -191,8 +191,8 @@ namespace mavka::mama {
         M->code.push_back(
             MaInstruction::load(new MaLoadInstructionArgs(iterator_name)));
         M->code.push_back(MaInstruction::get(new MaGetInstructionArgs("далі")));
-        M->code.push_back(MaInstruction::initcall(
-            new MaInitCallInstructionArgs(M->code.size() + 2)));
+        M->code.push_back(MaInstruction::initcall(new MaInitCallInstructionArgs(
+            MA_ARGS_POSITIONED, M->code.size() + 2)));
         M->code.push_back(MaInstruction::call());
 
         M->code.push_back(MaInstruction::jump(start_index));

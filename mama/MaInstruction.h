@@ -11,6 +11,7 @@ typedef enum {
   OP_NO,
 
   OP_INITCALL,
+  OP_PUSH_ARG,
   OP_STORE_ARG,
   OP_CALL,
   OP_RETURN,
@@ -87,6 +88,7 @@ struct MaStoreInstructionArgs {
 };
 
 struct MaInitCallInstructionArgs {
+  MaArgsType args_type;
   size_t return_index;
   size_t line;
   size_t column;
@@ -190,6 +192,7 @@ struct MaInstruction {
   static MaInstruction yes();
   static MaInstruction no();
   static MaInstruction initcall(MaInitCallInstructionArgs* args);
+  static MaInstruction pusharg();
   static MaInstruction storearg(MaStoreArgInstructionArgs* args);
   static MaInstruction call();
   static MaInstruction return_();

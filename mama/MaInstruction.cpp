@@ -149,6 +149,9 @@ namespace mavka::mama {
   MaInstruction MaInstruction::initcall(MaInitCallInstructionArgs* args) {
     return MaInstruction{OP_INITCALL, {.initcall = args}};
   }
+  MaInstruction MaInstruction::pusharg() {
+    return MaInstruction{OP_PUSH_ARG};
+  }
   MaInstruction MaInstruction::storearg(MaStoreArgInstructionArgs* args) {
     return MaInstruction{OP_STORE_ARG, {.storearg = args}};
   }
