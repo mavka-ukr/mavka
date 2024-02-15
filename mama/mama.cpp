@@ -2,29 +2,8 @@
 
 #define DO_THROW_STRING(v)              \
   M->stack.push(create_string(M, (v))); \
-  I = MaInstruction::throw_();          \
+  M->ready_to_throw = true;             \
   goto i_start;
-
-#define HANDLE_THROW()                                                  \
-  std::vector<std::pair<size_t, size_t>> trace;                         \
-  while (!M->frames.empty()) {                                          \
-    READ_TOP_FRAME();                                                   \
-    FRAME_POP();                                                        \
-    if (frame->line && frame->column) {                                 \
-      trace.push_back({frame->line, frame->column});                    \
-    }                                                                   \
-    const auto catch_index = frame->catch_index;                        \
-    if (catch_index) {                                                  \
-      trace.clear();                                                    \
-      M->i = catch_index;                                               \
-      goto start;                                                       \
-    }                                                                   \
-  }                                                                     \
-  std::cout << "Не вдалось зловити: " << cell_to_string(M->stack.top()) \
-            << std::endl;                                               \
-  for (const auto& [line, column] : trace) {                            \
-    std::cout << "  " << line << ":" << column << std::endl;            \
-  }
 
 #define DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(varname, cell)                 \
   DO_THROW_STRING("Дію \"" + std::string(varname) +                       \
@@ -45,8 +24,8 @@
     varname = (cell).v.object->get(M, (cell).v.object, propname); \
     if (M->diia_native_throw) {                                   \
       M->diia_native_throw = false;                               \
-      throw std::runtime_error("shit");                           \
-      return;                                                     \
+      M->ready_to_throw = true;                                   \
+      goto i_start;                                               \
     }                                                             \
   } else {                                                        \
     if ((cell).v.object->properties.contains(propname)) {         \
@@ -86,6 +65,30 @@ namespace mavka::mama {
       auto I = M->code[M->i];
 
     i_start:
+      if (M->ready_to_throw) {
+        M->ready_to_throw = false;
+        std::vector<std::pair<size_t, size_t>> trace;
+        while (!M->frames.empty()) {
+          READ_TOP_FRAME();
+          FRAME_POP();
+          if (frame->type == FRAME_TYPE_CALL) {
+            if (frame->data.call->line && frame->data.call->column) {
+              trace.push_back(
+                  {frame->data.call->line, frame->data.call->column});
+            }
+          } else if (frame->type == FRAME_TYPE_TRY) {
+            M->i = frame->data.try_->catch_index;
+            goto start;
+          }
+        }
+        std::cout << "Не вдалось зловити: " << cell_to_string(M->stack.top())
+                  << std::endl;
+        for (const auto& [line, column] : trace) {
+          std::cout << "  " << line << ":" << column << std::endl;
+        }
+        return;
+      }
+
       DEBUG_DO(print_instruction_with_index(M->i, I))
 
       switch (I.op) {
@@ -334,7 +337,7 @@ namespace mavka::mama {
         case OP_TRY: {
           READ_TOP_FRAME();
           const auto cf_data =
-              new MaFrameTryArgs{.catch_index = I.args.try_->catch_index};
+              new MaFrameTryData{.catch_index = I.args.try_->catch_index};
           FRAME_PUSH(MaFrame::try_(frame->scope, cf_data));
           break;
         }
@@ -344,8 +347,8 @@ namespace mavka::mama {
           break;
         }
         case OP_THROW: {
-          throw std::runtime_error("shit");
-          return;
+          M->ready_to_throw = true;
+          goto i_start;
         }
         case OP_LIST: {
           PUSH(create_list(M));
@@ -399,7 +402,7 @@ namespace mavka::mama {
           const auto module_cell = create_module(M, I.args.module->name);
           const auto module_scope = new MaScope(frame->scope);
           const auto cf_data =
-              new MaFrameModuleArgs{.module = module_cell.v.object,
+              new MaFrameModuleData{.module = module_cell.v.object,
                                     .restore_stack_size = M->stack.size()};
           FRAME_PUSH(MaFrame::module(module_scope, cf_data));
           frame->scope->set_variable(I.args.module->name, module_cell);
@@ -1151,7 +1154,7 @@ namespace mavka::mama {
       const auto object = cell.v.object;
 
       if (IS_OBJECT_DIIA(cell)) {
-        const auto cf_data = new MaCallFrameCallArgs({
+        const auto cf_data = new MaCallFrameCallData({
             .type = FRAME_CALL_TYPE_DIIA,
             .o =
                 {
@@ -1168,7 +1171,7 @@ namespace mavka::mama {
         return true;
       }
       if (IS_OBJECT_DIIA_NATIVE(cell)) {
-        const auto cf_data = new MaCallFrameCallArgs({
+        const auto cf_data = new MaCallFrameCallData({
             .type = FRAME_CALL_TYPE_DIIA_NATIVE,
             .o =
                 {
@@ -1188,7 +1191,7 @@ namespace mavka::mama {
         goto repeat;
       }
       if (IS_OBJECT_STRUCTURE(cell)) {
-        const auto cf_data = new MaCallFrameCallArgs({
+        const auto cf_data = new MaCallFrameCallData({
             .type = FRAME_CALL_TYPE_STRUCTURE,
             .o =
                 {

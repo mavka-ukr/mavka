@@ -157,6 +157,7 @@ namespace mavka::mama {
     size_t i;
     std::stack<MaCell> stack;
     std::stack<MaFrame*> frames;
+    bool ready_to_throw;
 
     bool diia_native_throw;
     bool diia_native_repeat;
