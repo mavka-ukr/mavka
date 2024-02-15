@@ -7,10 +7,15 @@
 using namespace mavka::mama;
 
 void init_print(MaMa* M, MaScope* S) {
-  const auto diia_native_fn = [](MaMa* M, MaObject* me,
-                                 std::map<std::string, MaCell>& args) {
-    for (const auto& [key, value] : args) {
-      std::cout << cell_to_string(value) << std::endl;
+  const auto diia_native_fn = [](MaMa* M, MaObject* me, MaArgs* args) {
+    if (args->type == MA_ARGS_POSITIONED) {
+      for (const auto& arg : args->positioned) {
+        std::cout << cell_to_string(arg) << std::endl;
+      }
+    } else {
+      for (const auto& [key, value] : args->named) {
+        std::cout << key << ": " << cell_to_string(value) << std::endl;
+      }
     }
     M->stack.push(MA_MAKE_EMPTY());
     return;

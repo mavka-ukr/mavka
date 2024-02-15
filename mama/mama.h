@@ -94,6 +94,9 @@
 #define IS_OBJECT(cell) ((cell).type == MA_CELL_OBJECT)
 #define IS_OBJECT_STRING(cell) (cell).v.object->type == MA_OBJECT_STRING
 #define IS_OBJECT_STRUCTURE(cell) (cell).v.object->type == MA_OBJECT_STRUCTURE
+#define IS_OBJECT_DIIA(cell) (cell).v.object->type == MA_OBJECT_DIIA
+#define IS_OBJECT_DIIA_NATIVE(cell) \
+  (cell).v.object->type == MA_OBJECT_DIIA_NATIVE
 #define IS_STRING(cell) IS_OBJECT(cell) && IS_OBJECT_STRING(cell)
 
 #define PUSH(cell) M->stack.push(cell)
@@ -115,7 +118,12 @@
 #define FRAME_POP() M->frames.pop();
 #define FRAME_PUSH(frame) M->frames.push(frame);
 
-#define FRAME_SET_ARG(f, name, value) (f)->data.call->args[(name)] = (value);
+#define FRAME_SET_ARG(f, name, value) \
+  (f)->data.call->args->named.insert({(name), (value)});
+#define FRAME_PUSH_ARG(f, value) \
+  (f)->data.call->args->positioned.push_back((value));
+
+#define OBJECT_HAS(object, name) (object)->properties.contains((name))
 
 namespace mavka::mama {
   struct MaMa;
@@ -154,7 +162,8 @@ namespace mavka::mama {
     std::stack<MaFrame*> frames;
 
     bool diia_native_throw;
-    std::function<bool(MaMa* M)> diia_native_redirect;
+    bool diia_native_repeat;
+    std::function<void(MaMa* M)> diia_native_callback;
 
     MaObject* object_structure_object;
     MaObject* structure_structure_object;
@@ -177,7 +186,10 @@ namespace mavka::mama {
     size_t column;
   };
 
-  bool initcall(MaMa* M, MaCell cell, MaInitcallOptions options);
+  bool initcall(MaMa* M,
+                MaArgsType args_type,
+                MaCell cell,
+                MaInitcallOptions options);
 } // namespace mavka::mama
 
 #endif // MAMA_H

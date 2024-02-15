@@ -8,7 +8,14 @@ namespace mavka::mama {
       return result;
     }
 
+    const auto args_type =
+        call_node->args.empty()
+            ? MA_ARGS_POSITIONED
+            : (call_node->args[0]->name.empty() ? MA_ARGS_POSITIONED
+                                                : MA_ARGS_NAMED);
+
     M->code.push_back(MaInstruction::initcall(new MaInitCallInstructionArgs({
+        .args_type = args_type,
         .line = call_node->start_line,
         .column = call_node->start_column,
     })));
@@ -20,8 +27,7 @@ namespace mavka::mama {
         return arg_result;
       }
       if (arg->name.empty()) {
-        M->code.push_back(MaInstruction::storearg(
-            new MaStoreArgInstructionArgs(std::to_string(arg->index))));
+        M->code.push_back(MaInstruction::pusharg());
       } else {
         M->code.push_back(
             MaInstruction::storearg(new MaStoreArgInstructionArgs(arg->name)));

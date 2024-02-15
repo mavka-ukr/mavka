@@ -112,18 +112,18 @@ namespace mavka::mama {
 
   void ma_dict_get_element_diia_native_fn(MaMa* M,
                                           MaObject* list_me,
-                                          std::map<std::string, MaCell>& args) {
-    const auto key = args["0"];
-    M->stack.push(list_me->d.dict->get(key));
+                                          MaArgs* args) {
+    const auto key = FRAME_GET_ARG(args, 0, "ключ", MA_MAKE_EMPTY());
+    PUSH(list_me->d.dict->get(key));
   }
 
   void ma_dict_set_element_diia_native_fn(MaMa* M,
                                           MaObject* list_me,
-                                          std::map<std::string, MaCell>& args) {
-    const auto key = args["0"];
-    const auto value = args["1"];
+                                          MaArgs* args) {
+    const auto key = FRAME_GET_ARG(args, 0, "ключ", MA_MAKE_EMPTY());
+    const auto value = FRAME_GET_ARG(args, 1, "значення", MA_MAKE_EMPTY());
     list_me->d.dict->set(key, value);
-    M->stack.push(MA_MAKE_EMPTY());
+    PUSH(MA_MAKE_EMPTY());
   }
 
   MaCell create_dict(MaMa* M) {

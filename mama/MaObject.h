@@ -91,9 +91,7 @@ class MaStructure final {
   std::vector<MaObject*> methods;
 };
 
-typedef void DiiaNativeFn(MaMa* M,
-                          MaObject* me,
-                          std::map<std::string, MaCell>& args);
+typedef void DiiaNativeFn(MaMa* M, MaObject* me, MaArgs* args);
 
 class MaDiiaNative final {
  public:
