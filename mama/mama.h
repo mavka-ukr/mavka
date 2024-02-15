@@ -118,11 +118,6 @@
 #define FRAME_POP() M->frames.pop();
 #define FRAME_PUSH(frame) M->frames.push(frame);
 
-#define FRAME_SET_ARG(f, name, value) \
-  (f)->data.call->args->named.insert({(name), (value)});
-#define FRAME_PUSH_ARG(f, value) \
-  (f)->data.call->args->positioned.push_back((value));
-
 #define OBJECT_HAS(object, name) (object)->properties.contains((name))
 
 namespace mavka::mama {
