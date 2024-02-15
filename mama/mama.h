@@ -102,8 +102,10 @@
 #define PUSH(cell) M->stack.push(cell)
 #define PUSH_EMPTY() PUSH(MA_MAKE_EMPTY())
 #define PUSH_NUMBER(v) PUSH(MA_MAKE_NUMBER((v)))
+#define PUSH_INTEGER(v) PUSH(MA_MAKE_INTEGER((v)))
 #define PUSH_YES() PUSH(MA_MAKE_YES())
 #define PUSH_NO() PUSH(MA_MAKE_NO())
+#define PUSH_OBJECT(v) PUSH(MA_MAKE_OBJECT((v)))
 
 #define TOP() M->stack.top();
 #define TOP_VALUE(name) const auto name = TOP();

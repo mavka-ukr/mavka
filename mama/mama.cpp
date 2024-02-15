@@ -146,9 +146,9 @@ namespace mavka::mama {
             }
             for (int i = 0; i < diia->d.diia->params.size(); ++i) {
               const auto& param = diia->d.diia->params[i];
-              frame->scope->set_variable(
-                  param.name, FRAME_GET_ARG(call_data->args, i, param.name,
-                                            param.default_value));
+              const auto arg_value = FRAME_GET_ARG(
+                  call_data->args, i, param.name, param.default_value);
+              frame->scope->set_variable(param.name, arg_value);
             }
             M->i = diia->d.diia->index;
             goto start;
@@ -185,9 +185,9 @@ namespace mavka::mama {
                 create_object(M, MA_OBJECT, structure, nullptr);
             for (int i = 0; i < structure->d.structure->params.size(); ++i) {
               const auto& param = structure->d.structure->params[i];
-              ma_object_set(object_cell.v.object, param.name,
-                            FRAME_GET_ARG(call_data->args, i, param.name,
-                                          param.default_value));
+              const auto arg_value = FRAME_GET_ARG(
+                  call_data->args, i, param.name, param.default_value);
+              ma_object_set(object_cell.v.object, param.name, arg_value);
             }
             PUSH(object_cell);
             FRAME_POP();
@@ -303,7 +303,7 @@ namespace mavka::mama {
         }
         case OP_GET: {
           POP_VALUE(cell);
-          if (cell.type == MA_CELL_OBJECT) {
+          if (IS_OBJECT(cell)) {
             OBJECT_GET(cell, value, I.args.get->name);
             PUSH(value);
             break;
@@ -384,8 +384,8 @@ namespace mavka::mama {
         case OP_STRUCT_METHOD: {
           POP_VALUE(diia_cell);
           TOP_VALUE(structure_cell);
-          if (structure_cell.type == MA_CELL_OBJECT) {
-            if (structure_cell.v.object->type == MA_OBJECT_STRUCTURE) {
+          if (IS_OBJECT(structure_cell)) {
+            if (IS_OBJECT_STRUCTURE(structure_cell)) {
               structure_cell.v.object->d.structure->methods.push_back(
                   diia_cell.v.object);
               break;

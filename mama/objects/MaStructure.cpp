@@ -8,9 +8,8 @@ namespace mavka::mama {
       return create_string(M, me->d.structure->name);
     }
     if (!me->properties.contains(name)) {
-      M->stack.push(create_string(
-          M,
-          "Властивість \"" + name + "\" не визначено для типу \"Структура\"."));
+      PUSH(create_string(M, "Властивість \"" + name +
+                                "\" не визначено для типу \"Структура\"."));
       M->diia_native_throw = true;
       return MA_MAKE_EMPTY();
     }
@@ -21,20 +20,19 @@ namespace mavka::mama {
                                                                MaObject* me,
                                                                MaArgs* args) {
     const auto cell = FRAME_GET_ARG(args, 0, "значення", MA_MAKE_EMPTY());
-    if (cell.type == MA_CELL_EMPTY) {
-      M->stack.push(MA_MAKE_EMPTY());
+    if (IS_EMPTY(cell)) {
+      PUSH_EMPTY();
       return;
     }
-    if (cell.type == MA_CELL_NUMBER) {
-      M->stack.push(MA_MAKE_OBJECT(M->number_structure_object));
+    if (IS_NUMBER(cell)) {
+      PUSH_OBJECT(M->number_structure_object);
       return;
     }
-    if (cell.type == MA_CELL_YES || cell.type == MA_CELL_NO) {
-      M->stack.push(MA_MAKE_OBJECT(M->logical_structure_object));
+    if (IS_YES(cell) || IS_NO(cell)) {
+      PUSH_OBJECT(M->logical_structure_object);
       return;
     }
-    M->stack.push(MA_MAKE_OBJECT(cell.v.object->structure));
-    return;
+    PUSH_OBJECT(cell.v.object->structure);
   }
 
   MaCell create_structure(MaMa* M, const std::string& name) {

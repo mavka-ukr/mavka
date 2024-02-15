@@ -123,7 +123,7 @@ namespace mavka::mama {
     const auto key = FRAME_GET_ARG(args, 0, "ключ", MA_MAKE_EMPTY());
     const auto value = FRAME_GET_ARG(args, 1, "значення", MA_MAKE_EMPTY());
     list_me->d.dict->set(key, value);
-    PUSH(MA_MAKE_EMPTY());
+    PUSH_EMPTY();
   }
 
   MaCell create_dict(MaMa* M) {
