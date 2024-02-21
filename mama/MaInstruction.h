@@ -112,6 +112,7 @@ struct MaLoadInstructionArgs {
 struct MaDiiaInstructionArgs {
   MaCode* code;
   std::string name;
+  std::string path;
 };
 
 struct MaDiiaParamInstructionArgs {
@@ -119,16 +120,21 @@ struct MaDiiaParamInstructionArgs {
 };
 
 struct MaTryInstructionArgs {
-  size_t catch_index;
+  MaCode* try_code;
+  MaCode* catch_code;
 };
 
 struct MaTryDoneInstructionArgs {
   size_t index;
 };
 
+struct MaThrowInstructionArgs {
+  size_t line;
+  size_t column;
+};
+
 struct MaStructInstructionArgs {
   std::string name;
-  size_t constructor_index;
 };
 
 struct MaStructParamInstructionArgs {
@@ -176,6 +182,7 @@ struct MaInstruction {
     MaSetInstructionArgs* set;
     MaTryInstructionArgs* try_;
     MaTryDoneInstructionArgs* trydone;
+    MaThrowInstructionArgs* throw_;
     MaDictSetInstructionArgs* dictset;
     MaStructInstructionArgs* struct_;
     MaStructParamInstructionArgs* structparam;
@@ -207,7 +214,7 @@ struct MaInstruction {
   static MaInstruction set(MaSetInstructionArgs* args);
   static MaInstruction try_(MaTryInstructionArgs* args);
   static MaInstruction trydone(MaTryDoneInstructionArgs* args);
-  static MaInstruction throw_();
+  static MaInstruction throw_(MaThrowInstructionArgs* args);
   static MaInstruction list();
   static MaInstruction listappend();
   static MaInstruction dict();

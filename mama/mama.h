@@ -118,7 +118,11 @@
 
 #define READ_TOP_FRAME() const auto frame = M->frames.top();
 #define FRAME_POP() M->frames.pop();
+#define FRAME_TOP() M->frames.top();
 #define FRAME_PUSH(frame) M->frames.push(frame);
+#define POP_FRAME(name)    \
+  const auto name = FRAME_TOP(); \
+  FRAME_POP();
 
 #define OBJECT_HAS(object, name) (object)->properties.contains((name))
 
@@ -139,6 +143,7 @@ namespace mavka::mama {
   struct MaCell;
   struct MaObject;
   struct MaCode;
+  class MaException;
 
 #include "MaFrame.h"
 #include "MaInstruction.h"
@@ -146,6 +151,8 @@ namespace mavka::mama {
 #include "MaScope.h"
 #include "compiler/compiler.h"
 #include "helpers.h"
+
+  class MaException : public std::exception {};
 
   struct MaCode {
     std::vector<MaInstruction> instructions;
@@ -161,11 +168,6 @@ namespace mavka::mama {
 
     std::stack<MaCell> stack;
     std::stack<MaFrame*> frames;
-    bool ready_to_throw;
-
-    bool diia_native_throw;
-    bool diia_native_repeat;
-    std::function<void(MaMa* M)> diia_native_callback;
 
     MaObject* object_structure_object;
     MaObject* structure_structure_object;
@@ -181,6 +183,7 @@ namespace mavka::mama {
   };
 
   void restore_stack(MaMa* M, size_t stack_size);
+  void restore_frames(MaMa* M, size_t frames_size);
   void run(MaMa* M, MaCode* code, size_t start_index = 0);
 
   struct MaInitcallOptions {
@@ -188,10 +191,16 @@ namespace mavka::mama {
     size_t column;
   };
 
+  void ma_call(MaMa* M, MaCell cell, const std::vector<MaCell>& args);
+  void ma_call_named(MaMa* M,
+                     MaCell cell,
+                     const std::unordered_map<std::string, MaCell>& args);
+
   bool initcall(MaMa* M,
                 MaArgsType args_type,
                 MaCell cell,
                 MaInitcallOptions options);
+  void docall(MaMa* M);
 } // namespace mavka::mama
 
 #endif // MAMA_H

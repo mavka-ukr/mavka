@@ -116,8 +116,11 @@ namespace mavka::mama {
     std::cout << "unknown" << std::endl;
   }
 
-  void print_instruction_with_index(int index, MaInstruction instruction) {
-    std::cout << index << ": " << getopname(instruction.op) << " [";
+  void print_instruction_with_index(MaCode* code,
+                                    int index,
+                                    MaInstruction instruction) {
+    std::cout << code << "[" << index << "]: " << getopname(instruction.op)
+              << " [";
     if (instruction.op == OP_STORE) {
       std::cout << instruction.args.store->name;
     }
@@ -147,7 +150,7 @@ namespace mavka::mama {
   void print_code(MaCode* code) {
     for (int i = 0; i < code->instructions.size(); ++i) {
       const auto& instruction = code->instructions[i];
-      print_instruction_with_index(i, instruction);
+      print_instruction_with_index(code, i, instruction);
     }
   }
 } // namespace mavka::mama

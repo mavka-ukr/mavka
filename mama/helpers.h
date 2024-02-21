@@ -11,7 +11,9 @@ std::string cell_to_string(MaCell cell, int depth = 0);
 
 void print_cell(MaCell* cell);
 
-void print_instruction_with_index(int index, MaInstruction instruction);
+void print_instruction_with_index(MaCode* code,
+                                  int index,
+                                  MaInstruction instruction);
 
 void print_code(MaCode* code);
 

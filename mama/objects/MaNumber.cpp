@@ -23,24 +23,12 @@ namespace mavka::mama {
     }
     if (IS_OBJECT(cell)) {
       if (OBJECT_HAS(cell.v.object, MAG_NUMBER)) {
-        PUSH(cell.v.object->properties[MAG_NUMBER]);
-        M->diia_native_callback = [](MaMa* M) {
-          POP_VALUE(mag_number_diia_cell);
-          READ_TOP_FRAME();
-          if (initcall(M, MA_ARGS_POSITIONED, mag_number_diia_cell,
-                       {.line = frame->data.call->line,
-                        .column = frame->data.call->column})) {
-            M->diia_native_repeat = true;
-          } else {
-            M->stack.push(create_string(M, "Неможливо перетворити на число."));
-            M->diia_native_throw = true;
-          }
-        };
+        ma_call(M, cell.v.object->properties[MAG_NUMBER], {});
         return;
       }
     }
     M->stack.push(create_string(M, "Неможливо перетворити на число."));
-    M->diia_native_throw = true;
+    throw MaException();
   }
 
   void init_number(MaMa* M) {
