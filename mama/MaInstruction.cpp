@@ -123,6 +123,10 @@ namespace mavka::mama {
         return "OP_TAKE";
       case OP_LOAD_MODULE:
         return "OP_LOAD_MODULE";
+      case OP_MODULE_LOAD:
+        return "OP_MODULE_LOAD";
+      case OP_PUSH_ARG:
+        return "OP_PUSH_ARG";
       default:
         break;
     }
@@ -194,8 +198,8 @@ namespace mavka::mama {
   MaInstruction MaInstruction::trydone(MaTryDoneInstructionArgs* args) {
     return MaInstruction{OP_TRY_DONE, {.trydone = args}};
   }
-  MaInstruction MaInstruction::throw_() {
-    return MaInstruction{OP_THROW};
+  MaInstruction MaInstruction::throw_(MaThrowInstructionArgs* args) {
+    return MaInstruction{OP_THROW, {.throw_ = args}};
   }
   MaInstruction MaInstruction::list() {
     return MaInstruction{OP_LIST};

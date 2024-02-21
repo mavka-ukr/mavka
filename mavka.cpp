@@ -119,13 +119,37 @@ int main(int argc, char** argv) {
 
     const auto& path = args[1];
 
-    mavka::mama::run(
-        M,
-        new MaCode(
-            {.instructions = {MaInstruction{
-                 OP_TAKE,
-                 {.take = new MaTakeInstructionArgs(INT64_MAX, path)}}}}),
-        0);
+    try {
+      mavka::mama::run(
+          M,
+          new MaCode(
+              {.instructions = {MaInstruction{
+                   OP_TAKE,
+                   {.take = new MaTakeInstructionArgs(INT64_MAX, path)}}}}),
+          0);
+    } catch (const MaException& e) {
+      std::vector<std::string> trace;
+      while (!M->frames.empty()) {
+        POP_FRAME(trace_frame);
+        if (trace_frame->type == FRAME_TYPE_CALL) {
+          if (trace_frame->data.call->line || trace_frame->data.call->column) {
+            std::string path;
+            if (trace_frame->data.call->type == FRAME_CALL_TYPE_DIIA) {
+              path = trace_frame->data.call->o.diia->d.diia->path;
+            }
+            const auto line = std::to_string(trace_frame->data.call->line);
+            const auto column = std::to_string(trace_frame->data.call->column);
+            trace.push_back(path + ":" + line + ":" + column);
+          }
+        }
+      }
+      for (const auto& line : trace) {
+        std::cout << line << std::endl;
+      }
+      std::cout << "Не вдалось зловити: " << cell_to_string(M->stack.top())
+                << std::endl;
+      return 1;
+    }
   } else {
     print_help();
     return 1;

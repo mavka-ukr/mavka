@@ -5,7 +5,6 @@ enum MaFrameType {
   FRAME_TYPE_ROOT,
   FRAME_TYPE_CALL,
   FRAME_TYPE_MODULE,
-  FRAME_TYPE_TRY
 };
 enum MaFrameCallType {
   FRAME_CALL_TYPE_DIIA,
@@ -48,22 +47,16 @@ struct MaFrameModuleData {
   MaObject* module;
 };
 
-struct MaFrameTryData {
-  size_t catch_index;
-};
-
 struct MaFrame {
   MaFrameType type;
   MaScope* scope;
   union {
     MaCallFrameCallData* call;
     MaFrameModuleData* module;
-    MaFrameTryData* try_;
   } data;
 
   static MaFrame* call(MaScope* scope, MaCallFrameCallData* data);
   static MaFrame* module(MaScope* scope, MaFrameModuleData* data);
-  static MaFrame* try_(MaScope* scope, MaFrameTryData* data);
 };
 
 #endif // MA_FRAME_H

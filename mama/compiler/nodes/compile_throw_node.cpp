@@ -9,7 +9,9 @@ namespace mavka::mama {
     if (result.error) {
       return result;
     }
-    code->instructions.push_back(MaInstruction::throw_());
+    code->instructions.push_back(MaInstruction::throw_(
+        new MaThrowInstructionArgs({.line = throw_node->start_line,
+                                    .column = throw_node->start_column})));
     return success();
   }
 } // namespace mavka::mama

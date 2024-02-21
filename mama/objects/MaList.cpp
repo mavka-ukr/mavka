@@ -156,8 +156,7 @@ namespace mavka::mama {
     if (!me->properties.contains(name)) {
       M->stack.push(create_string(
           M, "Властивість \"" + name + "\" не визначено для типу \"список\"."));
-      M->diia_native_throw = true;
-      return MA_MAKE_EMPTY();
+      throw MaException();
     }
     return me->properties[name];
   }
