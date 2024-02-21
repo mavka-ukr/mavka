@@ -11,6 +11,7 @@ namespace mavka::mama {
       const std::vector<ast::TypeValueSingleNode*>& return_types,
       const std::vector<ast::ASTSome*>& body) {
     const auto diia_code = new MaCode();
+    diia_code->path = code->path;
     const auto body_result = compile_body(M, diia_code, body);
     if (body_result.error) {
       return body_result;

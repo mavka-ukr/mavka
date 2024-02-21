@@ -89,6 +89,7 @@ struct MaStoreInstructionArgs {
 
 struct MaInitCallInstructionArgs {
   MaArgsType args_type;
+  std::string path;
   size_t line;
   size_t column;
 };

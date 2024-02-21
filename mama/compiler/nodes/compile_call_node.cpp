@@ -18,6 +18,7 @@ namespace mavka::mama {
     code->instructions.push_back(
         MaInstruction::initcall(new MaInitCallInstructionArgs({
             .args_type = args_type,
+            .path = code->path,
             .line = call_node->start_line,
             .column = call_node->start_column,
         })));

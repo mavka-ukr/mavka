@@ -38,6 +38,7 @@ struct MaCallFrameCallData {
     MaObject* structure;
   } o;
   MaArgs* args;
+  std::string path;
   size_t line;
   size_t column;
   size_t restore_stack_size;
