@@ -144,7 +144,7 @@ namespace mavka::mama {
     std::cout << "]" << std::endl;
   }
 
-  void print_code(MaMa* M) {
+  void print_code(MaCode* code) {
     for (int i = 0; i < code->instructions.size(); ++i) {
       const auto& instruction = code->instructions[i];
       print_instruction_with_index(i, instruction);

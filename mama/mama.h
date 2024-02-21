@@ -180,6 +180,7 @@ namespace mavka::mama {
     size_t iterator_count;
   };
 
+  void restore_stack(MaMa* M, size_t stack_size);
   void run(MaMa* M, MaCode* code, size_t start_index = 0);
 
   struct MaInitcallOptions {

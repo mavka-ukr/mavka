@@ -99,8 +99,11 @@ int main(int argc, char** argv) {
                   << std::endl;
         continue;
       }
+      const auto restore_stack_size = M->stack.size();
       mavka::mama::run(M, line_code, 0);
-      std::cout << cell_to_string(M->stack.top()) << std::endl;
+      const auto result = M->stack.top();
+      mavka::mama::restore_stack(M, restore_stack_size);
+      std::cout << cell_to_string(result) << std::endl;
     } while (true);
     return 1;
   } else if (args.size() == 2) {

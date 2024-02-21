@@ -48,7 +48,7 @@
   }
 
 namespace mavka::mama {
-  inline void restore_stack(MaMa* M, size_t stack_size) {
+  void restore_stack(MaMa* M, size_t stack_size) {
     while (M->stack.size() > stack_size) {
       M->stack.pop();
     }
@@ -139,7 +139,6 @@ namespace mavka::mama {
           break;
         }
         case OP_CALL: {
-        repeat_op_call:
           READ_TOP_FRAME();
           const auto call_data = frame->data.call;
           if (call_data->type == FRAME_CALL_TYPE_DIIA) {
@@ -154,7 +153,10 @@ namespace mavka::mama {
               frame->scope->set_variable(param.name, arg_value);
             }
             run(M, diia->d.diia->code, 0);
-            break;
+            FRAME_POP();
+            const auto result = M->stack.top();
+            restore_stack(M, call_data->restore_stack_size);
+            PUSH(result);
           }
           if (call_data->type == FRAME_CALL_TYPE_DIIA_NATIVE) {
             const auto diia_native = call_data->o.diia_native;
@@ -197,7 +199,7 @@ namespace mavka::mama {
         case OP_DIIA: {
           READ_TOP_FRAME();
           const auto diia_cell =
-              create_diia(M, I.args.diia->name, I.args.diia->index, nullptr);
+              create_diia(M, I.args.diia->name, I.args.diia->code, nullptr);
           diia_cell.v.object->d.diia->scope = frame->scope;
           PUSH(diia_cell);
           break;
@@ -479,7 +481,8 @@ namespace mavka::mama {
             }
             READ_TOP_FRAME();
             FRAME_PUSH_ARG(frame, right);
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_GREATER, left);
           }
@@ -507,7 +510,8 @@ namespace mavka::mama {
             }
             READ_TOP_FRAME();
             FRAME_PUSH_ARG(frame, right);
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_GREATER_EQUAL, left);
           }
@@ -535,7 +539,8 @@ namespace mavka::mama {
             }
             READ_TOP_FRAME();
             FRAME_PUSH_ARG(frame, right);
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_LESSER, left);
           }
@@ -563,7 +568,8 @@ namespace mavka::mama {
             }
             READ_TOP_FRAME();
             FRAME_PUSH_ARG(frame, right);
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_LESSER_EQUAL, left);
           }
@@ -579,7 +585,8 @@ namespace mavka::mama {
             }
             READ_TOP_FRAME();
             FRAME_PUSH_ARG(frame, right);
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_CONTAINS, left);
           }
@@ -652,7 +659,8 @@ namespace mavka::mama {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_NEGATIVE, value);
           }
@@ -668,7 +676,8 @@ namespace mavka::mama {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_POSITIVE, value);
           }
@@ -685,7 +694,8 @@ namespace mavka::mama {
               DO_THROW_CANNOT_CALL_CELL(diia_cell);
             }
             READ_TOP_FRAME();
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_NOT, value);
           }
@@ -709,7 +719,8 @@ namespace mavka::mama {
             }
             READ_TOP_FRAME();
             FRAME_PUSH_ARG(frame, right);
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_ADD, left);
           }
@@ -733,7 +744,8 @@ namespace mavka::mama {
             }
             READ_TOP_FRAME();
             FRAME_PUSH_ARG(frame, right);
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_SUB, left);
           }
@@ -757,7 +769,8 @@ namespace mavka::mama {
             }
             READ_TOP_FRAME();
             FRAME_PUSH_ARG(frame, right);
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_MUL, left);
           }
@@ -781,7 +794,8 @@ namespace mavka::mama {
             }
             READ_TOP_FRAME();
             FRAME_PUSH_ARG(frame, right);
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_DIV, left);
           }
@@ -805,7 +819,8 @@ namespace mavka::mama {
             }
             READ_TOP_FRAME();
             FRAME_PUSH_ARG(frame, right);
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_MOD, left);
           }
@@ -829,7 +844,8 @@ namespace mavka::mama {
             }
             READ_TOP_FRAME();
             FRAME_PUSH_ARG(frame, right);
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_DIVDIV, left);
           }
@@ -853,7 +869,8 @@ namespace mavka::mama {
             }
             READ_TOP_FRAME();
             FRAME_PUSH_ARG(frame, right);
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_POW, left);
           }
@@ -879,7 +896,8 @@ namespace mavka::mama {
             }
             READ_TOP_FRAME();
             FRAME_PUSH_ARG(frame, right);
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_XOR, left);
           }
@@ -905,7 +923,8 @@ namespace mavka::mama {
             }
             READ_TOP_FRAME();
             FRAME_PUSH_ARG(frame, right);
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_OR, left);
           }
@@ -931,7 +950,8 @@ namespace mavka::mama {
             }
             READ_TOP_FRAME();
             FRAME_PUSH_ARG(frame, right);
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_AND, left);
           }
@@ -957,7 +977,8 @@ namespace mavka::mama {
             }
             READ_TOP_FRAME();
             FRAME_PUSH_ARG(frame, right);
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_SHIFT_LEFT, left);
           }
@@ -983,7 +1004,8 @@ namespace mavka::mama {
             }
             READ_TOP_FRAME();
             FRAME_PUSH_ARG(frame, right);
-            run(M, diia_cell.v.object->d.diia->code, 0);
+            I = MaInstruction::call();
+            goto i_start;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_SHIFT_RIGHT, left);
           }
