@@ -3,13 +3,14 @@
 namespace mavka::mama {
   MaCompilationResult compile_assign_simple_node(
       MaMa* M,
+      MaCode* code,
       mavka::ast::AssignSimpleNode* assign_simple_node) {
     if (assign_simple_node->op == "=") {
-      const auto result = compile_node(M, assign_simple_node->value);
+      const auto result = compile_node(M, code, assign_simple_node->value);
       if (result.error) {
         return result;
       }
-      M->code.push_back(MaInstruction::store(
+      code->instructions.push_back(MaInstruction::store(
           new MaStoreInstructionArgs(assign_simple_node->name)));
       return success();
     }

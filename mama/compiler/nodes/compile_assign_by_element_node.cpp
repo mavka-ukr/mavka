@@ -3,6 +3,7 @@
 namespace mavka::mama {
   MaCompilationResult compile_assign_by_element_node(
       MaMa* M,
+      MaCode* code,
       mavka::ast::AssignByElementNode* assign_by_element_node) {
     if (assign_by_element_node->op == "=") {
       const auto call_node = new mavka::ast::CallNode();
@@ -18,7 +19,7 @@ namespace mavka::mama {
       value_arg_node->index = 1;
       value_arg_node->value = assign_by_element_node->value;
       call_node->args = {element_arg_node, value_arg_node};
-      return compile_call_node(M, call_node);
+      return compile_call_node(M, code, call_node);
     }
     return error(mavka::ast::make_ast_some(assign_by_element_node),
                  "Вказівка \"" + assign_by_element_node->op +

@@ -3,29 +3,30 @@
 namespace mavka::mama {
   MaCompilationResult compile_arithmetic_node(
       MaMa* M,
+      MaCode* code,
       const mavka::ast::ArithmeticNode* arithmetic_node) {
-    const auto left = compile_node(M, arithmetic_node->left);
+    const auto left = compile_node(M, code, arithmetic_node->left);
     if (left.error) {
       return left;
     }
-    const auto right = compile_node(M, arithmetic_node->right);
+    const auto right = compile_node(M, code, arithmetic_node->right);
     if (right.error) {
       return right;
     }
     if (arithmetic_node->op == "+") {
-      M->code.push_back(MaInstruction::add());
+      code->instructions.push_back(MaInstruction::add());
     } else if (arithmetic_node->op == "-") {
-      M->code.push_back(MaInstruction::sub());
+      code->instructions.push_back(MaInstruction::sub());
     } else if (arithmetic_node->op == "*") {
-      M->code.push_back(MaInstruction::mul());
+      code->instructions.push_back(MaInstruction::mul());
     } else if (arithmetic_node->op == "/") {
-      M->code.push_back(MaInstruction::div());
+      code->instructions.push_back(MaInstruction::div());
     } else if (arithmetic_node->op == "%") {
-      M->code.push_back(MaInstruction::mod());
+      code->instructions.push_back(MaInstruction::mod());
     } else if (arithmetic_node->op == "//") {
-      M->code.push_back(MaInstruction::divdiv());
+      code->instructions.push_back(MaInstruction::divdiv());
     } else if (arithmetic_node->op == "**") {
-      M->code.push_back(MaInstruction::pop());
+      code->instructions.push_back(MaInstruction::pop());
     }
     return success();
   }

@@ -3,12 +3,13 @@
 namespace mavka::mama {
   MaCompilationResult compile_negative_node(
       MaMa* M,
+      MaCode* code,
       const mavka::ast::NegativeNode* negative_node) {
-    const auto result = compile_node(M, negative_node->value);
+    const auto result = compile_node(M, code, negative_node->value);
     if (result.error) {
       return result;
     }
-    M->code.push_back(MaInstruction::negative());
+    code->instructions.push_back(MaInstruction::negative());
     return success();
   }
 } // namespace mavka::mama

@@ -3,14 +3,15 @@
 namespace mavka::mama {
   MaCompilationResult compile_array_node(
       MaMa* M,
+      MaCode* code,
       const mavka::ast::ArrayNode* array_node) {
-    M->code.push_back(MaInstruction::list());
+    code->instructions.push_back(MaInstruction::list());
     for (auto& element : array_node->elements) {
-      const auto result = compile_node(M, element);
+      const auto result = compile_node(M, code, element);
       if (result.error) {
         return result;
       }
-      M->code.push_back(MaInstruction::listappend());
+      code->instructions.push_back(MaInstruction::listappend());
     }
     return success();
   }
