@@ -110,7 +110,7 @@ struct MaLoadInstructionArgs {
 };
 
 struct MaDiiaInstructionArgs {
-  int index;
+  MaCode* code;
   std::string name;
 };
 
@@ -140,6 +140,7 @@ struct MaStoreArgInstructionArgs {
 };
 
 struct MaModuleInstructionArgs {
+  MaCode* code;
   std::string name;
 };
 

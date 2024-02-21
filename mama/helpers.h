@@ -13,6 +13,6 @@ void print_cell(MaCell* cell);
 
 void print_instruction_with_index(int index, MaInstruction instruction);
 
-void print_code(MaMa* M);
+void print_code(MaCode* code);
 
 #endif // HELPERS_H

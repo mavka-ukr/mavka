@@ -159,9 +159,6 @@ namespace mavka::mama {
             MaInstruction::get(new MaGetInstructionArgs(MAG_ITERATOR)));
         code->instructions.push_back(MaInstruction::initcall(
             new MaInitCallInstructionArgs(MA_ARGS_POSITIONED)));
-        const auto initcall_instruction_index = code->instructions.size() - 1;
-        code->instructions[initcall_instruction_index].args.initcall->return_index =
-            code->instructions.size() + 1;
         code->instructions.push_back(MaInstruction::call());
         code->instructions.push_back(
             MaInstruction::store(new MaStoreInstructionArgs(iterator_name)));

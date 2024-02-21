@@ -10,22 +10,16 @@ namespace mavka::mama {
       const std::vector<ast::ParamNode*>& params,
       const std::vector<ast::TypeValueSingleNode*>& return_types,
       const std::vector<ast::ASTSome*>& body) {
-    code->instructions.push_back(MaInstruction::jump(0));
-    const auto jump_out_of_diia_body_instruction_index = code->instructions.size() - 1;
-
-    const auto diia_index = code->instructions.size();
-
-    const auto body_result = compile_body(M, code, body);
+    const auto diia_code = new MaCode();
+    const auto body_result = compile_body(M, diia_code, body);
     if (body_result.error) {
       return body_result;
     }
-    code->instructions.push_back(MaInstruction::empty());
-    code->instructions.push_back(MaInstruction::return_());
-
-    code->instructions[jump_out_of_diia_body_instruction_index].args.jump = code->instructions.size();
+    diia_code->instructions.push_back(MaInstruction::empty());
+    diia_code->instructions.push_back(MaInstruction::return_());
 
     code->instructions.push_back(
-        MaInstruction::diia(new MaDiiaInstructionArgs(diia_index, name)));
+        MaInstruction::diia(new MaDiiaInstructionArgs(diia_code, name)));
     for (const auto& param : params) {
       if (param->variadic) {
         return error(ast::make_ast_some(param),
