@@ -132,7 +132,8 @@ namespace mavka::mama {
       code->instructions.push_back(MaInstruction::jump(start_index));
 
       const auto break_index = code->instructions.size();
-      code->instructions[jump_out_instruction_index].args.jumpiftrue = break_index;
+      code->instructions[jump_out_instruction_index].args.jumpiftrue =
+          break_index;
 
       code->instructions.push_back(MaInstruction::empty());
       code->instructions.push_back(
@@ -140,9 +141,11 @@ namespace mavka::mama {
 
       for (const auto& jump : jumps) {
         if (jump.continue_node) {
-          code->instructions[jump.continue_node->code_index].args.jump = continue_index;
+          code->instructions[jump.continue_node->code_index].args.jump =
+              continue_index;
         } else if (jump.break_node) {
-          code->instructions[jump.break_node->code_index].args.jump = break_index;
+          code->instructions[jump.break_node->code_index].args.jump =
+              break_index;
         }
       }
 
@@ -188,15 +191,17 @@ namespace mavka::mama {
 
         code->instructions.push_back(
             MaInstruction::load(new MaLoadInstructionArgs(iterator_name)));
-        code->instructions.push_back(MaInstruction::get(new MaGetInstructionArgs("далі")));
-        code->instructions.push_back(MaInstruction::initcall(new MaInitCallInstructionArgs(
-            MA_ARGS_POSITIONED, code->instructions.size() + 2)));
+        code->instructions.push_back(
+            MaInstruction::get(new MaGetInstructionArgs("далі")));
+        code->instructions.push_back(MaInstruction::initcall(
+            new MaInitCallInstructionArgs(MA_ARGS_POSITIONED)));
         code->instructions.push_back(MaInstruction::call());
 
         code->instructions.push_back(MaInstruction::jump(start_index));
 
         const auto break_index = code->instructions.size();
-        code->instructions[jump_out_instruction_index].args.jumpiftrue = break_index;
+        code->instructions[jump_out_instruction_index].args.jumpiftrue =
+            break_index;
 
         code->instructions.push_back(MaInstruction::empty());
         code->instructions.push_back(
@@ -207,9 +212,11 @@ namespace mavka::mama {
 
         for (const auto& jump : jumps) {
           if (jump.continue_node) {
-            code->instructions[jump.continue_node->code_index].args.jump = continue_index;
+            code->instructions[jump.continue_node->code_index].args.jump =
+                continue_index;
           } else if (jump.break_node) {
-            code->instructions[jump.break_node->code_index].args.jump = break_index;
+            code->instructions[jump.break_node->code_index].args.jump =
+                break_index;
           }
         }
 

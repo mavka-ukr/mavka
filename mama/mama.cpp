@@ -99,7 +99,8 @@ namespace mavka::mama {
         case OP_INITCALL: {
           POP_VALUE(cell);
           if (initcall(M, I.args.initcall->args_type, cell,
-                       {.line = I.args.initcall->line,
+                       {.path = I.args.initcall->path,
+                        .line = I.args.initcall->line,
                         .column = I.args.initcall->column})) {
             break;
           }
@@ -135,7 +136,6 @@ namespace mavka::mama {
           const auto diia_cell =
               create_diia(M, I.args.diia->name, I.args.diia->code, nullptr);
           diia_cell.v.object->d.diia->scope = frame->scope;
-          diia_cell.v.object->d.diia->path = I.args.diia->path;
           PUSH(diia_cell);
           break;
         }
@@ -897,6 +897,7 @@ namespace mavka::mama {
             M->loaded_file_modules.insert_or_assign(
                 module_object->d.module->name, module_object);
             const auto module_code = new MaCode();
+            module_code->path = path;
             const auto body_compilation_result =
                 compile_body(M, module_code, parser_result.program_node->body);
             if (body_compilation_result.error) {
@@ -991,6 +992,7 @@ namespace mavka::mama {
                     .diia = object,
                 },
             .args = args,
+            .path = options.path,
             .line = options.line,
             .column = options.column,
             .restore_stack_size = M->stack.size(),
@@ -1007,6 +1009,7 @@ namespace mavka::mama {
                     .diia_native = object,
                 },
             .args = args,
+            .path = options.path,
             .line = options.line,
             .column = options.column,
             .restore_stack_size = M->stack.size(),
@@ -1026,6 +1029,7 @@ namespace mavka::mama {
                     .structure = object,
                 },
             .args = args,
+            .path = options.path,
             .line = options.line,
             .column = options.column,
             .restore_stack_size = M->stack.size(),

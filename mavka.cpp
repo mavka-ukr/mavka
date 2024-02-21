@@ -45,6 +45,38 @@ void print_version() {
   std::cout << MAVKA_VERSION << std::endl;
 }
 
+size_t try_run(MaMa* M, MaCode* code) {
+  try {
+    mavka::mama::run(M, code, 0);
+    return 0;
+  } catch (const MaException& e) {
+    std::vector<std::string> trace;
+    while (!M->frames.empty()) {
+      POP_FRAME(trace_frame);
+      if (trace_frame->type == FRAME_TYPE_CALL) {
+        if (trace_frame->data.call->line || trace_frame->data.call->column) {
+          std::string path = trace_frame->data.call->path;
+          const auto line = std::to_string(trace_frame->data.call->line);
+          const auto column = std::to_string(trace_frame->data.call->column);
+          const auto diia_name =
+              trace_frame->data.call->o.diia->d.diia->name.empty()
+                  ? "[анонімна дія]"
+                  : trace_frame->data.call->o.diia->d.diia->name;
+          trace.push_back(path + ":" + line + ":" + column + ": " + diia_name);
+        }
+      }
+    }
+    if (!trace.empty()) {
+      std::cout << "Слід:" << std::endl;
+      for (const auto& line : trace) {
+        std::cout << "  " << line << std::endl;
+      }
+    }
+    std::cout << cell_to_string(M->stack.top()) << std::endl;
+    return 1;
+  }
+}
+
 int main(int argc, char** argv) {
   const auto args = std::vector<std::string>(argv, argv + argc);
   const auto cwd = std::filesystem::current_path();
@@ -88,6 +120,7 @@ int main(int argc, char** argv) {
         continue;
       }
       const auto line_code = new MaCode();
+      line_code->path = "[консоль]";
       const auto body_compilation_result =
           compile_body(M, line_code, parser_result.program_node->body, true);
       if (body_compilation_result.error) {
@@ -100,10 +133,11 @@ int main(int argc, char** argv) {
         continue;
       }
       const auto restore_stack_size = M->stack.size();
-      mavka::mama::run(M, line_code, 0);
-      const auto result = M->stack.top();
-      mavka::mama::restore_stack(M, restore_stack_size);
-      std::cout << cell_to_string(result) << std::endl;
+      if (!try_run(M, line_code)) {
+        const auto result = M->stack.top();
+        mavka::mama::restore_stack(M, restore_stack_size);
+        std::cout << cell_to_string(result) << std::endl;
+      }
     } while (true);
     return 1;
   } else if (args.size() == 2) {
@@ -119,37 +153,11 @@ int main(int argc, char** argv) {
 
     const auto& path = args[1];
 
-    try {
-      mavka::mama::run(
-          M,
-          new MaCode(
-              {.instructions = {MaInstruction{
-                   OP_TAKE,
-                   {.take = new MaTakeInstructionArgs(INT64_MAX, path)}}}}),
-          0);
-    } catch (const MaException& e) {
-      std::vector<std::string> trace;
-      while (!M->frames.empty()) {
-        POP_FRAME(trace_frame);
-        if (trace_frame->type == FRAME_TYPE_CALL) {
-          if (trace_frame->data.call->line || trace_frame->data.call->column) {
-            std::string path;
-            if (trace_frame->data.call->type == FRAME_CALL_TYPE_DIIA) {
-              path = trace_frame->data.call->o.diia->d.diia->path;
-            }
-            const auto line = std::to_string(trace_frame->data.call->line);
-            const auto column = std::to_string(trace_frame->data.call->column);
-            trace.push_back(path + ":" + line + ":" + column);
-          }
-        }
-      }
-      for (const auto& line : trace) {
-        std::cout << line << std::endl;
-      }
-      std::cout << "Не вдалось зловити: " << cell_to_string(M->stack.top())
-                << std::endl;
-      return 1;
-    }
+    return try_run(
+        M, new MaCode(
+               {.instructions = {MaInstruction{
+                    OP_TAKE,
+                    {.take = new MaTakeInstructionArgs(INT64_MAX, path)}}}}));
   } else {
     print_help();
     return 1;

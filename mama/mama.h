@@ -120,7 +120,7 @@
 #define FRAME_POP() M->frames.pop();
 #define FRAME_TOP() M->frames.top();
 #define FRAME_PUSH(frame) M->frames.push(frame);
-#define POP_FRAME(name)    \
+#define POP_FRAME(name)          \
   const auto name = FRAME_TOP(); \
   FRAME_POP();
 
@@ -156,6 +156,7 @@ namespace mavka::mama {
 
   struct MaCode {
     std::vector<MaInstruction> instructions;
+    std::string path;
   };
 
   struct MaMa {
@@ -187,6 +188,7 @@ namespace mavka::mama {
   void run(MaMa* M, MaCode* code, size_t start_index = 0);
 
   struct MaInitcallOptions {
+    std::string path;
     size_t line;
     size_t column;
   };
