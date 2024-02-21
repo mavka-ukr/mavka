@@ -38,7 +38,6 @@ struct MaCallFrameCallData {
     MaObject* diia_native;
     MaObject* structure;
   } o;
-  size_t return_index;
   MaArgs* args;
   size_t line;
   size_t column;
@@ -47,7 +46,6 @@ struct MaCallFrameCallData {
 
 struct MaFrameModuleData {
   MaObject* module;
-  size_t restore_stack_size;
 };
 
 struct MaFrameTryData {

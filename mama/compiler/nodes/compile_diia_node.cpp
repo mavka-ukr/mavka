@@ -2,31 +2,32 @@
 
 namespace mavka::mama {
   MaCompilationResult compile_diia_node(MaMa* M,
+                                        MaCode* code,
                                         mavka::ast::DiiaNode* diia_node) {
     if (diia_node->structure.empty()) {
       const auto result = compile_diia(
-          M, diia_node->async, diia_node->generics, diia_node->name,
+          M, code, diia_node->async, diia_node->generics, diia_node->name,
           diia_node->params, diia_node->return_types, diia_node->body);
       if (result.error) {
         return result;
       }
-      M->code.push_back(
+      code->instructions.push_back(
           MaInstruction::store(new MaStoreInstructionArgs(diia_node->name)));
     } else {
       if (diia_node->ee) {
         const auto result = compile_diia(
-            M, diia_node->async, diia_node->generics, diia_node->name,
+            M, code, diia_node->async, diia_node->generics, diia_node->name,
             diia_node->params, diia_node->return_types, diia_node->body);
         if (result.error) {
           return result;
         }
-        M->code.push_back(MaInstruction::load(
+        code->instructions.push_back(MaInstruction::load(
             new MaLoadInstructionArgs(diia_node->structure)));
-        M->code.push_back(
+        code->instructions.push_back(
             MaInstruction::set(new MaSetInstructionArgs(diia_node->name)));
       } else {
         const auto result = compile_method(
-            M, diia_node->structure, diia_node->ee, diia_node->async,
+            M, code, diia_node->structure, diia_node->ee, diia_node->async,
             diia_node->generics, diia_node->name, diia_node->params,
             diia_node->return_types, diia_node->body);
         if (result.error) {

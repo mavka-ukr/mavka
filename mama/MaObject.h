@@ -78,6 +78,7 @@ class MaDiiaParam final {
 class MaDiia final {
  public:
   std::string name;
+  MaCode* code;
   int index;
   MaObject* me;
   MaScope* scope;

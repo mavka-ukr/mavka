@@ -138,6 +138,7 @@ namespace mavka::mama {
   class MaModule;
   struct MaCell;
   struct MaObject;
+  struct MaCode;
 
 #include "MaFrame.h"
 #include "MaInstruction.h"
@@ -146,15 +147,18 @@ namespace mavka::mama {
 #include "compiler/compiler.h"
 #include "helpers.h"
 
+  struct MaCode {
+    std::vector<MaInstruction> instructions;
+  };
+
   struct MaMa {
     std::string cwd;
 
-    std::vector<MaInstruction> code;
     std::vector<MaCell> constants;
     MaScope* global_scope;
     std::unordered_map<std::string, MaObject*> loaded_file_modules;
+    MaObject* main_module;
 
-    size_t i;
     std::stack<MaCell> stack;
     std::stack<MaFrame*> frames;
     bool ready_to_throw;
@@ -176,10 +180,9 @@ namespace mavka::mama {
     size_t iterator_count;
   };
 
-  void run(MaMa* M, size_t start_index = 0);
+  void run(MaMa* M, MaCode* code, size_t start_index = 0);
 
   struct MaInitcallOptions {
-    size_t return_index;
     size_t line;
     size_t column;
   };

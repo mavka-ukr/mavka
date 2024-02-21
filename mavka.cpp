@@ -87,9 +87,9 @@ int main(int argc, char** argv) {
                   << std::endl;
         continue;
       }
-      const auto start_index = M->code.size();
+      const auto line_code = new MaCode();
       const auto body_compilation_result =
-          compile_body(M, parser_result.program_node->body, true);
+          compile_body(M, line_code, parser_result.program_node->body, true);
       if (body_compilation_result.error) {
         std::cout << "[консоль]:" +
                          std::to_string(body_compilation_result.error->line) +
@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
                   << std::endl;
         continue;
       }
-      mavka::mama::run(M, start_index);
+      mavka::mama::run(M, line_code, 0);
       std::cout << cell_to_string(M->stack.top()) << std::endl;
     } while (true);
     return 1;
@@ -116,10 +116,13 @@ int main(int argc, char** argv) {
 
     const auto& path = args[1];
 
-    M->code.push_back(MaInstruction{
-        OP_TAKE, {.take = new MaTakeInstructionArgs(INT64_MAX, path)}});
-
-    mavka::mama::run(M);
+    mavka::mama::run(
+        M,
+        new MaCode(
+            {.instructions = {MaInstruction{
+                 OP_TAKE,
+                 {.take = new MaTakeInstructionArgs(INT64_MAX, path)}}}}),
+        0);
   } else {
     print_help();
     return 1;

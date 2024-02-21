@@ -89,7 +89,6 @@ struct MaStoreInstructionArgs {
 
 struct MaInitCallInstructionArgs {
   MaArgsType args_type;
-  size_t return_index;
   size_t line;
   size_t column;
 };

@@ -28,8 +28,7 @@ namespace mavka::mama {
           POP_VALUE(mag_number_diia_cell);
           READ_TOP_FRAME();
           if (initcall(M, MA_ARGS_POSITIONED, mag_number_diia_cell,
-                       {.return_index = frame->data.call->return_index,
-                        .line = frame->data.call->line,
+                       {.line = frame->data.call->line,
                         .column = frame->data.call->column})) {
             M->diia_native_repeat = true;
           } else {
