@@ -183,7 +183,7 @@ int main(int argc, char** argv) {
       }
       const auto start_index = main_module_code->instructions.size();
       const auto body_compilation_result = compile_body(
-          M, main_module_code, parser_result.program_node->body, true);
+          M, main_module_code, parser_result.module_node->body, true);
       if (body_compilation_result.error) {
         std::cout << "[консоль]:" +
                          std::to_string(body_compilation_result.error->line) +

@@ -5,10 +5,10 @@ namespace mavka::mama {
       MaMa* M,
       MaCode* code,
       bool async,
-      const std::vector<ast::GenericNode*>& generics,
+      const std::vector<ast::Generic*>& generics,
       const std::string& name,
-      const std::vector<ast::ParamNode*>& params,
-      const std::vector<ast::TypeValueSingleNode*>& return_types,
+      const std::vector<ast::Param*>& params,
+      const std::vector<ast::TypeNode*>& return_types,
       const std::vector<ast::ASTSome*>& body) {
     const auto diia_code = new MaCode();
     diia_code->path = code->path;
@@ -46,10 +46,10 @@ namespace mavka::mama {
       const std::string& structure,
       bool ee,
       bool async,
-      const std::vector<ast::GenericNode*>& generics,
+      const std::vector<ast::Generic*>& generics,
       const std::string& name,
-      const std::vector<ast::ParamNode*>& params,
-      const std::vector<ast::TypeValueSingleNode*>& return_types,
+      const std::vector<ast::Param*>& params,
+      const std::vector<ast::TypeNode*>& return_types,
       const std::vector<ast::ASTSome*>& body) {
     code->instructions.push_back(
         MaInstruction::load(new MaLoadInstructionArgs(structure)));

@@ -9,13 +9,12 @@ add_subdirectory(external/parser)
 add_subdirectory(external/ordered-map)
 
 set(MAVKA_COMPILER_SRC
-        mama/compiler/nodes/compile_anon_diia.cpp
         mama/compiler/nodes/compile_arithmetic_node.cpp
-        mama/compiler/nodes/compile_array_node.cpp
+        mama/compiler/nodes/compile_list_node.cpp
         mama/compiler/nodes/compile_as_node.cpp
         mama/compiler/nodes/compile_assign_by_element_node.cpp
         mama/compiler/nodes/compile_assign_by_identifier_node.cpp
-        mama/compiler/nodes/compile_assign_simple_node.cpp
+        mama/compiler/nodes/compile_assign_node.cpp
         mama/compiler/nodes/compile_bitwise_node.cpp
         mama/compiler/nodes/compile_bitwise_not_node.cpp
         mama/compiler/nodes/compile_break_node.cpp
@@ -26,14 +25,10 @@ set(MAVKA_COMPILER_SRC
         mama/compiler/nodes/compile_dictionary_node.cpp
         mama/compiler/nodes/compile_diia_node.cpp
         mama/compiler/nodes/compile_each_node.cpp
-        mama/compiler/nodes/compile_eval_node.cpp
-        mama/compiler/nodes/compile_function_node.cpp
-        mama/compiler/nodes/compile_get_element_node.cpp
         mama/compiler/nodes/compile_give_node.cpp
         mama/compiler/nodes/compile_god_node.cpp
         mama/compiler/nodes/compile_identifier_node.cpp
         mama/compiler/nodes/compile_if_node.cpp
-        mama/compiler/nodes/compile_method_declaration_node.cpp
         mama/compiler/nodes/compile_mockup_diia_node.cpp
         mama/compiler/nodes/compile_mockup_module_node.cpp
         mama/compiler/nodes/compile_mockup_structure_node.cpp
@@ -51,13 +46,12 @@ set(MAVKA_COMPILER_SRC
         mama/compiler/nodes/compile_return_node.cpp
         mama/compiler/nodes/compile_string_node.cpp
         mama/compiler/nodes/compile_structure_node.cpp
-        mama/compiler/nodes/compile_take_module_node.cpp
-        mama/compiler/nodes/compile_take_pak_node.cpp
+        mama/compiler/nodes/compile_take_node.cpp
         mama/compiler/nodes/compile_ternary_node.cpp
         mama/compiler/nodes/compile_test_node.cpp
         mama/compiler/nodes/compile_throw_node.cpp
         mama/compiler/nodes/compile_try_node.cpp
-        mama/compiler/nodes/compile_type_value_single_node.cpp
+        mama/compiler/nodes/compile_type_node.cpp
         mama/compiler/nodes/compile_wait_node.cpp
         mama/compiler/nodes/compile_while_node.cpp
         mama/compiler/nodes/diia.cpp

@@ -4,7 +4,8 @@ namespace mavka::mama {
   MaCompilationResult compile_bitwise_not_node(
       MaMa* M,
       MaCode* code,
-      const mavka::ast::BitwiseNotNode* bitwise_not_node) {
+      const mavka::ast::ASTValue* ast_value) {
+    const auto bitwise_not_node = ast_value->data.BitwiseNotNode;
     const auto result = compile_node(M, code, bitwise_not_node->value);
     if (result.error) {
       return result;

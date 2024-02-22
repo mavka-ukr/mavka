@@ -4,10 +4,10 @@ namespace mavka::mama {
   MaCompilationResult compile_structure_node(
       MaMa* M,
       MaCode* code,
-      mavka::ast::StructureNode* structure_node) {
+      const mavka::ast::ASTValue* ast_value) {
+    const auto structure_node = ast_value->data.StructureNode;
     if (structure_node->parent) {
-      return error(mavka::ast::make_ast_some(structure_node),
-                   "Наслідування структур тимчасово недоступне.");
+      return error(ast_value, "Наслідування структур тимчасово недоступне.");
     }
     code->instructions.push_back(MaInstruction::struct_(
         new MaStructInstructionArgs(structure_node->name)));

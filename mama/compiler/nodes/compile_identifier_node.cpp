@@ -4,7 +4,8 @@ namespace mavka::mama {
   MaCompilationResult compile_identifier_node(
       MaMa* M,
       MaCode* code,
-      const mavka::ast::IdentifierNode* identifier_node) {
+      const mavka::ast::ASTValue* ast_value) {
+    const auto identifier_node = ast_value->data.IdentifierNode;
     if (identifier_node->name == "пусто") {
       code->instructions.push_back(MaInstruction::empty());
     } else if (identifier_node->name == "так") {

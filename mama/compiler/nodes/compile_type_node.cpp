@@ -1,9 +1,9 @@
 #include "../../mama.h"
 
 namespace mavka::mama {
-  MaCompilationResult compile_wait_node(MaMa* M,
+  MaCompilationResult compile_type_node(MaMa* M,
                                         MaCode* code,
                                         const mavka::ast::ASTValue* ast_value) {
-    return error(ast_value, "Вказівка \"чекати\" тимчасово недоступна.");
+    return error(ast_value, "Not implemented");
   }
 } // namespace mavka::mama

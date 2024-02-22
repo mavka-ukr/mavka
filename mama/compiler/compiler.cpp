@@ -3,240 +3,207 @@
 namespace mavka::mama {
   MaCompilationResult compile_node(MaMa* M,
                                    MaCode* code,
-                                   mavka::ast::ASTSome* node) {
-    if (!node) {
+                                   mavka::ast::ASTValue* ast_value) {
+    if (!ast_value) {
       return error(nullptr, "null node");
     }
-    if (node->is_nullptr()) {
-      return error(nullptr, "nullptr node");
+
+    if (ast_value->kind == ast::KindArithmeticNode) {
+      return compile_arithmetic_node(M, code, ast_value);
     }
 
-    if (node->AnonDiiaNode) {
-      return compile_anon_diia_node(M, code, node->AnonDiiaNode);
+    if (ast_value->kind == ast::KindAsNode) {
+      return compile_as_node(M, code, ast_value);
     }
 
-    if (node->ArithmeticNode) {
-      return compile_arithmetic_node(M, code, node->ArithmeticNode);
+    if (ast_value->kind == ast::KindAssignByIdentifierNode) {
+      return compile_assign_by_identifier_node(M, code, ast_value);
     }
 
-    if (node->ArrayNode) {
-      return compile_array_node(M, code, node->ArrayNode);
+    if (ast_value->kind == ast::KindAssignNode) {
+      return compile_assign_node(M, code, ast_value);
     }
 
-    if (node->AsNode) {
-      return compile_as_node(M, code, node->AsNode);
+    if (ast_value->kind == ast::KindBitwiseNode) {
+      return compile_bitwise_node(M, code, ast_value);
     }
 
-    if (node->AssignByElementNode) {
-      return compile_assign_by_element_node(M, code, node->AssignByElementNode);
+    if (ast_value->kind == ast::KindBitwiseNotNode) {
+      return compile_bitwise_not_node(M, code, ast_value);
     }
 
-    if (node->AssignByIdentifierNode) {
-      return compile_assign_by_identifier_node(M, code,
-                                               node->AssignByIdentifierNode);
+    if (ast_value->kind == ast::KindBreakNode) {
+      return compile_break_node(M, code, ast_value);
     }
 
-    if (node->AssignSimpleNode) {
-      return compile_assign_simple_node(M, code, node->AssignSimpleNode);
+    if (ast_value->kind == ast::KindCallNode) {
+      return compile_call_node(M, code, ast_value);
     }
 
-    if (node->BitwiseNode) {
-      return compile_bitwise_node(M, code, node->BitwiseNode);
+    if (ast_value->kind == ast::KindChainNode) {
+      return compile_chain_node(M, code, ast_value);
     }
 
-    if (node->BitwiseNotNode) {
-      return compile_bitwise_not_node(M, code, node->BitwiseNotNode);
+    if (ast_value->kind == ast::KindComparisonNode) {
+      return compile_comparison_node(M, code, ast_value);
     }
 
-    if (node->BreakNode) {
-      return compile_break_node(M, code, node->BreakNode);
+    if (ast_value->kind == ast::KindContinueNode) {
+      return compile_continue_node(M, code, ast_value);
     }
 
-    if (node->CallNode) {
-      return compile_call_node(M, code, node->CallNode);
+    if (ast_value->kind == ast::KindDictionaryNode) {
+      return compile_dictionary_node(M, code, ast_value);
     }
 
-    if (node->ChainNode) {
-      return compile_chain_node(M, code, node->ChainNode);
+    if (ast_value->kind == ast::KindDiiaNode) {
+      return compile_diia_node(M, code, ast_value);
     }
 
-    if (node->ComparisonNode) {
-      return compile_comparison_node(M, code, node->ComparisonNode);
+    if (ast_value->kind == ast::KindEachNode) {
+      return compile_each_node(M, code, ast_value);
     }
 
-    if (node->ContinueNode) {
-      return compile_continue_node(M, code, node->ContinueNode);
+    if (ast_value->kind == ast::KindGetElementNode) {
+      return compile_get_element_node(M, code, ast_value);
     }
 
-    if (node->DictionaryNode) {
-      return compile_dictionary_node(M, code, node->DictionaryNode);
+    if (ast_value->kind == ast::KindGiveNode) {
+      return compile_give_node(M, code, ast_value);
     }
 
-    if (node->DiiaNode) {
-      return compile_diia_node(M, code, node->DiiaNode);
+    if (ast_value->kind == ast::KindGodNode) {
+      return compile_god_node(M, code, ast_value);
     }
 
-    if (node->EachNode) {
-      return compile_each_node(M, code, node->EachNode);
+    if (ast_value->kind == ast::KindIdentifierNode) {
+      return compile_identifier_node(M, code, ast_value);
     }
 
-    if (node->EvalNode) {
-      return compile_eval_node(M, code, node->EvalNode);
+    if (ast_value->kind == ast::KindIfNode) {
+      return compile_if_node(M, code, ast_value);
     }
 
-    if (node->FunctionNode) {
-      return compile_function_node(M, code, node->FunctionNode);
+    if (ast_value->kind == ast::KindListNode) {
+      return compile_array_node(M, code, ast_value);
     }
 
-    if (node->GetElementNode) {
-      return compile_get_element_node(M, code, node->GetElementNode);
+    if (ast_value->kind == ast::KindMockupDiiaNode) {
+      return compile_mockup_diia_node(M, code, ast_value);
     }
 
-    if (node->GiveNode) {
-      return compile_give_node(M, code, node->GiveNode);
+    if (ast_value->kind == ast::KindMockupModuleNode) {
+      return compile_mockup_module_node(M, code, ast_value);
     }
 
-    if (node->GodNode) {
-      return compile_god_node(M, code, node->GodNode);
+    if (ast_value->kind == ast::KindMockupStructureNode) {
+      return compile_mockup_structure_node(M, code, ast_value);
     }
 
-    if (node->IdentifierNode) {
-      return compile_identifier_node(M, code, node->IdentifierNode);
+    if (ast_value->kind == ast::KindMockupSubjectNode) {
+      return compile_mockup_subject_node(M, code, ast_value);
     }
 
-    if (node->IfNode) {
-      return compile_if_node(M, code, node->IfNode);
+    if (ast_value->kind == ast::KindModuleNode) {
+      return compile_module_node(M, code, ast_value);
     }
 
-    if (node->MethodDeclarationNode) {
-      return compile_method_declaration_node(M, code,
-                                             node->MethodDeclarationNode);
+    if (ast_value->kind == ast::KindMRMDiiaNode) {
+      return compile_mrm_diia_node(M, code, ast_value);
     }
 
-    if (node->MockupDiiaNode) {
-      return compile_mockup_diia_node(M, code, node->MockupDiiaNode);
+    if (ast_value->kind == ast::KindNegativeNode) {
+      return compile_negative_node(M, code, ast_value);
     }
 
-    if (node->MockupModuleNode) {
-      return compile_mockup_module_node(M, code, node->MockupModuleNode);
+    if (ast_value->kind == ast::KindNotNode) {
+      return compile_not_node(M, code, ast_value);
     }
 
-    if (node->MockupStructureNode) {
-      return compile_mockup_structure_node(M, code, node->MockupStructureNode);
+    if (ast_value->kind == ast::KindNumberNode) {
+      return compile_number_node(M, code, ast_value);
     }
 
-    if (node->MockupSubjectNode) {
-      return compile_mockup_subject_node(M, code, node->MockupSubjectNode);
+    if (ast_value->kind == ast::KindPositiveNode) {
+      return compile_positive_node(M, code, ast_value);
     }
 
-    if (node->ModuleNode) {
-      return compile_module_node(M, code, node->ModuleNode);
+    if (ast_value->kind == ast::KindPostDecrementNode) {
+      return compile_post_decrement_node(M, code, ast_value);
     }
 
-    if (node->MRMDiiaNode) {
-      return compile_mrm_diia_node(M, code, node->MRMDiiaNode);
+    if (ast_value->kind == ast::KindPostIncrementNode) {
+      return compile_post_increment_node(M, code, ast_value);
     }
 
-    if (node->NegativeNode) {
-      return compile_negative_node(M, code, node->NegativeNode);
+    if (ast_value->kind == ast::KindPreDecrementNode) {
+      return compile_pre_decrement_node(M, code, ast_value);
     }
 
-    if (node->NotNode) {
-      return compile_not_node(M, code, node->NotNode);
+    if (ast_value->kind == ast::KindPreIncrementNode) {
+      return compile_pre_increment_node(M, code, ast_value);
     }
 
-    if (node->NumberNode) {
-      return compile_number_node(M, code, node->NumberNode);
+    if (ast_value->kind == ast::KindReturnNode) {
+      return compile_return_node(M, code, ast_value);
     }
 
-    if (node->PositiveNode) {
-      return compile_positive_node(M, code, node->PositiveNode);
+    if (ast_value->kind == ast::KindStringNode) {
+      return compile_string_node(M, code, ast_value);
     }
 
-    if (node->PostDecrementNode) {
-      return compile_post_decrement_node(M, code, node->PostDecrementNode);
+    if (ast_value->kind == ast::KindStructureNode) {
+      return compile_structure_node(M, code, ast_value);
     }
 
-    if (node->PostIncrementNode) {
-      return compile_post_increment_node(M, code, node->PostIncrementNode);
+    if (ast_value->kind == ast::KindTakeNode) {
+      return compile_take_node(M, code, ast_value);
     }
 
-    if (node->PreDecrementNode) {
-      return compile_pre_decrement_node(M, code, node->PreDecrementNode);
+    if (ast_value->kind == ast::KindTernaryNode) {
+      return compile_ternary_node(M, code, ast_value);
     }
 
-    if (node->PreIncrementNode) {
-      return compile_pre_increment_node(M, code, node->PreIncrementNode);
+    if (ast_value->kind == ast::KindTestNode) {
+      return compile_test_node(M, code, ast_value);
     }
 
-    if (node->ReturnNode) {
-      return compile_return_node(M, code, node->ReturnNode);
+    if (ast_value->kind == ast::KindThrowNode) {
+      return compile_throw_node(M, code, ast_value);
     }
 
-    if (node->StringNode) {
-      return compile_string_node(M, code, node->StringNode);
+    if (ast_value->kind == ast::KindTryNode) {
+      return compile_try_node(M, code, ast_value);
     }
 
-    if (node->StructureNode) {
-      return compile_structure_node(M, code, node->StructureNode);
+    if (ast_value->kind == ast::KindTypeNode) {
+      return compile_type_node(M, code, ast_value);
     }
 
-    if (node->TakeModuleNode) {
-      return compile_take_module_node(M, code, node->TakeModuleNode);
+    if (ast_value->kind == ast::KindWaitNode) {
+      return compile_wait_node(M, code, ast_value);
     }
 
-    if (node->TakePakNode) {
-      return compile_take_pak_node(M, code, node->TakePakNode);
+    if (ast_value->kind == ast::KindWhileNode) {
+      return compile_while_node(M, code, ast_value);
     }
 
-    if (node->TernaryNode) {
-      return compile_ternary_node(M, code, node->TernaryNode);
-    }
-
-    if (node->TestNode) {
-      return compile_test_node(M, code, node->TestNode);
-    }
-
-    if (node->ThrowNode) {
-      return compile_throw_node(M, code, node->ThrowNode);
-    }
-
-    if (node->TryNode) {
-      return compile_try_node(M, code, node->TryNode);
-    }
-
-    if (node->TypeValueSingleNode) {
-      return compile_type_value_single_node(M, code, node->TypeValueSingleNode);
-    }
-
-    if (node->WaitNode) {
-      return compile_wait_node(M, code, node->WaitNode);
-    }
-
-    if (node->WhileNode) {
-      return compile_while_node(M, code, node->WhileNode);
-    }
-
-    return error(node, "unsupported node");
+    return error(ast_value, "unsupported node");
   }
 
   MaCompilationResult compile_body(
       MaMa* M,
       MaCode* code,
-      const std::vector<mavka::ast::ASTSome*>& body,
-      bool nopop) {
+      const std::vector<mavka::ast::ASTValue*>& body) {
     for (const auto node : body) {
       if (!node) {
-        continue;
-      }
-      if (node->is_nullptr()) {
         continue;
       }
       const auto result = compile_node(M, code, node);
       if (result.error) {
         return result;
       }
-      // if (node->is_popable() && !nopop) {
+      // if (ast_value->is_popable() && !nopop) {
       //   code->instructions.push_back(MaInstruction{OP_POP});
       // }
     }
@@ -245,37 +212,36 @@ namespace mavka::mama {
 
   void find_each_node_jumps(MaMa* M,
                             MaCode* code,
-                            const std::vector<mavka::ast::ASTSome*>& body,
+                            const std::vector<mavka::ast::ASTValue*>& body,
                             std::vector<EachNodeJumps>& jumps) {
-    for (const auto node : body) {
-      if (!node) {
+    for (const auto ast_value : body) {
+      if (!ast_value) {
         continue;
       }
-      if (node->is_nullptr()) {
-        continue;
+      if (ast_value->kind == ast::KindContinueNode) {
+        jumps.push_back(
+            EachNodeJumps{.continue_node = ast_value->data.ContinueNode});
+      } else if (ast_value->kind == ast::KindBreakNode) {
+        jumps.push_back(EachNodeJumps{.break_node = ast_value->data.BreakNode});
       }
-      if (node->ContinueNode) {
-        jumps.push_back(EachNodeJumps{.continue_node = node->ContinueNode});
-      } else if (node->BreakNode) {
-        jumps.push_back(EachNodeJumps{.break_node = node->BreakNode});
+      if (ast_value->kind == ast::KindIfNode) {
+        find_each_node_jumps(M, code, ast_value->data.IfNode->body, jumps);
+        find_each_node_jumps(M, code, ast_value->data.IfNode->else_body, jumps);
       }
-      if (node->IfNode) {
-        find_each_node_jumps(M, code, node->IfNode->body, jumps);
-        find_each_node_jumps(M, code, node->IfNode->else_body, jumps);
-      }
-      if (node->TryNode) {
-        find_each_node_jumps(M, code, node->TryNode->body, jumps);
-        find_each_node_jumps(M, code, node->TryNode->catch_body, jumps);
+      if (ast_value->kind == ast::KindTryNode) {
+        find_each_node_jumps(M, code, ast_value->data.TryNode->body, jumps);
+        find_each_node_jumps(M, code, ast_value->data.TryNode->catch_body,
+                             jumps);
       }
     }
   }
 
-  MaCompilationResult error(mavka::ast::ASTSome* node,
+  MaCompilationResult error(const mavka::ast::ASTValue* ast_value,
                             const std::string& message) {
     const auto error = new MaCompilationError();
-    if (node) {
-      error->line = mavka::ast::get_ast_node(node)->start_line;
-      error->column = mavka::ast::get_ast_node(node)->start_column;
+    if (ast_value) {
+      error->line = ast_value->start_line;
+      error->column = ast_value->start_column;
     }
     error->message = message;
     return MaCompilationResult{.error = error};

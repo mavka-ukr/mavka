@@ -4,7 +4,8 @@ namespace mavka::mama {
   MaCompilationResult compile_while_node(
       MaMa* M,
       MaCode* code,
-      const mavka::ast::WhileNode* while_node) {
+      const mavka::ast::ASTValue* ast_value) {
+    const auto while_node = ast_value->data.WhileNode;
     std::vector<EachNodeJumps> jumps;
     find_each_node_jumps(M, code, while_node->body, jumps);
 
@@ -21,10 +22,12 @@ namespace mavka::mama {
     }
     code->instructions.push_back(MaInstruction::jump(continue_index));
     const auto break_index = code->instructions.size();
-    code->instructions[jump_if_false_instruction_index].args.jumpiffalse = break_index;
+    code->instructions[jump_if_false_instruction_index].args.jumpiffalse =
+        break_index;
     for (const auto& jump : jumps) {
       if (jump.continue_node) {
-        code->instructions[jump.continue_node->code_index].args.jump = continue_index;
+        code->instructions[jump.continue_node->code_index].args.jump =
+            continue_index;
       } else if (jump.break_node) {
         code->instructions[jump.break_node->code_index].args.jump = break_index;
       }
