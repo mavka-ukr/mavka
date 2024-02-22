@@ -19,11 +19,9 @@ struct MaArgs {
   std::vector<MaCell> positioned;
 };
 
-#define FRAME_SET_ARG(f, name, value) \
-  (f)->data.call->args->named.insert({(name), (value)});
-#define FRAME_PUSH_ARG(f, value) \
-  (f)->data.call->args->positioned.push_back((value));
-#define FRAME_GET_ARG(args, index, name, default_value)                     \
+#define ARGS_SET(a, name, value) (a).v.args->named.insert({(name), (value)});
+#define ARGS_PUSH(a, value) (a).v.args->positioned.push_back((value));
+#define ARGS_GET(args, index, name, default_value)                          \
   ((args)->type == MA_ARGS_NAMED                                            \
        ? ((args)->named.contains((name)) ? (args)->named[(name)]            \
                                          : (default_value))                 \
@@ -37,11 +35,10 @@ struct MaCallFrameCallData {
     MaObject* diia_native;
     MaObject* structure;
   } o;
-  MaArgs* args;
-  std::string path;
-  size_t line;
-  size_t column;
+  MaInstructionLocation* location;
   size_t restore_stack_size;
+  size_t restore_args_size;
+  bool pending;
 };
 
 struct MaFrameModuleData {

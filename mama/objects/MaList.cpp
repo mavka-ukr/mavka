@@ -115,8 +115,8 @@ namespace mavka::mama {
   void ma_list_get_element_diia_native_fn(MaMa* M,
                                           MaObject* list_me,
                                           MaArgs* args) {
-    const auto key = FRAME_GET_ARG(args, 0, "ключ", MA_MAKE_EMPTY());
-    if (IS_EMPTY(key)) {
+    const auto key = ARGS_GET(args, 0, "ключ", MA_MAKE_EMPTY());
+    if (!IS_EMPTY(key)) {
       PUSH(list_me->d.list->get(key.v.number));
       return;
     }
@@ -126,14 +126,14 @@ namespace mavka::mama {
   void ma_list_set_element_diia_native_fn(MaMa* M,
                                           MaObject* list_me,
                                           MaArgs* args) {
-    const auto key = FRAME_GET_ARG(args, 0, "ключ", MA_MAKE_EMPTY());
-    const auto value = FRAME_GET_ARG(args, 1, "значення", MA_MAKE_EMPTY());
+    const auto key = ARGS_GET(args, 0, "ключ", MA_MAKE_EMPTY());
+    const auto value = ARGS_GET(args, 1, "значення", MA_MAKE_EMPTY());
     list_me->d.list->set(key.v.number, value);
     PUSH_EMPTY();
   }
 
   void ma_list_append_diia_native_fn(MaMa* M, MaObject* list_me, MaArgs* args) {
-    const auto cell = FRAME_GET_ARG(args, 0, "значення", MA_MAKE_EMPTY());
+    const auto cell = ARGS_GET(args, 0, "значення", MA_MAKE_EMPTY());
     list_me->d.list->append(cell);
     PUSH_INTEGER(list_me->d.list->size());
   }
@@ -141,7 +141,7 @@ namespace mavka::mama {
   void ma_list_contains_diia_native_fn(MaMa* M,
                                        MaObject* list_me,
                                        MaArgs* args) {
-    const auto cell = FRAME_GET_ARG(args, 0, "значення", MA_MAKE_EMPTY());
+    const auto cell = ARGS_GET(args, 0, "значення", MA_MAKE_EMPTY());
     if (list_me->d.list->contains(cell)) {
       PUSH_YES();
     } else {

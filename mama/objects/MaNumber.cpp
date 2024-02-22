@@ -4,7 +4,7 @@ namespace mavka::mama {
   void number_structure_object_mag_call_diia_native_fn(MaMa* M,
                                                        MaObject* me,
                                                        MaArgs* args) {
-    const auto cell = FRAME_GET_ARG(args, 0, "значення", MA_MAKE_EMPTY());
+    const auto cell = ARGS_GET(args, 0, "значення", MA_MAKE_EMPTY());
     if (IS_EMPTY(cell)) {
       PUSH_NUMBER(0);
       return;
@@ -23,7 +23,7 @@ namespace mavka::mama {
     }
     if (IS_OBJECT(cell)) {
       if (OBJECT_HAS(cell.v.object, MAG_NUMBER)) {
-        ma_call(M, cell.v.object->properties[MAG_NUMBER], {});
+        ma_call(M, cell.v.object->properties[MAG_NUMBER], {}, {});
         return;
       }
     }

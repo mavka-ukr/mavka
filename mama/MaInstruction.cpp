@@ -95,8 +95,8 @@ namespace mavka::mama {
         return "OP_TRY_DONE";
       case OP_NOT:
         return "OP_NOT";
-      case OP_INITCALL:
-        return "OP_INITCALL";
+      case OP_INITARGS:
+        return "OP_INITARGS";
       case OP_DIIA_PARAM:
         return "OP_DIIA_PARAM";
       case OP_STRUCT_PARAM:
@@ -150,8 +150,8 @@ namespace mavka::mama {
   MaInstruction MaInstruction::no() {
     return MaInstruction{OP_NO};
   }
-  MaInstruction MaInstruction::initcall(MaInitCallInstructionArgs* args) {
-    return MaInstruction{OP_INITCALL, {.initcall = args}};
+  MaInstruction MaInstruction::initargs(MaInitArgsInstructionArgs* args) {
+    return MaInstruction{OP_INITARGS, {.initargs = args}};
   }
   MaInstruction MaInstruction::pusharg() {
     return MaInstruction{OP_PUSH_ARG};
@@ -159,8 +159,8 @@ namespace mavka::mama {
   MaInstruction MaInstruction::storearg(MaStoreArgInstructionArgs* args) {
     return MaInstruction{OP_STORE_ARG, {.storearg = args}};
   }
-  MaInstruction MaInstruction::call() {
-    return MaInstruction{OP_CALL};
+  MaInstruction MaInstruction::call(MaInstructionLocation* location) {
+    return MaInstruction{OP_CALL, {}, location};
   }
   MaInstruction MaInstruction::return_() {
     return MaInstruction{OP_RETURN};
@@ -276,26 +276,26 @@ namespace mavka::mama {
   MaInstruction MaInstruction::bnot() {
     return MaInstruction{OP_BNOT};
   }
-  MaInstruction MaInstruction::add() {
-    return MaInstruction{OP_ADD};
+  MaInstruction MaInstruction::add(MaInstructionLocation* location) {
+    return MaInstruction{OP_ADD, {}, location};
   }
-  MaInstruction MaInstruction::sub() {
-    return MaInstruction{OP_SUB};
+  MaInstruction MaInstruction::sub(MaInstructionLocation* location) {
+    return MaInstruction{OP_SUB, {}, location};
   }
-  MaInstruction MaInstruction::mul() {
-    return MaInstruction{OP_MUL};
+  MaInstruction MaInstruction::mul(MaInstructionLocation* location) {
+    return MaInstruction{OP_MUL, {}, location};
   }
-  MaInstruction MaInstruction::div() {
-    return MaInstruction{OP_DIV};
+  MaInstruction MaInstruction::div(MaInstructionLocation* location) {
+    return MaInstruction{OP_DIV, {}, location};
   }
-  MaInstruction MaInstruction::mod() {
-    return MaInstruction{OP_MOD};
+  MaInstruction MaInstruction::mod(MaInstructionLocation* location) {
+    return MaInstruction{OP_MOD, {}, location};
   }
-  MaInstruction MaInstruction::divdiv() {
-    return MaInstruction{OP_DIVDIV};
+  MaInstruction MaInstruction::divdiv(MaInstructionLocation* location) {
+    return MaInstruction{OP_DIVDIV, {}, location};
   }
-  MaInstruction MaInstruction::pow() {
-    return MaInstruction{OP_POW};
+  MaInstruction MaInstruction::pow(MaInstructionLocation* location) {
+    return MaInstruction{OP_POW, {}, location};
   }
   MaInstruction MaInstruction::xor_() {
     return MaInstruction{OP_XOR};

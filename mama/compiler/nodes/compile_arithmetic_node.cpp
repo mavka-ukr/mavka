@@ -13,20 +13,22 @@ namespace mavka::mama {
     if (right.error) {
       return right;
     }
+    const auto instruction_location = new MaInstructionLocation(
+        arithmetic_node->start_line, arithmetic_node->start_column);
     if (arithmetic_node->op == "+") {
-      code->instructions.push_back(MaInstruction::add());
+      code->instructions.push_back(MaInstruction::add(instruction_location));
     } else if (arithmetic_node->op == "-") {
-      code->instructions.push_back(MaInstruction::sub());
+      code->instructions.push_back(MaInstruction::sub(instruction_location));
     } else if (arithmetic_node->op == "*") {
-      code->instructions.push_back(MaInstruction::mul());
+      code->instructions.push_back(MaInstruction::mul(instruction_location));
     } else if (arithmetic_node->op == "/") {
-      code->instructions.push_back(MaInstruction::div());
+      code->instructions.push_back(MaInstruction::div(instruction_location));
     } else if (arithmetic_node->op == "%") {
-      code->instructions.push_back(MaInstruction::mod());
+      code->instructions.push_back(MaInstruction::mod(instruction_location));
     } else if (arithmetic_node->op == "//") {
-      code->instructions.push_back(MaInstruction::divdiv());
+      code->instructions.push_back(MaInstruction::divdiv(instruction_location));
     } else if (arithmetic_node->op == "**") {
-      code->instructions.push_back(MaInstruction::pop());
+      code->instructions.push_back(MaInstruction::pow(instruction_location));
     }
     return success();
   }
