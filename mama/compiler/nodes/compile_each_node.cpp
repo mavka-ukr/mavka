@@ -19,24 +19,30 @@ namespace mavka::mama {
 
       if (each_node->value->FromToSimpleNode) {
         const auto toSymbol = each_node->value->FromToSimpleNode->toSymbol;
+        const auto instruction_location = new MaInstructionLocation(
+            each_node->value->FromToSimpleNode->start_line,
+            each_node->value->FromToSimpleNode->start_column);
         if (toSymbol == "<=") {
           check_i = MaInstruction::gt();
-          step_op_i = MaInstruction::add();
+          step_op_i = MaInstruction::add(instruction_location);
         } else if (toSymbol == "<") {
           check_i = MaInstruction::ge();
-          step_op_i = MaInstruction::add();
+          step_op_i = MaInstruction::add(instruction_location);
         } else if (toSymbol == ">=") {
           check_i = MaInstruction::lt();
-          step_op_i = MaInstruction::add();
+          step_op_i = MaInstruction::add(instruction_location);
         } else if (toSymbol == ">") {
           check_i = MaInstruction::le();
-          step_op_i = MaInstruction::add();
+          step_op_i = MaInstruction::add(instruction_location);
         } else {
           return error(mavka::ast::make_ast_some(each_node),
                        "Невідомий символ: " + toSymbol);
         }
       } else if (each_node->value->FromToComplexNode) {
         const auto toSymbol = each_node->value->FromToComplexNode->toSymbol;
+        const auto instruction_location = new MaInstructionLocation(
+            each_node->value->FromToComplexNode->start_line,
+            each_node->value->FromToComplexNode->start_column);
         if (toSymbol == "<=") {
           check_i = MaInstruction::gt();
         } else if (toSymbol == "<") {
@@ -51,19 +57,19 @@ namespace mavka::mama {
         }
         const auto stepSymbol = each_node->value->FromToComplexNode->stepSymbol;
         if (stepSymbol == "+") {
-          step_op_i = MaInstruction::add();
+          step_op_i = MaInstruction::add(instruction_location);
         } else if (stepSymbol == "-") {
-          step_op_i = MaInstruction::sub();
+          step_op_i = MaInstruction::sub(instruction_location);
         } else if (stepSymbol == "*") {
-          step_op_i = MaInstruction::mul();
+          step_op_i = MaInstruction::mul(instruction_location);
         } else if (stepSymbol == "/") {
-          step_op_i = MaInstruction::div();
+          step_op_i = MaInstruction::div(instruction_location);
         } else if (stepSymbol == "%") {
-          step_op_i = MaInstruction::mod();
+          step_op_i = MaInstruction::mod(instruction_location);
         } else if (stepSymbol == "//") {
-          step_op_i = MaInstruction::divdiv();
+          step_op_i = MaInstruction::divdiv(instruction_location);
         } else if (stepSymbol == "**") {
-          step_op_i = MaInstruction::pow();
+          step_op_i = MaInstruction::pow(instruction_location);
         } else {
           return error(mavka::ast::make_ast_some(each_node),
                        "Невідомий символ: " + stepSymbol);
@@ -152,6 +158,8 @@ namespace mavka::mama {
       return success();
     } else {
       if (each_node->keyName.empty()) {
+        const auto instruction_location = new MaInstructionLocation(
+            each_node->start_line, each_node->start_column);
         M->iterator_count += 1;
         const auto iterator_name = std::to_string(M->iterator_count) + "_п";
         const auto result = compile_node(M, code, each_node->value);
@@ -160,9 +168,9 @@ namespace mavka::mama {
         }
         code->instructions.push_back(
             MaInstruction::get(new MaGetInstructionArgs(MAG_ITERATOR)));
-        code->instructions.push_back(MaInstruction::initcall(
-            new MaInitCallInstructionArgs(MA_ARGS_POSITIONED)));
-        code->instructions.push_back(MaInstruction::call());
+        code->instructions.push_back(MaInstruction::initargs(
+            new MaInitArgsInstructionArgs(MA_ARGS_POSITIONED)));
+        code->instructions.push_back(MaInstruction::call(instruction_location));
         code->instructions.push_back(
             MaInstruction::store(new MaStoreInstructionArgs(iterator_name)));
 
@@ -193,9 +201,9 @@ namespace mavka::mama {
             MaInstruction::load(new MaLoadInstructionArgs(iterator_name)));
         code->instructions.push_back(
             MaInstruction::get(new MaGetInstructionArgs("далі")));
-        code->instructions.push_back(MaInstruction::initcall(
-            new MaInitCallInstructionArgs(MA_ARGS_POSITIONED)));
-        code->instructions.push_back(MaInstruction::call());
+        code->instructions.push_back(MaInstruction::initargs(
+            new MaInitArgsInstructionArgs(MA_ARGS_POSITIONED)));
+        code->instructions.push_back(MaInstruction::call(instruction_location));
 
         code->instructions.push_back(MaInstruction::jump(start_index));
 

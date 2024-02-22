@@ -18,7 +18,7 @@ namespace mavka::mama {
   void structure_structure_object_get_structure_diia_native_fn(MaMa* M,
                                                                MaObject* me,
                                                                MaArgs* args) {
-    const auto cell = FRAME_GET_ARG(args, 0, "значення", MA_MAKE_EMPTY());
+    const auto cell = ARGS_GET(args, 0, "значення", MA_MAKE_EMPTY());
     if (IS_EMPTY(cell)) {
       PUSH_EMPTY();
       return;

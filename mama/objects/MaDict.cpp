@@ -113,15 +113,15 @@ namespace mavka::mama {
   void ma_dict_get_element_diia_native_fn(MaMa* M,
                                           MaObject* list_me,
                                           MaArgs* args) {
-    const auto key = FRAME_GET_ARG(args, 0, "ключ", MA_MAKE_EMPTY());
+    const auto key = ARGS_GET(args, 0, "ключ", MA_MAKE_EMPTY());
     PUSH(list_me->d.dict->get(key));
   }
 
   void ma_dict_set_element_diia_native_fn(MaMa* M,
                                           MaObject* list_me,
                                           MaArgs* args) {
-    const auto key = FRAME_GET_ARG(args, 0, "ключ", MA_MAKE_EMPTY());
-    const auto value = FRAME_GET_ARG(args, 1, "значення", MA_MAKE_EMPTY());
+    const auto key = ARGS_GET(args, 0, "ключ", MA_MAKE_EMPTY());
+    const auto value = ARGS_GET(args, 1, "значення", MA_MAKE_EMPTY());
     list_me->d.dict->set(key, value);
     PUSH_EMPTY();
   }

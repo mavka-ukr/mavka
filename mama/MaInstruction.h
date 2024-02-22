@@ -10,7 +10,7 @@ typedef enum {
   OP_YES,
   OP_NO,
 
-  OP_INITCALL,
+  OP_INITARGS,
   OP_PUSH_ARG,
   OP_STORE_ARG,
   OP_CALL,
@@ -83,15 +83,17 @@ typedef enum {
 
 std::string getopname(const OP op);
 
+struct MaInstructionLocation {
+  size_t line;
+  size_t column;
+};
+
 struct MaStoreInstructionArgs {
   std::string name;
 };
 
-struct MaInitCallInstructionArgs {
+struct MaInitArgsInstructionArgs {
   MaArgsType args_type;
-  std::string path;
-  size_t line;
-  size_t column;
 };
 
 struct MaGetInstructionArgs {
@@ -170,7 +172,7 @@ struct MaInstruction {
   union {
     size_t constant;
     double number;
-    MaInitCallInstructionArgs* initcall;
+    MaInitArgsInstructionArgs* initargs;
     MaStoreArgInstructionArgs* storearg;
     MaDiiaInstructionArgs* diia;
     MaDiiaParamInstructionArgs* diiaparam;
@@ -192,6 +194,7 @@ struct MaInstruction {
     MaModuleLoadInstructionArgs* moduleload;
     MaTakeInstructionArgs* take;
   } args;
+  MaInstructionLocation* location;
 
   static MaInstruction pop();
   static MaInstruction constant(size_t index);
@@ -199,10 +202,10 @@ struct MaInstruction {
   static MaInstruction empty();
   static MaInstruction yes();
   static MaInstruction no();
-  static MaInstruction initcall(MaInitCallInstructionArgs* args);
+  static MaInstruction initargs(MaInitArgsInstructionArgs* args);
   static MaInstruction pusharg();
   static MaInstruction storearg(MaStoreArgInstructionArgs* args);
-  static MaInstruction call();
+  static MaInstruction call(MaInstructionLocation* location);
   static MaInstruction return_();
   static MaInstruction diia(MaDiiaInstructionArgs* args);
   static MaInstruction diiaparam(MaDiiaParamInstructionArgs* args);
@@ -241,13 +244,13 @@ struct MaInstruction {
   static MaInstruction negative();
   static MaInstruction positive();
   static MaInstruction bnot();
-  static MaInstruction add();
-  static MaInstruction sub();
-  static MaInstruction mul();
-  static MaInstruction div();
-  static MaInstruction mod();
-  static MaInstruction divdiv();
-  static MaInstruction pow();
+  static MaInstruction add(MaInstructionLocation* location);
+  static MaInstruction sub(MaInstructionLocation* location);
+  static MaInstruction mul(MaInstructionLocation* location);
+  static MaInstruction div(MaInstructionLocation* location);
+  static MaInstruction mod(MaInstructionLocation* location);
+  static MaInstruction divdiv(MaInstructionLocation* location);
+  static MaInstruction pow(MaInstructionLocation* location);
   static MaInstruction xor_();
   static MaInstruction bor();
   static MaInstruction band();

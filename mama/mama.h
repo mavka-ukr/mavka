@@ -69,6 +69,7 @@
 #define MA_CELL_YES 2
 #define MA_CELL_NO 3
 #define MA_CELL_OBJECT 4
+#define MA_CELL_ARGS 5
 
 #define MA_OBJECT 0
 #define MA_OBJECT_DIIA 1
@@ -86,6 +87,7 @@
 #define MA_MAKE_YES() (MaCell{MA_CELL_YES})
 #define MA_MAKE_NO() (MaCell{MA_CELL_NO})
 #define MA_MAKE_OBJECT(value) (MaCell{MA_CELL_OBJECT, {.object = (value)}})
+#define MA_MAKE_ARGS(value) (MaCell{MA_CELL_ARGS, {.args = (value)}})
 
 #define IS_EMPTY(cell) ((cell).type == MA_CELL_EMPTY)
 #define IS_NUMBER(cell) ((cell).type == MA_CELL_NUMBER)
@@ -106,6 +108,7 @@
 #define PUSH_YES() PUSH(MA_MAKE_YES())
 #define PUSH_NO() PUSH(MA_MAKE_NO())
 #define PUSH_OBJECT(v) PUSH(MA_MAKE_OBJECT((v)))
+#define PUSH_ARGS(v) PUSH(MA_MAKE_ARGS((v)))
 
 #define TOP() M->stack.top();
 #define TOP_VALUE(name) const auto name = TOP();
@@ -129,6 +132,7 @@
 namespace mavka::mama {
   struct MaMa;
   struct MaFrame;
+  struct MaInstructionLocation;
   struct MaInstruction;
   class MaScope;
   struct MaCompilationError;
@@ -166,9 +170,11 @@ namespace mavka::mama {
     MaScope* global_scope;
     std::unordered_map<std::string, MaObject*> loaded_file_modules;
     MaObject* main_module;
+    MaObject* current_module;
 
     std::stack<MaCell> stack;
     std::stack<MaFrame*> frames;
+    std::stack<MaArgs*> args;
 
     MaObject* object_structure_object;
     MaObject* structure_structure_object;
@@ -187,22 +193,15 @@ namespace mavka::mama {
   void restore_frames(MaMa* M, size_t frames_size);
   void run(MaMa* M, MaCode* code, size_t start_index = 0);
 
-  struct MaInitcallOptions {
-    std::string path;
-    size_t line;
-    size_t column;
-  };
-
-  void ma_call(MaMa* M, MaCell cell, const std::vector<MaCell>& args);
+  void ma_call(MaMa* M,
+               MaCell cell,
+               const std::vector<MaCell>& args,
+               MaInstructionLocation* location);
   void ma_call_named(MaMa* M,
                      MaCell cell,
-                     const std::unordered_map<std::string, MaCell>& args);
-
-  bool initcall(MaMa* M,
-                MaArgsType args_type,
-                MaCell cell,
-                MaInitcallOptions options);
-  void docall(MaMa* M);
+                     const std::unordered_map<std::string, MaCell>& args,
+                     MaInstructionLocation* location);
+  void docall(MaMa* M, MaInstructionLocation* location);
 } // namespace mavka::mama
 
 #endif // MAMA_H

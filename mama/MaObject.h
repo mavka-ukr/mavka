@@ -33,6 +33,7 @@ struct MaObject {
 union MaCellV {
   MaObject* object;
   double number;
+  MaArgs* args;
 };
 
 struct MaCell {
@@ -81,6 +82,7 @@ class MaDiia final {
   MaCode* code;
   MaObject* me;
   MaScope* scope;
+  MaObject* module;
   std::vector<MaDiiaParam> params;
 };
 
@@ -103,6 +105,8 @@ class MaDiiaNative final {
 class MaModule final {
  public:
   std::string name;
+  MaCode* code;
+  bool is_file_module;
 };
 
 inline std::string ma_number_to_string(const double number) {

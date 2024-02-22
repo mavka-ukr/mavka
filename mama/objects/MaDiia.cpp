@@ -28,6 +28,7 @@ namespace mavka::mama {
     const auto diia_cell =
         create_diia(M, diia->d.diia->name, diia->d.diia->code, object);
     diia_cell.v.object->d.diia->scope = diia->d.diia->scope;
+    diia_cell.v.object->d.diia->module = diia->d.diia->module;
     diia_cell.v.object->d.diia->params = diia->d.diia->params;
     return diia_cell;
   }
