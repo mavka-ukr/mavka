@@ -3,7 +3,8 @@
 namespace mavka::mama {
   MaCompilationResult compile_diia_node(MaMa* M,
                                         MaCode* code,
-                                        mavka::ast::DiiaNode* diia_node) {
+                                        const mavka::ast::ASTValue* ast_value) {
+    const auto diia_node = ast_value->data.DiiaNode;
     if (diia_node->structure.empty()) {
       const auto result = compile_diia(
           M, code, diia_node->async, diia_node->generics, diia_node->name,

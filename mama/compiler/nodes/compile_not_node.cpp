@@ -3,7 +3,8 @@
 namespace mavka::mama {
   MaCompilationResult compile_not_node(MaMa* M,
                                        MaCode* code,
-                                       const mavka::ast::NotNode* not_node) {
+                                       const mavka::ast::ASTValue* ast_value) {
+    const auto not_node = ast_value->data.NotNode;
     const auto result = compile_node(M, code, not_node->value);
     if (result.error) {
       return result;

@@ -887,7 +887,7 @@ namespace mavka::mama {
                 module_object->d.module->name, module_object);
             module_code->path = path;
             const auto body_compilation_result =
-                compile_body(M, module_code, parser_result.program_node->body);
+                compile_body(M, module_code, parser_result.module_node->body);
             if (body_compilation_result.error) {
               DO_THROW_STRING(
                   path + ":" +

@@ -4,7 +4,8 @@ namespace mavka::mama {
   MaCompilationResult compile_module_node(
       MaMa* M,
       MaCode* code,
-      const mavka::ast::ModuleNode* module_node) {
+      const mavka::ast::ASTValue* ast_value) {
+    const auto module_node = ast_value->data.ModuleNode;
     const auto module_code = new MaCode();
     module_code->path = code->path;
     const auto body_result = compile_body(M, module_code, module_node->body);

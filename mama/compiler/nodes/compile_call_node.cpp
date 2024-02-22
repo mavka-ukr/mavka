@@ -3,7 +3,8 @@
 namespace mavka::mama {
   MaCompilationResult compile_call_node(MaMa* M,
                                         MaCode* code,
-                                        const mavka::ast::CallNode* call_node) {
+                                        const mavka::ast::ASTValue* ast_value) {
+    const auto call_node = ast_value->data.CallNode;
     const auto result = compile_node(M, code, call_node->value);
     if (result.error) {
       return result;
@@ -16,7 +17,7 @@ namespace mavka::mama {
                                                 : MA_ARGS_NAMED);
 
     const auto instruction_location = new MaInstructionLocation(
-        call_node->start_line, call_node->start_column);
+        ast_value->start_line, ast_value->start_column);
 
     code->instructions.push_back(
         MaInstruction::initargs(new MaInitArgsInstructionArgs(args_type)));

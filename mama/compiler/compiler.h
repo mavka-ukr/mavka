@@ -17,32 +17,32 @@ struct EachNodeJumps {
   ast::ContinueNode* continue_node;
 };
 
-MaCompilationResult error(mavka::ast::ASTSome* node,
+MaCompilationResult error(const mavka::ast::ASTValue* ast_value,
                           const std::string& message);
 
 MaCompilationResult success();
 
 MaCompilationResult compile_node(MaMa* M,
                                  MaCode* code,
-                                 mavka::ast::ASTSome* node);
+                                 const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_body(MaMa* M,
                                  MaCode* code,
-                                 const std::vector<mavka::ast::ASTSome*>& body,
+                                 const std::vector<mavka::ast::ASTValue*>& body,
                                  bool nopop = false);
 void find_each_node_jumps(MaMa* M,
                           MaCode* code,
-                          const std::vector<mavka::ast::ASTSome*>& body,
+                          const std::vector<mavka::ast::ASTValue*>& body,
                           std::vector<EachNodeJumps>& jumps);
 
 MaCompilationResult compile_diia(
     MaMa* M,
     MaCode* code,
     bool async,
-    const std::vector<ast::GenericNode*>& generics,
+    const std::vector<ast::Generic*>& generics,
     const std::string& name,
-    const std::vector<ast::ParamNode*>& params,
-    const std::vector<ast::TypeValueSingleNode*>& return_types,
-    const std::vector<ast::ASTSome*>& body);
+    const std::vector<ast::Param*>& params,
+    const std::vector<ast::TypeNode*>& return_types,
+    const std::vector<ast::ASTValue*>& body);
 
 MaCompilationResult compile_method(
     MaMa* M,
@@ -50,197 +50,188 @@ MaCompilationResult compile_method(
     const std::string& structure,
     bool ee,
     bool async,
-    const std::vector<ast::GenericNode*>& generics,
+    const std::vector<ast::Generic*>& generics,
     const std::string& name,
-    const std::vector<ast::ParamNode*>& params,
-    const std::vector<ast::TypeValueSingleNode*>& return_types,
-    const std::vector<ast::ASTSome*>& body);
+    const std::vector<ast::Param*>& params,
+    const std::vector<ast::TypeNode*>& return_types,
+    const std::vector<ast::ASTValue*>& body);
 
 MaCompilationResult compile_anon_diia_node(
     MaMa* M,
     MaCode* code,
-    const mavka::ast::AnonDiiaNode* anon_diia_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_arithmetic_node(
     MaMa* M,
     MaCode* code,
-    const mavka::ast::ArithmeticNode* arithmetic_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_array_node(MaMa* M,
                                        MaCode* code,
-                                       const mavka::ast::ArrayNode* array_node);
+                                       const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_as_node(MaMa* M,
                                     MaCode* code,
-                                    mavka::ast::AsNode* as_node);
+                                    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_assign_by_element_node(
     MaMa* M,
     MaCode* code,
-    mavka::ast::AssignByElementNode* assign_by_element_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_assign_by_identifier_node(
     MaMa* M,
     MaCode* code,
-    mavka::ast::AssignByIdentifierNode* assign_by_identifier_node);
-MaCompilationResult compile_assign_simple_node(
-    MaMa* M,
-    MaCode* code,
-    mavka::ast::AssignSimpleNode* assign_simple_node);
-MaCompilationResult compile_bitwise_node(
-    MaMa* M,
-    MaCode* code,
-    const mavka::ast::BitwiseNode* bitwise_node);
+    const mavka::ast::ASTValue* ast_value);
+MaCompilationResult compile_assign_node(MaMa* M,
+                                        MaCode* code,
+                                        const mavka::ast::ASTValue* ast_value);
+MaCompilationResult compile_bitwise_node(MaMa* M,
+                                         MaCode* code,
+                                         const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_bitwise_not_node(
     MaMa* M,
     MaCode* code,
-    const mavka::ast::BitwiseNotNode* bitwise_not_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_break_node(MaMa* M,
                                        MaCode* code,
-                                       mavka::ast::BreakNode* break_node);
+                                       const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_call_node(MaMa* M,
                                       MaCode* code,
-                                      const mavka::ast::CallNode* call_node);
+                                      const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_chain_node(MaMa* M,
                                        MaCode* code,
-                                       const mavka::ast::ChainNode* chain_node);
+                                       const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_comparison_node(
     MaMa* M,
     MaCode* code,
-    mavka::ast::ComparisonNode* comparison_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_continue_node(
     MaMa* M,
     MaCode* code,
-    mavka::ast::ContinueNode* continue_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_dictionary_node(
     MaMa* M,
     MaCode* code,
-    const mavka::ast::DictionaryNode* dictionary_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_diia_node(MaMa* M,
                                       MaCode* code,
-                                      mavka::ast::DiiaNode* diia_node);
+                                      const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_each_node(MaMa* M,
                                       MaCode* code,
-                                      mavka::ast::EachNode* each_node);
+                                      const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_eval_node(MaMa* M,
                                       MaCode* code,
-                                      mavka::ast::EvalNode* eval_node);
+                                      const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_function_node(
     MaMa* M,
     MaCode* code,
-    const mavka::ast::FunctionNode* function_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_get_element_node(
     MaMa* M,
     MaCode* code,
-    const mavka::ast::GetElementNode* get_element_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_give_node(MaMa* M,
                                       MaCode* code,
-                                      mavka::ast::GiveNode* give_node);
+                                      const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_god_node(MaMa* M,
                                      MaCode* code,
-                                     mavka::ast::GodNode* god_node);
+                                     const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_identifier_node(
     MaMa* M,
     MaCode* code,
-    const mavka::ast::IdentifierNode* identifier_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_if_node(MaMa* M,
                                     MaCode* code,
-                                    const mavka::ast::IfNode* if_node);
+                                    const mavka::ast::ASTValue* ast_value);
+MaCompilationResult compile_list_node(MaMa* M,
+                                      MaCode* code,
+                                      const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_method_declaration_node(
     MaMa* M,
     MaCode* code,
-    mavka::ast::MethodDeclarationNode* method_declaration_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_mockup_diia_node(
     MaMa* M,
     MaCode* code,
-    mavka::ast::MockupDiiaNode* mockup_diia_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_mockup_module_node(
     MaMa* M,
     MaCode* code,
-    mavka::ast::MockupModuleNode* mockup_module_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_mockup_structure_node(
     MaMa* M,
     MaCode* code,
-    mavka::ast::MockupStructureNode* mockup_structure_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_mockup_subject_node(
     MaMa* M,
     MaCode* code,
-    mavka::ast::MockupSubjectNode* mockup_subject_node);
-MaCompilationResult compile_module_node(
-    MaMa* M,
-    MaCode* code,
-    const mavka::ast::ModuleNode* module_node);
+    const mavka::ast::ASTValue* ast_value);
+MaCompilationResult compile_module_node(MaMa* M,
+                                        MaCode* code,
+                                        const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_mrm_diia_node(
     MaMa* M,
     MaCode* code,
-    mavka::ast::MRMDiiaNode* mrm_diia_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_negative_node(
     MaMa* M,
     MaCode* code,
-    const mavka::ast::NegativeNode* negative_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_not_node(MaMa* M,
                                      MaCode* code,
-                                     const mavka::ast::NotNode* not_node);
-MaCompilationResult compile_number_node(
-    MaMa* M,
-    MaCode* code,
-    const mavka::ast::NumberNode* number_node);
+                                     const mavka::ast::ASTValue* ast_value);
+MaCompilationResult compile_number_node(MaMa* M,
+                                        MaCode* code,
+                                        const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_positive_node(
     MaMa* M,
     MaCode* code,
-    const mavka::ast::PositiveNode* positive_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_post_decrement_node(
     MaMa* M,
     MaCode* code,
-    mavka::ast::PostDecrementNode* post_decrement_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_post_increment_node(
     MaMa* M,
     MaCode* code,
-    mavka::ast::PostIncrementNode* post_increment_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_pre_decrement_node(
     MaMa* M,
     MaCode* code,
-    mavka::ast::PreDecrementNode* pre_decrement_node);
+    const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_pre_increment_node(
     MaMa* M,
     MaCode* code,
-    mavka::ast::PreIncrementNode* pre_increment_node);
-MaCompilationResult compile_return_node(
-    MaMa* M,
-    MaCode* code,
-    const mavka::ast::ReturnNode* return_node);
-MaCompilationResult compile_string_node(
-    MaMa* M,
-    MaCode* code,
-    const mavka::ast::StringNode* string_node);
+    const mavka::ast::ASTValue* ast_value);
+MaCompilationResult compile_return_node(MaMa* M,
+                                        MaCode* code,
+                                        const mavka::ast::ASTValue* ast_value);
+MaCompilationResult compile_string_node(MaMa* M,
+                                        MaCode* code,
+                                        const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_structure_node(
     MaMa* M,
     MaCode* code,
-    mavka::ast::StructureNode* structure_node);
-MaCompilationResult compile_take_module_node(
-    MaMa* M,
-    MaCode* code,
-    mavka::ast::TakeModuleNode* take_module_node);
-MaCompilationResult compile_take_pak_node(
-    MaMa* M,
-    MaCode* code,
-    mavka::ast::TakePakNode* take_pak_node);
+    const mavka::ast::ASTValue* ast_value);
+MaCompilationResult compile_take_node(MaMa* M,
+                                      MaCode* code,
+                                      const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_ternary_node(MaMa* M,
                                          MaCode* code,
-                                         mavka::ast::TernaryNode* ternary_node);
+                                         const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_test_node(MaMa* M,
                                       MaCode* code,
-                                      mavka::ast::TestNode* test_node);
+                                      const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_throw_node(MaMa* M,
                                        MaCode* code,
-                                       const mavka::ast::ThrowNode* throw_node);
+                                       const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_try_node(MaMa* M,
                                      MaCode* code,
-                                     const mavka::ast::TryNode* try_node);
-MaCompilationResult compile_type_value_single_node(
-    MaMa* M,
-    MaCode* code,
-    mavka::ast::TypeValueSingleNode* type_value_single_node);
+                                     const mavka::ast::ASTValue* ast_value);
+MaCompilationResult compile_type_node(MaMa* M,
+                                      MaCode* code,
+                                      const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_wait_node(MaMa* M,
                                       MaCode* code,
-                                      mavka::ast::WaitNode* wait_node);
+                                      const mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_while_node(MaMa* M,
                                        MaCode* code,
-                                       const mavka::ast::WhileNode* while_node);
+                                       const mavka::ast::ASTValue* ast_value);
 
 #endif // COMPILER_H

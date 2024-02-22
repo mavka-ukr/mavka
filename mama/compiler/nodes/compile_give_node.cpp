@@ -3,7 +3,8 @@
 namespace mavka::mama {
   MaCompilationResult compile_give_node(MaMa* M,
                                         MaCode* code,
-                                        mavka::ast::GiveNode* give_node) {
+                                        const mavka::ast::ASTValue* ast_value) {
+    const auto give_node = ast_value->data.GiveNode;
     for (const auto& element_node : give_node->elements) {
       code->instructions.push_back(
           MaInstruction::load(new MaLoadInstructionArgs(element_node->name)));
