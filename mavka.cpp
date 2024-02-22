@@ -101,10 +101,16 @@ size_t try_run(MaMa* M, MaCode* code, size_t start_index = 0) {
         std::cout << "  " << line << std::endl;
       }
     }
-    std::cout << cell_to_string(M->stack.top()) << std::endl;
+    std::cout << cell_to_string(TOP()) << std::endl;
+    POP();
     return 1;
   }
 }
+
+#define KEY_UP 72
+#define KEY_DOWN 80
+#define KEY_LEFT 75
+#define KEY_RIGHT 77
 
 int main(int argc, char** argv) {
   const auto args = std::vector<std::string>(argv, argv + argc);
@@ -133,7 +139,6 @@ int main(int argc, char** argv) {
 
   if (args.size() == 1) {
     std::cout << "Експериментальна Мавка " << MAVKA_VERSION << std::endl;
-    std::string line;
     const auto main_module_cell = create_module(M, "старт");
     const auto main_module_code = new MaCode();
     main_module_code->path = "[консоль]";
@@ -142,13 +147,33 @@ int main(int argc, char** argv) {
     M->main_module = main_module_cell.v.object;
     FRAME_PUSH(MaFrame::module(
         new MaScope(S), new MaFrameModuleData(main_module_cell.v.object)));
+    std::string line;
     do {
-      std::cout << "› ";
-      std::getline(std::cin, line);
-      if (line == "вийти") {
+      if (line.empty()) {
+        std::cout << "› ";
+      } else {
+        std::cout << "  ";
+      }
+      std::string currline;
+      std::getline(std::cin, currline);
+      if (currline == "вийти") {
         return 0;
       }
+      if (currline.empty()) {
+        continue;
+      }
+      if (currline[currline.size() - 1] == '\\') {
+        line += ("\n" + currline.substr(0, currline.size() - 1));
+        continue;
+      } else {
+        if (line.empty()) {
+          line = currline;
+        } else {
+          line += ("\n" + currline);
+        }
+      }
       const auto parser_result = mavka::parser::parse(line, "[консоль]");
+      line = "";
       if (!parser_result.errors.empty()) {
         const auto error = parser_result.errors[0];
         std::cout << error.path + ":" + std::to_string(error.line) + ":" +

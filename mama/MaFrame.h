@@ -37,8 +37,6 @@ struct MaCallFrameCallData {
   } o;
   MaInstructionLocation* location;
   size_t restore_stack_size;
-  size_t restore_args_size;
-  bool pending;
 };
 
 struct MaFrameModuleData {

@@ -110,7 +110,7 @@
 #define PUSH_OBJECT(v) PUSH(MA_MAKE_OBJECT((v)))
 #define PUSH_ARGS(v) PUSH(MA_MAKE_ARGS((v)))
 
-#define TOP() M->stack.top();
+#define TOP() M->stack.top()
 #define TOP_VALUE(name) const auto name = TOP();
 #define POP() M->stack.pop();
 #define POP_VALUE(name)    \
