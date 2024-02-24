@@ -54,10 +54,9 @@ MaCompilationResult compile_method(MaMa* M,
                                    const ast::ASTValue* return_types,
                                    const std::vector<ast::ASTValue*>& body);
 
-MaCompilationResult compile_assign_by_identifier_node(
-    MaMa* M,
-    MaCode* code,
-    mavka::ast::ASTValue* ast_value);
+MaCompilationResult compile_property_set_node(MaMa* M,
+                                              MaCode* code,
+                                              mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_assign_node(MaMa* M,
                                         MaCode* code,
                                         mavka::ast::ASTValue* ast_value);
@@ -70,9 +69,9 @@ MaCompilationResult compile_break_node(MaMa* M,
 MaCompilationResult compile_call_node(MaMa* M,
                                       MaCode* code,
                                       mavka::ast::ASTValue* ast_value);
-MaCompilationResult compile_chain_node(MaMa* M,
-                                       MaCode* code,
-                                       mavka::ast::ASTValue* ast_value);
+MaCompilationResult compile_property_get_node(MaMa* M,
+                                              MaCode* code,
+                                              mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_continue_node(MaMa* M,
                                           MaCode* code,
                                           mavka::ast::ASTValue* ast_value);

@@ -10,12 +10,12 @@ add_subdirectory(external/ordered-map)
 
 set(MAVKA_COMPILER_SRC
         mama/compiler/nodes/compile_list_node.cpp
-        mama/compiler/nodes/compile_assign_by_identifier_node.cpp
+        mama/compiler/nodes/compile_property_set_node.cpp
         mama/compiler/nodes/compile_assign_node.cpp
         mama/compiler/nodes/compile_binary_node.cpp
         mama/compiler/nodes/compile_break_node.cpp
         mama/compiler/nodes/compile_call_node.cpp
-        mama/compiler/nodes/compile_chain_node.cpp
+        mama/compiler/nodes/compile_property_get_node.cpp
         mama/compiler/nodes/compile_continue_node.cpp
         mama/compiler/nodes/compile_dictionary_node.cpp
         mama/compiler/nodes/compile_diia_node.cpp
