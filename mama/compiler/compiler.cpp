@@ -8,8 +8,8 @@ namespace mavka::mama {
       return error(nullptr, "null node");
     }
 
-    if (ast_value->kind == ast::KindAssignByIdentifierNode) {
-      return compile_assign_by_identifier_node(M, code, ast_value);
+    if (ast_value->kind == ast::KindPropertySetNode) {
+      return compile_property_set_node(M, code, ast_value);
     }
 
     if (ast_value->kind == ast::KindAssignNode) {
@@ -28,8 +28,8 @@ namespace mavka::mama {
       return compile_call_node(M, code, ast_value);
     }
 
-    if (ast_value->kind == ast::KindChainNode) {
-      return compile_chain_node(M, code, ast_value);
+    if (ast_value->kind == ast::KindPropertyGetNode) {
+      return compile_property_get_node(M, code, ast_value);
     }
 
     if (ast_value->kind == ast::KindContinueNode) {
