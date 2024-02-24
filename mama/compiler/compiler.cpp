@@ -8,6 +8,10 @@ namespace mavka::mama {
       return error(nullptr, "null node");
     }
 
+    //    if (ast_value->kind == ast::KindNone) {
+    //      return success();
+    //    }
+
     if (ast_value->kind == ast::KindPropertySetNode) {
       return compile_property_set_node(M, code, ast_value);
     }
@@ -144,18 +148,30 @@ namespace mavka::mama {
       return compile_while_node(M, code, ast_value);
     }
 
-    return error(ast_value, "unsupported node");
+    return error(ast_value,
+                 "unsupported node: " + std::to_string(ast_value->kind));
   }
 
   MaCompilationResult compile_body(
       MaMa* M,
       MaCode* code,
       const std::vector<mavka::ast::ASTValue*>& body) {
-    for (const auto node : body) {
-      if (!node) {
+    for (const auto ast_value : body) {
+      if (!ast_value) {
         continue;
       }
-      const auto result = compile_node(M, code, node);
+      if (ast_value->kind == ast::KindNone) {
+        continue;
+      }
+      if (ast_value->kind == ast::KindBlockNode) {
+        const auto result =
+            compile_body(M, code, ast_value->data.BlockNode->body);
+        if (result.error) {
+          return result;
+        }
+        continue;
+      }
+      const auto result = compile_node(M, code, ast_value);
       if (result.error) {
         return result;
       }
