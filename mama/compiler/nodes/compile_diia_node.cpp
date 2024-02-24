@@ -12,8 +12,14 @@ namespace mavka::mama {
       if (result.error) {
         return result;
       }
-      code->instructions.push_back(
-          MaInstruction::store(new MaStoreInstructionArgs(diia_node->name)));
+      if (diia_node->anonymous) {
+      } else {
+        if (diia_node->name.empty()) {
+          return error(ast_value, "Не вказано назву дії.");
+        }
+        code->instructions.push_back(
+            MaInstruction::store(new MaStoreInstructionArgs(diia_node->name)));
+      }
     } else {
       if (diia_node->ee) {
         const auto result = compile_diia(
