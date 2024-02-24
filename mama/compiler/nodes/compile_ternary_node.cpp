@@ -4,7 +4,7 @@ namespace mavka::mama {
   MaCompilationResult compile_ternary_node(
       MaMa* M,
       MaCode* code,
-      const mavka::ast::ASTValue* ast_value) {
+      mavka::ast::ASTValue* ast_value) {
     const auto ternary_node = ast_value->data.TernaryNode;
     const auto condition_result =
         compile_node(M, code, ternary_node->condition);

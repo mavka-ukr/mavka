@@ -3,7 +3,7 @@
 namespace mavka::mama {
   MaCompilationResult compile_take_node(MaMa* M,
                                         MaCode* code,
-                                        const mavka::ast::ASTValue* ast_value) {
+                                        mavka::ast::ASTValue* ast_value) {
     const auto take_node = ast_value->data.TakeNode;
     const auto name = take_node->name;
     const auto path = M->cwd + "/" + name + ".м";

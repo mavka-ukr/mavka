@@ -3,7 +3,7 @@
 namespace mavka::mama {
   MaCompilationResult compile_if_node(MaMa* M,
                                       MaCode* code,
-                                      const mavka::ast::ASTValue* ast_value) {
+                                      mavka::ast::ASTValue* ast_value) {
     const auto if_node = ast_value->data.IfNode;
     const auto condition_result = compile_node(M, code, if_node->condition);
     if (condition_result.error) {

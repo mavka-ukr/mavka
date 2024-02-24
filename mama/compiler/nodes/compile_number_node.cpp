@@ -28,7 +28,7 @@ namespace mavka::mama {
   MaCompilationResult compile_number_node(
       MaMa* M,
       MaCode* code,
-      const mavka::ast::ASTValue* ast_value) {
+      mavka::ast::ASTValue* ast_value) {
     const auto number_node = ast_value->data.NumberNode;
     code->instructions.push_back(
         MaInstruction::number(std::stod(process_number(number_node->value))));

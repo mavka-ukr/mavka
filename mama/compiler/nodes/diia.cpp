@@ -1,15 +1,14 @@
 #include "../../mama.h"
 
 namespace mavka::mama {
-  MaCompilationResult compile_diia(
-      MaMa* M,
-      MaCode* code,
-      bool async,
-      const std::vector<ast::Generic*>& generics,
-      const std::string& name,
-      const std::vector<ast::Param*>& params,
-      const std::vector<ast::TypeNode*>& return_types,
-      const std::vector<ast::ASTSome*>& body) {
+  MaCompilationResult compile_diia(MaMa* M,
+                                   MaCode* code,
+                                   bool async,
+                                   const std::vector<ast::ASTValue*>& generics,
+                                   const std::string& name,
+                                   const std::vector<ast::ASTValue*>& params,
+                                   const ast::ASTValue* return_types,
+                                   const std::vector<ast::ASTValue*>& body) {
     const auto diia_code = new MaCode();
     diia_code->path = code->path;
     const auto body_result = compile_body(M, diia_code, body);
@@ -22,12 +21,12 @@ namespace mavka::mama {
     code->instructions.push_back(
         MaInstruction::diia(new MaDiiaInstructionArgs(diia_code, name)));
     for (const auto& param : params) {
-      if (param->variadic) {
-        return error(ast::make_ast_some(param),
-                     "Варіативні параметри наразі не підтримуються.");
+      if (param->data.ParamNode->variadic) {
+        return error(param, "Варіативні параметри наразі не підтримуються.");
       }
-      if (param->value) {
-        const auto value_result = compile_node(M, code, param->value);
+      if (param->data.ParamNode->value) {
+        const auto value_result =
+            compile_node(M, code, param->data.ParamNode->value);
         if (value_result.error) {
           return value_result;
         }
@@ -35,7 +34,7 @@ namespace mavka::mama {
         code->instructions.push_back(MaInstruction::empty());
       }
       code->instructions.push_back(MaInstruction::diiaparam(
-          new MaDiiaParamInstructionArgs(param->name)));
+          new MaDiiaParamInstructionArgs(param->data.ParamNode->name)));
     }
     return success();
   }
@@ -46,11 +45,11 @@ namespace mavka::mama {
       const std::string& structure,
       bool ee,
       bool async,
-      const std::vector<ast::Generic*>& generics,
+      const std::vector<ast::ASTValue*>& generics,
       const std::string& name,
-      const std::vector<ast::Param*>& params,
-      const std::vector<ast::TypeNode*>& return_types,
-      const std::vector<ast::ASTSome*>& body) {
+      const std::vector<ast::ASTValue*>& params,
+      const ast::ASTValue* return_types,
+      const std::vector<ast::ASTValue*>& body) {
     code->instructions.push_back(
         MaInstruction::load(new MaLoadInstructionArgs(structure)));
     const auto result = compile_diia(M, code, async, generics, name, params,

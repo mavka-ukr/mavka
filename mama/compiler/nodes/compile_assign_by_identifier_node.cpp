@@ -4,7 +4,7 @@ namespace mavka::mama {
   MaCompilationResult compile_assign_by_identifier_node(
       MaMa* M,
       MaCode* code,
-      const mavka::ast::ASTValue* ast_value) {
+      mavka::ast::ASTValue* ast_value) {
     const auto assign_by_identifier_node =
         ast_value->data.AssignByIdentifierNode;
     const auto value_result =

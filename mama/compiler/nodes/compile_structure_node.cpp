@@ -4,7 +4,7 @@ namespace mavka::mama {
   MaCompilationResult compile_structure_node(
       MaMa* M,
       MaCode* code,
-      const mavka::ast::ASTValue* ast_value) {
+      mavka::ast::ASTValue* ast_value) {
     const auto structure_node = ast_value->data.StructureNode;
     if (structure_node->parent) {
       return error(ast_value, "Наслідування структур тимчасово недоступне.");
@@ -12,20 +12,22 @@ namespace mavka::mama {
     code->instructions.push_back(MaInstruction::struct_(
         new MaStructInstructionArgs(structure_node->name)));
     for (const auto& param : structure_node->params) {
-      if (param->value) {
-        const auto value_result = compile_node(M, code, param->value);
+      if (param->data.ParamNode->value) {
+        const auto value_result =
+            compile_node(M, code, param->data.ParamNode->value);
         if (value_result.error) {
           return value_result;
         }
       } else {
         code->instructions.push_back(MaInstruction::empty());
       }
-      if (param->ee) {
+      if (param->data.ParamNode->ee) {
         code->instructions.push_back(MaInstruction{
-            OP_E_SETR, {.set = new MaSetInstructionArgs(param->name)}});
+            OP_E_SETR,
+            {.set = new MaSetInstructionArgs(param->data.ParamNode->name)}});
       } else {
         code->instructions.push_back(MaInstruction::structparam(
-            new MaStructParamInstructionArgs(param->name)));
+            new MaStructParamInstructionArgs(param->data.ParamNode->name)));
       }
     }
     code->instructions.push_back(

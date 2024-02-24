@@ -3,7 +3,7 @@
 namespace mavka::mama {
   MaCompilationResult compile_list_node(MaMa* M,
                                         MaCode* code,
-                                        const mavka::ast::ASTValue* ast_value) {
+                                        mavka::ast::ASTValue* ast_value) {
     const auto list_node = ast_value->data.ListNode;
     code->instructions.push_back(MaInstruction::list());
     for (auto& element : list_node->elements) {

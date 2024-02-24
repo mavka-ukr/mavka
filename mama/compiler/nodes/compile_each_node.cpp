@@ -3,7 +3,7 @@
 namespace mavka::mama {
   MaCompilationResult compile_each_node(MaMa* M,
                                         MaCode* code,
-                                        const mavka::ast::ASTValue* ast_value) {
+                                        mavka::ast::ASTValue* ast_value) {
     const auto each_node = ast_value->data.EachNode;
     std::vector<EachNodeJumps> jumps;
     find_each_node_jumps(M, code, each_node->body, jumps);
@@ -82,7 +82,6 @@ namespace mavka::mama {
       return success();
     }
 
-    return error(mavka::ast::make_ast_some(each_node),
-                 "Перебір з ключем тимчасово недоступний.");
+    return error(ast_value, "Перебір з ключем тимчасово недоступний.");
   }
 } // namespace mavka::mama

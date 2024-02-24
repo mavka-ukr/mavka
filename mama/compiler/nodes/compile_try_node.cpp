@@ -3,7 +3,7 @@
 namespace mavka::mama {
   MaCompilationResult compile_try_node(MaMa* M,
                                        MaCode* code,
-                                       const mavka::ast::ASTValue* ast_value) {
+                                       mavka::ast::ASTValue* ast_value) {
     const auto try_node = ast_value->data.TryNode;
     const auto try_code = new MaCode();
     try_code->path = code->path;

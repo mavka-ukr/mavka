@@ -4,7 +4,7 @@ namespace mavka::mama {
   MaCompilationResult compile_assign_node(
       MaMa* M,
       MaCode* code,
-      const mavka::ast::ASTValue* ast_value) {
+      mavka::ast::ASTValue* ast_value) {
     const auto assign_simple_node = ast_value->data.AssignNode;
     const auto result = compile_node(M, code, assign_simple_node->value);
     if (result.error) {

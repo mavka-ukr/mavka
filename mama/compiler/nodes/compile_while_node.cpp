@@ -4,7 +4,7 @@ namespace mavka::mama {
   MaCompilationResult compile_while_node(
       MaMa* M,
       MaCode* code,
-      const mavka::ast::ASTValue* ast_value) {
+      mavka::ast::ASTValue* ast_value) {
     const auto while_node = ast_value->data.WhileNode;
     std::vector<EachNodeJumps> jumps;
     find_each_node_jumps(M, code, while_node->body, jumps);

@@ -8,14 +8,6 @@ namespace mavka::mama {
       return error(nullptr, "null node");
     }
 
-    if (ast_value->kind == ast::KindArithmeticNode) {
-      return compile_arithmetic_node(M, code, ast_value);
-    }
-
-    if (ast_value->kind == ast::KindAsNode) {
-      return compile_as_node(M, code, ast_value);
-    }
-
     if (ast_value->kind == ast::KindAssignByIdentifierNode) {
       return compile_assign_by_identifier_node(M, code, ast_value);
     }
@@ -24,12 +16,8 @@ namespace mavka::mama {
       return compile_assign_node(M, code, ast_value);
     }
 
-    if (ast_value->kind == ast::KindBitwiseNode) {
-      return compile_bitwise_node(M, code, ast_value);
-    }
-
-    if (ast_value->kind == ast::KindBitwiseNotNode) {
-      return compile_bitwise_not_node(M, code, ast_value);
+    if (ast_value->kind == ast::KindBinaryNode) {
+      return compile_binary_node(M, code, ast_value);
     }
 
     if (ast_value->kind == ast::KindBreakNode) {
@@ -42,10 +30,6 @@ namespace mavka::mama {
 
     if (ast_value->kind == ast::KindChainNode) {
       return compile_chain_node(M, code, ast_value);
-    }
-
-    if (ast_value->kind == ast::KindComparisonNode) {
-      return compile_comparison_node(M, code, ast_value);
     }
 
     if (ast_value->kind == ast::KindContinueNode) {
@@ -62,10 +46,6 @@ namespace mavka::mama {
 
     if (ast_value->kind == ast::KindEachNode) {
       return compile_each_node(M, code, ast_value);
-    }
-
-    if (ast_value->kind == ast::KindGetElementNode) {
-      return compile_get_element_node(M, code, ast_value);
     }
 
     if (ast_value->kind == ast::KindGiveNode) {
@@ -85,7 +65,7 @@ namespace mavka::mama {
     }
 
     if (ast_value->kind == ast::KindListNode) {
-      return compile_array_node(M, code, ast_value);
+      return compile_list_node(M, code, ast_value);
     }
 
     if (ast_value->kind == ast::KindMockupDiiaNode) {
@@ -112,36 +92,8 @@ namespace mavka::mama {
       return compile_mrm_diia_node(M, code, ast_value);
     }
 
-    if (ast_value->kind == ast::KindNegativeNode) {
-      return compile_negative_node(M, code, ast_value);
-    }
-
-    if (ast_value->kind == ast::KindNotNode) {
-      return compile_not_node(M, code, ast_value);
-    }
-
     if (ast_value->kind == ast::KindNumberNode) {
       return compile_number_node(M, code, ast_value);
-    }
-
-    if (ast_value->kind == ast::KindPositiveNode) {
-      return compile_positive_node(M, code, ast_value);
-    }
-
-    if (ast_value->kind == ast::KindPostDecrementNode) {
-      return compile_post_decrement_node(M, code, ast_value);
-    }
-
-    if (ast_value->kind == ast::KindPostIncrementNode) {
-      return compile_post_increment_node(M, code, ast_value);
-    }
-
-    if (ast_value->kind == ast::KindPreDecrementNode) {
-      return compile_pre_decrement_node(M, code, ast_value);
-    }
-
-    if (ast_value->kind == ast::KindPreIncrementNode) {
-      return compile_pre_increment_node(M, code, ast_value);
     }
 
     if (ast_value->kind == ast::KindReturnNode) {
@@ -178,6 +130,10 @@ namespace mavka::mama {
 
     if (ast_value->kind == ast::KindTypeNode) {
       return compile_type_node(M, code, ast_value);
+    }
+
+    if (ast_value->kind == ast::KindUnaryNode) {
+      return compile_unary_node(M, code, ast_value);
     }
 
     if (ast_value->kind == ast::KindWaitNode) {
@@ -236,7 +192,7 @@ namespace mavka::mama {
     }
   }
 
-  MaCompilationResult error(const mavka::ast::ASTValue* ast_value,
+  MaCompilationResult error(mavka::ast::ASTValue* ast_value,
                             const std::string& message) {
     const auto error = new MaCompilationError();
     if (ast_value) {
