@@ -18,7 +18,7 @@ namespace mavka::mama {
             MaInstruction::store(new MaStoreInstructionArgs(take_node->as)));
       }
     } else {
-      for (const auto element : take_node->elements) {
+      for (const auto& element : take_node->elements) {
         code->instructions.push_back(MaInstruction::moduleload(
             new MaModuleLoadInstructionArgs(element.first, element.second)));
       }
