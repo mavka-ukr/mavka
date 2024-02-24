@@ -9,18 +9,13 @@ add_subdirectory(external/parser)
 add_subdirectory(external/ordered-map)
 
 set(MAVKA_COMPILER_SRC
-        mama/compiler/nodes/compile_arithmetic_node.cpp
         mama/compiler/nodes/compile_list_node.cpp
-        mama/compiler/nodes/compile_as_node.cpp
-        mama/compiler/nodes/compile_assign_by_element_node.cpp
         mama/compiler/nodes/compile_assign_by_identifier_node.cpp
         mama/compiler/nodes/compile_assign_node.cpp
-        mama/compiler/nodes/compile_bitwise_node.cpp
-        mama/compiler/nodes/compile_bitwise_not_node.cpp
+        mama/compiler/nodes/compile_binary_node.cpp
         mama/compiler/nodes/compile_break_node.cpp
         mama/compiler/nodes/compile_call_node.cpp
         mama/compiler/nodes/compile_chain_node.cpp
-        mama/compiler/nodes/compile_comparison_node.cpp
         mama/compiler/nodes/compile_continue_node.cpp
         mama/compiler/nodes/compile_dictionary_node.cpp
         mama/compiler/nodes/compile_diia_node.cpp
@@ -35,14 +30,8 @@ set(MAVKA_COMPILER_SRC
         mama/compiler/nodes/compile_mockup_subject_node.cpp
         mama/compiler/nodes/compile_module_node.cpp
         mama/compiler/nodes/compile_mrm_diia_node.cpp
-        mama/compiler/nodes/compile_negative_node.cpp
-        mama/compiler/nodes/compile_not_node.cpp
         mama/compiler/nodes/compile_number_node.cpp
-        mama/compiler/nodes/compile_positive_node.cpp
-        mama/compiler/nodes/compile_post_decrement_node.cpp
-        mama/compiler/nodes/compile_post_increment_node.cpp
-        mama/compiler/nodes/compile_pre_decrement_node.cpp
-        mama/compiler/nodes/compile_pre_increment_node.cpp
+        mama/compiler/nodes/compile_unary_node.cpp
         mama/compiler/nodes/compile_return_node.cpp
         mama/compiler/nodes/compile_string_node.cpp
         mama/compiler/nodes/compile_structure_node.cpp

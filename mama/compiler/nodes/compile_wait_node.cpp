@@ -3,7 +3,7 @@
 namespace mavka::mama {
   MaCompilationResult compile_wait_node(MaMa* M,
                                         MaCode* code,
-                                        const mavka::ast::ASTValue* ast_value) {
+                                        mavka::ast::ASTValue* ast_value) {
     return error(ast_value, "Вказівка \"чекати\" тимчасово недоступна.");
   }
 } // namespace mavka::mama

@@ -4,7 +4,7 @@ namespace mavka::mama {
   MaCompilationResult compile_mrm_diia_node(
       MaMa* M,
       MaCode* code,
-      const mavka::ast::ASTValue* ast_value) {
+      mavka::ast::ASTValue* ast_value) {
     return error(ast_value, "Вказівка <дія> тимчасово недоступна.");
   }
 } // namespace mavka::mama
