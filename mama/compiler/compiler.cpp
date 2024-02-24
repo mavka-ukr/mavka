@@ -48,10 +48,6 @@ namespace mavka::mama {
       return compile_diia_node(M, code, ast_value);
     }
 
-    if (ast_value->kind == ast::KindEachNode) {
-      return compile_each_node(M, code, ast_value);
-    }
-
     if (ast_value->kind == ast::KindGiveNode) {
       return compile_give_node(M, code, ast_value);
     }

@@ -81,9 +81,6 @@ MaCompilationResult compile_dictionary_node(MaMa* M,
 MaCompilationResult compile_diia_node(MaMa* M,
                                       MaCode* code,
                                       mavka::ast::ASTValue* ast_value);
-MaCompilationResult compile_each_node(MaMa* M,
-                                      MaCode* code,
-                                      mavka::ast::ASTValue* ast_value);
 MaCompilationResult compile_give_node(MaMa* M,
                                       MaCode* code,
                                       mavka::ast::ASTValue* ast_value);
