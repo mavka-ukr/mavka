@@ -19,7 +19,6 @@ set(MAVKA_COMPILER_SRC
         mama/compiler/nodes/compile_continue_node.cpp
         mama/compiler/nodes/compile_dictionary_node.cpp
         mama/compiler/nodes/compile_diia_node.cpp
-        mama/compiler/nodes/compile_each_node.cpp
         mama/compiler/nodes/compile_give_node.cpp
         mama/compiler/nodes/compile_god_node.cpp
         mama/compiler/nodes/compile_identifier_node.cpp
