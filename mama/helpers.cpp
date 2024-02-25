@@ -119,29 +119,29 @@ namespace mavka::mama {
   void print_instruction_with_index(MaCode* code,
                                     int index,
                                     MaInstruction instruction) {
-    std::cout << code << "[" << index << "]: " << getopname(instruction.op)
+    std::cout << code << "[" << index << "]: " << getopname(instruction.v)
               << " [";
-    if (instruction.op == OP_STORE) {
+    if (instruction.v == VStore) {
       std::cout << instruction.args.store->name;
     }
-    if (instruction.op == OP_LOAD) {
+    if (instruction.v == VLoad) {
       std::cout << instruction.args.load->name;
     }
-    if (instruction.op == OP_JUMP_IF_TRUE ||
-        instruction.op == OP_E_JUMP_IF_TRUE) {
+    if (instruction.v == VJumpIfTrue ||
+        instruction.v == VEJumpIfTrue) {
       std::cout << instruction.args.jumpiftrue;
     }
-    if (instruction.op == OP_JUMP_IF_FALSE ||
-        instruction.op == OP_E_JUMP_IF_FALSE) {
+    if (instruction.v == VJumpIfFalse ||
+        instruction.v == VEJumpIfFalse) {
       std::cout << instruction.args.jumpiffalse;
     }
-    if (instruction.op == OP_JUMP) {
+    if (instruction.v == VJump) {
       std::cout << instruction.args.jump;
     }
-    if (instruction.op == OP_STORE_ARG) {
+    if (instruction.v == VStoreArg) {
       std::cout << instruction.args.storearg->name;
     }
-    if (instruction.op == OP_NUMBER) {
+    if (instruction.v == VNumber) {
       std::cout << instruction.args.number;
     }
     std::cout << "]" << std::endl;

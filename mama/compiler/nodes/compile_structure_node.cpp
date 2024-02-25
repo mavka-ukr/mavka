@@ -23,7 +23,7 @@ namespace mavka::mama {
       }
       if (param->data.ParamNode->ee) {
         code->instructions.push_back(MaInstruction{
-            OP_E_SETR,
+            VESetR,
             {.set = new MaSetInstructionArgs(param->data.ParamNode->name)}});
       } else {
         code->instructions.push_back(MaInstruction::structparam(

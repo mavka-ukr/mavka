@@ -2,86 +2,86 @@
 #define MA_INSTRUCTION_H
 
 typedef enum {
-  OP_POP,
+  VPop,
 
-  OP_CONSTANT,
-  OP_NUMBER,
-  OP_EMPTY,
-  OP_YES,
-  OP_NO,
+  VConstant,
+  VNumber,
+  VEmpty,
+  VYes,
+  VNo,
 
-  OP_INITARGS,
-  OP_PUSH_ARG,
-  OP_STORE_ARG,
-  OP_CALL,
-  OP_RETURN,
-  OP_DIIA,
-  OP_DIIA_PARAM,
+  VInitargs,
+  VPushArg,
+  VStoreArg,
+  VCall,
+  VReturn,
+  VDiia,
+  VDiiaParam,
 
-  OP_STORE,
-  OP_LOAD,
+  VStore,
+  VLoad,
 
-  OP_JUMP,
-  OP_JUMP_IF_TRUE,
-  OP_JUMP_IF_FALSE,
-  OP_E_JUMP_IF_TRUE,
-  OP_E_JUMP_IF_FALSE,
+  VJump,
+  VJumpIfTrue,
+  VJumpIfFalse,
+  VEJumpIfTrue,
+  VEJumpIfFalse,
 
-  OP_GET,
-  OP_SET,
-  OP_E_SETR,
+  VGet,
+  VSet,
+  VESetR,
 
-  OP_TRY,
-  OP_TRY_DONE,
-  OP_THROW,
+  VTry,
+  VTryDone,
+  VThrow,
 
-  OP_LIST,
-  OP_LIST_APPEND,
-  OP_DICT,
-  OP_DICT_SET,
+  VList,
+  VListAppend,
+  VDict,
+  VDictSet,
 
-  OP_STRUCT,
-  OP_STRUCT_PARAM,
-  OP_STRUCT_METHOD,
+  VStruct,
+  VStructParam,
+  VStructMethod,
 
-  OP_MODULE,
-  OP_GIVE,
-  OP_MODULE_DONE,
-  OP_KEEP_MODULE,
-  OP_LOAD_MODULE,
-  OP_MODULE_LOAD,
-  OP_TAKE,
+  VModule,
+  VGive,
+  VModuleDone,
+  VKeepModule,
+  VLoadModule,
+  VModuleLoad,
+  VTake,
 
-  OP_EQ,
-  OP_GT,
-  OP_GE,
-  OP_LT,
-  OP_LE,
-  OP_CONTAINS,
-  OP_IS,
+  VEq,
+  VGt,
+  VGe,
+  VLt,
+  VLe,
+  VContains,
+  VIs,
 
-  OP_NOT,
+  VNot,
 
-  OP_NEGATIVE,
-  OP_POSITIVE,
-  OP_BNOT,
+  VNegative,
+  VPositive,
+  VBnot,
 
-  OP_ADD,
-  OP_SUB,
-  OP_MUL,
-  OP_DIV,
-  OP_MOD,
-  OP_DIVDIV,
-  OP_POW,
+  VAdd,
+  VSub,
+  VMul,
+  VDiv,
+  VMod,
+  VDivDiv,
+  VPow,
 
-  OP_XOR,
-  OP_BOR,
-  OP_BAND,
-  OP_SHL,
-  OP_SHR,
-} OP;
+  VXor,
+  VBor,
+  VBand,
+  VShl,
+  VShr,
+} MaV;
 
-std::string getopname(const OP op);
+std::string getopname(const MaV v);
 
 struct MaInstructionLocation {
   size_t line;
@@ -168,7 +168,7 @@ struct MaModuleLoadInstructionArgs {
 };
 
 struct MaInstruction {
-  OP op;
+  MaV v;
   union {
     size_t constant;
     double number;
