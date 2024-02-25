@@ -172,7 +172,7 @@ namespace mavka::mama {
         return result;
       }
       // if (ast_value->is_popable() && !nopop) {
-      //   code->instructions.push_back(MaInstruction{OP_POP});
+      //   code->instructions.push_back(MaInstruction{VPop});
       // }
     }
     return success();

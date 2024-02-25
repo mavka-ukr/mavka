@@ -61,53 +61,53 @@ namespace mavka::mama {
 
       DEBUG_DO(print_instruction_with_index(code, i, I))
 
-      switch (I.op) {
-        case OP_POP: {
+      switch (I.v) {
+        case VPop: {
           POP();
           break;
         }
-        case OP_CONSTANT: {
+        case VConstant: {
           PUSH(M->constants[I.args.constant]);
           break;
         }
-        case OP_NUMBER: {
+        case VNumber: {
           PUSH_NUMBER(I.args.number);
           break;
         }
-        case OP_EMPTY: {
+        case VEmpty: {
           PUSH_EMPTY();
           break;
         }
-        case OP_YES: {
+        case VYes: {
           PUSH_YES();
           break;
         }
-        case OP_NO: {
+        case VNo: {
           PUSH_NO();
           break;
         }
-        case OP_INITARGS: {
+        case VInitargs: {
           const auto args = new MaArgs(I.args.initargs->args_type);
           PUSH_ARGS(args);
           break;
         }
-        case OP_PUSH_ARG: {
+        case VPushArg: {
           POP_VALUE(value);
           TOP_VALUE(args);
           ARGS_PUSH(args, value);
           break;
         }
-        case OP_STORE_ARG: {
+        case VStoreArg: {
           POP_VALUE(value);
           TOP_VALUE(args);
           ARGS_SET(args, I.args.store->name, value);
           break;
         }
-        case OP_CALL: {
+        case VCall: {
           docall(M, I.location);
           break;
         }
-        case OP_RETURN: {
+        case VReturn: {
           auto frame = M->frames.top();
           FRAME_POP();
           while (frame->type != FRAME_TYPE_CALL) {
@@ -116,7 +116,7 @@ namespace mavka::mama {
           }
           return;
         }
-        case OP_DIIA: {
+        case VDiia: {
           READ_TOP_FRAME();
           const auto diia_cell =
               create_diia(M, I.args.diia->name, I.args.diia->code, nullptr);
@@ -125,7 +125,7 @@ namespace mavka::mama {
           PUSH(diia_cell);
           break;
         }
-        case OP_DIIA_PARAM: {
+        case VDiiaParam: {
           POP_VALUE(default_value_cell);
           TOP_VALUE(diia_cell);
           diia_cell.v.object->d.diia->params.push_back(
@@ -133,13 +133,13 @@ namespace mavka::mama {
                           .default_value = default_value_cell});
           break;
         }
-        case OP_STORE: {
+        case VStore: {
           POP_VALUE(value);
           READ_TOP_FRAME();
           frame->scope->set_variable(I.args.store->name, value);
           break;
         }
-        case OP_LOAD: {
+        case VLoad: {
           READ_TOP_FRAME();
           const auto scope = frame->scope;
           if (scope->has_variable(I.args.load->name)) {
@@ -148,11 +148,11 @@ namespace mavka::mama {
           }
           DO_THROW_STRING("Субʼєкт \"" + I.args.load->name + "\" не визначено.")
         }
-        case OP_JUMP: {
+        case VJump: {
           i = I.args.jump;
           goto start;
         }
-        case OP_JUMP_IF_TRUE: {
+        case VJumpIfTrue: {
           POP_VALUE(cell);
           if (IS_NUMBER(cell) && cell.v.number != 0.0) {
             i = I.args.jumpiftrue;
@@ -164,7 +164,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_JUMP_IF_FALSE: {
+        case VJumpIfFalse: {
           POP_VALUE(cell);
           if (IS_EMPTY(cell)) {
             i = I.args.jumpiffalse;
@@ -180,7 +180,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_E_JUMP_IF_TRUE: {
+        case VEJumpIfTrue: {
           TOP_VALUE(cell);
           if (IS_NUMBER(cell)) {
             if (cell.v.number != 0.0) {
@@ -193,7 +193,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_E_JUMP_IF_FALSE: {
+        case VEJumpIfFalse: {
           TOP_VALUE(cell);
           if (IS_EMPTY(cell)) {
             i = I.args.jumpiffalse;
@@ -209,7 +209,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_GET: {
+        case VGet: {
           POP_VALUE(cell);
           if (IS_OBJECT(cell)) {
             OBJECT_GET(cell, value, I.args.get->name);
@@ -219,7 +219,7 @@ namespace mavka::mama {
           DO_THROW_PROP_NOT_DEFINED_FOR_TYPE(I.args.get->name, cell);
           break;
         }
-        case OP_SET: {
+        case VSet: {
           POP_VALUE(cell);
           POP_VALUE(value);
           if (IS_OBJECT(cell)) {
@@ -231,7 +231,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_E_SETR: {
+        case VESetR: {
           POP_VALUE(value);
           TOP_VALUE(cell);
           if (IS_OBJECT(cell)) {
@@ -239,7 +239,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_TRY: {
+        case VTry: {
           const auto frame_size = M->frames.size();
           const auto stack_size = M->stack.size();
           try {
@@ -253,41 +253,41 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_TRY_DONE: {
+        case VTryDone: {
           FRAME_POP();
           i = I.args.trydone->index;
           break;
         }
-        case OP_THROW: {
+        case VThrow: {
           throw MaException();
         }
-        case OP_LIST: {
+        case VList: {
           PUSH(create_list(M));
           break;
         }
-        case OP_LIST_APPEND: {
+        case VListAppend: {
           POP_VALUE(value);
           TOP_VALUE(list_cell);
           list_cell.v.object->d.list->append(value);
           break;
         }
-        case OP_DICT: {
+        case VDict: {
           PUSH(create_dict(M));
           break;
         }
-        case OP_DICT_SET: {
+        case VDictSet: {
           POP_VALUE(value);
           TOP_VALUE(dict_cell);
           dict_cell.v.object->d.dict->set(create_string(M, I.args.dictset->key),
                                           value);
           break;
         }
-        case OP_STRUCT: {
+        case VStruct: {
           const auto structure_cell = create_structure(M, I.args.struct_->name);
           PUSH(structure_cell);
           break;
         }
-        case OP_STRUCT_PARAM: {
+        case VStructParam: {
           POP_VALUE(default_value_cell);
           TOP_VALUE(structure_cell);
           structure_cell.v.object->d.structure->params.push_back(
@@ -295,7 +295,7 @@ namespace mavka::mama {
                           .default_value = default_value_cell});
           break;
         }
-        case OP_STRUCT_METHOD: {
+        case VStructMethod: {
           POP_VALUE(diia_cell);
           TOP_VALUE(structure_cell);
           if (IS_OBJECT(structure_cell)) {
@@ -308,7 +308,7 @@ namespace mavka::mama {
           DO_THROW_STRING("Неможливо створити метод для типу " +
                           getcelltypename(structure_cell))
         }
-        case OP_MODULE: {
+        case VModule: {
           READ_TOP_FRAME();
           const auto module_cell = create_module(M, I.args.module->name);
           const auto module_scope = new MaScope(frame->scope);
@@ -318,7 +318,7 @@ namespace mavka::mama {
           frame->scope->set_variable(I.args.module->name, module_cell);
           break;
         }
-        case OP_GIVE: {
+        case VGive: {
           POP_VALUE(value);
           READ_TOP_FRAME();
           if (frame->type == FRAME_TYPE_MODULE) {
@@ -328,11 +328,11 @@ namespace mavka::mama {
           }
           DO_THROW_STRING("Неможливо дати \"" + I.args.give->name + "\".")
         }
-        case OP_MODULE_DONE: {
+        case VModuleDone: {
           FRAME_POP();
           break;
         }
-        case OP_EQ: {
+        case VEq: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_EMPTY(left)) {
@@ -386,7 +386,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_GT: {
+        case VGt: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_NUMBER(left)) {
@@ -410,7 +410,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_GE: {
+        case VGe: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_NUMBER(left)) {
@@ -434,7 +434,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_LT: {
+        case VLt: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_NUMBER(left)) {
@@ -458,7 +458,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_LE: {
+        case VLe: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_NUMBER(left)) {
@@ -482,7 +482,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_CONTAINS: {
+        case VContains: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_OBJECT(left)) {
@@ -494,7 +494,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_IS: {
+        case VIs: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_EMPTY(left)) {
@@ -532,7 +532,7 @@ namespace mavka::mama {
           PUSH_NO();
           break;
         }
-        case OP_NOT: {
+        case VNot: {
           POP_VALUE(value);
           if (IS_EMPTY(value)) {
             PUSH_YES();
@@ -551,7 +551,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_NEGATIVE: {
+        case VNegative: {
           POP_VALUE(value);
           if (IS_NUMBER(value)) {
             PUSH_NUMBER(-value.v.number);
@@ -564,7 +564,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_POSITIVE: {
+        case VPositive: {
           POP_VALUE(value);
           if (IS_NUMBER(value)) {
             PUSH_NUMBER(value.v.number * -1);
@@ -577,7 +577,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_BNOT: {
+        case VBnot: {
           POP_VALUE(value);
           if (IS_NUMBER(value)) {
             PUSH_NUMBER(
@@ -591,7 +591,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_ADD: {
+        case VAdd: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_NUMBER(left)) {
@@ -611,7 +611,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_SUB: {
+        case VSub: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_NUMBER(left)) {
@@ -631,7 +631,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_MUL: {
+        case VMul: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_NUMBER(left)) {
@@ -651,7 +651,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_DIV: {
+        case VDiv: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_NUMBER(left)) {
@@ -671,7 +671,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_MOD: {
+        case VMod: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_NUMBER(left)) {
@@ -691,7 +691,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_DIVDIV: {
+        case VDivDiv: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_NUMBER(left)) {
@@ -711,7 +711,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_POW: {
+        case VPow: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_NUMBER(left)) {
@@ -731,7 +731,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_XOR: {
+        case VXor: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_NUMBER(left)) {
@@ -753,7 +753,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_BOR: {
+        case VBor: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_NUMBER(left)) {
@@ -775,7 +775,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_BAND: {
+        case VBand: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_NUMBER(left)) {
@@ -797,7 +797,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_SHL: {
+        case VShl: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_NUMBER(left)) {
@@ -819,7 +819,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_SHR: {
+        case VShr: {
           POP_VALUE(right);
           POP_VALUE(left);
           if (IS_NUMBER(left)) {
@@ -841,7 +841,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_TAKE: {
+        case VTake: {
           const auto rawpath = I.args.take->path;
           if (!std::filesystem::exists(rawpath)) {
             DO_THROW_STRING("Не вдалося прочитати файл \"" + rawpath + "\".");
@@ -911,7 +911,7 @@ namespace mavka::mama {
           }
           break;
         }
-        case OP_KEEP_MODULE: {
+        case VKeepModule: {
           READ_TOP_FRAME();
           const auto current_module_path =
               frame->data.module->module->d.module->name;
@@ -919,12 +919,12 @@ namespace mavka::mama {
                                                   frame->data.module->module);
           break;
         }
-        case OP_LOAD_MODULE: {
+        case VLoadModule: {
           READ_TOP_FRAME();
           PUSH(MA_MAKE_OBJECT(frame->data.module->module));
           break;
         }
-        case OP_MODULE_LOAD: {
+        case VModuleLoad: {
           TOP_VALUE(module_cell);
           OBJECT_GET(module_cell, value, I.args.moduleload->name);
           READ_TOP_FRAME();
@@ -932,7 +932,7 @@ namespace mavka::mama {
           break;
         }
         default: {
-          std::cout << "unsupported instruction " << getopname(I.op)
+          std::cout << "unsupported instruction " << getopname(I.v)
                     << std::endl;
           return;
         }

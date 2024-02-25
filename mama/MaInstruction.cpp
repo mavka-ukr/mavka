@@ -1,315 +1,315 @@
 #include "mama.h"
 
 namespace mavka::mama {
-  std::string getopname(const OP op) {
-    switch (op) {
-      case OP_CONSTANT:
-        return "OP_CONSTANT";
-      case OP_ADD:
-        return "OP_ADD";
-      case OP_SUB:
-        return "OP_SUB";
-      case OP_MUL:
-        return "OP_MUL";
-      case OP_DIV:
-        return "OP_DIV";
-      case OP_MOD:
-        return "OP_MOD";
-      case OP_DIVDIV:
-        return "OP_DIVDIV";
-      case OP_POW:
-        return "OP_POW";
-      case OP_STORE:
-        return "OP_STORE";
-      case OP_LOAD:
-        return "OP_LOAD";
-      case OP_GET:
-        return "OP_GET";
-      case OP_SET:
-        return "OP_SET";
-      case OP_XOR:
-        return "OP_XOR";
-      case OP_BOR:
-        return "OP_BOR";
-      case OP_BAND:
-        return "OP_BAND";
-      case OP_SHL:
-        return "OP_SHL";
-      case OP_SHR:
-        return "OP_SHR";
-      case OP_BNOT:
-        return "OP_BNOT";
-      case OP_JUMP_IF_FALSE:
-        return "OP_JUMP_IF_FALSE";
-      case OP_JUMP_IF_TRUE:
-        return "OP_JUMP_IF_TRUE";
-      case OP_E_JUMP_IF_FALSE:
-        return "OP_E_JUMP_IF_FALSE";
-      case OP_E_JUMP_IF_TRUE:
-        return "OP_E_JUMP_IF_TRUE";
-      case OP_JUMP:
-        return "OP_JUMP";
-      case OP_THROW:
-        return "OP_THROW";
-      case OP_EQ:
-        return "OP_EQ";
-      case OP_LT:
-        return "OP_LT";
-      case OP_LE:
-        return "OP_LE";
-      case OP_CONTAINS:
-        return "OP_CONTAINS";
-      case OP_GT:
-        return "OP_GT";
-      case OP_GE:
-        return "OP_GE";
-      case OP_CALL:
-        return "OP_CALL";
-      case OP_RETURN:
-        return "OP_RETURN";
-      case OP_POP:
-        return "OP_POP";
-      case OP_LIST:
-        return "OP_LIST";
-      case OP_LIST_APPEND:
-        return "OP_LIST_APPEND";
-      case OP_NEGATIVE:
-        return "OP_NEGATIVE";
-      case OP_POSITIVE:
-        return "OP_POSITIVE";
-      case OP_DIIA:
-        return "OP_DIIA";
-      case OP_DICT:
-        return "OP_DICT";
-      case OP_DICT_SET:
-        return "OP_DICT_SET";
-      case OP_STRUCT:
-        return "OP_STRUCT";
-      case OP_GIVE:
-        return "OP_GIVE";
-      case OP_MODULE:
-        return "OP_MODULE";
-      case OP_TRY:
-        return "OP_TRY";
-      case OP_TRY_DONE:
-        return "OP_TRY_DONE";
-      case OP_NOT:
-        return "OP_NOT";
-      case OP_INITARGS:
-        return "OP_INITARGS";
-      case OP_DIIA_PARAM:
-        return "OP_DIIA_PARAM";
-      case OP_STRUCT_PARAM:
-        return "OP_STRUCT_PARAM";
-      case OP_STRUCT_METHOD:
-        return "OP_STRUCT_METHOD";
-      case OP_MODULE_DONE:
-        return "OP_MODULE_DONE";
-      case OP_STORE_ARG:
-        return "OP_STORE_ARG";
-      case OP_NUMBER:
-        return "OP_NUMBER";
-      case OP_EMPTY:
-        return "OP_EMPTY";
-      case OP_YES:
-        return "OP_YES";
-      case OP_NO:
-        return "OP_NO";
-      case OP_KEEP_MODULE:
-        return "OP_KEEP_MODULE";
-      case OP_IS:
-        return "OP_IS";
-      case OP_TAKE:
-        return "OP_TAKE";
-      case OP_LOAD_MODULE:
-        return "OP_LOAD_MODULE";
-      case OP_MODULE_LOAD:
-        return "OP_MODULE_LOAD";
-      case OP_PUSH_ARG:
-        return "OP_PUSH_ARG";
+  std::string getopname(const MaV v) {
+    switch (v) {
+      case VConstant:
+        return "VConstant";
+      case VAdd:
+        return "VAdd";
+      case VSub:
+        return "VSub";
+      case VMul:
+        return "VMul";
+      case VDiv:
+        return "VDiv";
+      case VMod:
+        return "VMod";
+      case VDivDiv:
+        return "VDivDiv";
+      case VPow:
+        return "VPow";
+      case VStore:
+        return "VStore";
+      case VLoad:
+        return "VLoad";
+      case VGet:
+        return "VGet";
+      case VSet:
+        return "VSet";
+      case VXor:
+        return "VXor";
+      case VBor:
+        return "VBor";
+      case VBand:
+        return "VBand";
+      case VShl:
+        return "VShl";
+      case VShr:
+        return "VShr";
+      case VBnot:
+        return "VBnot";
+      case VJumpIfFalse:
+        return "VJumpIfFalse";
+      case VJumpIfTrue:
+        return "VJumpIfTrue";
+      case VEJumpIfFalse:
+        return "VEJumpIfFalse";
+      case VEJumpIfTrue:
+        return "VEJumpIfTrue";
+      case VJump:
+        return "VJump";
+      case VThrow:
+        return "VThrow";
+      case VEq:
+        return "VEq";
+      case VLt:
+        return "VLt";
+      case VLe:
+        return "VLe";
+      case VContains:
+        return "VContains";
+      case VGt:
+        return "VGt";
+      case VGe:
+        return "VGe";
+      case VCall:
+        return "VCall";
+      case VReturn:
+        return "VReturn";
+      case VPop:
+        return "VPop";
+      case VList:
+        return "VList";
+      case VListAppend:
+        return "VListAppend";
+      case VNegative:
+        return "VNegative";
+      case VPositive:
+        return "VPositive";
+      case VDiia:
+        return "VDiia";
+      case VDict:
+        return "VDict";
+      case VDictSet:
+        return "VDictSet";
+      case VStruct:
+        return "VStruct";
+      case VGive:
+        return "VGive";
+      case VModule:
+        return "VModule";
+      case VTry:
+        return "VTry";
+      case VTryDone:
+        return "VTryDone";
+      case VNot:
+        return "VNot";
+      case VInitargs:
+        return "VInitargs";
+      case VDiiaParam:
+        return "VDiiaParam";
+      case VStructParam:
+        return "VStructParam";
+      case VStructMethod:
+        return "VStructMethod";
+      case VModuleDone:
+        return "VModuleDone";
+      case VStoreArg:
+        return "VStoreArg";
+      case VNumber:
+        return "VNumber";
+      case VEmpty:
+        return "VEmpty";
+      case VYes:
+        return "VYes";
+      case VNo:
+        return "VNo";
+      case VKeepModule:
+        return "VKeepModule";
+      case VIs:
+        return "VIs";
+      case VTake:
+        return "VTake";
+      case VLoadModule:
+        return "VLoadModule";
+      case VModuleLoad:
+        return "VModuleLoad";
+      case VPushArg:
+        return "VPushArg";
       default:
         break;
     }
-    return std::to_string(op);
+    return std::to_string(v);
   }
   MaInstruction MaInstruction::pop() {
-    return MaInstruction{OP_POP};
+    return MaInstruction{VPop};
   }
   MaInstruction MaInstruction::constant(size_t index) {
-    return MaInstruction{OP_CONSTANT, {.constant = index}};
+    return MaInstruction{VConstant, {.constant = index}};
   }
   MaInstruction MaInstruction::number(double value) {
-    return MaInstruction{OP_NUMBER, {.number = value}};
+    return MaInstruction{VNumber, {.number = value}};
   }
   MaInstruction MaInstruction::empty() {
-    return MaInstruction{OP_EMPTY};
+    return MaInstruction{VEmpty};
   }
   MaInstruction MaInstruction::yes() {
-    return MaInstruction{OP_YES};
+    return MaInstruction{VYes};
   }
   MaInstruction MaInstruction::no() {
-    return MaInstruction{OP_NO};
+    return MaInstruction{VNo};
   }
   MaInstruction MaInstruction::initargs(MaInitArgsInstructionArgs* args) {
-    return MaInstruction{OP_INITARGS, {.initargs = args}};
+    return MaInstruction{VInitargs, {.initargs = args}};
   }
   MaInstruction MaInstruction::pusharg() {
-    return MaInstruction{OP_PUSH_ARG};
+    return MaInstruction{VPushArg};
   }
   MaInstruction MaInstruction::storearg(MaStoreArgInstructionArgs* args) {
-    return MaInstruction{OP_STORE_ARG, {.storearg = args}};
+    return MaInstruction{VStoreArg, {.storearg = args}};
   }
   MaInstruction MaInstruction::call(MaInstructionLocation* location) {
-    return MaInstruction{OP_CALL, {}, location};
+    return MaInstruction{VCall, {}, location};
   }
   MaInstruction MaInstruction::return_() {
-    return MaInstruction{OP_RETURN};
+    return MaInstruction{VReturn};
   }
   MaInstruction MaInstruction::diia(MaDiiaInstructionArgs* args) {
-    return MaInstruction{OP_DIIA, {.diia = args}};
+    return MaInstruction{VDiia, {.diia = args}};
   }
   MaInstruction MaInstruction::diiaparam(MaDiiaParamInstructionArgs* args) {
-    return MaInstruction{OP_DIIA_PARAM, {.diiaparam = args}};
+    return MaInstruction{VDiiaParam, {.diiaparam = args}};
   }
   MaInstruction MaInstruction::store(MaStoreInstructionArgs* args) {
-    return MaInstruction{OP_STORE, {.store = args}};
+    return MaInstruction{VStore, {.store = args}};
   }
   MaInstruction MaInstruction::load(MaLoadInstructionArgs* args) {
-    return MaInstruction{OP_LOAD, {.load = args}};
+    return MaInstruction{VLoad, {.load = args}};
   }
   MaInstruction MaInstruction::jump(size_t index) {
-    return MaInstruction{OP_JUMP, {.jump = index}};
+    return MaInstruction{VJump, {.jump = index}};
   }
   MaInstruction MaInstruction::jumpiftrue(size_t index) {
-    return MaInstruction{OP_JUMP_IF_TRUE, {.jumpiftrue = index}};
+    return MaInstruction{VJumpIfTrue, {.jumpiftrue = index}};
   }
   MaInstruction MaInstruction::jumpiffalse(size_t index) {
-    return MaInstruction{OP_JUMP_IF_FALSE, {.jumpiffalse = index}};
+    return MaInstruction{VJumpIfFalse, {.jumpiffalse = index}};
   }
   MaInstruction MaInstruction::get(MaGetInstructionArgs* args) {
-    return MaInstruction{OP_GET, {.get = args}};
+    return MaInstruction{VGet, {.get = args}};
   }
   MaInstruction MaInstruction::set(MaSetInstructionArgs* args) {
-    return MaInstruction{OP_SET, {.set = args}};
+    return MaInstruction{VSet, {.set = args}};
   }
   MaInstruction MaInstruction::try_(MaTryInstructionArgs* args) {
-    return MaInstruction{OP_TRY, {.try_ = args}};
+    return MaInstruction{VTry, {.try_ = args}};
   }
   MaInstruction MaInstruction::trydone(MaTryDoneInstructionArgs* args) {
-    return MaInstruction{OP_TRY_DONE, {.trydone = args}};
+    return MaInstruction{VTryDone, {.trydone = args}};
   }
   MaInstruction MaInstruction::throw_(MaThrowInstructionArgs* args) {
-    return MaInstruction{OP_THROW, {.throw_ = args}};
+    return MaInstruction{VThrow, {.throw_ = args}};
   }
   MaInstruction MaInstruction::list() {
-    return MaInstruction{OP_LIST};
+    return MaInstruction{VList};
   }
   MaInstruction MaInstruction::listappend() {
-    return MaInstruction{OP_LIST_APPEND};
+    return MaInstruction{VListAppend};
   }
   MaInstruction MaInstruction::dict() {
-    return MaInstruction{OP_DICT};
+    return MaInstruction{VDict};
   }
   MaInstruction MaInstruction::dictset(MaDictSetInstructionArgs* args) {
-    return MaInstruction{OP_DICT_SET, {.dictset = args}};
+    return MaInstruction{VDictSet, {.dictset = args}};
   }
   MaInstruction MaInstruction::struct_(MaStructInstructionArgs* args) {
-    return MaInstruction{OP_STRUCT, {.struct_ = args}};
+    return MaInstruction{VStruct, {.struct_ = args}};
   }
   MaInstruction MaInstruction::structparam(MaStructParamInstructionArgs* args) {
-    return MaInstruction{OP_STRUCT_PARAM, {.structparam = args}};
+    return MaInstruction{VStructParam, {.structparam = args}};
   }
   MaInstruction MaInstruction::structmethod() {
-    return MaInstruction{OP_STRUCT_METHOD};
+    return MaInstruction{VStructMethod};
   }
   MaInstruction MaInstruction::module(MaModuleInstructionArgs* args) {
-    return MaInstruction{OP_MODULE, {.module = args}};
+    return MaInstruction{VModule, {.module = args}};
   }
   MaInstruction MaInstruction::give(MaGiveInstructionArgs* args) {
-    return MaInstruction{OP_GIVE, {.give = args}};
+    return MaInstruction{VGive, {.give = args}};
   }
   MaInstruction MaInstruction::moduledone() {
-    return MaInstruction{OP_MODULE_DONE};
+    return MaInstruction{VModuleDone};
   }
   MaInstruction MaInstruction::keepmodule() {
-    return MaInstruction{OP_KEEP_MODULE};
+    return MaInstruction{VKeepModule};
   }
   MaInstruction MaInstruction::loadmodule() {
-    return MaInstruction{OP_LOAD_MODULE};
+    return MaInstruction{VLoadModule};
   }
   MaInstruction MaInstruction::moduleload(MaModuleLoadInstructionArgs* args) {
-    return MaInstruction{OP_MODULE_LOAD, {.moduleload = args}};
+    return MaInstruction{VModuleLoad, {.moduleload = args}};
   }
   MaInstruction MaInstruction::take(MaTakeInstructionArgs* args) {
-    return MaInstruction{OP_TAKE, {.take = args}};
+    return MaInstruction{VTake, {.take = args}};
   }
   MaInstruction MaInstruction::eq() {
-    return MaInstruction{OP_EQ};
+    return MaInstruction{VEq};
   }
   MaInstruction MaInstruction::gt() {
-    return MaInstruction{OP_GT};
+    return MaInstruction{VGt};
   }
   MaInstruction MaInstruction::ge() {
-    return MaInstruction{OP_GE};
+    return MaInstruction{VGe};
   }
   MaInstruction MaInstruction::lt() {
-    return MaInstruction{OP_LT};
+    return MaInstruction{VLt};
   }
   MaInstruction MaInstruction::le() {
-    return MaInstruction{OP_LE};
+    return MaInstruction{VLe};
   }
   MaInstruction MaInstruction::contains() {
-    return MaInstruction{OP_CONTAINS};
+    return MaInstruction{VContains};
   }
   MaInstruction MaInstruction::is() {
-    return MaInstruction{OP_IS};
+    return MaInstruction{VIs};
   }
   MaInstruction MaInstruction::not_() {
-    return MaInstruction{OP_NOT};
+    return MaInstruction{VNot};
   }
   MaInstruction MaInstruction::negative() {
-    return MaInstruction{OP_NEGATIVE};
+    return MaInstruction{VNegative};
   }
   MaInstruction MaInstruction::positive() {
-    return MaInstruction{OP_POSITIVE};
+    return MaInstruction{VPositive};
   }
   MaInstruction MaInstruction::bnot() {
-    return MaInstruction{OP_BNOT};
+    return MaInstruction{VBnot};
   }
   MaInstruction MaInstruction::add(MaInstructionLocation* location) {
-    return MaInstruction{OP_ADD, {}, location};
+    return MaInstruction{VAdd, {}, location};
   }
   MaInstruction MaInstruction::sub(MaInstructionLocation* location) {
-    return MaInstruction{OP_SUB, {}, location};
+    return MaInstruction{VSub, {}, location};
   }
   MaInstruction MaInstruction::mul(MaInstructionLocation* location) {
-    return MaInstruction{OP_MUL, {}, location};
+    return MaInstruction{VMul, {}, location};
   }
   MaInstruction MaInstruction::div(MaInstructionLocation* location) {
-    return MaInstruction{OP_DIV, {}, location};
+    return MaInstruction{VDiv, {}, location};
   }
   MaInstruction MaInstruction::mod(MaInstructionLocation* location) {
-    return MaInstruction{OP_MOD, {}, location};
+    return MaInstruction{VMod, {}, location};
   }
   MaInstruction MaInstruction::divdiv(MaInstructionLocation* location) {
-    return MaInstruction{OP_DIVDIV, {}, location};
+    return MaInstruction{VDivDiv, {}, location};
   }
   MaInstruction MaInstruction::pow(MaInstructionLocation* location) {
-    return MaInstruction{OP_POW, {}, location};
+    return MaInstruction{VPow, {}, location};
   }
   MaInstruction MaInstruction::xor_() {
-    return MaInstruction{OP_XOR};
+    return MaInstruction{VXor};
   }
   MaInstruction MaInstruction::bor() {
-    return MaInstruction{OP_BOR};
+    return MaInstruction{VBor};
   }
   MaInstruction MaInstruction::band() {
-    return MaInstruction{OP_BAND};
+    return MaInstruction{VBand};
   }
   MaInstruction MaInstruction::shl() {
-    return MaInstruction{OP_SHL};
+    return MaInstruction{VShl};
   }
   MaInstruction MaInstruction::shr() {
-    return MaInstruction{OP_SHR};
+    return MaInstruction{VShr};
   }
 } // namespace mavka::mama

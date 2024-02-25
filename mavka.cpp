@@ -219,7 +219,7 @@ int main(int argc, char** argv) {
     return try_run(
         M, new MaCode(
                {.instructions = {MaInstruction{
-                    OP_TAKE,
+                    VTake,
                     {.take = new MaTakeInstructionArgs(INT64_MAX, path)}}}}));
   } else {
     print_help();
