@@ -17,8 +17,7 @@ void init_print(MaMa* M, MaScope* S) {
         std::cout << key << ": " << cell_to_string(value) << std::endl;
       }
     }
-    M->stack.push(MA_MAKE_EMPTY());
-    return;
+    RETURN_EMPTY();
   };
   const auto diia_cell = create_diia_native(M, "друк", diia_native_fn, nullptr);
   S->set_variable("друк", diia_cell);
@@ -60,8 +59,9 @@ MaObject* find_nearest_file_module(MaMa* M) {
 }
 
 size_t try_run(MaMa* M, MaCode* code, size_t start_index = 0) {
+  std::stack<MaCell> stack;
   try {
-    mavka::mama::run(M, code, start_index);
+    mavka::mama::run(M, stack, code, start_index);
     return 0;
   } catch (const MaException& e) {
     std::vector<std::string> trace;
@@ -101,8 +101,7 @@ size_t try_run(MaMa* M, MaCode* code, size_t start_index = 0) {
         std::cout << "  " << line << std::endl;
       }
     }
-    std::cout << cell_to_string(TOP()) << std::endl;
-    POP();
+    std::cout << cell_to_string(M->throw_cell) << std::endl;
     return 1;
   }
 }
@@ -139,69 +138,6 @@ int main(int argc, char** argv) {
 
   if (args.size() == 1) {
     std::cout << "Експериментальна Мавка " << MAVKA_VERSION << std::endl;
-    const auto main_module_cell = create_module(M, "старт");
-    const auto main_module_code = new MaCode();
-    main_module_code->path = "[консоль]";
-    main_module_cell.v.object->d.module->code = main_module_code;
-    main_module_cell.v.object->d.module->is_file_module = true;
-    M->main_module = main_module_cell.v.object;
-    FRAME_PUSH(MaFrame::module(
-        new MaScope(S), new MaFrameModuleData(main_module_cell.v.object)));
-    std::string line;
-    do {
-      if (line.empty()) {
-        std::cout << "› ";
-      } else {
-        std::cout << "  ";
-      }
-      std::string currline;
-      std::getline(std::cin, currline);
-      if (currline == "вийти") {
-        return 0;
-      }
-      if (currline.empty()) {
-        continue;
-      }
-      if (currline[currline.size() - 1] == '\\') {
-        line += ("\n" + currline.substr(0, currline.size() - 1));
-        continue;
-      } else {
-        if (line.empty()) {
-          line = currline;
-        } else {
-          line += ("\n" + currline);
-        }
-      }
-      const auto parser_result = mavka::parser::parse(line, "[консоль]");
-      line = "";
-      if (!parser_result.errors.empty()) {
-        const auto error = parser_result.errors[0];
-        std::cout << error.path + ":" + std::to_string(error.line) + ":" +
-                         std::to_string(error.column) + ": " + error.message
-                  << std::endl;
-        continue;
-      }
-      const auto start_index = main_module_code->instructions.size();
-      const auto body_compilation_result =
-          compile_body(M, main_module_code, parser_result.module_node->body);
-      if (body_compilation_result.error) {
-        std::cout << "[консоль]:" +
-                         std::to_string(body_compilation_result.error->line) +
-                         ":" +
-                         std::to_string(body_compilation_result.error->column) +
-                         ": " + body_compilation_result.error->message
-                  << std::endl;
-        continue;
-      }
-      const auto restore_stack_size = M->stack.size();
-      if (!try_run(M, main_module_code, start_index)) {
-        if (!M->stack.empty()) {
-          const auto result = TOP();
-          mavka::mama::restore_stack(M, restore_stack_size);
-          std::cout << cell_to_string(result) << std::endl;
-        }
-      }
-    } while (true);
     return 1;
   } else if (args.size() == 2) {
     const auto& command = args[1];

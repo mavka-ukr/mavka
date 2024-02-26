@@ -1,7 +1,7 @@
 #include "mama.h"
 
-#define DO_THROW_STRING(v)              \
-  M->stack.push(create_string(M, (v))); \
+#define DO_THROW_STRING(v)               \
+  M->throw_cell = create_string(M, (v)); \
   throw MaException();
 
 #define DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(varname, cell)                 \
@@ -37,19 +37,16 @@
   }
 
 namespace mavka::mama {
-  void restore_stack(MaMa* M, size_t stack_size) {
-    while (M->stack.size() > stack_size) {
-      POP();
-    }
-  }
-
   void restore_frames(MaMa* M, size_t frames_size) {
     while (M->frames.size() > frames_size) {
       FRAME_POP();
     }
   }
 
-  void run(MaMa* M, MaCode* code, size_t start_index) {
+  void run(MaMa* M,
+           std::stack<MaCell>& stack,
+           MaCode* code,
+           size_t start_index) {
     auto size = code->instructions.size();
     size_t i = start_index;
     for (;;) {
@@ -104,7 +101,9 @@ namespace mavka::mama {
           break;
         }
         case VCall: {
-          docall(M, I.location);
+          POP_VALUE(args_cell);
+          POP_VALUE(cell);
+          PUSH(docall(M, cell, args_cell.v.args, I.location));
           break;
         }
         case VReturn: {
@@ -241,15 +240,13 @@ namespace mavka::mama {
         }
         case VTry: {
           const auto frame_size = M->frames.size();
-          const auto stack_size = M->stack.size();
           try {
-            run(M, I.args.try_->try_code, 0);
+            run(M, stack, I.args.try_->try_code, 0);
           } catch (const MaException& e) {
-            POP_VALUE(value);
-            restore_stack(M, stack_size);
+            const auto value = M->throw_cell;
             PUSH(value);
             restore_frames(M, frame_size);
-            run(M, I.args.try_->catch_code, 0);
+            run(M, stack, I.args.try_->catch_code, 0);
           }
           break;
         }
@@ -403,7 +400,7 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_GREATER);
-            ma_call(M, diia_cell, {right}, nullptr);
+            PUSH(ma_call(M, diia_cell, {right}, nullptr));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_GREATER, left);
@@ -427,7 +424,7 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_GREATER_EQUAL);
-            ma_call(M, diia_cell, {right}, nullptr);
+            PUSH(ma_call(M, diia_cell, {right}, nullptr));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_GREATER_EQUAL, left);
@@ -451,7 +448,7 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_LESSER);
-            ma_call(M, diia_cell, {right}, nullptr);
+            PUSH(ma_call(M, diia_cell, {right}, nullptr));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_LESSER, left);
@@ -475,7 +472,7 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_LESSER_EQUAL);
-            ma_call(M, diia_cell, {right}, nullptr);
+            PUSH(ma_call(M, diia_cell, {right}, nullptr));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_LESSER_EQUAL, left);
@@ -487,7 +484,7 @@ namespace mavka::mama {
           POP_VALUE(left);
           if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_CONTAINS);
-            ma_call(M, diia_cell, {right}, nullptr);
+            PUSH(ma_call(M, diia_cell, {right}, nullptr));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_CONTAINS, left);
@@ -557,7 +554,7 @@ namespace mavka::mama {
             PUSH_NUMBER(-value.v.number);
           } else if (IS_OBJECT(value)) {
             OBJECT_GET(value, diia_cell, MAG_NEGATIVE);
-            ma_call(M, diia_cell, {}, nullptr);
+            PUSH(ma_call(M, diia_cell, {}, nullptr));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_NEGATIVE, value);
@@ -570,7 +567,7 @@ namespace mavka::mama {
             PUSH_NUMBER(value.v.number * -1);
           } else if (IS_OBJECT(value)) {
             OBJECT_GET(value, diia_cell, MAG_POSITIVE);
-            ma_call(M, diia_cell, {}, nullptr);
+            PUSH(ma_call(M, diia_cell, {}, nullptr));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_POSITIVE, value);
@@ -584,7 +581,7 @@ namespace mavka::mama {
                 static_cast<double>(~static_cast<long>(value.v.number)));
           } else if (IS_OBJECT(value)) {
             OBJECT_GET(value, diia_cell, MAG_BW_NOT);
-            ma_call(M, diia_cell, {}, nullptr);
+            PUSH(ma_call(M, diia_cell, {}, nullptr));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_NOT, value);
@@ -604,7 +601,7 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_ADD);
-            ma_call(M, diia_cell, {right}, I.location);
+            PUSH(ma_call(M, diia_cell, {right}, I.location));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_ADD, left);
@@ -624,7 +621,7 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_SUB);
-            ma_call(M, diia_cell, {right}, I.location);
+            PUSH(ma_call(M, diia_cell, {right}, I.location));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_SUB, left);
@@ -644,7 +641,7 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_MUL);
-            ma_call(M, diia_cell, {right}, I.location);
+            PUSH(ma_call(M, diia_cell, {right}, I.location));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_MUL, left);
@@ -664,7 +661,7 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_DIV);
-            ma_call(M, diia_cell, {right}, I.location);
+            PUSH(ma_call(M, diia_cell, {right}, I.location));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_DIV, left);
@@ -684,7 +681,7 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_MOD);
-            ma_call(M, diia_cell, {right}, I.location);
+            PUSH(ma_call(M, diia_cell, {right}, I.location));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_MOD, left);
@@ -704,7 +701,7 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_DIVDIV);
-            ma_call(M, diia_cell, {right}, I.location);
+            PUSH(ma_call(M, diia_cell, {right}, I.location));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_DIVDIV, left);
@@ -724,7 +721,7 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_POW);
-            ma_call(M, diia_cell, {right}, I.location);
+            PUSH(ma_call(M, diia_cell, {right}, I.location));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_POW, left);
@@ -746,7 +743,7 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_BW_XOR);
-            ma_call(M, diia_cell, {right}, nullptr);
+            PUSH(ma_call(M, diia_cell, {right}, nullptr));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_XOR, left);
@@ -768,7 +765,7 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_BW_OR);
-            ma_call(M, diia_cell, {right}, nullptr);
+            PUSH(ma_call(M, diia_cell, {right}, nullptr));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_OR, left);
@@ -790,7 +787,7 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_BW_AND);
-            ma_call(M, diia_cell, {right}, nullptr);
+            PUSH(ma_call(M, diia_cell, {right}, nullptr));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_AND, left);
@@ -812,7 +809,7 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_BW_SHIFT_LEFT);
-            ma_call(M, diia_cell, {right}, nullptr);
+            PUSH(ma_call(M, diia_cell, {right}, nullptr));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_SHIFT_LEFT, left);
@@ -834,7 +831,7 @@ namespace mavka::mama {
             }
           } else if (IS_OBJECT(left)) {
             OBJECT_GET(left, diia_cell, MAG_BW_SHIFT_RIGHT);
-            ma_call(M, diia_cell, {right}, nullptr);
+            PUSH(ma_call(M, diia_cell, {right}, nullptr));
             break;
           } else {
             DO_THROW_DIIA_NOT_DEFINED_FOR_TYPE(MAG_BW_SHIFT_RIGHT, left);
@@ -897,15 +894,14 @@ namespace mavka::mama {
               return;
             }
             READ_TOP_FRAME();
-            const auto restore_stack_size = M->stack.size();
             FRAME_PUSH(MaFrame::module(new MaScope(frame->scope),
                                        new MaFrameModuleData{
                                            .module = module_object,
                                        }));
             M->current_module = module_object;
-            run(M, module_code, 0);
+            std::stack<MaCell> stack;
+            run(M, stack, module_code, 0);
             M->current_module = module_object;
-            restore_stack(M, restore_stack_size);
             FRAME_POP();
             goto start;
           }
@@ -942,34 +938,28 @@ namespace mavka::mama {
     }
   }
 
-  void ma_call(MaMa* M,
-               MaCell cell,
-               const std::vector<MaCell>& args,
-               MaInstructionLocation* location) {
-    PUSH(cell);
-    PUSH_ARGS(new MaArgs(MA_ARGS_POSITIONED, {}, args));
-    docall(M, location);
+  MaCell ma_call(MaMa* M,
+                 MaCell cell,
+                 const std::vector<MaCell>& args,
+                 MaInstructionLocation* location) {
+    return docall(M, cell, new MaArgs(MA_ARGS_POSITIONED, {}, args), location);
   }
 
-  void ma_call_named(MaMa* M,
-                     MaCell cell,
-                     const std::unordered_map<std::string, MaCell>& args,
-                     MaInstructionLocation* location) {
-    PUSH(cell);
-    PUSH_ARGS(new MaArgs(MA_ARGS_NAMED, args, {}));
-    docall(M, location);
+  MaCell ma_call_named(MaMa* M,
+                       MaCell cell,
+                       const std::unordered_map<std::string, MaCell>& args,
+                       MaInstructionLocation* location) {
+    return docall(M, cell, new MaArgs(MA_ARGS_NAMED, args, {}), location);
   }
 
-  void docall(MaMa* M, MaInstructionLocation* location) {
+  MaCell docall(MaMa* M,
+                MaCell cell,
+                MaArgs* args,
+                MaInstructionLocation* location) {
     auto frame = M->frames.top();
-    POP_VALUE(args_cell);
-    const auto args = args_cell.v.args;
-    auto cell = M->stack.top();
-    M->stack.pop();
   repeat:
     if (IS_OBJECT(cell)) {
       const auto object = cell.v.object;
-      const auto restore_stack_size = M->stack.size();
 
       if (IS_OBJECT_DIIA(cell)) {
         const auto cf_data = new MaCallFrameCallData({
@@ -979,7 +969,6 @@ namespace mavka::mama {
                     .diia = object,
                 },
             .location = location,
-            .restore_stack_size = M->stack.size(),
         });
         const auto scope = new MaScope(object->d.diia->scope);
         frame = MaFrame::call(scope, cf_data);
@@ -995,11 +984,10 @@ namespace mavka::mama {
               ARGS_GET(args, i, param.name, param.default_value);
           frame->scope->set_variable(param.name, arg_value);
         }
-        run(M, diia->d.diia->code, 0);
-        const auto result = M->stack.top();
-        restore_stack(M, restore_stack_size);
-        PUSH(result);
-        return;
+        std::stack<MaCell> stack;
+        run(M, stack, diia->d.diia->code, 0);
+        const auto result = stack.top();
+        return result;
       } else if (IS_OBJECT_DIIA_NATIVE(cell)) {
         const auto cf_data = new MaCallFrameCallData({
             .type = FRAME_CALL_TYPE_DIIA_NATIVE,
@@ -1008,18 +996,14 @@ namespace mavka::mama {
                     .diia_native = object,
                 },
             .location = location,
-            .restore_stack_size = M->stack.size(),
         });
         frame = MaFrame::call(frame->scope, cf_data);
         FRAME_PUSH(frame);
         const auto call_data = frame->data.call;
         const auto diia_native = call_data->o.diia_native;
-        diia_native->d.diia_native->fn(M, diia_native->d.diia_native->me, args);
+        const auto result = diia_native->d.diia_native->fn(M, diia_native->d.diia_native->me, args);
         FRAME_POP();
-        const auto result = M->stack.top();
-        restore_stack(M, restore_stack_size);
-        PUSH(result);
-        return;
+        return result;
       } else if (object->properties.contains(MAG_CALL)) {
         cell = object->properties[MAG_CALL];
         goto repeat;
@@ -1031,7 +1015,6 @@ namespace mavka::mama {
                     .structure = object,
                 },
             .location = location,
-            .restore_stack_size = M->stack.size(),
         });
         frame = MaFrame::call(frame->scope, cf_data);
         FRAME_PUSH(frame);
@@ -1046,8 +1029,7 @@ namespace mavka::mama {
           ma_object_set(object_cell.v.object, param.name, arg_value);
         }
         FRAME_POP();
-        PUSH(object_cell);
-        return;
+        return object_cell;
       } else {
         DO_THROW_CANNOT_CALL_CELL(cell);
       }

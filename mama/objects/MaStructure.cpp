@@ -8,30 +8,27 @@ namespace mavka::mama {
       return create_string(M, me->d.structure->name);
     }
     if (!me->properties.contains(name)) {
-      PUSH(create_string(M, "Властивість \"" + name +
-                                "\" не визначено для типу \"Структура\"."));
+      M->throw_cell = create_string(M, "Властивість \"" + name +
+                                "\" не визначено для типу \"Структура\".");
       throw MaException();
     }
     return me->properties[name];
   }
 
-  void structure_structure_object_get_structure_diia_native_fn(MaMa* M,
+  MaCell structure_structure_object_get_structure_diia_native_fn(MaMa* M,
                                                                MaObject* me,
                                                                MaArgs* args) {
     const auto cell = ARGS_GET(args, 0, "значення", MA_MAKE_EMPTY());
     if (IS_EMPTY(cell)) {
-      PUSH_EMPTY();
-      return;
+      RETURN_EMPTY();
     }
     if (IS_NUMBER(cell)) {
-      PUSH_OBJECT(M->number_structure_object);
-      return;
+      RETURN_OBJECT(M->number_structure_object);
     }
     if (IS_YES(cell) || IS_NO(cell)) {
-      PUSH_OBJECT(M->logical_structure_object);
-      return;
+      RETURN_OBJECT(M->logical_structure_object);
     }
-    PUSH_OBJECT(cell.v.object->structure);
+    RETURN_OBJECT(cell.v.object->structure);
   }
 
   MaCell create_structure(MaMa* M, const std::string& name) {

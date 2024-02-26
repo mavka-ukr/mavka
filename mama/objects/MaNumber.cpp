@@ -1,33 +1,28 @@
 #include "../mama.h"
 
 namespace mavka::mama {
-  void number_structure_object_mag_call_diia_native_fn(MaMa* M,
-                                                       MaObject* me,
-                                                       MaArgs* args) {
+  MaCell number_structure_object_mag_call_diia_native_fn(MaMa* M,
+                                                         MaObject* me,
+                                                         MaArgs* args) {
     const auto cell = ARGS_GET(args, 0, "значення", MA_MAKE_EMPTY());
     if (IS_EMPTY(cell)) {
-      PUSH_NUMBER(0);
-      return;
+      RETURN_NUMBER(0);
     }
     if (IS_NUMBER(cell)) {
-      PUSH(cell);
-      return;
+      RETURN(cell);
     }
     if (IS_YES(cell)) {
-      PUSH_NUMBER(1);
-      return;
+      RETURN_NUMBER(1);
     }
     if (IS_NO(cell)) {
-      PUSH_NUMBER(0);
-      return;
+      RETURN_NUMBER(0);
     }
     if (IS_OBJECT(cell)) {
       if (OBJECT_HAS(cell.v.object, MAG_NUMBER)) {
-        ma_call(M, cell.v.object->properties[MAG_NUMBER], {}, {});
-        return;
+        return ma_call(M, cell.v.object->properties[MAG_NUMBER], {}, {});
       }
     }
-    M->stack.push(create_string(M, "Неможливо перетворити на число."));
+    M->throw_cell = create_string(M, "Неможливо перетворити на число.");
     throw MaException();
   }
 
