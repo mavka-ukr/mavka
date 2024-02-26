@@ -101,7 +101,7 @@
   (cell).v.object->type == MA_OBJECT_DIIA_NATIVE
 #define IS_STRING(cell) IS_OBJECT(cell) && IS_OBJECT_STRING(cell)
 
-#define PUSH(cell) M->stack.push(cell)
+#define PUSH(cell) stack.push(cell)
 #define PUSH_EMPTY() PUSH(MA_MAKE_EMPTY())
 #define PUSH_NUMBER(v) PUSH(MA_MAKE_NUMBER((v)))
 #define PUSH_INTEGER(v) PUSH(MA_MAKE_INTEGER((v)))
@@ -110,9 +110,17 @@
 #define PUSH_OBJECT(v) PUSH(MA_MAKE_OBJECT((v)))
 #define PUSH_ARGS(v) PUSH(MA_MAKE_ARGS((v)))
 
-#define TOP() M->stack.top()
+#define RETURN(cell) return cell;
+#define RETURN_EMPTY() return MA_MAKE_EMPTY();
+#define RETURN_NUMBER(v) return MA_MAKE_NUMBER((v));
+#define RETURN_INTEGER(v) return MA_MAKE_INTEGER((v));
+#define RETURN_YES() return MA_MAKE_YES();
+#define RETURN_NO() return MA_MAKE_NO();
+#define RETURN_OBJECT(v) return MA_MAKE_OBJECT((v));
+
+#define TOP() stack.top()
 #define TOP_VALUE(name) const auto name = TOP();
-#define POP() M->stack.pop();
+#define POP() stack.pop();
 #define POP_VALUE(name)    \
   const auto name = TOP(); \
   POP();
@@ -172,9 +180,9 @@ namespace mavka::mama {
     MaObject* main_module;
     MaObject* current_module;
 
-    std::stack<MaCell> stack;
+    MaCell throw_cell;
+
     std::stack<MaFrame*> frames;
-    std::stack<MaArgs*> args;
 
     MaObject* object_structure_object;
     MaObject* structure_structure_object;
@@ -185,23 +193,26 @@ namespace mavka::mama {
     MaObject* list_structure_object;
     MaObject* dict_structure_object;
     MaObject* module_structure_object;
-
-    size_t iterator_count;
   };
 
-  void restore_stack(MaMa* M, size_t stack_size);
   void restore_frames(MaMa* M, size_t frames_size);
-  void run(MaMa* M, MaCode* code, size_t start_index = 0);
+  void run(MaMa* M,
+           std::stack<MaCell>& stack,
+           MaCode* code,
+           size_t start_index = 0);
 
-  void ma_call(MaMa* M,
-               MaCell cell,
-               const std::vector<MaCell>& args,
-               MaInstructionLocation* location);
-  void ma_call_named(MaMa* M,
-                     MaCell cell,
-                     const std::unordered_map<std::string, MaCell>& args,
-                     MaInstructionLocation* location);
-  void docall(MaMa* M, MaInstructionLocation* location);
+  MaCell ma_call(MaMa* M,
+                 MaCell cell,
+                 const std::vector<MaCell>& args,
+                 MaInstructionLocation* location);
+  MaCell ma_call_named(MaMa* M,
+                       MaCell cell,
+                       const std::unordered_map<std::string, MaCell>& args,
+                       MaInstructionLocation* location);
+  MaCell docall(MaMa* M,
+                MaCell cell,
+                MaArgs* args,
+                MaInstructionLocation* location);
 } // namespace mavka::mama
 
 #endif // MAMA_H

@@ -65,9 +65,9 @@ namespace mavka::mama {
     return false;
   }
 
-  void ma_list_iterate_diia_native_fn(MaMa* M,
-                                      MaObject* list_me,
-                                      MaArgs* args) {
+  MaCell ma_list_iterate_diia_native_fn(MaMa* M,
+                                        MaObject* list_me,
+                                        MaArgs* args) {
     const auto iterator_object_cell = create_empty_object(M);
     const auto iterator_object = iterator_object_cell.v.object;
 
@@ -109,43 +109,42 @@ namespace mavka::mama {
           iterator_object);
       ma_object_set(iterator_object, "далі", next_diia_native_cell);
     }
-    M->stack.push(iterator_object_cell);
+    RETURN(iterator_object_cell);
   }
 
-  void ma_list_get_element_diia_native_fn(MaMa* M,
+  MaCell ma_list_get_element_diia_native_fn(MaMa* M,
                                           MaObject* list_me,
                                           MaArgs* args) {
     const auto key = ARGS_GET(args, 0, "ключ", MA_MAKE_EMPTY());
     if (!IS_EMPTY(key)) {
-      PUSH(list_me->d.list->get(key.v.number));
-      return;
+      RETURN(list_me->d.list->get(key.v.number));
     }
-    PUSH_EMPTY();
+    RETURN_EMPTY();
   }
 
-  void ma_list_set_element_diia_native_fn(MaMa* M,
+  MaCell ma_list_set_element_diia_native_fn(MaMa* M,
                                           MaObject* list_me,
                                           MaArgs* args) {
     const auto key = ARGS_GET(args, 0, "ключ", MA_MAKE_EMPTY());
     const auto value = ARGS_GET(args, 1, "значення", MA_MAKE_EMPTY());
     list_me->d.list->set(key.v.number, value);
-    PUSH_EMPTY();
+    RETURN_EMPTY();
   }
 
-  void ma_list_append_diia_native_fn(MaMa* M, MaObject* list_me, MaArgs* args) {
+  MaCell ma_list_append_diia_native_fn(MaMa* M, MaObject* list_me, MaArgs* args) {
     const auto cell = ARGS_GET(args, 0, "значення", MA_MAKE_EMPTY());
     list_me->d.list->append(cell);
-    PUSH_INTEGER(list_me->d.list->size());
+    RETURN_INTEGER(list_me->d.list->size());
   }
 
-  void ma_list_contains_diia_native_fn(MaMa* M,
+  MaCell ma_list_contains_diia_native_fn(MaMa* M,
                                        MaObject* list_me,
                                        MaArgs* args) {
     const auto cell = ARGS_GET(args, 0, "значення", MA_MAKE_EMPTY());
     if (list_me->d.list->contains(cell)) {
-      PUSH_YES();
+      RETURN_YES();
     } else {
-      PUSH_NO();
+      RETURN_NO();
     }
   }
 
@@ -154,8 +153,8 @@ namespace mavka::mama {
       return MA_MAKE_INTEGER(me->d.list->size());
     }
     if (!me->properties.contains(name)) {
-      M->stack.push(create_string(
-          M, "Властивість \"" + name + "\" не визначено для типу \"список\"."));
+      M->throw_cell = create_string(
+          M, "Властивість \"" + name + "\" не визначено для типу \"список\".");
       throw MaException();
     }
     return me->properties[name];
