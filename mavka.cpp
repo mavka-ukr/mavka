@@ -44,20 +44,6 @@ void print_version() {
   std::cout << MAVKA_VERSION << std::endl;
 }
 
-MaObject* find_nearest_file_module(MaMa* M) {
-  auto frames_copy = M->frame_stack;
-  while (!frames_copy.empty()) {
-    auto frame = frames_copy.top();
-    frames_copy.pop();
-    if (frame->object->type == MA_OBJECT_MODULE) {
-      if (frame->object->d.module->is_file_module) {
-        return frame->object;
-      }
-    }
-  }
-  return nullptr;
-}
-
 size_t try_run(MaMa* M, std::function<void()> fn) {
   try {
     fn();
@@ -67,27 +53,44 @@ size_t try_run(MaMa* M, std::function<void()> fn) {
     while (M->frame_stack.size() > 2) {
       POP_FRAME(trace_frame);
       std::string path;
+      std::string line;
+      std::string column;
+      std::string name;
       if (trace_frame->object->type == MA_OBJECT_DIIA) {
-        const auto nearest_module = find_nearest_file_module(M);
-        path = nearest_module->d.module->code->path;
+        path = trace_frame->object->d.diia->module->d.module->code->path;
+        line = std::to_string(trace_frame->location.line);
+        column = std::to_string(trace_frame->location.column);
+        name = trace_frame->object->d.diia->name.empty()
+                   ? "[дія]"
+                   : trace_frame->object->d.diia->name;
+        if (trace_frame->object->d.diia->me != nullptr) {
+          name = trace_frame->object->d.diia->me->structure->d.structure->name +
+                 "." + name;
+        }
+      } else if (trace_frame->object->type == MA_OBJECT_DIIA_NATIVE) {
+        path = "[невідомо]";
+        line = std::to_string(trace_frame->location.line);
+        column = std::to_string(trace_frame->location.column);
+        name = "[дія]";
+        if (trace_frame->object->d.diia_native->me != nullptr) {
+          name = trace_frame->object->d.diia_native->me->structure->d.structure
+                     ->name +
+                 "." + name;
+        }
+      } else if (trace_frame->object->type == MA_OBJECT_STRUCTURE) {
+        path = "[невідомо]";
+        line = std::to_string(trace_frame->location.line);
+        column = std::to_string(trace_frame->location.column);
+        name = "[дія]";
+        if (trace_frame->object->d.diia_native->me != nullptr) {
+          name = trace_frame->object->d.diia_native->me->structure->d.structure
+                     ->name +
+                 "." + name;
+        }
       } else {
         path = "[невідомо]";
       }
-      const auto line = trace_frame->location
-                            ? std::to_string(trace_frame->location->line)
-                            : "0";
-      const auto column = trace_frame->location
-                              ? std::to_string(trace_frame->location->column)
-                              : "0";
-      auto diia_name = trace_frame->object->d.diia->name.empty()
-                           ? "[дія]"
-                           : trace_frame->object->d.diia->name;
-      if (trace_frame->object->d.diia->me != nullptr) {
-        diia_name =
-            trace_frame->object->d.diia->me->structure->d.structure->name +
-            "." + diia_name;
-      }
-      trace.push_back(diia_name + " " + path + ":" + line + ":" + column);
+      trace.push_back(name + " " + path + ":" + line + ":" + column);
     }
     if (!trace.empty()) {
       std::cout << "Слід:" << std::endl;
@@ -134,7 +137,8 @@ int main(int argc, char** argv) {
     main_module_cell.v.object->d.module->code = main_module_code;
     main_module_cell.v.object->d.module->is_file_module = true;
     M->main_module = main_module_cell.v.object;
-    const auto frame = new MaFrame(new MaScope(S), main_module_cell.v.object);
+    const auto frame = new MaFrame(new MaScope(S), main_module_cell.v.object,
+                                   main_module_cell.v.object);
     FRAME_PUSH(frame);
     std::string line;
     do {
