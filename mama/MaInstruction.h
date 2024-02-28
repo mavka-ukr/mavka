@@ -158,8 +158,9 @@ struct MaGiveInstructionArgs {
 };
 
 struct MaTakeInstructionArgs {
-  size_t jump_to;
-  std::string path;
+  std::string repository;
+  bool relative;
+  std::vector<std::string> path_parts;
 };
 
 struct MaModuleLoadInstructionArgs {

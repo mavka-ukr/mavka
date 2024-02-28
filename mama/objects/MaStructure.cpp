@@ -2,22 +2,23 @@
 
 namespace mavka::mama {
   MaCell ma_structure_get_handler(MaMa* M,
-                                  MaObject* me,
+                                  MaObject* o,
                                   const std::string& name) {
     if (name == "назва") {
-      return create_string(M, me->d.structure->name);
+      return create_string(M, o->d.structure->name);
     }
-    if (!me->properties.contains(name)) {
-      M->throw_cell = create_string(M, "Властивість \"" + name +
-                                "\" не визначено для типу \"Структура\".");
+    if (!o->properties.contains(name)) {
+      M->throw_cell =
+          create_string(M, "Властивість \"" + name +
+                               "\" не визначено для типу \"Структура\".");
       throw MaException();
     }
-    return me->properties[name];
+    return o->properties[name];
   }
 
   MaCell structure_structure_object_get_structure_diia_native_fn(MaMa* M,
-                                                               MaObject* me,
-                                                               MaArgs* args) {
+                                                                 MaObject* o,
+                                                                 MaArgs* args) {
     const auto cell = ARGS_GET(args, 0, "значення", MA_MAKE_EMPTY());
     if (IS_EMPTY(cell)) {
       RETURN_EMPTY();
@@ -39,6 +40,17 @@ namespace mavka::mama {
     structure_object->d.structure = structure;
     structure_object->structure = structure_object;
     structure_object->get = ma_structure_get_handler;
+    structure_object->call = [](MaMa* M, MaObject* o, MaArgs* args,
+                                MaInstructionLocation* location) {
+      const auto object_cell = create_object(M, MA_OBJECT, o, nullptr);
+      for (int i = 0; i < o->d.structure->params.size(); ++i) {
+        const auto& param = o->d.structure->params[i];
+        const auto arg_value =
+            ARGS_GET(args, i, param.name, param.default_value);
+        ma_object_set(object_cell.v.object, param.name, arg_value);
+      }
+      RETURN(object_cell);
+    };
     return MaCell{MA_CELL_OBJECT, {.object = structure_object}};
   }
 

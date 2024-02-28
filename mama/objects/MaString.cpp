@@ -58,20 +58,20 @@ namespace mavka::mama {
     return utf8_substr(this->data, start, length);
   }
 
-  MaCell ma_string_split_diia_native_fn(MaMa* M, MaObject* me, MaArgs* args) {
+  MaCell ma_string_split_diia_native_fn(MaMa* M, MaObject* o, MaArgs* args) {
     const auto cell = ARGS_GET(args, 0, "роздільник", MA_MAKE_EMPTY());
     if (IS_STRING(cell)) {
       const auto delim = cell.v.object->d.string->data;
       if (delim.empty()) {
         const auto list = create_list(M);
-        for (const auto& c : utf8_chars(me->d.string->data)) {
+        for (const auto& c : utf8_chars(o->d.diia_native->me->d.string->data)) {
           list.v.object->d.list->data.push_back(create_string(M, c));
         }
         RETURN(list);
       }
       std::vector<std::string> result;
       std::string current;
-      for (const auto& c : utf8_chars(me->d.string->data)) {
+      for (const auto& c : utf8_chars(o->d.diia_native->me->d.string->data)) {
         if (c == delim) {
           result.push_back(current);
           current.clear();
@@ -92,7 +92,7 @@ namespace mavka::mama {
     }
   }
 
-  MaCell ma_string_replace_diia_native_fn(MaMa* M, MaObject* me, MaArgs* args) {
+  MaCell ma_string_replace_diia_native_fn(MaMa* M, MaObject* o, MaArgs* args) {
     const auto first = ARGS_GET(args, 0, "старе", MA_MAKE_EMPTY());
     if (!IS_STRING(first)) {
       M->throw_cell = create_string(
@@ -108,8 +108,8 @@ namespace mavka::mama {
     const auto first_string = first.v.object->d.string->data;
     const auto second_string = second.v.object->d.string->data;
     std::string new_string;
-    for (std::size_t i = 0; i < me->d.string->length(); i++) {
-      const auto substr = me->d.string->substr(i, 1);
+    for (std::size_t i = 0; i < o->d.diia_native->me->d.string->length(); i++) {
+      const auto substr = o->d.diia_native->me->d.string->substr(i, 1);
       if (substr == first_string) {
         new_string += second_string;
       } else {
@@ -120,11 +120,12 @@ namespace mavka::mama {
   }
 
   MaCell ma_string_starts_with_diia_native_fn(MaMa* M,
-                                              MaObject* me,
+                                              MaObject* o,
                                               MaArgs* args) {
     const auto cell = ARGS_GET(args, 0, "значення", MA_MAKE_EMPTY());
     if (IS_STRING(cell)) {
-      if (me->d.string->data.find(cell.v.object->d.string->data) == 0) {
+      if (o->d.diia_native->me->d.string->data.find(
+              cell.v.object->d.string->data) == 0) {
         RETURN_YES();
       }
       RETURN_NO();
@@ -136,16 +137,17 @@ namespace mavka::mama {
   }
 
   MaCell ma_string_ends_with_diia_native_fn(MaMa* M,
-                                            MaObject* me,
+                                            MaObject* o,
                                             MaArgs* args) {
     const auto cell = ARGS_GET(args, 0, "значення", MA_MAKE_EMPTY());
     if (IS_STRING(cell)) {
       const auto str = cell.v.object->d.string;
-      if (me->d.string->length() < str->length()) {
+      if (o->d.diia_native->me->d.string->length() < str->length()) {
         RETURN_NO();
       }
-      if (me->d.string->substr(me->d.string->length() - str->length(),
-                               str->length()) == str->data) {
+      if (o->d.diia_native->me->d.string->substr(
+              o->d.diia_native->me->d.string->length() - str->length(),
+              str->length()) == str->data) {
         RETURN(MA_MAKE_YES());
       }
       RETURN_NO();
@@ -156,43 +158,45 @@ namespace mavka::mama {
     }
   }
 
-  MaCell ma_string_trim_diia_native_fn(MaMa* M, MaObject* me, MaArgs* args) {
-    RETURN(create_string(M, internal::tools::trim(me->d.string->data)));
+  MaCell ma_string_trim_diia_native_fn(MaMa* M, MaObject* o, MaArgs* args) {
+    RETURN(create_string(
+        M, internal::tools::trim(o->d.diia_native->me->d.string->data)));
   }
 
-  MaCell ma_string_mag_add_diia_native_fn(MaMa* M, MaObject* me, MaArgs* args) {
-    const auto cell = ARGS_GET(args, 0, "значення", MA_MAKE_EMPTY());
-    if (IS_EMPTY(cell)) {
-      RETURN(create_string(M, me->d.string->data + "пусто"));
+  MaCell ma_string_mag_add_diia_native_fn(MaMa* M, MaObject* o, MaArgs* args) {
+    const auto arg_cell = ARGS_GET(args, 0, "значення", MA_MAKE_EMPTY());
+    if (IS_EMPTY(arg_cell)) {
+      RETURN(create_string(M, o->d.diia_native->me->d.string->data + "пусто"));
     }
-    if (IS_NUMBER(cell)) {
-      RETURN(create_string(
-          M, me->d.string->data + ma_number_to_string(cell.v.number)));
+    if (IS_NUMBER(arg_cell)) {
+      RETURN(create_string(M, o->d.diia_native->me->d.string->data +
+                                  ma_number_to_string(arg_cell.v.number)));
     }
-    if (IS_YES(cell)) {
-      RETURN(create_string(M, me->d.string->data + "так"));
+    if (IS_YES(arg_cell)) {
+      RETURN(create_string(M, o->d.diia_native->me->d.string->data + "так"));
     }
-    if (IS_NO(cell)) {
-      RETURN(create_string(M, me->d.string->data + "ні"));
+    if (IS_NO(arg_cell)) {
+      RETURN(create_string(M, o->d.diia_native->me->d.string->data + "ні"));
     }
-    if (IS_OBJECT(cell)) {
-      if (IS_OBJECT_STRING(cell)) {
-        RETURN(create_string(
-            M, me->d.string->data + cell.v.object->d.string->data));
+    if (IS_OBJECT(arg_cell)) {
+      if (IS_OBJECT_STRING(arg_cell)) {
+        RETURN(create_string(M, o->d.diia_native->me->d.string->data +
+                                    arg_cell.v.object->d.string->data));
       }
     }
-    M->throw_cell = create_string(M, "Неможливо додати до тексту обʼєкт типу \"" +
-                                getcelltypename(cell) + "\".");
+    M->throw_cell =
+        create_string(M, "Неможливо додати до тексту обʼєкт типу \"" +
+                             getcelltypename(arg_cell) + "\".");
     throw MaException();
   }
 
   MaCell ma_string_mag_contains_diia_native_fn(MaMa* M,
-                                               MaObject* me,
+                                               MaObject* o,
                                                MaArgs* args) {
     const auto cell = ARGS_GET(args, 0, "значення", MA_MAKE_EMPTY());
     if (IS_STRING(cell)) {
-      if (me->d.string->data.find(cell.v.object->d.string->data) !=
-          std::string::npos) {
+      if (o->d.diia_native->me->d.string->data.find(
+              cell.v.object->d.string->data) != std::string::npos) {
         RETURN(MA_MAKE_YES());
       }
       RETURN_NO();
@@ -204,13 +208,13 @@ namespace mavka::mama {
   }
 
   MaCell ma_string_mag_get_element_diia_native_fn(MaMa* M,
-                                                  MaObject* me,
+                                                  MaObject* o,
                                                   MaArgs* args) {
     const auto cell = ARGS_GET(args, 0, "позиція", MA_MAKE_EMPTY());
     if (IS_NUMBER(cell)) {
       const auto i = cell.v.number;
-      if (i < me->d.string->length()) {
-        const auto substr = me->d.string->substr(i, 1);
+      if (i < o->d.diia_native->me->d.string->length()) {
+        const auto substr = o->d.diia_native->me->d.string->substr(i, 1);
         RETURN(create_string(M, substr));
       }
     }
@@ -218,7 +222,7 @@ namespace mavka::mama {
   }
 
   MaCell ma_string_mag_iterator_diia_native_fn(MaMa* M,
-                                               MaObject* me,
+                                               MaObject* o,
                                                MaArgs* args) {
     M->throw_cell = create_string(
         M, "Дія \"" + std::string(MAG_ITERATOR) + "\" тимчасово недоступна.");
@@ -226,9 +230,9 @@ namespace mavka::mama {
   }
 
   MaCell ma_string_mag_number_diia_native_fn(MaMa* M,
-                                             MaObject* me,
+                                             MaObject* o,
                                              MaArgs* args) {
-    RETURN_NUMBER(std::stod(me->d.string->data));
+    RETURN_NUMBER(std::stod(o->d.diia_native->me->d.string->data));
   }
 
   MaCell ma_string_get_handler(MaMa* M, MaObject* me, const std::string& name) {
@@ -292,7 +296,7 @@ namespace mavka::mama {
   }
 
   MaCell text_structure_object_mag_call_diia_native_fn(MaMa* M,
-                                                       MaObject* me,
+                                                       MaObject* o,
                                                        MaArgs* args) {
     const auto cell = ARGS_GET(args, 0, "значення", MA_MAKE_EMPTY());
     if (IS_NUMBER(cell)) {

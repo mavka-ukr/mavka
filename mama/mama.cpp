@@ -37,18 +37,10 @@
   }
 
 namespace mavka::mama {
-  void restore_frames(MaMa* M, size_t frames_size) {
-    while (M->frames.size() > frames_size) {
-      FRAME_POP();
-    }
-  }
-
-  void run(MaMa* M,
-           std::stack<MaCell>& stack,
-           MaCode* code,
-           size_t start_index) {
+  void run(MaMa* M, MaCode* code) {
+    READ_TOP_FRAME();
     auto size = code->instructions.size();
-    size_t i = start_index;
+    size_t i = 0;
     for (;;) {
     start:
       if (i >= size) {
@@ -84,20 +76,19 @@ namespace mavka::mama {
           break;
         }
         case VInitargs: {
-          const auto args = new MaArgs(I.args.initargs->args_type);
-          PUSH_ARGS(args);
+          PUSH_ARGS(new MaArgs(I.args.initargs->args_type));
           break;
         }
         case VPushArg: {
-          POP_VALUE(value);
-          TOP_VALUE(args);
-          ARGS_PUSH(args, value);
+          POP_VALUE(value_cell);
+          TOP_VALUE(args_cell);
+          ARGS_PUSH(args_cell, value_cell);
           break;
         }
         case VStoreArg: {
-          POP_VALUE(value);
-          TOP_VALUE(args);
-          ARGS_SET(args, I.args.store->name, value);
+          POP_VALUE(value_cell);
+          TOP_VALUE(args_cell);
+          ARGS_SET(args_cell, I.args.store->name, value_cell);
           break;
         }
         case VCall: {
@@ -107,16 +98,9 @@ namespace mavka::mama {
           break;
         }
         case VReturn: {
-          auto frame = M->frames.top();
-          FRAME_POP();
-          while (frame->type != FRAME_TYPE_CALL) {
-            frame = M->frames.top();
-            FRAME_POP();
-          }
           return;
         }
         case VDiia: {
-          READ_TOP_FRAME();
           const auto diia_cell =
               create_diia(M, I.args.diia->name, I.args.diia->code, nullptr);
           diia_cell.v.object->d.diia->scope = frame->scope;
@@ -134,12 +118,10 @@ namespace mavka::mama {
         }
         case VStore: {
           POP_VALUE(value);
-          READ_TOP_FRAME();
           frame->scope->set_variable(I.args.store->name, value);
           break;
         }
         case VLoad: {
-          READ_TOP_FRAME();
           const auto scope = frame->scope;
           if (scope->has_variable(I.args.load->name)) {
             PUSH(scope->get_variable(I.args.load->name));
@@ -239,14 +221,16 @@ namespace mavka::mama {
           break;
         }
         case VTry: {
-          const auto frame_size = M->frames.size();
+          const auto frames_size = M->frame_stack.size();
           try {
-            run(M, stack, I.args.try_->try_code, 0);
+            run(M, I.args.try_->try_code);
           } catch (const MaException& e) {
             const auto value = M->throw_cell;
             PUSH(value);
-            restore_frames(M, frame_size);
-            run(M, stack, I.args.try_->catch_code, 0);
+            while (M->frame_stack.size() > frames_size) {
+              FRAME_POP();
+            }
+            run(M, I.args.try_->catch_code);
           }
           break;
         }
@@ -306,24 +290,15 @@ namespace mavka::mama {
                           getcelltypename(structure_cell))
         }
         case VModule: {
-          READ_TOP_FRAME();
           const auto module_cell = create_module(M, I.args.module->name);
           const auto module_scope = new MaScope(frame->scope);
-          const auto cf_data =
-              new MaFrameModuleData{.module = module_cell.v.object};
-          FRAME_PUSH(MaFrame::module(module_scope, cf_data));
+          FRAME_PUSH(new MaFrame(module_scope, module_cell.v.object));
           frame->scope->set_variable(I.args.module->name, module_cell);
           break;
         }
         case VGive: {
           POP_VALUE(value);
-          READ_TOP_FRAME();
-          if (frame->type == FRAME_TYPE_MODULE) {
-            frame->data.module->module->properties.insert_or_assign(
-                I.args.give->name, value);
-            break;
-          }
-          DO_THROW_STRING("Неможливо дати \"" + I.args.give->name + "\".")
+          frame->object->properties.insert_or_assign(I.args.give->name, value);
         }
         case VModuleDone: {
           FRAME_POP();
@@ -839,91 +814,25 @@ namespace mavka::mama {
           break;
         }
         case VTake: {
-          const auto rawpath = I.args.take->path;
-          if (!std::filesystem::exists(rawpath)) {
-            DO_THROW_STRING("Не вдалося прочитати файл \"" + rawpath + "\".");
-            return;
-          }
-          const auto path =
-              std::filesystem::canonical(I.args.take->path).string();
-          const auto stdpath = std::filesystem::path(path);
-          if (!stdpath.has_filename()) {
-            DO_THROW_STRING("Не вдалося прочитати файл \"" + path + "\".");
-            return;
-          }
-          const auto name = stdpath.stem().string();
-
-          if (M->loaded_file_modules.contains(name)) {
-            PUSH(MA_MAKE_OBJECT(M->loaded_file_modules[name]));
-            break;
-          } else {
-            auto file = std::ifstream(path);
-            if (!file.is_open()) {
-              DO_THROW_STRING("Не вдалося прочитати файл \"" + path + "\".");
-              return;
-            }
-            const auto source = std::string(std::istreambuf_iterator(file),
-                                            std::istreambuf_iterator<char>());
-            const auto parser_result = parser::parse(source, path);
-            if (!parser_result.errors.empty()) {
-              const auto error = parser_result.errors[0];
-              DO_THROW_STRING(error.path + ":" + std::to_string(error.line) +
-                              ":" + std::to_string(error.column) + ": " +
-                              error.message);
-              return;
-            }
-            const auto module_code = new MaCode();
-            const auto module_cell = create_module(M, name);
-            const auto module_object = module_cell.v.object;
-            module_object->d.module->code = module_code;
-            module_object->d.module->is_file_module = true;
-            if (M->main_module == nullptr) {
-              M->main_module = module_cell.v.object;
-            }
-            M->loaded_file_modules.insert_or_assign(
-                module_object->d.module->name, module_object);
-            module_code->path = path;
-            const auto body_compilation_result =
-                compile_body(M, module_code, parser_result.module_node->body);
-            if (body_compilation_result.error) {
-              DO_THROW_STRING(
-                  path + ":" +
-                  std::to_string(body_compilation_result.error->line) + ":" +
-                  std::to_string(body_compilation_result.error->column) + ": " +
-                  body_compilation_result.error->message);
-              return;
-            }
-            READ_TOP_FRAME();
-            FRAME_PUSH(MaFrame::module(new MaScope(frame->scope),
-                                       new MaFrameModuleData{
-                                           .module = module_object,
-                                       }));
-            M->current_module = module_object;
-            std::stack<MaCell> stack;
-            run(M, stack, module_code, 0);
-            M->current_module = module_object;
-            FRAME_POP();
-            goto start;
-          }
+          const auto module_object =
+              ma_take(M, I.args.take->repository, I.args.take->relative,
+                      I.args.take->path_parts);
+          PUSH_OBJECT(module_object);
           break;
         }
         case VKeepModule: {
-          READ_TOP_FRAME();
-          const auto current_module_path =
-              frame->data.module->module->d.module->name;
+          const auto current_module_path = frame->object->d.module->name;
           M->loaded_file_modules.insert_or_assign(current_module_path,
-                                                  frame->data.module->module);
+                                                  frame->object);
           break;
         }
         case VLoadModule: {
-          READ_TOP_FRAME();
-          PUSH(MA_MAKE_OBJECT(frame->data.module->module));
+          PUSH(MA_MAKE_OBJECT(frame->object));
           break;
         }
         case VModuleLoad: {
           TOP_VALUE(module_cell);
           OBJECT_GET(module_cell, value, I.args.moduleload->name);
-          READ_TOP_FRAME();
           frame->scope->set_variable(I.args.moduleload->as, value);
           break;
         }
@@ -952,86 +861,94 @@ namespace mavka::mama {
     return docall(M, cell, new MaArgs(MA_ARGS_NAMED, args, {}), location);
   }
 
+  MaObject* ma_take(MaMa* M,
+                    const std::string& repository,
+                    bool relative,
+                    const std::vector<std::string>& path_parts) {
+    const auto path =
+        M->cwd + "/" + internal::tools::implode(path_parts, "/") + ".м";
+    if (!std::filesystem::exists(path)) {
+      DO_THROW_STRING("Не вдалося прочитати файл \"" + path + "\".");
+    }
+    return ma_take(M, path);
+  }
+
+  MaObject* ma_take(MaMa* M, const std::string& path) {
+    const auto canonical_path = std::filesystem::canonical(path).string();
+
+    const auto fs_path = std::filesystem::path(canonical_path);
+    if (!fs_path.has_filename()) {
+      DO_THROW_STRING("Не вдалося прочитати файл \"" + canonical_path + "\".");
+    }
+
+    const auto name = fs_path.stem().string();
+
+    if (M->loaded_file_modules.contains(canonical_path)) {
+      return M->loaded_file_modules[canonical_path];
+    }
+
+    auto file = std::ifstream(canonical_path);
+    if (!file.is_open()) {
+      DO_THROW_STRING("Не вдалося прочитати файл \"" + canonical_path + "\".");
+    }
+
+    const auto source = std::string(std::istreambuf_iterator(file),
+                                    std::istreambuf_iterator<char>());
+
+    const auto parser_result = parser::parse(source, canonical_path);
+    if (!parser_result.errors.empty()) {
+      const auto error = parser_result.errors[0];
+      DO_THROW_STRING(error.path + ":" + std::to_string(error.line) + ":" +
+                      std::to_string(error.column) + ": " + error.message);
+    }
+
+    const auto module_code = new MaCode();
+    module_code->path = canonical_path;
+
+    const auto module_cell = create_module(M, name);
+    const auto module_object = module_cell.v.object;
+    module_object->d.module->code = module_code;
+    module_object->d.module->is_file_module = true;
+    if (M->main_module == nullptr) {
+      M->main_module = module_cell.v.object;
+    }
+    M->loaded_file_modules.insert_or_assign(canonical_path, module_object);
+
+    const auto body_compilation_result =
+        compile_body(M, module_code, parser_result.module_node->body);
+    if (body_compilation_result.error) {
+      DO_THROW_STRING(canonical_path + ":" +
+                      std::to_string(body_compilation_result.error->line) +
+                      ":" +
+                      std::to_string(body_compilation_result.error->column) +
+                      ": " + body_compilation_result.error->message);
+    }
+
+    READ_TOP_FRAME();
+    const auto module_scope = new MaScope(frame->scope);
+    const auto module_frame = new MaFrame(module_scope, module_object);
+    FRAME_PUSH(module_frame);
+    const auto prev_module = M->current_module;
+    M->current_module = module_object;
+    run(M, module_code);
+    M->current_module = prev_module;
+    FRAME_POP();
+    return module_object;
+  }
+
   MaCell docall(MaMa* M,
                 MaCell cell,
                 MaArgs* args,
                 MaInstructionLocation* location) {
-    auto frame = M->frames.top();
   repeat:
     if (IS_OBJECT(cell)) {
       const auto object = cell.v.object;
 
-      if (IS_OBJECT_DIIA(cell)) {
-        const auto cf_data = new MaCallFrameCallData({
-            .type = FRAME_CALL_TYPE_DIIA,
-            .o =
-                {
-                    .diia = object,
-                },
-            .location = location,
-        });
-        const auto scope = new MaScope(object->d.diia->scope);
-        frame = MaFrame::call(scope, cf_data);
-        FRAME_PUSH(frame);
-        const auto call_data = frame->data.call;
-        const auto diia = call_data->o.diia;
-        if (diia->d.diia->me) {
-          frame->scope->set_variable("я", MA_MAKE_OBJECT(diia->d.diia->me));
-        }
-        for (int i = 0; i < diia->d.diia->params.size(); ++i) {
-          const auto& param = diia->d.diia->params[i];
-          const auto arg_value =
-              ARGS_GET(args, i, param.name, param.default_value);
-          frame->scope->set_variable(param.name, arg_value);
-        }
-        std::stack<MaCell> stack;
-        run(M, stack, diia->d.diia->code, 0);
-        const auto result = stack.top();
-        return result;
-      } else if (IS_OBJECT_DIIA_NATIVE(cell)) {
-        const auto cf_data = new MaCallFrameCallData({
-            .type = FRAME_CALL_TYPE_DIIA_NATIVE,
-            .o =
-                {
-                    .diia_native = object,
-                },
-            .location = location,
-        });
-        frame = MaFrame::call(frame->scope, cf_data);
-        FRAME_PUSH(frame);
-        const auto call_data = frame->data.call;
-        const auto diia_native = call_data->o.diia_native;
-        const auto result = diia_native->d.diia_native->fn(M, diia_native->d.diia_native->me, args);
-        FRAME_POP();
-        return result;
-      } else if (object->properties.contains(MAG_CALL)) {
+      if (object->properties.contains(MAG_CALL)) {
         cell = object->properties[MAG_CALL];
         goto repeat;
-      } else if (IS_OBJECT_STRUCTURE(cell)) {
-        const auto cf_data = new MaCallFrameCallData({
-            .type = FRAME_CALL_TYPE_STRUCTURE,
-            .o =
-                {
-                    .structure = object,
-                },
-            .location = location,
-        });
-        frame = MaFrame::call(frame->scope, cf_data);
-        FRAME_PUSH(frame);
-        const auto call_data = frame->data.call;
-        const auto structure = call_data->o.structure;
-        const auto object_cell =
-            create_object(M, MA_OBJECT, structure, nullptr);
-        for (int i = 0; i < structure->d.structure->params.size(); ++i) {
-          const auto& param = structure->d.structure->params[i];
-          const auto arg_value =
-              ARGS_GET(args, i, param.name, param.default_value);
-          ma_object_set(object_cell.v.object, param.name, arg_value);
-        }
-        FRAME_POP();
-        return object_cell;
-      } else {
-        DO_THROW_CANNOT_CALL_CELL(cell);
+      } else if (object->call) {
+        return object->call(M, object, args, location);
       }
     }
     DO_THROW_CANNOT_CALL_CELL(cell);

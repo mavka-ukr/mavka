@@ -2,7 +2,7 @@
 
 namespace mavka::mama {
   MaCell number_structure_object_mag_call_diia_native_fn(MaMa* M,
-                                                         MaObject* me,
+                                                         MaObject* o,
                                                          MaArgs* args) {
     const auto cell = ARGS_GET(args, 0, "значення", MA_MAKE_EMPTY());
     if (IS_EMPTY(cell)) {

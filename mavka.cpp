@@ -45,54 +45,49 @@ void print_version() {
 }
 
 MaObject* find_nearest_file_module(MaMa* M) {
-  auto frames_copy = M->frames;
+  auto frames_copy = M->frame_stack;
   while (!frames_copy.empty()) {
     auto frame = frames_copy.top();
     frames_copy.pop();
-    if (frame->type == FRAME_TYPE_MODULE) {
-      if (frame->data.module->module->d.module->is_file_module) {
-        return frame->data.module->module;
+    if (frame->object->type == MA_OBJECT_MODULE) {
+      if (frame->object->d.module->is_file_module) {
+        return frame->object;
       }
     }
   }
   return nullptr;
 }
 
-size_t try_run(MaMa* M, MaCode* code, size_t start_index = 0) {
-  std::stack<MaCell> stack;
+size_t try_run(MaMa* M, std::function<void()> fn) {
   try {
-    mavka::mama::run(M, stack, code, start_index);
+    fn();
     return 0;
   } catch (const MaException& e) {
     std::vector<std::string> trace;
-    while (M->frames.size() > 2) {
+    while (M->frame_stack.size() > 2) {
       POP_FRAME(trace_frame);
-      if (trace_frame->type == FRAME_TYPE_CALL) {
-        std::string path;
-        if (trace_frame->data.call->type == FRAME_CALL_TYPE_DIIA) {
-          const auto nearest_module = find_nearest_file_module(M);
-          path = nearest_module->d.module->code->path;
-        } else {
-          path = "[невідомо]";
-        }
-        const auto line =
-            trace_frame->data.call->location
-                ? std::to_string(trace_frame->data.call->location->line)
-                : "0";
-        const auto column =
-            trace_frame->data.call->location
-                ? std::to_string(trace_frame->data.call->location->column)
-                : "0";
-        auto diia_name = trace_frame->data.call->o.diia->d.diia->name.empty()
-                             ? "[дія]"
-                             : trace_frame->data.call->o.diia->d.diia->name;
-        if (trace_frame->data.call->o.diia->d.diia->me != nullptr) {
-          diia_name = trace_frame->data.call->o.diia->d.diia->me->structure->d
-                          .structure->name +
-                      "." + diia_name;
-        }
-        trace.push_back(diia_name + " " + path + ":" + line + ":" + column);
+      std::string path;
+      if (trace_frame->object->type == MA_OBJECT_DIIA) {
+        const auto nearest_module = find_nearest_file_module(M);
+        path = nearest_module->d.module->code->path;
+      } else {
+        path = "[невідомо]";
       }
+      const auto line = trace_frame->location
+                            ? std::to_string(trace_frame->location->line)
+                            : "0";
+      const auto column = trace_frame->location
+                              ? std::to_string(trace_frame->location->column)
+                              : "0";
+      auto diia_name = trace_frame->object->d.diia->name.empty()
+                           ? "[дія]"
+                           : trace_frame->object->d.diia->name;
+      if (trace_frame->object->d.diia->me != nullptr) {
+        diia_name =
+            trace_frame->object->d.diia->me->structure->d.structure->name +
+            "." + diia_name;
+      }
+      trace.push_back(diia_name + " " + path + ":" + line + ":" + column);
     }
     if (!trace.empty()) {
       std::cout << "Слід:" << std::endl;
@@ -105,11 +100,6 @@ size_t try_run(MaMa* M, MaCode* code, size_t start_index = 0) {
     return 1;
   }
 }
-
-#define KEY_UP 72
-#define KEY_DOWN 80
-#define KEY_LEFT 75
-#define KEY_RIGHT 77
 
 int main(int argc, char** argv) {
   const auto args = std::vector<std::string>(argv, argv + argc);
@@ -131,13 +121,75 @@ int main(int argc, char** argv) {
   init_dict(M);
   init_structure_2(M);
 
-  const auto frame = new MaFrame(FRAME_TYPE_ROOT);
-  frame->scope = S;
-  FRAME_PUSH(frame);
+  const auto main_frame = new MaFrame();
+  main_frame->scope = S;
+  FRAME_PUSH(main_frame);
   init_print(M, S);
 
   if (args.size() == 1) {
     std::cout << "Експериментальна Мавка " << MAVKA_VERSION << std::endl;
+    const auto main_module_cell = create_module(M, "старт");
+    const auto main_module_code = new MaCode();
+    main_module_code->path = "[консоль]";
+    main_module_cell.v.object->d.module->code = main_module_code;
+    main_module_cell.v.object->d.module->is_file_module = true;
+    M->main_module = main_module_cell.v.object;
+    const auto frame = new MaFrame(new MaScope(S), main_module_cell.v.object);
+    FRAME_PUSH(frame);
+    std::string line;
+    do {
+      if (line.empty()) {
+        std::cout << "› ";
+      } else {
+        std::cout << "  ";
+      }
+      std::string currline;
+      std::getline(std::cin, currline);
+      if (currline == "вийти") {
+        return 0;
+      }
+      if (currline.empty()) {
+        continue;
+      }
+      if (currline[currline.size() - 1] == '\\') {
+        line += ("\n" + currline.substr(0, currline.size() - 1));
+        continue;
+      } else {
+        if (line.empty()) {
+          line = currline;
+        } else {
+          line += ("\n" + currline);
+        }
+      }
+      const auto parser_result = mavka::parser::parse(line, "[консоль]");
+      line = "";
+      if (!parser_result.errors.empty()) {
+        const auto error = parser_result.errors[0];
+        std::cout << error.path + ":" + std::to_string(error.line) + ":" +
+                         std::to_string(error.column) + ": " + error.message
+                  << std::endl;
+        continue;
+      }
+      const auto code = new MaCode();
+      const auto body_compilation_result =
+          compile_body(M, code, parser_result.module_node->body);
+      if (body_compilation_result.error) {
+        std::cout << "[консоль]:" +
+                         std::to_string(body_compilation_result.error->line) +
+                         ":" +
+                         std::to_string(body_compilation_result.error->column) +
+                         ": " + body_compilation_result.error->message
+                  << std::endl;
+        continue;
+      }
+      if (!try_run(M, [&M, &code]() { mavka::mama::run(M, code); })) {
+        if (!frame->stack.empty()) {
+          const auto result = TOP();
+          POP();
+          std::cout << cell_to_string(result) << std::endl;
+        }
+      }
+    } while (true);
     return 1;
   } else if (args.size() == 2) {
     const auto& command = args[1];
@@ -152,11 +204,7 @@ int main(int argc, char** argv) {
 
     const auto& path = args[1];
 
-    return try_run(
-        M, new MaCode(
-               {.instructions = {MaInstruction{
-                    VTake,
-                    {.take = new MaTakeInstructionArgs(INT64_MAX, path)}}}}));
+    try_run(M, [&path, &M]() { ma_take(M, path); });
   } else {
     print_help();
     return 1;

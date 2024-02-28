@@ -5,14 +5,15 @@ namespace mavka::mama {
                                         MaCode* code,
                                         mavka::ast::ASTValue* ast_value) {
     const auto take_node = ast_value->data.TakeNode;
-    const auto name = take_node->name;
-    const auto path = M->cwd + "/" + name + ".м";
-    code->instructions.push_back(MaInstruction::take(
-        new MaTakeInstructionArgs(code->instructions.size() + 1, path)));
+    const auto parts = mavka::internal::tools::explode(take_node->name, ".");
+
+    code->instructions.push_back(MaInstruction::take(new MaTakeInstructionArgs(
+        take_node->repo, take_node->relative, parts)));
+
     if (take_node->elements.empty()) {
       if (take_node->as.empty()) {
         code->instructions.push_back(
-            MaInstruction::store(new MaStoreInstructionArgs(name)));
+            MaInstruction::store(new MaStoreInstructionArgs(parts.back())));
       } else {
         code->instructions.push_back(
             MaInstruction::store(new MaStoreInstructionArgs(take_node->as)));
