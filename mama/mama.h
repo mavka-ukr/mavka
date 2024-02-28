@@ -101,7 +101,7 @@
   (cell).v.object->type == MA_OBJECT_DIIA_NATIVE
 #define IS_STRING(cell) IS_OBJECT(cell) && IS_OBJECT_STRING(cell)
 
-#define PUSH(cell) stack.push(cell)
+#define PUSH(cell) frame->stack.push(cell)
 #define PUSH_EMPTY() PUSH(MA_MAKE_EMPTY())
 #define PUSH_NUMBER(v) PUSH(MA_MAKE_NUMBER((v)))
 #define PUSH_INTEGER(v) PUSH(MA_MAKE_INTEGER((v)))
@@ -118,19 +118,19 @@
 #define RETURN_NO() return MA_MAKE_NO();
 #define RETURN_OBJECT(v) return MA_MAKE_OBJECT((v));
 
-#define TOP() stack.top()
+#define TOP() frame->stack.top()
 #define TOP_VALUE(name) const auto name = TOP();
-#define POP() stack.pop();
+#define POP() frame->stack.pop();
 #define POP_VALUE(name)    \
   const auto name = TOP(); \
   POP();
 
 #define OBJECT_STRING_DATA(cell) (cell).v.object->d.string->data
 
-#define READ_TOP_FRAME() const auto frame = M->frames.top();
-#define FRAME_POP() M->frames.pop();
-#define FRAME_TOP() M->frames.top();
-#define FRAME_PUSH(frame) M->frames.push(frame);
+#define READ_TOP_FRAME() const auto frame = M->frame_stack.top();
+#define FRAME_POP() M->frame_stack.pop();
+#define FRAME_TOP() M->frame_stack.top();
+#define FRAME_PUSH(frame) M->frame_stack.push(frame);
 #define POP_FRAME(name)          \
   const auto name = FRAME_TOP(); \
   FRAME_POP();
@@ -182,7 +182,7 @@ namespace mavka::mama {
 
     MaCell throw_cell;
 
-    std::stack<MaFrame*> frames;
+    std::stack<MaFrame*> frame_stack;
 
     MaObject* object_structure_object;
     MaObject* structure_structure_object;
@@ -195,11 +195,7 @@ namespace mavka::mama {
     MaObject* module_structure_object;
   };
 
-  void restore_frames(MaMa* M, size_t frames_size);
-  void run(MaMa* M,
-           std::stack<MaCell>& stack,
-           MaCode* code,
-           size_t start_index = 0);
+  void run(MaMa* M, MaCode* code);
 
   MaCell ma_call(MaMa* M,
                  MaCell cell,
@@ -213,6 +209,13 @@ namespace mavka::mama {
                 MaCell cell,
                 MaArgs* args,
                 MaInstructionLocation* location);
+
+  MaObject* ma_take(MaMa* M,
+                    const std::string& repository,
+                    bool relative,
+                    const std::vector<std::string>& path_parts);
+  MaObject* ma_take(MaMa* M,
+                    const std::string& path);
 } // namespace mavka::mama
 
 #endif // MAMA_H

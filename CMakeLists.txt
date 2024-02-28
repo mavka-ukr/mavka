@@ -53,7 +53,6 @@ set(MAVKA_COMPILER_SRC
         mama/objects/MaObject.cpp
         mama/objects/MaString.cpp
         mama/objects/MaStructure.cpp
-        mama/MaFrame.cpp
         mama/MaInstruction.cpp
         mama/helpers.cpp
         mama/mama.cpp

@@ -9,7 +9,29 @@ namespace mavka::mama {
     diia->name = name;
     diia->code = code;
     diia->me = me;
-    return create_object(M, MA_OBJECT_DIIA, M->diia_structure_object, diia);
+    const auto cell =
+        create_object(M, MA_OBJECT_DIIA, M->diia_structure_object, diia);
+    cell.v.object->call = [](MaMa* M, MaObject* o, MaArgs* args,
+                             MaInstructionLocation* location) {
+      const auto frame = new MaFrame(nullptr, o, location);
+      FRAME_PUSH(frame);
+      const auto diia_scope = new MaScope(o->d.diia->scope);
+      frame->scope = diia_scope;
+      if (o->d.diia->me) {
+        frame->scope->set_variable("я", MA_MAKE_OBJECT(o->d.diia->me));
+      }
+      for (int i = 0; i < o->d.diia->params.size(); ++i) {
+        const auto& param = o->d.diia->params[i];
+        const auto arg_value =
+            ARGS_GET(args, i, param.name, param.default_value);
+        frame->scope->set_variable(param.name, arg_value);
+      }
+      run(M, o->d.diia->code);
+      const auto result = frame->stack.top();
+      FRAME_POP();
+      return result;
+    };
+    return cell;
   }
 
   MaCell create_diia_native(MaMa* M,
@@ -20,8 +42,13 @@ namespace mavka::mama {
     diia_native->name = name;
     diia_native->fn = diia_native_fn;
     diia_native->me = me;
-    return create_object(M, MA_OBJECT_DIIA_NATIVE, M->diia_structure_object,
-                         diia_native);
+    const auto cell = create_object(M, MA_OBJECT_DIIA_NATIVE,
+                                    M->diia_structure_object, diia_native);
+    cell.v.object->call = [](MaMa* M, MaObject* o, MaArgs* args,
+                             MaInstructionLocation* location) {
+      return o->d.diia_native->fn(M, o, args);
+    };
+    return cell;
   }
 
   MaCell bind_diia(MaMa* M, MaObject* diia, MaObject* object) {
