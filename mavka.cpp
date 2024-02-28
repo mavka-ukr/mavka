@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include "mama/mama.h"
+#include "mama/src/mama.h"
 
 using namespace mavka::mama;
 
