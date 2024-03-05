@@ -230,7 +230,12 @@ int main(int argc, char** argv) {
   init_read(M);
 
   if (args.size() == 1) {
-    std::cout << "Експериментальна Мавка " << MAVKA_VERSION << std::endl;
+    const auto take_result = M->TakeFn(M, "біб", false, {"_ірк"}, {});
+    if (take_result.IsError()) {
+      std::cerr << cell_to_string(take_result.v.error->value) << std::endl;
+      return 1;
+    }
+    return 0;
   } else {
     const auto& command = args[1];
     if (command == "допомога") {
