@@ -20,7 +20,9 @@
 - [пак.укр](https://пак.укр) - паки Мавки
 - [фрагмент.укр](https://фрагмент.укр) - фрагменти Мавки
 - [конкурс.укр](https://конкурс.укр) - конкурси Мавки
-- [джеджалик](https://github.com/mavka-ukr/jejalyk) - компілятор Мавки в JavaScript
+- [МаМа](https://github.com/mavka-ukr/mama) - Машина Мавки
+- [Джеджалик](https://github.com/mavka-ukr/jejalyk) - компілятор Мавки в JavaScript
+- [Парсер](https://github.com/mavka-ukr/parser) - розбирач коду Мавки
 
 ## Розробка
 
@@ -49,7 +51,7 @@ git submodule update --init --recursive
 ```
 
 ```shell
-./dist.sh # архів з релізом
+./dist.sh # архів з випуском
 ```
 
 ### Запуск
@@ -58,11 +60,4 @@ git submodule update --init --recursive
 ./build-bin/мавка старт.м
 # або
 ./build-Obin/мавка_оптимізовано старт.м
-```
-
-### Тестування
-
-```shell
-./dist.sh
-./mtests.sh
 ```
