@@ -7,7 +7,7 @@
 - [Artemii Kravchuk](https://github.com/ArtemiiKravchuk)
 - [Andrii Kurdiumov](https://github.com/kant2002)
 - [Dmytro-Andrii Kostelnyi](https://github.com/dkostmii)
-- [DenKisil](https://github.com/denkisil)
+- [DenKisil](https://github.com/ossenjoyer)
 - [Danik Vitek](https://github.com/DanikVitek)
 
 ## Як сюди потрапити?
