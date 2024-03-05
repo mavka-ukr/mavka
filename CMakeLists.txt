@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 file(READ "VERSION" MAVKA_VERSION)
 
-add_subdirectory(mama/src)
+add_subdirectory(mama)
 
 set(MAVKA_COMPILER_SRC)
 
