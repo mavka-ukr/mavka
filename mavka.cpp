@@ -230,7 +230,7 @@ int main(int argc, char** argv) {
   init_read(M);
 
   if (args.size() == 1) {
-    const auto take_result = M->TakeFn(M, "біб", false, {"_ірк"}, {});
+    const auto take_result = M->TakeFn(M, "біб", false, {"вбудоване", "ірм"}, {});
     if (take_result.IsError()) {
       std::cerr << cell_to_string(take_result.v.error->value) << std::endl;
       return 1;
