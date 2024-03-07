@@ -7,7 +7,12 @@ file(READ "VERSION" MAVKA_VERSION)
 
 add_subdirectory(src/mama)
 
-set(MAVKA_COMPILER_SRC)
+set(MAVKA_COMPILER_SRC
+        src/bib/read.cpp
+        src/main.cpp
+        src/mavka.cpp
+        src/take.cpp
+)
 
 add_executable(mavka src/main.cpp ${MAVKA_COMPILER_SRC})
 add_executable(mavka_optimized src/main.cpp ${MAVKA_COMPILER_SRC})

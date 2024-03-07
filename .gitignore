@@ -25,4 +25,4 @@ head.h
 node_modules/
 .паки/
 х.м
-lib_bundle.h
+MAVKA_LIB_MODULES.h
