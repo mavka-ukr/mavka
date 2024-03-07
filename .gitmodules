@@ -1,0 +1,3 @@
+[submodule "src/mama"]
+	path = src/mama
+	url = https://github.com/mavka-ukr/mama
