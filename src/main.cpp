@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
-#include "lib_bundle.h"
+#include "../lib_bundle.h"
 #include "mama/src/mama.h"
 
 using namespace mavka::mama;
