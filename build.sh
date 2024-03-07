@@ -11,17 +11,17 @@ fi
 
 LIBS_BUNDLE_HEAD="std::unordered_map<std::string, std::string> lib_modules = {"
 LIBS_BUNDLE_TAIL="};"
-LIBS=$(find біб | grep --color=never ".м\$")
+LIBS=$(find "біб" | grep --color=never ".м\$")
 LIBS_BUNDLE_CONTENT=""
-IFSOLD=$IFS
 for LIB in $LIBS; do
-    IFS=
-    LIB_CONTENT="$(cat "$LIB")"
-    LIBS_BUNDLE_CONTENT="$LIBS_BUNDLE_CONTENT{\"$LIB\", R\"($LIB_CONTENT)\"},"
+    LIB_CONTENT=$(xxd -i -n data "$LIB")
+    LIBS_BUNDLE_CONTENT="$LIBS_BUNDLE_CONTENT{\"$LIB\", []() {
+    $LIB_CONTENT
+    return std::string(data, data + data_len);
+}()},"
 done
 LIBS_BUNDLE_CONTENT="$LIBS_BUNDLE_HEAD $LIBS_BUNDLE_CONTENT $LIBS_BUNDLE_TAIL"
-echo $LIBS_BUNDLE_CONTENT >lib_bundle.h
-IFS=$IFSOLD
+echo "$LIBS_BUNDLE_CONTENT" >lib_bundle.h
 
 if [ "$TARGET" = "bin" ] || [ "$TARGET" = "all" ]; then
     mkdir -p build-bin
