@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
 
   if (args.size() == 1) {
     const auto take_result =
-        M->TakeFn(M, "біб", false, {"вбудоване", "ірм"}, {});
+        M->TakeFn(M, "біб", false, {"вбудоване", "ІРМ"}, {});
     if (take_result.IsError()) {
       std::cerr << cell_to_string(take_result.v.error->value) << std::endl;
       return 1;
