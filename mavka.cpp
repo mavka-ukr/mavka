@@ -116,24 +116,6 @@ void init_print(MaMa* M) {
                               MaNative::Create(M, "друк", native_fn, nullptr));
 }
 
-void init_read(MaMa* M) {
-  const auto native_fn = [](MaMa* M, MaObject* me, MaArgs* args,
-                            const MaLocation& location) {
-    const auto prefix = args->Get(0, "префікс");
-    if (prefix.IsObject() && prefix.IsObjectText()) {
-      std::cout << prefix.AsText()->data;
-    }
-    std::string value;
-    getline(std::cin, value);
-    if (std::cin.eof()) {
-      return MaCell::Empty();
-    }
-    return MaCell::Object(MaText::Create(M, value));
-  };
-  M->global_scope->SetSubject(
-      "читати", MaNative::Create(M, "читати", native_fn, nullptr));
-}
-
 void print_help() {
   std::cout << R"(Використання:
   мавка [...опції] <модуль.м> [...аргументи]
@@ -188,23 +170,51 @@ MaCell TakePath(MaMa* M,
   return M->DoTake(path, name, source, location);
 }
 
+MaCell TakeBib(MaMa* M,
+               const std::string& path,
+               const std::vector<std::string>& parts,
+               const MaLocation& location) {
+  const auto full_path =
+      "біб/" + mavka::internal::tools::implode(parts, "/") + ".м";
+  if (full_path == "біб/читати.м") {
+    const auto read_module_object = MaModule::Create(M, "читати");
+    const auto read_native = MaNative::Create(
+        M, "читати",
+        [](MaMa* M, MaObject* me, MaArgs* args, const MaLocation& location) {
+          const auto prefix = args->Get(0, "префікс");
+          if (prefix.IsObject() && prefix.IsObjectText()) {
+            std::cout << prefix.AsText()->data;
+          }
+          std::string value;
+          getline(std::cin, value);
+          if (std::cin.eof()) {
+            return MaCell::Empty();
+          }
+          return MaCell::Object(MaText::Create(M, value));
+        },
+        nullptr);
+    read_module_object->SetProperty("чародія_викликати", read_native);
+    M->loaded_file_modules[full_path] = read_module_object;
+    return MaCell::Object(read_module_object);
+  }
+  if (M->loaded_file_modules.contains(full_path)) {
+    return MaCell::Object(M->loaded_file_modules[full_path]);
+  }
+  if (lib_modules.contains(full_path)) {
+    const auto& name = parts.back();
+    return M->DoTake(full_path, name, lib_modules[full_path], location);
+  }
+  return MaCell::Error(MaError::Create(
+      M, "Модуль \"" + full_path + "\" не знайдено в бібліотеці.", location));
+}
+
 MaCell TakeFn(MaMa* M,
               const std::string& repository,
               bool relative,
               const std::vector<std::string>& parts,
               const MaLocation& location) {
   if (repository == "біб") {
-    const auto path =
-        "біб/" + mavka::internal::tools::implode(parts, "/") + ".м";
-    if (lib_modules.contains(path)) {
-      if (M->loaded_file_modules.contains(path)) {
-        return MaCell::Object(M->loaded_file_modules[path]);
-      }
-      const auto name = parts.back();
-      return M->DoTake(path, name, lib_modules[path], location);
-    }
-    return MaCell::Error(MaError::Create(
-        M, "Модуль \"" + path + "\" не знайдено в бібліотеці.", location));
+    return TakeBib(M, repository, parts, location);
   }
   if (!repository.empty()) {
     return MaCell::Error(
@@ -225,12 +235,13 @@ int main(int argc, char** argv) {
 
   const auto M = MaMa::Create();
   M->TakeFn = TakeFn;
+  M->global_scope->SetSubject("версія_мавки", MaText::Create(M, MAVKA_VERSION));
 
   init_print(M);
-  init_read(M);
 
   if (args.size() == 1) {
-    const auto take_result = M->TakeFn(M, "біб", false, {"вбудоване", "ірм"}, {});
+    const auto take_result =
+        M->TakeFn(M, "біб", false, {"вбудоване", "ірм"}, {});
     if (take_result.IsError()) {
       std::cerr << cell_to_string(take_result.v.error->value) << std::endl;
       return 1;
