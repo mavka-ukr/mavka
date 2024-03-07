@@ -43,21 +43,23 @@ git submodule update --init --recursive
 ### Будування
 
 ```shell
-./build.sh bin # виконуваний файл
+bash scripts/build.sh bin # виконуваний файл
 ```
 
 ```shell
-./build.sh Obin # оптимізований виконуваний файл
+bash scripts/build.sh Obin # оптимізований виконуваний файл
 ```
 
 ```shell
-./dist.sh # архів з випуском
+bash scripts/release.sh # архів з випуском
 ```
 
 ### Запуск
 
 ```shell
 ./build-bin/мавка старт.м
-# або
+```
+
+```shell
 ./build-Obin/мавка_оптимізовано старт.м
 ```

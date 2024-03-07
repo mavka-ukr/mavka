@@ -10,9 +10,9 @@ cmake ..
 make -j8 mavka_optimized
 
 cd ..
-rm -rf dist
-mkdir -p dist
-cd dist
+rm -rf release
+mkdir -p release
+cd release
 mkdir -p мавка-"$VERSION"
 cp ../build-Obin/мавка_оптимізовано мавка-"$VERSION"/мавка
 cp ../LICENSE мавка-"$VERSION"/Ліцензія
