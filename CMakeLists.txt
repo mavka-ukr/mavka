@@ -8,7 +8,8 @@ file(READ "VERSION" MAVKA_VERSION)
 add_subdirectory(src/mama)
 
 set(MAVKA_COMPILER_SRC
-        src/bib/read.cpp
+        src/bib/bib_read.cpp
+        src/bib/bib_mavka.cpp
         src/main.cpp
         src/mavka.cpp
         src/take.cpp

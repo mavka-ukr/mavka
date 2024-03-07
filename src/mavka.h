@@ -27,4 +27,10 @@ namespace mavka {
                          MaArgs* args,
                          const MaLocation& location);
   MaObject* BibInitReadModule(MaMa* M);
+
+  MaCell BibMavkaEvalNativeFn(MaMa* M,
+                              MaObject* o,
+                              MaArgs* args,
+                              const MaLocation& location);
+  MaObject* BibInitMavkaModule(MaMa* M);
 } // namespace mavka

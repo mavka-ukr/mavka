@@ -16,6 +16,11 @@ namespace mavka {
       M->loaded_file_modules[full_path] = read_module_object;
       return MaCell::Object(read_module_object);
     }
+    if (full_path == "біб/мавка.м") {
+      const auto mavka_module_object = BibInitMavkaModule(M);
+      M->loaded_file_modules[full_path] = mavka_module_object;
+      return MaCell::Object(mavka_module_object);
+    }
     if (MAVKA_LIB_MODULES.contains(full_path)) {
       const auto& name = parts.back();
       return M->DoTake(full_path, name, MAVKA_LIB_MODULES[full_path], location);
