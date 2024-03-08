@@ -15,11 +15,12 @@ namespace mavka {
 
   // взяти біб мавка
   MaObject* BibInitMavkaModule(MaMa* M) {
-    const auto read_module_object = MaModule::Create(M, "мавка");
-    read_module_object->SetProperty("версія", MaText::Create(M, MAVKA_VERSION));
-    read_module_object->SetProperty(
+    const auto mavka_module_object = MaModule::Create(M, "мавка");
+    mavka_module_object->SetProperty("версія",
+                                     MaText::Create(M, MAVKA_VERSION));
+    mavka_module_object->SetProperty(
         "виконати",
         MaNative::Create(M, "виконати", BibMavkaEvalNativeFn, nullptr));
-    return read_module_object;
+    return mavka_module_object;
   }
 } // namespace mavka
