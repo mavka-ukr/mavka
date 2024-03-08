@@ -4,7 +4,7 @@
 
 namespace mavka {
   MaValue BibMavkaEvalNativeFn(MaMa* M,
-                               MaObject* o,
+                               MaObject* native_o,
                                MaArgs* args,
                                const MaLocation& location) {
     const auto code = args->Get(0, "код");
@@ -16,7 +16,7 @@ namespace mavka {
   }
 
   MaValue BibMavkaExtendNativeFn(MaMa* M,
-                                 MaObject* o,
+                                 MaObject* native_o,
                                  MaArgs* args,
                                  const MaLocation& location) {
     const auto version_cell = args->Get(0, "версія");
@@ -37,17 +37,15 @@ namespace mavka {
     }
     dlerror();
 
-    void* extfptr = dlsym(dobject, "мавка_розширити_модуль");
+    void* extfptr = dlsym(dobject, "мавка_розширити");
     if (extfptr == nullptr) {
       return MaValue::Error(
           MaError::Create(M, std::string(dlerror()), location));
     }
 
-    double (*load_extension)(mavka::api::v0::MavkaOptions mavkaOptions);
+    MaValue (*load_extension)(mavka::api::v0::MavkaOptions mavkaOptions);
     const auto f = reinterpret_cast<decltype(load_extension)>(extfptr);
-    f({.version = (char*)MAVKA_VERSION});
-
-    return MaValue::Empty();
+    return f({.version = (char*)MAVKA_VERSION});
   }
 
   // взяти біб мавка

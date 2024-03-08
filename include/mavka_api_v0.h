@@ -1,3 +1,5 @@
+#include <functional>
+
 namespace mavka::api::v0 {
   typedef void* MavkaPointer;
 
