@@ -5,7 +5,7 @@ namespace mavka {
     if (cell.IsEmpty()) {
       return "пусто";
     }
-    if (IS_NUMBER(cell)) {
+    if (cell.IsNumber()) {
       if (std::isinf(cell.AsNumber())) {
         return "нескінченність";
       }
@@ -20,7 +20,7 @@ namespace mavka {
     if (cell.IsNo()) {
       return "ні";
     }
-    if (IS_OBJECT(cell)) {
+    if (cell.IsObject()) {
       if (cell.v.object->type == MA_OBJECT) {
         std::vector<std::string> items;
         for (const auto& param :
@@ -88,6 +88,6 @@ namespace mavka {
     if (cell.IsError()) {
       return "<помилка>";
     }
-    return "<невідомо>";
+    return "<невідомо " + std::to_string(cell.type) + ">";
   }
 } // namespace mavka

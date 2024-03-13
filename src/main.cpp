@@ -22,11 +22,18 @@ void init_print(MaMa* M) {
 
 void print_help() {
   std::cout << R"(Використання:
+  мавка
   мавка [...опції] <модуль.м> [...аргументи]
   мавка [...опції] <команда> [...аргументи]
 
 Доступні команди:
-  <модуль.м> — виконати модуль
+  <без команди> — запустити Діалог
+    Опції: немає
+
+  <модуль.м> — виконати модуль за шляхом
+    Опції: немає
+
+  взяти [|біб|пак|...] <а.б.в> — виконати модуль вказівкою взяти
     Опції: немає
 
   версія — показати версію Мавки
@@ -68,13 +75,31 @@ int main(int argc, char** argv) {
       print_version();
       return 0;
     }
-
-    const auto& path = args[1];
-
-    const auto take_result = TakePath(M, path, {});
-    if (take_result.IsError()) {
-      std::cerr << cell_to_string(M, take_result.v.error->value) << std::endl;
-      return 1;
+    if (command == "взяти") {
+      const auto& repo = args[2];
+      if (repo == "біб" || repo == "пак") {
+        const auto take_parts = mavka::internal::tools::explode(args[3], ".");
+        const auto take_result = TakeFn(M, repo, false, take_parts, {});
+        if (take_result.IsError()) {
+          std::cerr << cell_to_string(M, take_result.v.error->value)
+                    << std::endl;
+          return 1;
+        }
+      } else {
+        const auto take_parts = mavka::internal::tools::explode(args[2], ".");
+        const auto take_result = TakeFn(M, "", false, take_parts, {});
+        if (take_result.IsError()) {
+          std::cerr << cell_to_string(M, take_result.v.error->value)
+                    << std::endl;
+          return 1;
+        }
+      }
+    } else {
+      const auto take_result = TakePath(M, args[1], {});
+      if (take_result.IsError()) {
+        std::cerr << cell_to_string(M, take_result.v.error->value) << std::endl;
+        return 1;
+      }
     }
   }
 
