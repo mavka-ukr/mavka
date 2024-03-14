@@ -21,6 +21,11 @@ namespace mavka {
       M->loaded_file_modules[full_path] = mavka_module_object;
       return MaValue::Object(mavka_module_object);
     }
+    if (full_path == "біб/сфс.м") {
+      const auto fss_module_object = BibInitFsSyncModule(M);
+      M->loaded_file_modules[full_path] = fss_module_object;
+      return MaValue::Object(fss_module_object);
+    }
     if (MAVKA_LIB_MODULES.contains(full_path)) {
       const auto& name = parts.back();
       return M->DoTake(full_path, name, MAVKA_LIB_MODULES[full_path], location);

@@ -33,4 +33,14 @@ namespace mavka {
                                MaArgs* args,
                                const MaLocation& location);
   MaObject* BibInitMavkaModule(MaMa* M);
+
+  MaValue BibFsSyncReadNativeFn(MaMa* M,
+                                MaObject* o,
+                                MaArgs* args,
+                                const MaLocation& location);
+  MaValue BibFsSyncReadTextNativeFn(MaMa* M,
+                                    MaObject* o,
+                                    MaArgs* args,
+                                    const MaLocation& location);
+  MaObject* BibInitFsSyncModule(MaMa* M);
 } // namespace mavka

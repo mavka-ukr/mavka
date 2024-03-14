@@ -81,6 +81,10 @@ namespace mavka {
         return "<модуль " + name + "[" +
                mavka::internal::tools::implode(items, ", ") + "]>";
       }
+      if (cell.v.object->type == MA_OBJECT_BYTES) {
+        return "<байти " + std::to_string(cell.v.object->d.bytes->data.size()) +
+               ">";
+      }
     }
     if (cell.IsArgs()) {
       return "<аргументи>";

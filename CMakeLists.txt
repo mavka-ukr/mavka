@@ -6,10 +6,12 @@ set(CMAKE_CXX_STANDARD 20)
 file(READ "VERSION" MAVKA_VERSION)
 
 add_subdirectory(src/mama)
+add_subdirectory(src/libuv)
 
 set(MAVKA_COMPILER_SRC
-        src/bib/bib_read.cpp
+        src/bib/bib_fs_sync.cpp
         src/bib/bib_mavka.cpp
+        src/bib/bib_read.cpp
         src/main.cpp
         src/mavka.cpp
         src/take.cpp
@@ -18,8 +20,8 @@ set(MAVKA_COMPILER_SRC
 add_executable(mavka src/main.cpp ${MAVKA_COMPILER_SRC})
 add_executable(mavka_optimized src/main.cpp ${MAVKA_COMPILER_SRC})
 
-target_link_libraries(mavka PRIVATE mama)
-target_link_libraries(mavka_optimized PRIVATE mama)
+target_link_libraries(mavka PRIVATE mama uv)
+target_link_libraries(mavka_optimized PRIVATE mama uv)
 
 target_compile_options(mavka PRIVATE -fexceptions -DMAVKA_VERSION="${MAVKA_VERSION}")
 target_compile_options(mavka_optimized PRIVATE -fexceptions -O3 -DMAVKA_VERSION="${MAVKA_VERSION}")

@@ -1,3 +1,6 @@
 [submodule "src/mama"]
 	path = src/mama
 	url = https://github.com/mavka-ukr/mama
+[submodule "src/libuv"]
+	path = src/libuv
+	url = https://github.com/libuv/libuv
