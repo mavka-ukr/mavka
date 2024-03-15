@@ -28,7 +28,7 @@ namespace mavka {
         }
         return "<дія " + name + ">";
       }
-      if (cell.asObject()->isList(M)) {
+      if (cell.asObject()->isText(M)) {
         if (depth > 0) {
           return "\"" + cell.v.object->d.text->data + "\"";
         }
