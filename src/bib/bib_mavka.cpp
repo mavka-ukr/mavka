@@ -8,8 +8,8 @@ namespace mavka {
                                MaArgs* args,
                                const MaLocation& location) {
     const auto code = args->Get(0, "код");
-    if (code.IsObject() && code.IsObjectText()) {
-      return M->Eval(code.AsText()->data, location);
+    if (code.isObject() && code.asObject()->isText(M)) {
+      return M->eval(code.asText()->data, location);
     }
     return MaValue::Error(
         MaError::Create(M, "Очікується що код буде текстом.", location));
@@ -20,17 +20,17 @@ namespace mavka {
                                  MaArgs* args,
                                  const MaLocation& location) {
     const auto version_cell = args->Get(0, "версія");
-    if (!version_cell.IsNumber()) {
+    if (!version_cell.isNumber()) {
       return MaValue::Error(
           MaError::Create(M, "Очікується що версія буде числом.", location));
     }
     const auto path_cell = args->Get(1, "шлях");
-    if (!(path_cell.IsObject() && path_cell.IsObjectText())) {
+    if (!(path_cell.isObject() && path_cell.asObject()->isText(M))) {
       return MaValue::Error(
           MaError::Create(M, "Очікується що шлях буде текстом.", location));
     }
 
-    void* dobject = dlopen(path_cell.AsText()->data.c_str(), RTLD_LAZY);
+    void* dobject = dlopen(path_cell.asText()->data.c_str(), RTLD_LAZY);
     if (!dobject) {
       return MaValue::Error(
           MaError::Create(M, std::string(dlerror()), location));
@@ -52,27 +52,27 @@ namespace mavka {
             [](mavka::api::v0::MavkaPointer mama,
                mavka::api::v0::MavkaPointer object) {
               const auto maObject = static_cast<MaObject*>(object);
-              maObject->Retain();
+              maObject->retain();
               return static_cast<mavka::api::v0::MavkaPointer>(maObject);
             },
         .retain =
             [](mavka::api::v0::MavkaPointer mama,
                mavka::api::v0::MavkaPointer object) {
               const auto maObject = static_cast<MaObject*>(object);
-              maObject->Retain();
+              maObject->retain();
             },
         .release =
             [](mavka::api::v0::MavkaPointer mama,
                mavka::api::v0::MavkaPointer object) {
               const auto maObject = static_cast<MaObject*>(object);
-              maObject->Release();
+              maObject->release();
             },
         .get_property =
             [](mavka::api::v0::MavkaPointer mama,
                mavka::api::v0::MavkaPointer object, const char* name) {
               const auto M = static_cast<MaMa*>(mama);
               const auto maObject = static_cast<MaObject*>(object);
-              const auto value = maObject->GetProperty(M, std::string(name));
+              const auto value = maObject->getProperty(M, std::string(name));
               return mavka::api::v0::MavkaValue{
                   .type = value.type,
                   .data = {.object = value.v.object},
@@ -84,7 +84,7 @@ namespace mavka {
                mavka::api::v0::MavkaValue value) {
               const auto M = static_cast<MaMa*>(mama);
               const auto maObject = static_cast<MaObject*>(object);
-              maObject->SetProperty(
+              maObject->setProperty(
                   M, std::string(name),
                   MaValue::Object(static_cast<MaObject*>(value.data.object)));
               return mavka::api::v0::MavkaValue{
@@ -104,7 +104,7 @@ namespace mavka {
                 args.push_back(MaValue::Object(
                     static_cast<MaObject*>(argv[i].data.object)));
               }
-              const auto result = value.Call(M, args, {});
+              const auto result = value.call(M, args, {});
               return mavka::api::v0::MavkaValue{
                   .type = value.type,
                   .data = {.object = result.v.object},
@@ -116,13 +116,13 @@ namespace mavka {
   // взяти біб мавка
   MaObject* BibInitMavkaModule(MaMa* M) {
     const auto mavka_module_o = MaModule::Create(M, "мавка");
-    mavka_module_o->SetProperty(M, "версія", MaText::Create(M, MAVKA_VERSION));
-    mavka_module_o->SetProperty(
+    mavka_module_o->setProperty(M, "версія", MaText::Create(M, MAVKA_VERSION));
+    mavka_module_o->setProperty(
         M, "виконати",
-        MaNative::Create(M, "виконати", BibMavkaEvalNativeFn, nullptr));
-    mavka_module_o->SetProperty(
+        MaDiia::Create(M, "виконати", BibMavkaEvalNativeFn, nullptr));
+    mavka_module_o->setProperty(
         M, "розширити",
-        MaNative::Create(M, "розширити", BibMavkaExtendNativeFn, nullptr));
+        MaDiia::Create(M, "розширити", BibMavkaExtendNativeFn, nullptr));
     return mavka_module_o;
   }
 } // namespace mavka

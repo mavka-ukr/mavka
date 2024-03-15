@@ -28,7 +28,7 @@ namespace mavka {
     }
     if (MAVKA_LIB_MODULES.contains(full_path)) {
       const auto& name = parts.back();
-      return M->DoTake(full_path, name, MAVKA_LIB_MODULES[full_path], location);
+      return M->doTake(full_path, name, MAVKA_LIB_MODULES[full_path], location);
     }
     return MaValue::Error(MaError::Create(
         M, "Модуль \"" + full_path + "\" не знайдено в бібліотеці.", location));
@@ -64,7 +64,7 @@ namespace mavka {
     const auto source = std::string(std::istreambuf_iterator(file),
                                     std::istreambuf_iterator<char>());
 
-    return M->DoTake(path, name, source, location);
+    return M->doTake(path, name, source, location);
   }
 
   MaValue TakeFn(MaMa* M,

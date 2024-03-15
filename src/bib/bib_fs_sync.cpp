@@ -8,8 +8,8 @@ namespace mavka {
                                 MaArgs* args,
                                 const MaLocation& location) {
     const auto path = args->Get(0, "шлях");
-    if (path.IsObject() && (path.IsObjectText())) {
-      const auto path_str = path.AsText()->data;
+    if (path.isObject() && (path.asObject()->isText(M))) {
+      const auto path_str = path.asText()->data;
       std::ifstream file(path_str);
       if (file.is_open()) {
         std::vector<uint8_t> data((std::istreambuf_iterator<char>(file)),
@@ -28,8 +28,8 @@ namespace mavka {
                                     MaArgs* args,
                                     const MaLocation& location) {
     const auto path = args->Get(0, "шлях");
-    if (path.IsObject() && (path.IsObjectText())) {
-      const auto path_str = path.AsText()->data;
+    if (path.isObject() && (path.asObject()->isText(M))) {
+      const auto path_str = path.asText()->data;
       std::ifstream file(path_str);
       if (file.is_open()) {
         std::string text((std::istreambuf_iterator<char>(file)),
@@ -46,13 +46,13 @@ namespace mavka {
   // взяти біб сфс
   MaObject* BibInitFsSyncModule(MaMa* M) {
     const auto mavka_module_o = MaModule::Create(M, "сфс");
-    mavka_module_o->SetProperty(
+    mavka_module_o->setProperty(
         M, "прочитати",
-        MaNative::Create(M, "прочитати", BibFsSyncReadNativeFn, nullptr));
-    mavka_module_o->SetProperty(
+        MaDiia::Create(M, "прочитати", BibFsSyncReadNativeFn, nullptr));
+    mavka_module_o->setProperty(
         M, "прочитати_текст",
-        MaNative::Create(M, "прочитати_текст", BibFsSyncReadTextNativeFn,
-                         nullptr));
+        MaDiia::Create(M, "прочитати_текст", BibFsSyncReadTextNativeFn,
+                       nullptr));
     return mavka_module_o;
   }
 } // namespace mavka

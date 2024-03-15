@@ -16,8 +16,8 @@ void init_print(MaMa* M) {
     }
     return MaValue::Empty();
   };
-  M->global_scope->SetSubject("друк",
-                              MaNative::Create(M, "друк", native_fn, nullptr));
+  M->global_scope->setSubject("друк",
+                              MaDiia::Create(M, "друк", native_fn, nullptr));
 }
 
 void print_help() {
@@ -52,15 +52,15 @@ int main(int argc, char** argv) {
   const auto args = std::vector<std::string>(argv, argv + argc);
 
   const auto M = MaMa::Create();
-  M->TakeFn = TakeFn;
-  M->global_scope->SetSubject("версія_мавки", MaText::Create(M, MAVKA_VERSION));
+  M->take_fn = TakeFn;
+  M->global_scope->setSubject("версія_мавки", MaText::Create(M, MAVKA_VERSION));
 
   init_print(M);
 
   if (args.size() == 1) {
     const auto take_result =
-        M->TakeFn(M, "біб", false, {"вбудоване", "діалог"}, {});
-    if (take_result.IsError()) {
+        M->take_fn(M, "біб", false, {"вбудоване", "діалог"}, {});
+    if (take_result.isError()) {
       std::cerr << cell_to_string(M, take_result.v.error->value) << std::endl;
       return 1;
     }
@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
       if (repo == "біб" || repo == "пак") {
         const auto take_parts = mavka::internal::tools::explode(args[3], ".");
         const auto take_result = TakeFn(M, repo, false, take_parts, {});
-        if (take_result.IsError()) {
+        if (take_result.isError()) {
           std::cerr << cell_to_string(M, take_result.v.error->value)
                     << std::endl;
           return 1;
@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
       } else {
         const auto take_parts = mavka::internal::tools::explode(args[2], ".");
         const auto take_result = TakeFn(M, "", false, take_parts, {});
-        if (take_result.IsError()) {
+        if (take_result.isError()) {
           std::cerr << cell_to_string(M, take_result.v.error->value)
                     << std::endl;
           return 1;
@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
       }
     } else {
       const auto take_result = TakePath(M, args[1], {});
-      if (take_result.IsError()) {
+      if (take_result.isError()) {
         std::cerr << cell_to_string(M, take_result.v.error->value) << std::endl;
         return 1;
       }
