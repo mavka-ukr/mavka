@@ -54,6 +54,16 @@ void print_version() {
   std::cout << MAVKA_VERSION << std::endl;
 }
 
+void print_error_with_trace(MaMa* M, const MaValue& value) {
+  const auto stackTrace = M->getStackTrace();
+  if (!stackTrace.empty()) {
+    std::cout << stackTrace << std::endl;
+  }
+  const auto location = M->locations[value.asError()->li];
+  std::cerr << location.path << ":" << location.line << ":" << location.column
+            << ": " << cell_to_string(M, value.v.error->value) << std::endl;
+}
+
 int main(int argc, char** argv) {
   const auto args = std::vector<std::string>(argv, argv + argc);
 
@@ -67,7 +77,7 @@ int main(int argc, char** argv) {
   if (args.size() == 1) {
     const auto take_result = M->take("біб", false, {"вбудоване", "діалог"}, {});
     if (take_result.isError()) {
-      std::cerr << cell_to_string(M, take_result.v.error->value) << std::endl;
+      print_error_with_trace(M, take_result);
       return 1;
     }
     return 0;
@@ -87,23 +97,21 @@ int main(int argc, char** argv) {
         const auto take_parts = mavka::internal::tools::explode(args[3], ".");
         const auto take_result = take_fn(M, repo, false, take_parts, {});
         if (take_result.isError()) {
-          std::cerr << cell_to_string(M, take_result.v.error->value)
-                    << std::endl;
+          print_error_with_trace(M, take_result);
           return 1;
         }
       } else {
         const auto take_parts = mavka::internal::tools::explode(args[2], ".");
         const auto take_result = take_fn(M, "", false, take_parts, {});
         if (take_result.isError()) {
-          std::cerr << cell_to_string(M, take_result.v.error->value)
-                    << std::endl;
+          print_error_with_trace(M, take_result);
           return 1;
         }
       }
     } else {
       const auto take_result = maTakeFsPath(M, args[1], true, {});
       if (take_result.isError()) {
-        std::cerr << cell_to_string(M, take_result.v.error->value) << std::endl;
+        print_error_with_trace(M, take_result);
         return 1;
       }
     }
