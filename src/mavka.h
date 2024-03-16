@@ -11,12 +11,6 @@ namespace mavka {
   std::string cell_to_string(MaMa* M, MaValue cell, int depth = 0);
 
   MaValue TakeBib(MaMa* M, const std::vector<std::string>& parts, size_t li);
-  MaValue TakeFn(MaMa* M,
-                 const std::string& repository,
-                 bool relative,
-                 const std::vector<std::string>& parts,
-                 size_t li);
-  MaValue TakePath(MaMa* M, const std::string& raw_path, size_t li);
 
   MaValue BibReadNativeFn(MaMa* M, MaObject* o, MaObject* args, size_t li);
   MaObject* BibInitReadModule(MaMa* M);
