@@ -26,8 +26,10 @@ namespace mavka::api::v0 {
     } data;
   } MavkaValue;
 
+  struct Mavka;
+
   // нативна функція C++ для виклику з Мавки
-  typedef MavkaValue MavkaNativeFn(MavkaPointer mama,
+  typedef MavkaValue MavkaNativeFn(Mavka* mavka,
                                    MavkaPointer diiaObject,
                                    MavkaPointer args,
                                    size_t li);
@@ -37,58 +39,58 @@ namespace mavka::api::v0 {
     char* version;
 
     // вказівник на МаМа
-    MavkaPointer mama;
+    MavkaPointer M;
 
     // збільшити лічильник посилань обʼєкта для УО
-    void (*retain)(MavkaPointer mama, MavkaPointer object);
+    void (*retain)(Mavka* mavka, MavkaPointer object);
 
     // зменшити лічильник посилань обʼєкта для УО
     // (видаляє обʼєкт коли лічильник стає 0)
-    void (*release)(MavkaPointer mama, MavkaPointer object);
+    void (*release)(Mavka* mavka, MavkaPointer object);
 
     // отримати властивість обʼєкта
-    MavkaValue (*get)(MavkaPointer mama, MavkaPointer object, const char* name);
+    MavkaValue (*get)(Mavka* mavka, MavkaPointer object, const char* name);
 
     // встановити властивість обʼєкта
-    MavkaValue (*set)(MavkaPointer mama,
+    MavkaValue (*set)(Mavka* mavka,
                       MavkaPointer object,
                       const char* name,
                       MavkaValue value);
 
     // отримати елемент обʼєкта
-    MavkaValue (*getAt)(MavkaPointer mama, MavkaPointer object, MavkaValue key);
+    MavkaValue (*getAt)(Mavka* mavka, MavkaPointer object, MavkaValue key);
 
     // встановити елемент обʼєкта
-    MavkaValue (*setAt)(MavkaPointer mama,
+    MavkaValue (*setAt)(Mavka* mavka,
                         MavkaPointer object,
                         MavkaValue key,
                         MavkaValue value);
 
     // викликати обʼєкт
-    MavkaValue (*call)(MavkaPointer mama,
+    MavkaValue (*call)(Mavka* mavka,
                        MavkaPointer object,
                        size_t argc,
                        MavkaValue* argv,
                        size_t li);
 
     // створити дію
-    MavkaPointer (*createDiia)(MavkaPointer mama,
+    MavkaPointer (*createDiia)(Mavka* mavka,
                                const char* name,
-                               std::function<MavkaNativeFn> fn);
+                               MavkaNativeFn fn);
 
     // створити модуль
-    MavkaPointer (*createModule)(MavkaPointer mama, const char* name);
+    MavkaPointer (*createModule)(Mavka* mavka, const char* name);
 
     // створити байти
-    MavkaPointer (*createBytes)(MavkaPointer mama, const uint8_t* data);
+    MavkaPointer (*createBytes)(Mavka* mavka, const uint8_t* data);
 
     // створити текст
-    MavkaPointer (*createText)(MavkaPointer mama, const char* text);
+    MavkaPointer (*createText)(Mavka* mavka, const char* text);
 
     // створити список
-    MavkaPointer (*createList)(MavkaPointer mama);
+    MavkaPointer (*createList)(Mavka* mavka);
 
     // створити словник
-    MavkaPointer (*createDict)(MavkaPointer mama);
+    MavkaPointer (*createDict)(Mavka* mavka);
   } Mavka;
 } // namespace mavka::api::v0
