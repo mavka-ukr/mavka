@@ -97,10 +97,11 @@ namespace mavka {
               const auto M = static_cast<MaMa*>(mama);
               const auto value =
                   MaValue::Object(static_cast<MaObject*>(object));
-              std::vector<MaValue> args;
+              const auto args = MaObject::Empty(M);
               for (size_t i = 0; i < argc; ++i) {
-                args.push_back(MaValue::Object(
-                    static_cast<MaObject*>(argv[i].data.object)));
+                args->setProperty(M, std::to_string(i),
+                                  MaValue::Object(static_cast<MaObject*>(
+                                      argv[i].data.object)));
               }
               const auto result = value.call(M, args, {});
               return mavka::api::v0::MavkaValue{
