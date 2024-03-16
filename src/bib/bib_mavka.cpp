@@ -51,9 +51,9 @@ namespace mavka {
       return MaValue::Error(MaError::Create(M, std::string(dlerror()), li));
     }
 
-    MaValue (*load_extension)(mavka::api::v0::MavkaOptions mavkaOptions);
+    MaValue (*load_extension)(mavka::api::v0::Mavka* mavka);
     const auto f = reinterpret_cast<decltype(load_extension)>(extfptr);
-    return f({
+    const auto mavkaApiV0 = new mavka::api::v0::Mavka{
         .version = (char*)MAVKA_VERSION,
         .mama = M,
         .retain =
@@ -177,7 +177,8 @@ namespace mavka {
               const auto M = static_cast<MaMa*>(mama);
               return (void*)MaDict::Create(M);
             },
-    });
+    };
+    return f(mavkaApiV0);
   }
 
   // взяти біб мавка

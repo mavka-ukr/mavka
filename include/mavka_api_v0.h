@@ -32,8 +32,7 @@ namespace mavka::api::v0 {
                                    MavkaPointer args,
                                    size_t li);
 
-  // опції Мавки
-  typedef struct MavkaOptions {
+  typedef struct Mavka {
     // версія Мавки (а.б.в)
     char* version;
 
@@ -91,5 +90,5 @@ namespace mavka::api::v0 {
 
     // створити словник
     MavkaPointer (*createDict)(MavkaPointer mama);
-  } MavkaOptions;
+  } Mavka;
 } // namespace mavka::api::v0
