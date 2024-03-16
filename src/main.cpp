@@ -5,13 +5,12 @@ using namespace mavka;
 
 MaValue take_fn(MaMa* M,
                 const std::string& repository,
-                bool relative,
                 const std::vector<std::string>& parts,
                 size_t li) {
   if (repository == "біб") {
     return TakeBib(M, parts, li);
   }
-  return maTakeFsFn(M, repository, relative, parts, li);
+  return maTakeFsFn(M, repository, parts, li);
 }
 
 void init_print(MaMa* M) {
@@ -75,7 +74,7 @@ int main(int argc, char** argv) {
   init_print(M);
 
   if (args.size() == 1) {
-    const auto take_result = M->take("біб", false, {"вбудоване", "діалог"}, {});
+    const auto take_result = M->take("біб", {"вбудоване", "діалог"}, {});
     if (take_result.isError()) {
       print_error_with_trace(M, take_result);
       return 1;
@@ -95,14 +94,14 @@ int main(int argc, char** argv) {
       const auto& repo = args[2];
       if (repo == "біб" || repo == "пак") {
         const auto take_parts = mavka::internal::tools::explode(args[3], ".");
-        const auto take_result = take_fn(M, repo, false, take_parts, {});
+        const auto take_result = take_fn(M, repo, take_parts, {});
         if (take_result.isError()) {
           print_error_with_trace(M, take_result);
           return 1;
         }
       } else {
         const auto take_parts = mavka::internal::tools::explode(args[2], ".");
-        const auto take_result = take_fn(M, "", false, take_parts, {});
+        const auto take_result = take_fn(M, "", take_parts, {});
         if (take_result.isError()) {
           print_error_with_trace(M, take_result);
           return 1;
