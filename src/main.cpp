@@ -3,21 +3,15 @@
 using namespace mavka;
 
 void init_print(MaMa* M) {
-  const auto native_fn = [](MaMa* M, MaObject* native_o, MaArgs* args,
-                            const MaLocation& location) {
-    if (args->type == MA_ARGS_TYPE_POSITIONED) {
-      for (const auto& arg : args->positioned) {
-        std::cout << cell_to_string(M, arg) << std::endl;
-      }
-    } else {
-      for (const auto& [key, value] : args->named) {
-        std::cout << key << ": " << cell_to_string(M, value) << std::endl;
-      }
+  const auto native_fn = [](MaMa* M, MaObject* native_o, MaObject* args,
+                            size_t li) {
+    for (const auto& [key, value] : args->properties) {
+      std::cout << cell_to_string(M, value) << std::endl;
     }
     return MaValue::Empty();
   };
-  M->global_scope->setSubject("друк",
-                              MaDiia::Create(M, "друк", native_fn, nullptr));
+  M->global_scope->setProperty(M, "друк",
+                               MaDiia::Create(M, "друк", native_fn, nullptr));
 }
 
 void print_help() {
@@ -53,7 +47,8 @@ int main(int argc, char** argv) {
 
   const auto M = MaMa::Create();
   M->take_fn = TakeFn;
-  M->global_scope->setSubject("версія_мавки", MaText::Create(M, MAVKA_VERSION));
+  M->global_scope->setProperty(M, "версія_мавки",
+                               MaText::Create(M, MAVKA_VERSION));
 
   init_print(M);
 

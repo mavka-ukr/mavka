@@ -5,42 +5,40 @@
 namespace mavka {
   MaValue BibMavkaEvalNativeFn(MaMa* M,
                                MaObject* native_o,
-                               MaArgs* args,
-                               const MaLocation& location) {
-    const auto code = args->Get(0, "код");
+                               MaObject* args,
+                               size_t li) {
+    const auto code = args->getArg(M, "0", "код");
     if (code.isObject() && code.asObject()->isText(M)) {
-      return M->eval(code.asText()->data, location);
+      return M->eval(code.asText()->data, li);
     }
     return MaValue::Error(
-        MaError::Create(M, "Очікується що код буде текстом.", location));
+        MaError::Create(M, "Очікується що код буде текстом.", li));
   }
 
   MaValue BibMavkaExtendNativeFn(MaMa* M,
                                  MaObject* native_o,
-                                 MaArgs* args,
-                                 const MaLocation& location) {
-    const auto version_cell = args->Get(0, "версія");
+                                 MaObject* args,
+                                 size_t li) {
+    const auto version_cell = args->getArg(M, "0", "версія");
     if (!version_cell.isNumber()) {
       return MaValue::Error(
-          MaError::Create(M, "Очікується що версія буде числом.", location));
+          MaError::Create(M, "Очікується що версія буде числом.", li));
     }
-    const auto path_cell = args->Get(1, "шлях");
+    const auto path_cell = args->getArg(M, "1", "шлях");
     if (!(path_cell.isObject() && path_cell.asObject()->isText(M))) {
       return MaValue::Error(
-          MaError::Create(M, "Очікується що шлях буде текстом.", location));
+          MaError::Create(M, "Очікується що шлях буде текстом.", li));
     }
 
     void* dobject = dlopen(path_cell.asText()->data.c_str(), RTLD_LAZY);
     if (!dobject) {
-      return MaValue::Error(
-          MaError::Create(M, std::string(dlerror()), location));
+      return MaValue::Error(MaError::Create(M, std::string(dlerror()), li));
     }
     dlerror();
 
     void* extfptr = dlsym(dobject, "мавка_розширити");
     if (extfptr == nullptr) {
-      return MaValue::Error(
-          MaError::Create(M, std::string(dlerror()), location));
+      return MaValue::Error(MaError::Create(M, std::string(dlerror()), li));
     }
 
     MaValue (*load_extension)(mavka::api::v0::MavkaOptions mavkaOptions);

@@ -4,10 +4,10 @@
 
 namespace mavka {
   MaValue BibFsSyncReadNativeFn(MaMa* M,
-                                MaObject* native_o,
-                                MaArgs* args,
-                                const MaLocation& location) {
-    const auto path = args->Get(0, "шлях");
+                                MaObject* diiaObject,
+                                MaObject* args,
+                                size_t li) {
+    const auto path = args->getArg(M, "0", "шлях");
     if (path.isObject() && (path.asObject()->isText(M))) {
       const auto path_str = path.asText()->data;
       std::ifstream file(path_str);
@@ -17,17 +17,17 @@ namespace mavka {
         return MaValue::Object(MaBytes::Create(M, data));
       }
       return MaValue::Error(MaError::Create(
-          M, "Не вдалося прочитати файл \"" + path_str + "\".", location));
+          M, "Не вдалося прочитати файл \"" + path_str + "\".", li));
     }
     return MaValue::Error(
-        MaError::Create(M, "Очікується що шлях буде текстом.", location));
+        MaError::Create(M, "Очікується що шлях буде текстом.", li));
   }
 
   MaValue BibFsSyncReadTextNativeFn(MaMa* M,
-                                    MaObject* native_o,
-                                    MaArgs* args,
-                                    const MaLocation& location) {
-    const auto path = args->Get(0, "шлях");
+                                    MaObject* diiaObject,
+                                    MaObject* args,
+                                    size_t li) {
+    const auto path = args->getArg(M, "0", "шлях");
     if (path.isObject() && (path.asObject()->isText(M))) {
       const auto path_str = path.asText()->data;
       std::ifstream file(path_str);
@@ -37,10 +37,10 @@ namespace mavka {
         return MaValue::Object(MaText::Create(M, text));
       }
       return MaValue::Error(MaError::Create(
-          M, "Не вдалося прочитати файл \"" + path_str + "\".", location));
+          M, "Не вдалося прочитати файл \"" + path_str + "\".", li));
     }
     return MaValue::Error(
-        MaError::Create(M, "Очікується що шлях буде текстом.", location));
+        MaError::Create(M, "Очікується що шлях буде текстом.", li));
   }
 
   // взяти біб сфс
