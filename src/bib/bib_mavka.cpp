@@ -73,11 +73,7 @@ namespace mavka {
                mavka::api::v0::MavkaPointer object, const char* name) {
               const auto M = static_cast<MaMa*>(mavka->M);
               const auto maObject = static_cast<MaObject*>(object);
-              const auto value = maObject->getProperty(M, std::string(name));
-              return mavka::api::v0::MavkaValue{
-                  .type = (api::v0::MavkaValueType)value.type,
-                  .data = {.object = value.v.object},
-              };
+              return maValue2MavkaApiV0Value(maObject->getProperty(M, name));
             },
         .set =
             [](mavka::api::v0::Mavka* mavka,
@@ -116,6 +112,24 @@ namespace mavka {
               const auto result = diiaValue.call(M, args, 0);
               return maValue2MavkaApiV0Value(result);
             },
+        .getArg =
+            [](mavka::api::v0::Mavka* mavka,
+               mavka::api::v0::MavkaPointer object, const char* index,
+               const char* name) {
+              const auto M = static_cast<MaMa*>(mavka->M);
+              const auto maObject = static_cast<MaObject*>(object);
+              return maValue2MavkaApiV0Value(maObject->getArg(M, index, name));
+            },
+        .getArgOrDefault =
+            [](mavka::api::v0::Mavka* mavka,
+               mavka::api::v0::MavkaPointer object, const char* index,
+               const char* name,
+               const mavka::api::v0::MavkaValue& defaultValue) {
+              const auto M = static_cast<MaMa*>(mavka->M);
+              const auto maObject = static_cast<MaObject*>(object);
+              return maValue2MavkaApiV0Value(maObject->getArg(
+                  M, index, name, mavkaApiV0Value2MaValue(defaultValue)));
+            },
         .call =
             [](mavka::api::v0::Mavka* mavka,
                mavka::api::v0::MavkaPointer object, size_t argc,
@@ -129,11 +143,7 @@ namespace mavka {
                                   MaValue::Object(static_cast<MaObject*>(
                                       argv[i].data.object)));
               }
-              const auto result = value.call(M, args, {});
-              return mavka::api::v0::MavkaValue{
-                  .type = (api::v0::MavkaValueType)value.type,
-                  .data = {.object = result.v.object},
-              };
+              return maValue2MavkaApiV0Value(value.call(M, args, {}));
             },
         .createDiia =
             [](mavka::api::v0::Mavka* mavka, const char* name,
@@ -143,9 +153,8 @@ namespace mavka {
                   M, name,
                   [fn, mavka](MaMa* M, MaObject* diiaObject, MaObject* args,
                               size_t li) {
-                    const auto result = fn(mavka, diiaObject, args, li);
-                    return MaValue{(MaValueType)result.type,
-                                   {.ptr = result.data.object}};
+                    return mavkaApiV0Value2MaValue(
+                        fn(mavka, diiaObject, args, li));
                   },
                   nullptr);
               return (void*)diiaObject;
@@ -176,6 +185,20 @@ namespace mavka {
             [](mavka::api::v0::Mavka* mavka) {
               const auto M = static_cast<MaMa*>(mavka->M);
               return (void*)MaDict::Create(M);
+            },
+        .isObjectText =
+            [](mavka::api::v0::Mavka* mavka,
+               mavka::api::v0::MavkaPointer object) {
+              const auto M = static_cast<MaMa*>(mavka->M);
+              const auto maObject = static_cast<MaObject*>(object);
+              return maObject->isText(M);
+            },
+        .getTextData =
+            [](mavka::api::v0::Mavka* mavka,
+               mavka::api::v0::MavkaPointer object) {
+              const auto M = static_cast<MaMa*>(mavka->M);
+              const auto maObject = static_cast<MaObject*>(object);
+              return maObject->asText()->data.data();
             },
     };
     return f(mavkaApiV0);
