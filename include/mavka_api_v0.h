@@ -66,6 +66,19 @@ namespace mavka::api::v0 {
                         MavkaValue key,
                         MavkaValue value);
 
+    // отримати аргумент
+    MavkaValue (*getArg)(Mavka* mavka,
+                         MavkaPointer object,
+                         const char* index,
+                         const char* name);
+
+    // отримати аргумент або значення за замовчуванням
+    MavkaValue (*getArgOrDefault)(Mavka* mavka,
+                                  MavkaPointer object,
+                                  const char* index,
+                                  const char* name,
+                                  const MavkaValue& defaultValue);
+
     // викликати обʼєкт
     MavkaValue (*call)(Mavka* mavka,
                        MavkaPointer object,
@@ -92,5 +105,8 @@ namespace mavka::api::v0 {
 
     // створити словник
     MavkaPointer (*createDict)(Mavka* mavka);
+
+    bool (*isObjectText)(Mavka* mavka, MavkaPointer object);
+    char* (*getTextData)(Mavka* mavka, MavkaPointer object);
   } Mavka;
 } // namespace mavka::api::v0
