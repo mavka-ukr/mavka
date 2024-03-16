@@ -25,6 +25,31 @@ void init_print(MaMa* M) {
                                MaDiia::Create(M, "друк", native_fn, nullptr));
 }
 
+void init_get_module_path(MaMa* M) {
+  const auto native_fn = [](MaMa* M, MaObject* diiaObject, MaObject* args,
+                            size_t li) {
+    const auto currentModule = M->call_stack.top()->module;
+    return MaValue::Object(
+        MaText::Create(M, currentModule->asModule()->getCode()->getPath()));
+  };
+  M->global_scope->setProperty(
+      M, "отримати_шлях_до_модуля",
+      MaDiia::Create(M, "отримати_шлях_до_модуля", native_fn, nullptr));
+}
+
+void init_get_module_dir_path(MaMa* M) {
+  const auto native_fn = [](MaMa* M, MaObject* diiaObject, MaObject* args,
+                            size_t li) {
+    const auto currentModule = M->call_stack.top()->module;
+    const auto path = currentModule->asModule()->getCode()->getPath();
+    const auto dir = std::filesystem::path(path).parent_path().string();
+    return MaValue::Object(MaText::Create(M, dir));
+  };
+  M->global_scope->setProperty(
+      M, "отримати_шлях_до_папки_модуля",
+      MaDiia::Create(M, "отримати_шлях_до_папки_модуля", native_fn, nullptr));
+}
+
 void print_help() {
   std::cout << R"(Використання:
   мавка
@@ -72,6 +97,8 @@ int main(int argc, char** argv) {
                                MaText::Create(M, MAVKA_VERSION));
 
   init_print(M);
+  init_get_module_path(M);
+  init_get_module_dir_path(M);
 
   if (args.size() == 1) {
     const auto take_result = M->take("біб", {"вбудоване", "діалог"}, {});
