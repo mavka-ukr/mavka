@@ -10,37 +10,27 @@ using namespace mavka::mama;
 namespace mavka {
   std::string cell_to_string(MaMa* M, MaValue cell, int depth = 0);
 
-  MaValue TakeBib(MaMa* M,
-                  const std::vector<std::string>& parts,
-                  const MaLocation& location);
+  MaValue TakeBib(MaMa* M, const std::vector<std::string>& parts, size_t li);
   MaValue TakeFn(MaMa* M,
                  const std::string& repository,
                  bool relative,
                  const std::vector<std::string>& parts,
-                 const MaLocation& location);
-  MaValue TakePath(MaMa* M,
-                   const std::string& raw_path,
-                   const MaLocation& location);
+                 size_t li);
+  MaValue TakePath(MaMa* M, const std::string& raw_path, size_t li);
 
-  MaValue BibReadNativeFn(MaMa* M,
-                          MaObject* o,
-                          MaArgs* args,
-                          const MaLocation& location);
+  MaValue BibReadNativeFn(MaMa* M, MaObject* o, MaObject* args, size_t li);
   MaObject* BibInitReadModule(MaMa* M);
 
-  MaValue BibMavkaEvalNativeFn(MaMa* M,
-                               MaObject* o,
-                               MaArgs* args,
-                               const MaLocation& location);
+  MaValue BibMavkaEvalNativeFn(MaMa* M, MaObject* o, MaObject* args, size_t li);
   MaObject* BibInitMavkaModule(MaMa* M);
 
   MaValue BibFsSyncReadNativeFn(MaMa* M,
-                                MaObject* o,
-                                MaArgs* args,
-                                const MaLocation& location);
+                                MaObject* diiaObject,
+                                MaObject* args,
+                                size_t li);
   MaValue BibFsSyncReadTextNativeFn(MaMa* M,
                                     MaObject* o,
-                                    MaArgs* args,
-                                    const MaLocation& location);
+                                    MaObject* args,
+                                    size_t li);
   MaObject* BibInitFsSyncModule(MaMa* M);
 } // namespace mavka

@@ -75,9 +75,6 @@ namespace mavka {
       return cell.v.object->type->d.structure->name + "(" +
              mavka::internal::tools::implode(items, ", ") + ")";
     }
-    if (cell.isArgs()) {
-      return "<аргументи>";
-    }
     if (cell.isError()) {
       return "<помилка>";
     }

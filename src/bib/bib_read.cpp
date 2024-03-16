@@ -1,11 +1,8 @@
 #include "../mavka.h"
 
 namespace mavka {
-  MaValue BibReadNativeFn(MaMa* M,
-                          MaObject* o,
-                          MaArgs* args,
-                          const MaLocation& location) {
-    const auto prefix = args->Get(0, "префікс");
+  MaValue BibReadNativeFn(MaMa* M, MaObject* o, MaObject* args, size_t li) {
+    const auto prefix = args->getArg(M, "0", "префікс");
     if (prefix.isObject() && prefix.asObject()->isText(M)) {
       std::cout << prefix.asText()->data;
     }
