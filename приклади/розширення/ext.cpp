@@ -9,18 +9,8 @@ void do_something(Mavka* mavka) {
 
 extern "C" MavkaValue мавка_розширити(Mavka* mavka) {
   do_something(mavka);
-  const auto testDiia = mavka->createDiia(
-      mavka, "ехо",
-      [](Mavka* mavka, MavkaPointer diiaObject, MavkaPointer args, size_t li) {
-        const auto arg1 = mavka->getArg(mavka, args, "0", "значення");
-        if (arg1.type == MavkaValueTypeObject) {
-          if (mavka->isObjectText(mavka, arg1.data.object)) {
-            const auto textData = mavka->getTextData(mavka, arg1.data.object);
-            const auto textObject = mavka->createText(mavka, textData);
-            return MavkaValue{MavkaValueTypeObject, {.object = textObject}};
-          }
-        }
-        return MavkaValue{MavkaValueTypeEmpty, {}};
-      });
-  return MavkaValue{MavkaValueTypeObject, {.object = testDiia}};
+  const auto testStructure = mavka->createStructure(mavka, "Вектор2Д");
+  mavka->addParamToStructure(mavka, testStructure, "х");
+  mavka->addParamToStructure(mavka, testStructure, "у");
+  return MavkaValue{MavkaValueTypeObject, {.object = testStructure}};
 }

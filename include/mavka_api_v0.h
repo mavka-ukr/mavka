@@ -24,6 +24,13 @@ namespace mavka::api::v0 {
       double number;
       MavkaPointer object;
     } data;
+
+    inline bool isError() const { return type == MavkaValueTypeError; };
+    inline bool isEmpty() const { return type == MavkaValueTypeEmpty; };
+    inline bool isNumber() const { return type == MavkaValueTypeNumber; };
+    inline bool isYes() const { return type == MavkaValueTypeYes; };
+    inline bool isNo() const { return type == MavkaValueTypeNo; };
+    inline bool isObject() const { return type == MavkaValueTypeObject; };
   } MavkaValue;
 
   struct Mavka;
@@ -40,6 +47,9 @@ namespace mavka::api::v0 {
 
     // вказівник на МаМа
     MavkaPointer M;
+
+    // отримати глобальний субʼєкт
+    MavkaValue (*getGlobal)(Mavka* mavka, const char* name);
 
     // збільшити лічильник посилань обʼєкта для УО
     void (*retain)(Mavka* mavka, MavkaPointer object);
@@ -69,13 +79,13 @@ namespace mavka::api::v0 {
     // отримати аргумент
     MavkaValue (*getArg)(Mavka* mavka,
                          MavkaPointer object,
-                         const char* index,
+                         size_t index,
                          const char* name);
 
     // отримати аргумент або значення за замовчуванням
     MavkaValue (*getArgOrDefault)(Mavka* mavka,
                                   MavkaPointer object,
-                                  const char* index,
+                                  size_t index,
                                   const char* name,
                                   const MavkaValue& defaultValue);
 
@@ -85,6 +95,23 @@ namespace mavka::api::v0 {
                        size_t argc,
                        MavkaValue* argv,
                        size_t li);
+
+    // створити обʼєкт
+    MavkaPointer (*createObject)(Mavka* mavka);
+
+    // створити структуру
+    MavkaPointer (*createStructure)(Mavka* mavka, const char* name);
+
+    // додати параметр до структури
+    void (*addParamToStructure)(Mavka* mavka,
+                                MavkaPointer structureObject,
+                                const char* name);
+
+    // додати метод до структури
+    void (*addMethodToStructure)(Mavka* mavka,
+                                 MavkaPointer structureObject,
+                                 const char* name,
+                                 MavkaPointer diiaObject);
 
     // створити дію
     MavkaPointer (*createDiia)(Mavka* mavka,
@@ -106,7 +133,33 @@ namespace mavka::api::v0 {
     // створити словник
     MavkaPointer (*createDict)(Mavka* mavka);
 
+    // створити помилку
+    MavkaPointer (*createError)(Mavka* mavka,
+                                const MavkaValue& value,
+                                size_t li);
+
+    // перевірити чи обʼєкт є структурою
+    bool (*isObjectStructure)(Mavka* mavka, MavkaPointer object);
+
+    // перевірити чи обʼєкт є дією
+    bool (*isObjectDiia)(Mavka* mavka, MavkaPointer object);
+
+    // перевірити чи обʼєкт є модулем
+    bool (*isObjectModule)(Mavka* mavka, MavkaPointer object);
+
+    // перевірити чи обʼєкт є байтами
+    bool (*isObjectBytes)(Mavka* mavka, MavkaPointer object);
+
+    // перевірити чи обʼєкт є текстом
     bool (*isObjectText)(Mavka* mavka, MavkaPointer object);
+
+    // отримати дані тексу як char*
     char* (*getTextData)(Mavka* mavka, MavkaPointer object);
+
+    // перевірити чи обʼєкт є списком
+    bool (*isObjectList)(Mavka* mavka, MavkaPointer object);
+
+    // перевірити чи обʼєкт є словником
+    bool (*isObjectDict)(Mavka* mavka, MavkaPointer object);
   } Mavka;
 } // namespace mavka::api::v0
