@@ -10,5 +10,15 @@ void do_something(MavkaOptions& mavkaOptions) {
 
 extern "C" MavkaValue мавка_розширити(MavkaOptions mavkaOptions) {
   do_something(mavkaOptions);
-  return MavkaValue{1, {.number = 2.0}};
+  const auto testDiia = mavkaOptions.createDiia(
+      mavkaOptions.mama, "тест",
+      [mavkaOptions](MavkaPointer mama, MavkaPointer diiaObject,
+                      MavkaPointer args, size_t li) {
+        const auto dict = mavkaOptions.createDict(mama);
+        mavkaOptions.setAt(mama, dict,
+                           MavkaValue{MavkaValueTypeNumber, {.number = 0}},
+                           MavkaValue{MavkaValueTypeNumber, {.number = 1}});
+        return MavkaValue{MavkaValueTypeObject, {.object = dict}};
+      });
+  return MavkaValue{MavkaValueTypeObject, {.object = testDiia}};
 }
