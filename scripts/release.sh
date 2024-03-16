@@ -23,5 +23,5 @@ cd ..
 if [ "$1" = "install" ]; then
     echo "Встановлюємо Мавку $VERSION"
     sudo cp -r release/мавка-"$VERSION"/мавка /usr/local/bin/мавка
-    echo "Мавка $VERSION встановлена"
+    echo "Мавку $VERSION встановлено в /usr/local/bin/мавка"
 fi
