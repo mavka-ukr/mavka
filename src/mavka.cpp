@@ -22,7 +22,7 @@ namespace mavka {
     }
     if (cell.isObject()) {
       if (cell.asObject()->isDiia(M)) {
-        const auto name = cell.v.object->d.diia->name;
+        const auto name = cell.asObject()->diiaGetName();
         if (name.empty()) {
           return "<дія>";
         }
@@ -30,30 +30,30 @@ namespace mavka {
       }
       if (cell.asObject()->isText(M)) {
         if (depth > 0) {
-          return "\"" + cell.v.object->d.text->data + "\"";
+          return "\"" + cell.asObject()->textData + "\"";
         }
-        return cell.v.object->d.text->data;
+        return cell.asObject()->textData;
       }
       if (cell.asObject()->isList(M)) {
         std::vector<std::string> items;
-        for (const auto& item : cell.v.object->d.list->data) {
+        for (const auto& item : cell.asObject()->listData) {
           items.push_back(cell_to_string(M, item, depth + 1));
         }
         return "[" + mavka::internal::tools::implode(items, ", ") + "]";
       }
       if (cell.asObject()->isDict(M)) {
         std::vector<std::string> items;
-        for (const auto& item : cell.v.object->d.dict->data) {
+        for (const auto& item : cell.asObject()->dictData) {
           items.push_back(cell_to_string(M, item.first, depth + 1) + "=" +
                           cell_to_string(M, item.second, depth + 1));
         }
         return "(" + mavka::internal::tools::implode(items, ", ") + ")";
       }
       if (cell.asObject()->isStructure(M)) {
-        return "<структура " + cell.v.object->d.structure->name + ">";
+        return "<структура " + cell.asObject()->structureGetName() + ">";
       }
       if (cell.asObject()->isModule(M)) {
-        const auto name = cell.v.object->d.module->name;
+        const auto name = cell.asObject()->moduleGetName();
         std::vector<std::string> items;
         for (const auto& [k, v] : cell.v.object->properties) {
           if (k != "назва") {
@@ -64,15 +64,16 @@ namespace mavka {
                mavka::internal::tools::implode(items, ", ") + "]>";
       }
       if (cell.asObject()->isBytes(M)) {
-        return "<байти " + std::to_string(cell.v.object->d.bytes->data.size()) +
+        return "<байти " + std::to_string(cell.asObject()->bytesData.size()) +
                ">";
       }
       std::vector<std::string> items;
-      for (const auto& param : cell.v.object->type->d.structure->params) {
-        const auto value = cell.v.object->getProperty(M, param.name);
+      for (const auto& param :
+           cell.asObject()->getStructure()->structureGetParams()) {
+        const auto value = cell.asObject()->getProperty(M, param.name);
         items.push_back(param.name + "=" + cell_to_string(M, value, depth + 1));
       }
-      return cell.v.object->type->d.structure->name + "(" +
+      return cell.asObject()->getStructure()->structureGetName() + "(" +
              mavka::internal::tools::implode(items, ", ") + ")";
     }
     if (cell.isError()) {

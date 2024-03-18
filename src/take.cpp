@@ -3,7 +3,10 @@
 namespace mavka {
 #include "../MAVKA_LIB_MODULES.h"
 
-  MaValue TakeBib(MaMa* M, const std::vector<std::string>& parts, size_t li) {
+  MaValue TakeBib(MaMa* M,
+                  MaObject* scope,
+                  const std::vector<std::string>& parts,
+                  size_t li) {
     const auto full_path =
         "біб/" + mavka::internal::tools::implode(parts, "/") + ".м";
     if (M->loaded_file_modules.contains(full_path)) {
@@ -26,8 +29,8 @@ namespace mavka {
     }
     if (MAVKA_LIB_MODULES.contains(full_path)) {
       const auto& name = parts.back();
-      return M->takeSource(full_path, name, MAVKA_LIB_MODULES[full_path], true,
-                           li);
+      return M->takeSource(scope, full_path, name, MAVKA_LIB_MODULES[full_path],
+                           true, li);
     }
     return MaValue::Error(MaError::Create(
         M, "Модуль \"" + full_path + "\" не знайдено в бібліотеці.", li));

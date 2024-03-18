@@ -4,17 +4,18 @@
 
 namespace mavka {
   MaValue BibFsSyncReadNativeFn(MaMa* M,
+                                MaObject* scope,
                                 MaObject* diiaObject,
                                 MaObject* args,
                                 size_t li) {
     const auto path = args->getArg(M, "0", "шлях");
     if (path.isObject() && (path.asObject()->isText(M))) {
-      const auto path_str = path.asText()->data;
+      const auto path_str = path.asObject()->textData;
       std::ifstream file(path_str);
       if (file.is_open()) {
         std::vector<uint8_t> data((std::istreambuf_iterator<char>(file)),
                                   std::istreambuf_iterator<char>());
-        return MaValue::Object(MaBytes::Create(M, data));
+        return MaValue::Object(M->createBytes(data));
       }
       return MaValue::Error(MaError::Create(
           M, "Не вдалося прочитати файл \"" + path_str + "\".", li));
@@ -24,17 +25,18 @@ namespace mavka {
   }
 
   MaValue BibFsSyncReadTextNativeFn(MaMa* M,
+                                    MaObject* scope,
                                     MaObject* diiaObject,
                                     MaObject* args,
                                     size_t li) {
     const auto path = args->getArg(M, "0", "шлях");
     if (path.isObject() && (path.asObject()->isText(M))) {
-      const auto path_str = path.asText()->data;
+      const auto path_str = path.asObject()->textData;
       std::ifstream file(path_str);
       if (file.is_open()) {
         std::string text((std::istreambuf_iterator<char>(file)),
                          std::istreambuf_iterator<char>());
-        return MaValue::Object(MaText::Create(M, text));
+        return MaValue::Object(M->createText(text));
       }
       return MaValue::Error(MaError::Create(
           M, "Не вдалося прочитати файл \"" + path_str + "\".", li));
@@ -45,14 +47,14 @@ namespace mavka {
 
   // взяти біб сфс
   MaObject* BibInitFsSyncModule(MaMa* M) {
-    const auto mavka_module_o = MaModule::Create(M, "сфс");
+    const auto mavka_module_o = M->createModule("сфс");
     mavka_module_o->setProperty(
         M, "прочитати",
-        MaDiia::Create(M, "прочитати", BibFsSyncReadNativeFn, nullptr));
+        M->createNativeDiia("прочитати", BibFsSyncReadNativeFn, nullptr));
     mavka_module_o->setProperty(
         M, "прочитати_текст",
-        MaDiia::Create(M, "прочитати_текст", BibFsSyncReadTextNativeFn,
-                       nullptr));
+        M->createNativeDiia("прочитати_текст", BibFsSyncReadTextNativeFn,
+                            nullptr));
     return mavka_module_o;
   }
 } // namespace mavka
