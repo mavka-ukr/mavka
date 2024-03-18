@@ -48,8 +48,8 @@ namespace mavka::api::v0 {
     // вказівник на МаМа
     MavkaPointer M;
 
-    // отримати глобальний субʼєкт
-    MavkaValue (*getGlobal)(Mavka* mavka, const char* name);
+    // вказівник на сковп з якого викликано дію для розширення
+    MavkaPointer scope;
 
     // збільшити лічильник посилань обʼєкта для УО
     void (*retain)(Mavka* mavka, MavkaPointer object);

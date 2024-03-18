@@ -4,50 +4,49 @@
 using namespace mavka;
 
 MaValue take_fn(MaMa* M,
+                MaObject* scope,
                 const std::string& repository,
                 const std::vector<std::string>& parts,
                 size_t li) {
   if (repository == "біб") {
-    return TakeBib(M, parts, li);
+    return TakeBib(M, scope, parts, li);
   }
-  return maTakeFsFn(M, repository, parts, li);
+  return maTakeFsFn(M, scope, repository, parts, li);
 }
 
 void init_print(MaMa* M) {
-  const auto native_fn = [](MaMa* M, MaObject* native_o, MaObject* args,
-                            size_t li) {
+  const auto nativeFn = [](MaMa* M, MaObject* scope, MaObject* diiaObject,
+                           MaObject* args, size_t li) {
     for (const auto& [key, value] : args->properties) {
       std::cout << cell_to_string(M, value) << std::endl;
     }
     return MaValue::Empty();
   };
   M->global_scope->setProperty(M, "друк",
-                               MaDiia::Create(M, "друк", native_fn, nullptr));
+                               M->createNativeDiia("друк", nativeFn, nullptr));
 }
 
 void init_get_module_path(MaMa* M) {
-  const auto native_fn = [](MaMa* M, MaObject* diiaObject, MaObject* args,
-                            size_t li) {
-    const auto currentModule = M->call_stack.top()->module;
+  const auto native_fn = [](MaMa* M, MaObject* scope, MaObject* diiaObject,
+                            MaObject* args, size_t li) {
     return MaValue::Object(
-        MaText::Create(M, currentModule->asModule()->getCode()->getPath()));
+        M->createText(scope->scopeGetModule()->moduleGetCode()->getPath()));
   };
   M->global_scope->setProperty(
       M, "отримати_шлях_до_модуля",
-      MaDiia::Create(M, "отримати_шлях_до_модуля", native_fn, nullptr));
+      M->createNativeDiia("отримати_шлях_до_модуля", native_fn, nullptr));
 }
 
 void init_get_module_dir_path(MaMa* M) {
-  const auto native_fn = [](MaMa* M, MaObject* diiaObject, MaObject* args,
-                            size_t li) {
-    const auto currentModule = M->call_stack.top()->module;
-    const auto path = currentModule->asModule()->getCode()->getPath();
+  const auto nativeFn = [](MaMa* M, MaObject* scope, MaObject* diiaObject,
+                           MaObject* args, size_t li) {
+    const auto path = scope->scopeGetModule()->moduleGetCode()->getPath();
     const auto dir = std::filesystem::path(path).parent_path().string();
-    return MaValue::Object(MaText::Create(M, dir));
+    return MaValue::Object(M->createText(dir));
   };
   M->global_scope->setProperty(
       M, "отримати_шлях_до_папки_модуля",
-      MaDiia::Create(M, "отримати_шлях_до_папки_модуля", native_fn, nullptr));
+      M->createNativeDiia("отримати_шлях_до_папки_модуля", nativeFn, nullptr));
 }
 
 void print_help() {
@@ -93,15 +92,15 @@ int main(int argc, char** argv) {
 
   const auto M = MaMa::Create();
   M->take_fn = take_fn;
-  M->global_scope->setProperty(M, "версія_мавки",
-                               MaText::Create(M, MAVKA_VERSION));
+  M->global_scope->setProperty(M, "версія_мавки", M->createText(MAVKA_VERSION));
 
   init_print(M);
   init_get_module_path(M);
   init_get_module_dir_path(M);
 
   if (args.size() == 1) {
-    const auto take_result = M->take("біб", {"вбудоване", "діалог"}, {});
+    const auto take_result =
+        M->take(M->global_scope, "біб", {"вбудоване", "діалог"}, {});
     if (take_result.isError()) {
       print_error_with_trace(M, take_result);
       return 1;
@@ -121,21 +120,24 @@ int main(int argc, char** argv) {
       const auto& repo = args[2];
       if (repo == "біб" || repo == "пак") {
         const auto take_parts = mavka::internal::tools::explode(args[3], ".");
-        const auto take_result = take_fn(M, repo, take_parts, {});
+        const auto take_result =
+            take_fn(M, M->global_scope, repo, take_parts, {});
         if (take_result.isError()) {
           print_error_with_trace(M, take_result);
           return 1;
         }
       } else {
         const auto take_parts = mavka::internal::tools::explode(args[2], ".");
-        const auto take_result = take_fn(M, "", take_parts, {});
+        const auto take_result =
+            take_fn(M, M->global_scope, "", take_parts, {});
         if (take_result.isError()) {
           print_error_with_trace(M, take_result);
           return 1;
         }
       }
     } else {
-      const auto take_result = maTakeFsPath(M, args[1], true, {});
+      const auto take_result =
+          maTakeFsPath(M, M->global_scope, args[1], true, {});
       if (take_result.isError()) {
         print_error_with_trace(M, take_result);
         return 1;
