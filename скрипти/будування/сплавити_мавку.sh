@@ -40,9 +40,9 @@ echo "AR=$AR"
 echo "RANLIB=$RANLIB"
 echo "TSIL=$TSIL"
 
-echo "Плавимо Бібліотеку Цілі"
-
-bash ціль/бібліотека/збудувати.sh ./ціль/бібліотека "$MAVKA_BUILD_DIRECTORY/ціль/.плавлення-бібліотеки"
+#echo "Плавимо Бібліотеку Цілі"
+#
+#bash ціль/бібліотека/збудувати.sh ./ціль/бібліотека "$MAVKA_BUILD_DIRECTORY/ціль/.плавлення-бібліотеки"
 
 echo "Плавимо Мавку"
 
@@ -88,7 +88,6 @@ done
 echo "> Створення виконуваного файлу $MAVKA_BUILD_DIRECTORY/$MAVKA_BUILD_OUT_EXE"
 $CXX -Wl,-s -static -municode -o "$MAVKA_BUILD_DIRECTORY/$MAVKA_BUILD_OUT_EXE" \
   ${MAVKA_BUILD_OBJECT_FILES[*]} \
-  "$TSIL_LIBRARY_PATH/біб.a" \
   "$MAVKA_BUILD_DIRECTORY/external/parser/build/libmavka_parser.a" \
   "$MAVKA_BUILD_DIRECTORY/external/parser/build/syntax/libmavka_syntax.a" \
   "$MAVKA_BUILD_DIRECTORY/external/parser/build/syntax/antlr4-cpp-runtime/libantlr4_cpp_runtime.a" \
