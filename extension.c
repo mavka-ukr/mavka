@@ -1,9 +1,9 @@
+typedef typeof(sizeof(0)) size_t;
+extern void *malloc(size_t size);
+
 #include "setjmp.h"
 
-extern int зберегти_інформацію_для_стрибка(void* буфер) {
-  return setjmp(буфер);
-}
-
-extern void стрибнути_на_збережену_точку(void* буфер, int значення) {
-  longjmp(буфер, значення);
+extern void *make_setjmp_buffer() {
+  jmp_buf *buf = malloc(sizeof(jmp_buf));
+  return buf;
 }
