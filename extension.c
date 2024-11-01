@@ -1,9 +1,18 @@
-typedef typeof(sizeof(0)) size_t;
-extern void *malloc(size_t size);
+#include <stdio.h>
+#include <stdlib.h>
 
-#include "setjmp.h"
+extern void* mavka_ext_malloc(int size) {
+  return malloc(size);
+}
 
-extern void *make_setjmp_buffer() {
-  jmp_buf *buf = malloc(sizeof(jmp_buf));
-  return buf;
+extern void mavka_ext_free(void* ptr) {
+  free(ptr);
+}
+
+extern void* mavka_ext_realloc(void* ptr, int size) {
+  return realloc(ptr, size);
+}
+
+extern int mavka_ext_putchar(unsigned char c) {
+  return putchar(c);
 }
