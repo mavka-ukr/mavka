@@ -14,7 +14,7 @@ int wmain(int argc, wchar_t** argv) {
   for (int i = 0; i < argc; i++) {
     int len = WideCharToMultiByte(CP_UTF8, 0, argv[i], -1, NULL, 0, NULL, NULL);
     argv8[i] = new unsigned char[len];
-    WideCharToMultiByte(CP_UTF8, 0, argv[i], -1, (char*)argv8[i], len, NULL,
+    WideCharToMultiByte(CP_UTF8, 0, argv[i], -1, reinterpret_cast<char*>(argv8[i]), len, NULL,
                         NULL);
     argc8++;
   }

@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 3.26)
+project(mavka_external)
+
+set(CMAKE_CXX_STANDARD 20)
+
+file(READ "../ВЕРСІЯ" MAVKA_VERSION)
+
+add_subdirectory(mavka_parser)
+
+add_library(mavka_external main.cpp extension.cpp)
+target_compile_options(mavka_external PUBLIC -fexceptions -DMAVKA_VERSION="${MAVKA_EXTERNAL_VERSION}")
+target_link_libraries(mavka_external PUBLIC mavka_parser)
+target_link_options(mavka_external PUBLIC -static)
