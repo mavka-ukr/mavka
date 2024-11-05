@@ -8,9 +8,11 @@ cmake ../../external -G Ninja -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always
 ninja
 cd -
 
-ціль .плавлення/мавка.o скомпілювати мавка.ц
+ціль .плавлення/МаМа/Компілятор.ll скомпілювати МаМа/Компілятор.ц
+ціль .плавлення/МаМа/Машина.ll скомпілювати МаМа/Машина.ц
+ціль .плавлення/мавка.ll скомпілювати мавка.ц
 clang++ -o мавка \
-  .плавлення/мавка.o \
+  .плавлення/мавка.ll \
   external/extension.cpp \
   external/main.cpp \
   build/external/libmavka_external.a \
