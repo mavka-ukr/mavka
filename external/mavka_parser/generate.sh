@@ -3,6 +3,6 @@
 set -e
 
 cd syntax
-java -jar antlr-4.13.0-complete.jar -Dlanguage=Cpp *.g4 -visitor -o source
+java -jar antlr-4.13.0-complete.jar -Dlanguage=Cpp *.g4 -visitor -o generated
 cd ..
 exit 0
