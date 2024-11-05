@@ -31,8 +31,6 @@ public:
 
     virtual std::any visitAtom_subject(MavkaParser::Atom_subjectContext *context) = 0;
 
-    virtual std::any visitOperation_number(MavkaParser::Operation_numberContext *context) = 0;
-
     virtual std::any visitAtom_position_get(MavkaParser::Atom_position_getContext *context) = 0;
 
     virtual std::any visitAtom_call(MavkaParser::Atom_callContext *context) = 0;
@@ -98,6 +96,8 @@ public:
     virtual std::any visitOperation_rshift(MavkaParser::Operation_rshiftContext *context) = 0;
 
     virtual std::any visitOperation_lshift(MavkaParser::Operation_lshiftContext *context) = 0;
+
+    virtual std::any visitOperation_number(MavkaParser::Operation_numberContext *context) = 0;
 
     virtual std::any visitOperation_and(MavkaParser::Operation_andContext *context) = 0;
 

@@ -32,9 +32,6 @@ public:
   virtual void enterAtom_subject(MavkaParser::Atom_subjectContext *ctx) = 0;
   virtual void exitAtom_subject(MavkaParser::Atom_subjectContext *ctx) = 0;
 
-  virtual void enterOperation_number(MavkaParser::Operation_numberContext *ctx) = 0;
-  virtual void exitOperation_number(MavkaParser::Operation_numberContext *ctx) = 0;
-
   virtual void enterAtom_position_get(MavkaParser::Atom_position_getContext *ctx) = 0;
   virtual void exitAtom_position_get(MavkaParser::Atom_position_getContext *ctx) = 0;
 
@@ -133,6 +130,9 @@ public:
 
   virtual void enterOperation_lshift(MavkaParser::Operation_lshiftContext *ctx) = 0;
   virtual void exitOperation_lshift(MavkaParser::Operation_lshiftContext *ctx) = 0;
+
+  virtual void enterOperation_number(MavkaParser::Operation_numberContext *ctx) = 0;
+  virtual void exitOperation_number(MavkaParser::Operation_numberContext *ctx) = 0;
 
   virtual void enterOperation_and(MavkaParser::Operation_andContext *ctx) = 0;
   virtual void exitOperation_and(MavkaParser::Operation_andContext *ctx) = 0;

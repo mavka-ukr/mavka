@@ -201,17 +201,6 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  class  Operation_numberContext : public AtomContext {
-  public:
-    Operation_numberContext(AtomContext *ctx);
-
-    antlr4::tree::TerminalNode *NUMBER();
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
   class  Atom_position_getContext : public AtomContext {
   public:
     Atom_position_getContext(AtomContext *ctx);
@@ -807,6 +796,17 @@ public:
     std::vector<OperationContext *> operation();
     OperationContext* operation(size_t i);
     Op_lshiftContext *op_lshift();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Operation_numberContext : public OperationContext {
+  public:
+    Operation_numberContext(OperationContext *ctx);
+
+    antlr4::tree::TerminalNode *NUMBER();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 

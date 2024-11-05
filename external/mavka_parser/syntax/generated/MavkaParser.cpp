@@ -106,12 +106,12 @@ void mavkaparserParserInitialize() {
   	21,2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,2,26,7,26,2,27,7,27,2,28,7,
   	28,2,29,7,29,2,30,7,30,2,31,7,31,2,32,7,32,2,33,7,33,2,34,7,34,2,35,7,
   	35,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,5,1,81,8,1,10,1,12,1,84,9,1,1,1,1,
-  	1,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,3,2,97,8,2,1,2,1,2,3,2,101,8,2,
+  	1,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,3,2,96,8,2,1,2,1,2,3,2,100,8,2,1,2,
   	1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,
-  	2,1,2,1,2,1,2,1,2,1,2,1,2,5,2,127,8,2,10,2,12,2,130,9,2,3,2,132,8,2,1,
-  	2,1,2,1,2,5,2,137,8,2,10,2,12,2,140,9,2,1,3,1,3,1,3,1,3,1,3,1,3,1,4,1,
-  	4,3,4,150,8,4,1,4,1,4,1,4,1,4,1,4,1,5,1,5,1,5,1,5,1,5,3,5,162,8,5,1,5,
-  	1,5,1,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,5,6,176,8,6,10,6,12,6,179,
+  	2,1,2,1,2,1,2,1,2,1,2,5,2,126,8,2,10,2,12,2,129,9,2,3,2,131,8,2,1,2,1,
+  	2,1,2,5,2,136,8,2,10,2,12,2,139,9,2,1,3,1,3,1,3,1,3,1,3,1,3,1,4,1,4,3,
+  	4,149,8,4,1,4,1,4,1,4,1,4,1,4,1,5,1,5,1,5,1,5,1,5,3,5,161,8,5,1,5,1,5,
+  	1,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,5,6,176,8,6,10,6,12,6,179,
   	9,6,3,6,181,8,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,5,6,195,
   	8,6,10,6,12,6,198,9,6,3,6,200,8,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,
   	1,6,1,6,1,6,5,6,214,8,6,10,6,12,6,217,9,6,3,6,219,8,6,1,6,1,6,1,6,1,6,
@@ -143,8 +143,8 @@ void mavkaparserParserInitialize() {
   	4,34,581,8,34,11,34,12,34,582,1,35,5,35,586,8,35,10,35,12,35,589,9,35,
   	1,35,0,2,4,12,36,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,
   	38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,0,1,2,0,67,67,69,69,
-  	633,0,72,1,0,0,0,2,75,1,0,0,0,4,100,1,0,0,0,6,141,1,0,0,0,8,149,1,0,0,
-  	0,10,161,1,0,0,0,12,239,1,0,0,0,14,376,1,0,0,0,16,379,1,0,0,0,18,382,
+  	633,0,72,1,0,0,0,2,75,1,0,0,0,4,99,1,0,0,0,6,140,1,0,0,0,8,148,1,0,0,
+  	0,10,160,1,0,0,0,12,239,1,0,0,0,14,376,1,0,0,0,16,379,1,0,0,0,18,382,
   	1,0,0,0,20,386,1,0,0,0,22,389,1,0,0,0,24,392,1,0,0,0,26,395,1,0,0,0,28,
   	398,1,0,0,0,30,401,1,0,0,0,32,404,1,0,0,0,34,406,1,0,0,0,36,408,1,0,0,
   	0,38,431,1,0,0,0,40,434,1,0,0,0,42,477,1,0,0,0,44,479,1,0,0,0,46,487,
@@ -155,50 +155,50 @@ void mavkaparserParserInitialize() {
   	79,3,56,28,0,79,81,1,0,0,0,80,77,1,0,0,0,81,84,1,0,0,0,82,80,1,0,0,0,
   	82,83,1,0,0,0,83,85,1,0,0,0,84,82,1,0,0,0,85,86,3,70,35,0,86,3,1,0,0,
   	0,87,88,6,2,-1,0,88,89,5,51,0,0,89,90,3,70,35,0,90,91,3,34,17,0,91,92,
-  	3,70,35,0,92,93,5,52,0,0,93,101,1,0,0,0,94,101,5,62,0,0,95,97,5,67,0,
-  	0,96,95,1,0,0,0,96,97,1,0,0,0,97,98,1,0,0,0,98,101,5,69,0,0,99,101,5,
-  	67,0,0,100,87,1,0,0,0,100,94,1,0,0,0,100,96,1,0,0,0,100,99,1,0,0,0,101,
-  	138,1,0,0,0,102,103,10,3,0,0,103,104,3,70,35,0,104,105,5,42,0,0,105,106,
-  	3,70,35,0,106,107,5,67,0,0,107,137,1,0,0,0,108,109,10,2,0,0,109,110,3,
-  	70,35,0,110,111,5,53,0,0,111,112,3,70,35,0,112,113,3,34,17,0,113,114,
-  	3,70,35,0,114,115,5,54,0,0,115,137,1,0,0,0,116,117,10,1,0,0,117,118,5,
-  	51,0,0,118,131,3,70,35,0,119,120,3,10,5,0,120,128,3,70,35,0,121,122,3,
-  	70,35,0,122,123,5,61,0,0,123,124,3,70,35,0,124,125,3,10,5,0,125,127,1,
-  	0,0,0,126,121,1,0,0,0,127,130,1,0,0,0,128,126,1,0,0,0,128,129,1,0,0,0,
-  	129,132,1,0,0,0,130,128,1,0,0,0,131,119,1,0,0,0,131,132,1,0,0,0,132,133,
-  	1,0,0,0,133,134,3,70,35,0,134,135,5,52,0,0,135,137,1,0,0,0,136,102,1,
-  	0,0,0,136,108,1,0,0,0,136,116,1,0,0,0,137,140,1,0,0,0,138,136,1,0,0,0,
-  	138,139,1,0,0,0,139,5,1,0,0,0,140,138,1,0,0,0,141,142,5,67,0,0,142,143,
-  	3,70,35,0,143,144,5,39,0,0,144,145,3,70,35,0,145,146,3,34,17,0,146,7,
-  	1,0,0,0,147,150,5,62,0,0,148,150,5,69,0,0,149,147,1,0,0,0,149,148,1,0,
-  	0,0,150,151,1,0,0,0,151,152,3,70,35,0,152,153,5,39,0,0,153,154,3,70,35,
-  	0,154,155,3,34,17,0,155,9,1,0,0,0,156,157,5,67,0,0,157,158,3,70,35,0,
-  	158,159,5,39,0,0,159,160,3,70,35,0,160,162,1,0,0,0,161,156,1,0,0,0,161,
-  	162,1,0,0,0,162,163,1,0,0,0,163,164,3,34,17,0,164,11,1,0,0,0,165,166,
-  	6,6,-1,0,166,240,3,4,2,0,167,168,5,51,0,0,168,180,3,70,35,0,169,177,3,
-  	6,3,0,170,171,3,70,35,0,171,172,5,61,0,0,172,173,3,70,35,0,173,174,3,
-  	6,3,0,174,176,1,0,0,0,175,170,1,0,0,0,176,179,1,0,0,0,177,175,1,0,0,0,
-  	177,178,1,0,0,0,178,181,1,0,0,0,179,177,1,0,0,0,180,169,1,0,0,0,180,181,
-  	1,0,0,0,181,182,1,0,0,0,182,183,3,70,35,0,183,184,5,52,0,0,184,240,1,
-  	0,0,0,185,186,5,53,0,0,186,199,3,70,35,0,187,188,3,8,4,0,188,196,3,70,
-  	35,0,189,190,3,70,35,0,190,191,5,61,0,0,191,192,3,70,35,0,192,193,3,8,
-  	4,0,193,195,1,0,0,0,194,189,1,0,0,0,195,198,1,0,0,0,196,194,1,0,0,0,196,
-  	197,1,0,0,0,197,200,1,0,0,0,198,196,1,0,0,0,199,187,1,0,0,0,199,200,1,
-  	0,0,0,200,201,1,0,0,0,201,202,3,70,35,0,202,203,5,54,0,0,203,240,1,0,
-  	0,0,204,205,5,53,0,0,205,218,3,70,35,0,206,207,3,34,17,0,207,215,3,70,
-  	35,0,208,209,3,70,35,0,209,210,5,61,0,0,210,211,3,70,35,0,211,212,3,34,
-  	17,0,212,214,1,0,0,0,213,208,1,0,0,0,214,217,1,0,0,0,215,213,1,0,0,0,
-  	215,216,1,0,0,0,216,219,1,0,0,0,217,215,1,0,0,0,218,206,1,0,0,0,218,219,
-  	1,0,0,0,219,220,1,0,0,0,220,221,3,70,35,0,221,222,5,54,0,0,222,240,1,
-  	0,0,0,223,224,5,60,0,0,224,225,3,70,35,0,225,226,3,12,6,24,226,240,1,
-  	0,0,0,227,228,5,57,0,0,228,229,3,70,35,0,229,230,3,12,6,23,230,240,1,
-  	0,0,0,231,232,5,43,0,0,232,233,3,70,35,0,233,234,3,12,6,22,234,240,1,
-  	0,0,0,235,236,5,44,0,0,236,237,3,70,35,0,237,238,3,12,6,21,238,240,1,
-  	0,0,0,239,165,1,0,0,0,239,167,1,0,0,0,239,185,1,0,0,0,239,204,1,0,0,0,
-  	239,223,1,0,0,0,239,227,1,0,0,0,239,231,1,0,0,0,239,235,1,0,0,0,240,373,
-  	1,0,0,0,241,242,10,20,0,0,242,243,3,70,35,0,243,244,5,45,0,0,244,245,
-  	3,70,35,0,245,246,3,12,6,21,246,372,1,0,0,0,247,248,10,19,0,0,248,249,
-  	3,70,35,0,249,250,5,46,0,0,250,251,3,70,35,0,251,252,3,12,6,20,252,372,
+  	3,70,35,0,92,93,5,52,0,0,93,100,1,0,0,0,94,96,5,67,0,0,95,94,1,0,0,0,
+  	95,96,1,0,0,0,96,97,1,0,0,0,97,100,5,69,0,0,98,100,5,67,0,0,99,87,1,0,
+  	0,0,99,95,1,0,0,0,99,98,1,0,0,0,100,137,1,0,0,0,101,102,10,3,0,0,102,
+  	103,3,70,35,0,103,104,5,42,0,0,104,105,3,70,35,0,105,106,5,67,0,0,106,
+  	136,1,0,0,0,107,108,10,2,0,0,108,109,3,70,35,0,109,110,5,53,0,0,110,111,
+  	3,70,35,0,111,112,3,34,17,0,112,113,3,70,35,0,113,114,5,54,0,0,114,136,
+  	1,0,0,0,115,116,10,1,0,0,116,117,5,51,0,0,117,130,3,70,35,0,118,119,3,
+  	10,5,0,119,127,3,70,35,0,120,121,3,70,35,0,121,122,5,61,0,0,122,123,3,
+  	70,35,0,123,124,3,10,5,0,124,126,1,0,0,0,125,120,1,0,0,0,126,129,1,0,
+  	0,0,127,125,1,0,0,0,127,128,1,0,0,0,128,131,1,0,0,0,129,127,1,0,0,0,130,
+  	118,1,0,0,0,130,131,1,0,0,0,131,132,1,0,0,0,132,133,3,70,35,0,133,134,
+  	5,52,0,0,134,136,1,0,0,0,135,101,1,0,0,0,135,107,1,0,0,0,135,115,1,0,
+  	0,0,136,139,1,0,0,0,137,135,1,0,0,0,137,138,1,0,0,0,138,5,1,0,0,0,139,
+  	137,1,0,0,0,140,141,5,67,0,0,141,142,3,70,35,0,142,143,5,39,0,0,143,144,
+  	3,70,35,0,144,145,3,34,17,0,145,7,1,0,0,0,146,149,5,62,0,0,147,149,5,
+  	69,0,0,148,146,1,0,0,0,148,147,1,0,0,0,149,150,1,0,0,0,150,151,3,70,35,
+  	0,151,152,5,39,0,0,152,153,3,70,35,0,153,154,3,34,17,0,154,9,1,0,0,0,
+  	155,156,5,67,0,0,156,157,3,70,35,0,157,158,5,39,0,0,158,159,3,70,35,0,
+  	159,161,1,0,0,0,160,155,1,0,0,0,160,161,1,0,0,0,161,162,1,0,0,0,162,163,
+  	3,34,17,0,163,11,1,0,0,0,164,165,6,6,-1,0,165,240,5,62,0,0,166,240,3,
+  	4,2,0,167,168,5,51,0,0,168,180,3,70,35,0,169,177,3,6,3,0,170,171,3,70,
+  	35,0,171,172,5,61,0,0,172,173,3,70,35,0,173,174,3,6,3,0,174,176,1,0,0,
+  	0,175,170,1,0,0,0,176,179,1,0,0,0,177,175,1,0,0,0,177,178,1,0,0,0,178,
+  	181,1,0,0,0,179,177,1,0,0,0,180,169,1,0,0,0,180,181,1,0,0,0,181,182,1,
+  	0,0,0,182,183,3,70,35,0,183,184,5,52,0,0,184,240,1,0,0,0,185,186,5,53,
+  	0,0,186,199,3,70,35,0,187,188,3,8,4,0,188,196,3,70,35,0,189,190,3,70,
+  	35,0,190,191,5,61,0,0,191,192,3,70,35,0,192,193,3,8,4,0,193,195,1,0,0,
+  	0,194,189,1,0,0,0,195,198,1,0,0,0,196,194,1,0,0,0,196,197,1,0,0,0,197,
+  	200,1,0,0,0,198,196,1,0,0,0,199,187,1,0,0,0,199,200,1,0,0,0,200,201,1,
+  	0,0,0,201,202,3,70,35,0,202,203,5,54,0,0,203,240,1,0,0,0,204,205,5,53,
+  	0,0,205,218,3,70,35,0,206,207,3,34,17,0,207,215,3,70,35,0,208,209,3,70,
+  	35,0,209,210,5,61,0,0,210,211,3,70,35,0,211,212,3,34,17,0,212,214,1,0,
+  	0,0,213,208,1,0,0,0,214,217,1,0,0,0,215,213,1,0,0,0,215,216,1,0,0,0,216,
+  	219,1,0,0,0,217,215,1,0,0,0,218,206,1,0,0,0,218,219,1,0,0,0,219,220,1,
+  	0,0,0,220,221,3,70,35,0,221,222,5,54,0,0,222,240,1,0,0,0,223,224,5,60,
+  	0,0,224,225,3,70,35,0,225,226,3,12,6,24,226,240,1,0,0,0,227,228,5,57,
+  	0,0,228,229,3,70,35,0,229,230,3,12,6,23,230,240,1,0,0,0,231,232,5,43,
+  	0,0,232,233,3,70,35,0,233,234,3,12,6,22,234,240,1,0,0,0,235,236,5,44,
+  	0,0,236,237,3,70,35,0,237,238,3,12,6,21,238,240,1,0,0,0,239,164,1,0,0,
+  	0,239,166,1,0,0,0,239,167,1,0,0,0,239,185,1,0,0,0,239,204,1,0,0,0,239,
+  	223,1,0,0,0,239,227,1,0,0,0,239,231,1,0,0,0,239,235,1,0,0,0,240,373,1,
+  	0,0,0,241,242,10,20,0,0,242,243,3,70,35,0,243,244,5,45,0,0,244,245,3,
+  	70,35,0,245,246,3,12,6,21,246,372,1,0,0,0,247,248,10,19,0,0,248,249,3,
+  	70,35,0,249,250,5,46,0,0,250,251,3,70,35,0,251,252,3,12,6,20,252,372,
   	1,0,0,0,253,254,10,18,0,0,254,255,3,70,35,0,255,256,5,47,0,0,256,257,
   	3,70,35,0,257,258,3,12,6,19,258,372,1,0,0,0,259,260,10,17,0,0,260,261,
   	3,70,35,0,261,262,5,43,0,0,262,263,3,70,35,0,263,264,3,12,6,18,264,372,
@@ -292,8 +292,8 @@ void mavkaparserParserInitialize() {
   	0,576,574,1,0,0,0,577,578,7,0,0,0,578,67,1,0,0,0,579,581,5,73,0,0,580,
   	579,1,0,0,0,581,582,1,0,0,0,582,580,1,0,0,0,582,583,1,0,0,0,583,69,1,
   	0,0,0,584,586,5,73,0,0,585,584,1,0,0,0,586,589,1,0,0,0,587,585,1,0,0,
-  	0,587,588,1,0,0,0,588,71,1,0,0,0,589,587,1,0,0,0,43,82,96,100,128,131,
-  	136,138,149,161,177,180,196,199,215,218,239,371,373,412,423,426,434,437,
+  	0,587,588,1,0,0,0,588,71,1,0,0,0,589,587,1,0,0,0,43,82,95,99,127,130,
+  	135,137,148,160,177,180,196,199,215,218,239,371,373,412,423,426,434,437,
   	443,446,458,461,466,472,483,506,513,518,526,536,549,553,559,563,567,574,
   	582,587
   };
@@ -662,31 +662,6 @@ std::any MavkaParser::Atom_subjectContext::accept(tree::ParseTreeVisitor *visito
   else
     return visitor->visitChildren(this);
 }
-//----------------- Operation_numberContext ------------------------------------------------------------------
-
-tree::TerminalNode* MavkaParser::Operation_numberContext::NUMBER() {
-  return getToken(MavkaParser::NUMBER, 0);
-}
-
-MavkaParser::Operation_numberContext::Operation_numberContext(AtomContext *ctx) { copyFrom(ctx); }
-
-void MavkaParser::Operation_numberContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<MavkaParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterOperation_number(this);
-}
-void MavkaParser::Operation_numberContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<MavkaParserListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitOperation_number(this);
-}
-
-std::any MavkaParser::Operation_numberContext::accept(tree::ParseTreeVisitor *visitor) {
-  if (auto parserVisitor = dynamic_cast<MavkaParserVisitor*>(visitor))
-    return parserVisitor->visitOperation_number(this);
-  else
-    return visitor->visitChildren(this);
-}
 //----------------- Atom_position_getContext ------------------------------------------------------------------
 
 std::vector<MavkaParser::NlsContext *> MavkaParser::Atom_position_getContext::nls() {
@@ -815,7 +790,7 @@ MavkaParser::AtomContext* MavkaParser::atom(int precedence) {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(100);
+    setState(99);
     _errHandler->sync(this);
     switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 2, _ctx)) {
     case 1: {
@@ -837,36 +812,27 @@ MavkaParser::AtomContext* MavkaParser::atom(int precedence) {
     }
 
     case 2: {
-      _localctx = _tracker.createInstance<Operation_numberContext>(_localctx);
-      _ctx = _localctx;
-      previousContext = _localctx;
-      setState(94);
-      match(MavkaParser::NUMBER);
-      break;
-    }
-
-    case 3: {
       _localctx = _tracker.createInstance<Operation_stringContext>(_localctx);
       _ctx = _localctx;
       previousContext = _localctx;
-      setState(96);
+      setState(95);
       _errHandler->sync(this);
 
       _la = _input->LA(1);
       if (_la == MavkaParser::ID) {
-        setState(95);
+        setState(94);
         antlrcpp::downCast<Operation_stringContext *>(_localctx)->tt = match(MavkaParser::ID);
       }
-      setState(98);
+      setState(97);
       match(MavkaParser::STRING);
       break;
     }
 
-    case 4: {
+    case 3: {
       _localctx = _tracker.createInstance<Atom_subjectContext>(_localctx);
       _ctx = _localctx;
       previousContext = _localctx;
-      setState(99);
+      setState(98);
       antlrcpp::downCast<Atom_subjectContext *>(_localctx)->id = match(MavkaParser::ID);
       break;
     }
@@ -875,7 +841,7 @@ MavkaParser::AtomContext* MavkaParser::atom(int precedence) {
       break;
     }
     _ctx->stop = _input->LT(-1);
-    setState(138);
+    setState(137);
     _errHandler->sync(this);
     alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 6, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
@@ -883,7 +849,7 @@ MavkaParser::AtomContext* MavkaParser::atom(int precedence) {
         if (!_parseListeners.empty())
           triggerExitRuleEvent();
         previousContext = _localctx;
-        setState(136);
+        setState(135);
         _errHandler->sync(this);
         switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 5, _ctx)) {
         case 1: {
@@ -891,16 +857,16 @@ MavkaParser::AtomContext* MavkaParser::atom(int precedence) {
           _localctx = newContext;
           newContext->object = previousContext;
           pushNewRecursionContext(newContext, startState, RuleAtom);
-          setState(102);
+          setState(101);
 
           if (!(precpred(_ctx, 3))) throw FailedPredicateException(this, "precpred(_ctx, 3)");
+          setState(102);
+          nls();
           setState(103);
-          nls();
-          setState(104);
           match(MavkaParser::DOT);
-          setState(105);
+          setState(104);
           nls();
-          setState(106);
+          setState(105);
           antlrcpp::downCast<Atom_getContext *>(_localctx)->id = match(MavkaParser::ID);
           break;
         }
@@ -910,20 +876,20 @@ MavkaParser::AtomContext* MavkaParser::atom(int precedence) {
           _localctx = newContext;
           newContext->object = previousContext;
           pushNewRecursionContext(newContext, startState, RuleAtom);
-          setState(108);
+          setState(107);
 
           if (!(precpred(_ctx, 2))) throw FailedPredicateException(this, "precpred(_ctx, 2)");
+          setState(108);
+          nls();
           setState(109);
-          nls();
-          setState(110);
           match(MavkaParser::BRACKET_OPEN);
+          setState(110);
+          nls();
           setState(111);
-          nls();
-          setState(112);
           antlrcpp::downCast<Atom_position_getContext *>(_localctx)->position = expr();
-          setState(113);
+          setState(112);
           nls();
-          setState(114);
+          setState(113);
           match(MavkaParser::BRACKET_CLOSE);
           break;
         }
@@ -933,45 +899,45 @@ MavkaParser::AtomContext* MavkaParser::atom(int precedence) {
           _localctx = newContext;
           newContext->object = previousContext;
           pushNewRecursionContext(newContext, startState, RuleAtom);
-          setState(116);
+          setState(115);
 
           if (!(precpred(_ctx, 1))) throw FailedPredicateException(this, "precpred(_ctx, 1)");
-          setState(117);
+          setState(116);
           match(MavkaParser::PAREN_OPEN);
-          setState(118);
+          setState(117);
           nls();
-          setState(131);
+          setState(130);
           _errHandler->sync(this);
 
           _la = _input->LA(1);
           if (((((_la - 43) & ~ 0x3fULL) == 0) &&
             ((1ULL << (_la - 43)) & 84559107) != 0)) {
-            setState(119);
+            setState(118);
             call_arg();
-            setState(120);
+            setState(119);
             nls();
-            setState(128);
+            setState(127);
             _errHandler->sync(this);
             alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 3, _ctx);
             while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
               if (alt == 1) {
+                setState(120);
+                nls();
                 setState(121);
-                nls();
-                setState(122);
                 match(MavkaParser::COMA);
-                setState(123);
+                setState(122);
                 nls();
-                setState(124);
+                setState(123);
                 call_arg(); 
               }
-              setState(130);
+              setState(129);
               _errHandler->sync(this);
               alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 3, _ctx);
             }
           }
-          setState(133);
+          setState(132);
           nls();
-          setState(134);
+          setState(133);
           match(MavkaParser::PAREN_CLOSE);
           break;
         }
@@ -980,7 +946,7 @@ MavkaParser::AtomContext* MavkaParser::atom(int precedence) {
           break;
         } 
       }
-      setState(140);
+      setState(139);
       _errHandler->sync(this);
       alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 6, _ctx);
     }
@@ -1057,15 +1023,15 @@ MavkaParser::Object_argContext* MavkaParser::object_arg() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(141);
+    setState(140);
     antlrcpp::downCast<Object_argContext *>(_localctx)->id = match(MavkaParser::ID);
+    setState(141);
+    nls();
     setState(142);
-    nls();
-    setState(143);
     match(MavkaParser::EQUAL);
-    setState(144);
+    setState(143);
     nls();
-    setState(145);
+    setState(144);
     expr();
    
   }
@@ -1146,17 +1112,17 @@ MavkaParser::Dict_argContext* MavkaParser::dict_arg() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(149);
+    setState(148);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case MavkaParser::NUMBER: {
-        setState(147);
+        setState(146);
         antlrcpp::downCast<Dict_argContext *>(_localctx)->key_number = match(MavkaParser::NUMBER);
         break;
       }
 
       case MavkaParser::STRING: {
-        setState(148);
+        setState(147);
         antlrcpp::downCast<Dict_argContext *>(_localctx)->key_string = match(MavkaParser::STRING);
         break;
       }
@@ -1164,13 +1130,13 @@ MavkaParser::Dict_argContext* MavkaParser::dict_arg() {
     default:
       throw NoViableAltException(this);
     }
+    setState(150);
+    nls();
     setState(151);
-    nls();
-    setState(152);
     match(MavkaParser::EQUAL);
-    setState(153);
+    setState(152);
     nls();
-    setState(154);
+    setState(153);
     expr();
    
   }
@@ -1247,18 +1213,18 @@ MavkaParser::Call_argContext* MavkaParser::call_arg() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(161);
+    setState(160);
     _errHandler->sync(this);
 
     switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 8, _ctx)) {
     case 1: {
-      setState(156);
+      setState(155);
       antlrcpp::downCast<Call_argContext *>(_localctx)->id = match(MavkaParser::ID);
-      setState(157);
+      setState(156);
       nls();
-      setState(158);
+      setState(157);
       match(MavkaParser::EQUAL);
-      setState(159);
+      setState(158);
       nls();
       break;
     }
@@ -1266,7 +1232,7 @@ MavkaParser::Call_argContext* MavkaParser::call_arg() {
     default:
       break;
     }
-    setState(163);
+    setState(162);
     expr();
    
   }
@@ -2434,6 +2400,31 @@ std::any MavkaParser::Operation_lshiftContext::accept(tree::ParseTreeVisitor *vi
   else
     return visitor->visitChildren(this);
 }
+//----------------- Operation_numberContext ------------------------------------------------------------------
+
+tree::TerminalNode* MavkaParser::Operation_numberContext::NUMBER() {
+  return getToken(MavkaParser::NUMBER, 0);
+}
+
+MavkaParser::Operation_numberContext::Operation_numberContext(OperationContext *ctx) { copyFrom(ctx); }
+
+void MavkaParser::Operation_numberContext::enterRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<MavkaParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->enterOperation_number(this);
+}
+void MavkaParser::Operation_numberContext::exitRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<MavkaParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->exitOperation_number(this);
+}
+
+std::any MavkaParser::Operation_numberContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MavkaParserVisitor*>(visitor))
+    return parserVisitor->visitOperation_number(this);
+  else
+    return visitor->visitChildren(this);
+}
 //----------------- Operation_andContext ------------------------------------------------------------------
 
 std::vector<MavkaParser::NlsContext *> MavkaParser::Operation_andContext::nls() {
@@ -2505,16 +2496,25 @@ MavkaParser::OperationContext* MavkaParser::operation(int precedence) {
     _errHandler->sync(this);
     switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 15, _ctx)) {
     case 1: {
-      _localctx = _tracker.createInstance<Operation_atomContext>(_localctx);
+      _localctx = _tracker.createInstance<Operation_numberContext>(_localctx);
       _ctx = _localctx;
       previousContext = _localctx;
 
+      setState(165);
+      match(MavkaParser::NUMBER);
+      break;
+    }
+
+    case 2: {
+      _localctx = _tracker.createInstance<Operation_atomContext>(_localctx);
+      _ctx = _localctx;
+      previousContext = _localctx;
       setState(166);
       atom(0);
       break;
     }
 
-    case 2: {
+    case 3: {
       _localctx = _tracker.createInstance<Operation_objectContext>(_localctx);
       _ctx = _localctx;
       previousContext = _localctx;
@@ -2555,7 +2555,7 @@ MavkaParser::OperationContext* MavkaParser::operation(int precedence) {
       break;
     }
 
-    case 3: {
+    case 4: {
       _localctx = _tracker.createInstance<Operation_dictContext>(_localctx);
       _ctx = _localctx;
       previousContext = _localctx;
@@ -2600,7 +2600,7 @@ MavkaParser::OperationContext* MavkaParser::operation(int precedence) {
       break;
     }
 
-    case 4: {
+    case 5: {
       _localctx = _tracker.createInstance<Operation_arrayContext>(_localctx);
       _ctx = _localctx;
       previousContext = _localctx;
@@ -2644,7 +2644,7 @@ MavkaParser::OperationContext* MavkaParser::operation(int precedence) {
       break;
     }
 
-    case 5: {
+    case 6: {
       _localctx = _tracker.createInstance<Operation_pre_notContext>(_localctx);
       _ctx = _localctx;
       previousContext = _localctx;
@@ -2657,7 +2657,7 @@ MavkaParser::OperationContext* MavkaParser::operation(int precedence) {
       break;
     }
 
-    case 6: {
+    case 7: {
       _localctx = _tracker.createInstance<Operation_pre_bw_notContext>(_localctx);
       _ctx = _localctx;
       previousContext = _localctx;
@@ -2670,7 +2670,7 @@ MavkaParser::OperationContext* MavkaParser::operation(int precedence) {
       break;
     }
 
-    case 7: {
+    case 8: {
       _localctx = _tracker.createInstance<Operation_pre_plusContext>(_localctx);
       _ctx = _localctx;
       previousContext = _localctx;
@@ -2683,7 +2683,7 @@ MavkaParser::OperationContext* MavkaParser::operation(int precedence) {
       break;
     }
 
-    case 8: {
+    case 9: {
       _localctx = _tracker.createInstance<Operation_pre_minusContext>(_localctx);
       _ctx = _localctx;
       previousContext = _localctx;
@@ -4281,7 +4281,7 @@ MavkaParser::Diia_defineContext* MavkaParser::diia_define() {
 
     _la = _input->LA(1);
     if (((((_la - 51) & ~ 0x3fULL) == 0) &&
-      ((1ULL << (_la - 51)) & 329729) != 0)) {
+      ((1ULL << (_la - 51)) & 327681) != 0)) {
       setState(465);
       antlrcpp::downCast<Diia_defineContext *>(_localctx)->d_type = type();
     }
@@ -5358,7 +5358,7 @@ MavkaParser::ParamContext* MavkaParser::param() {
 
     _la = _input->LA(1);
     if (((((_la - 51) & ~ 0x3fULL) == 0) &&
-      ((1ULL << (_la - 51)) & 329729) != 0)) {
+      ((1ULL << (_la - 51)) & 327681) != 0)) {
       setState(558);
       type();
     }
