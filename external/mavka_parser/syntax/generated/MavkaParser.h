@@ -115,8 +115,12 @@ public:
   public:
     ProgramContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    std::vector<NlsContext *> nls();
+    NlsContext* nls(size_t i);
     std::vector<Body_elementContext *> body_element();
     Body_elementContext* body_element(size_t i);
+    std::vector<NlContext *> nl();
+    NlContext* nl(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1234,8 +1238,6 @@ public:
     Body_elementContext* body_element(size_t i);
     std::vector<NlContext *> nl();
     NlContext* nl(size_t i);
-    std::vector<NlsContext *> nls();
-    NlsContext* nls(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

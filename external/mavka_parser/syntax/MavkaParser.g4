@@ -6,7 +6,7 @@ options {
 
 file: f_program=program EOF;
 
-program: body_element*;
+program: nls body_element (nl body_element)* nls;
 
 atom: '(' nls expr nls ')' #atom_nested
     | NUMBER #operation_number
@@ -78,7 +78,7 @@ if: 'якщо' cond=expr nl (ifok=body nl)? (('інакше' nl ifnot=body nl)? 
 
 while: 'поки' cond=operation nl (w_body=body nl)? 'кінець';
 
-body: body_element (nl nls body_element)*;
+body: body_element (nl body_element)*;
 body_element: structure_define
             | diia_define
             | assign
