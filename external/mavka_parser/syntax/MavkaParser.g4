@@ -9,7 +9,6 @@ file: f_program=program EOF;
 program: nls body_element (nl body_element)* nls;
 
 atom: '(' nls expr nls ')' #atom_nested
-    | NUMBER #operation_number
     | (tt=ID)? STRING #operation_string
     | id=ID #atom_subject
     | object=atom nls '.' nls id=ID #atom_get
@@ -19,7 +18,8 @@ object_arg: id=ID nls '=' nls expr;
 dict_arg: (key_number=NUMBER | key_string=STRING) nls '=' nls expr;
 call_arg: (id=ID nls '=' nls)? expr;
 
-operation: atom #operation_atom
+operation: NUMBER #operation_number
+         | atom #operation_atom
          | '(' nls (object_arg (nls ',' nls object_arg)*)? nls ')' #operation_object
          | '[' nls (dict_arg nls (nls ',' nls dict_arg)*)? nls ']' #operation_dict
          | '[' nls (expr nls (nls ',' nls expr)*)? nls ']' #operation_array

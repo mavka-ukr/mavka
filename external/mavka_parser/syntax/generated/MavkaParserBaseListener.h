@@ -34,9 +34,6 @@ public:
   virtual void enterAtom_subject(MavkaParser::Atom_subjectContext * /*ctx*/) override { }
   virtual void exitAtom_subject(MavkaParser::Atom_subjectContext * /*ctx*/) override { }
 
-  virtual void enterOperation_number(MavkaParser::Operation_numberContext * /*ctx*/) override { }
-  virtual void exitOperation_number(MavkaParser::Operation_numberContext * /*ctx*/) override { }
-
   virtual void enterAtom_position_get(MavkaParser::Atom_position_getContext * /*ctx*/) override { }
   virtual void exitAtom_position_get(MavkaParser::Atom_position_getContext * /*ctx*/) override { }
 
@@ -135,6 +132,9 @@ public:
 
   virtual void enterOperation_lshift(MavkaParser::Operation_lshiftContext * /*ctx*/) override { }
   virtual void exitOperation_lshift(MavkaParser::Operation_lshiftContext * /*ctx*/) override { }
+
+  virtual void enterOperation_number(MavkaParser::Operation_numberContext * /*ctx*/) override { }
+  virtual void exitOperation_number(MavkaParser::Operation_numberContext * /*ctx*/) override { }
 
   virtual void enterOperation_and(MavkaParser::Operation_andContext * /*ctx*/) override { }
   virtual void exitOperation_and(MavkaParser::Operation_andContext * /*ctx*/) override { }
