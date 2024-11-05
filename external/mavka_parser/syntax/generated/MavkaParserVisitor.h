@@ -43,6 +43,8 @@ public:
 
     virtual std::any visitOperation_gte(MavkaParser::Operation_gteContext *context) = 0;
 
+    virtual std::any visitOperation_dict_empty(MavkaParser::Operation_dict_emptyContext *context) = 0;
+
     virtual std::any visitOperation_dict(MavkaParser::Operation_dictContext *context) = 0;
 
     virtual std::any visitOperation_neq(MavkaParser::Operation_neqContext *context) = 0;

@@ -334,6 +334,21 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
+  class  Operation_dict_emptyContext : public OperationContext {
+  public:
+    Operation_dict_emptyContext(OperationContext *ctx);
+
+    antlr4::tree::TerminalNode *BRACKET_OPEN();
+    std::vector<NlsContext *> nls();
+    NlsContext* nls(size_t i);
+    antlr4::tree::TerminalNode *EQUAL();
+    antlr4::tree::TerminalNode *BRACKET_CLOSE();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
   class  Operation_dictContext : public OperationContext {
   public:
     Operation_dictContext(OperationContext *ctx);

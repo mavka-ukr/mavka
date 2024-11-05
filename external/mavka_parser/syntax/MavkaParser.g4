@@ -21,6 +21,7 @@ call_arg: (id=ID nls '=' nls)? expr;
 operation: NUMBER #operation_number
          | atom #operation_atom
          | '(' nls (object_arg (nls ',' nls object_arg)*)? nls ')' #operation_object
+         | '[' nls '=' nls ']' #operation_dict_empty
          | '[' nls (dict_arg nls (nls ',' nls dict_arg)*)? nls ']' #operation_dict
          | '[' nls (expr nls (nls ',' nls expr)*)? nls ']' #operation_array
          | left=operation nls op='як' nls (right_type=type) #operation_as

@@ -63,6 +63,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitOperation_dict_empty(MavkaParser::Operation_dict_emptyContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitOperation_dict(MavkaParser::Operation_dictContext *ctx) override {
     return visitChildren(ctx);
   }
