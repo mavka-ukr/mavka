@@ -52,6 +52,9 @@ public:
   virtual void enterOperation_gte(MavkaParser::Operation_gteContext * /*ctx*/) override { }
   virtual void exitOperation_gte(MavkaParser::Operation_gteContext * /*ctx*/) override { }
 
+  virtual void enterOperation_dict_empty(MavkaParser::Operation_dict_emptyContext * /*ctx*/) override { }
+  virtual void exitOperation_dict_empty(MavkaParser::Operation_dict_emptyContext * /*ctx*/) override { }
+
   virtual void enterOperation_dict(MavkaParser::Operation_dictContext * /*ctx*/) override { }
   virtual void exitOperation_dict(MavkaParser::Operation_dictContext * /*ctx*/) override { }
 
