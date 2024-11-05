@@ -228,11 +228,20 @@ namespace mavka::parser {
   std::any MavkaASTVisitor::visitAtom_call(MavkaParser::Atom_callContext* ctx) {
     const auto асд_дані_виконати = new АСДДаніВиконати();
     асд_дані_виконати->обʼєкт = AAV(visitContext(ctx->object));
-    std::vector<АСДЗначення*> arguments;
+    std::vector<Аргумент*> arguments;
     for (const auto& argument : ctx->call_arg()) {
-      arguments.push_back(AAV(visitContext(argument->expr())));
+      auto arg = new Аргумент();
+      if (argument->id) {
+        arg->ідентифікатор = ІД(this, argument->id, argument->id->getText());
+      } else {
+        arg->ідентифікатор = nullptr;
+      }
+      arg->значення = AAV(visitContext(argument->expr()));
+      arg->місцезнаходження = LOC(this, argument);
+      arguments.push_back(arg);
     }
-    асд_дані_виконати->аргументи = AAVecToList(arguments);
+    асд_дані_виконати->кількість_аргументів = arguments.size();
+    асд_дані_виконати->аргументи = VecToArr(arguments);
     return AV(this, ctx, АСДВидВиконати, асд_дані_виконати);
   }
 

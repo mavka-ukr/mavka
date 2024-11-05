@@ -17,7 +17,7 @@ atom: '(' nls expr nls ')' #atom_nested
     | object=atom '(' nls (call_arg nls (nls ',' nls call_arg)*)? nls ')' #atom_call;
 object_arg: id=ID nls '=' nls expr;
 dict_arg: (key_number=NUMBER | key_string=STRING) nls '=' nls expr;
-call_arg: (id=ID nls '=' nls expr) | expr;
+call_arg: (id=ID nls '=' nls)? expr;
 
 operation: atom #operation_atom
          | '(' nls (object_arg (nls ',' nls object_arg)*)? nls ')' #operation_object

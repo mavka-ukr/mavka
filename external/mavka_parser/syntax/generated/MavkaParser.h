@@ -299,10 +299,10 @@ public:
     antlr4::Token *id = nullptr;
     Call_argContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    ExprContext *expr();
     std::vector<NlsContext *> nls();
     NlsContext* nls(size_t i);
     antlr4::tree::TerminalNode *EQUAL();
-    ExprContext *expr();
     antlr4::tree::TerminalNode *ID();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
