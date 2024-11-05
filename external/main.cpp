@@ -1,7 +1,7 @@
 // наразі змушені використовувати точку входу з C++
 // так як Ціль ще не дуже може зробити те що треба на Windows
 
-#include <string.h>
+#include <cstring>
 
 extern "C" int стартувати_мавку(int argc, unsigned char** argv);
 
