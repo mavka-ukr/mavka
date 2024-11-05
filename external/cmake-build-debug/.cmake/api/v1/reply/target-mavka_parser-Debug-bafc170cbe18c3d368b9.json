@@ -1,0 +1,141 @@
+{
+	"archive" : {},
+	"artifacts" : 
+	[
+		{
+			"path" : "mavka_parser/libmavka_parser.a"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"target_link_libraries",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"mavka_parser/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 15,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 18,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 17,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g -std=gnu++20 -fdiagnostics-color=always"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 3,
+					"path" : "/home/kohutd/CLionProjects/mavka-1.0.0/external/mavka_parser/."
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/kohutd/CLionProjects/mavka-1.0.0/external/mavka_parser/syntax/generated"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/kohutd/CLionProjects/mavka-1.0.0/external/mavka_parser/syntax/antlr4-cpp-runtime/src"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					1
+				],
+				"standard" : "20"
+			},
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 2,
+			"id" : "mavka_syntax::@206cc03b2a0c87e62774"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "antlr4_cpp_runtime::@3d6d7c675a58fb42248c"
+		}
+	],
+	"id" : "mavka_parser::@b5efcedfd77c289a630f",
+	"name" : "mavka_parser",
+	"nameOnDisk" : "libmavka_parser.a",
+	"paths" : 
+	{
+		"build" : "mavka_parser",
+		"source" : "mavka_parser"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "mavka_parser/tools.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "mavka_parser/parser.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "mavka_parser/visitor.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "STATIC_LIBRARY"
+}
