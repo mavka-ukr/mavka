@@ -1,0 +1,12 @@
+/home/kohutd/CLionProjects/mavka-1.0.0/external/cmake-build-debug/CMakeFiles/mavka_external.dir
+/home/kohutd/CLionProjects/mavka-1.0.0/external/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/kohutd/CLionProjects/mavka-1.0.0/external/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/kohutd/CLionProjects/mavka-1.0.0/external/cmake-build-debug/mavka_parser/CMakeFiles/mavka_parser.dir
+/home/kohutd/CLionProjects/mavka-1.0.0/external/cmake-build-debug/mavka_parser/CMakeFiles/edit_cache.dir
+/home/kohutd/CLionProjects/mavka-1.0.0/external/cmake-build-debug/mavka_parser/CMakeFiles/rebuild_cache.dir
+/home/kohutd/CLionProjects/mavka-1.0.0/external/cmake-build-debug/mavka_parser/syntax/CMakeFiles/mavka_syntax.dir
+/home/kohutd/CLionProjects/mavka-1.0.0/external/cmake-build-debug/mavka_parser/syntax/CMakeFiles/edit_cache.dir
+/home/kohutd/CLionProjects/mavka-1.0.0/external/cmake-build-debug/mavka_parser/syntax/CMakeFiles/rebuild_cache.dir
+/home/kohutd/CLionProjects/mavka-1.0.0/external/cmake-build-debug/mavka_parser/syntax/antlr4-cpp-runtime/CMakeFiles/antlr4_cpp_runtime.dir
+/home/kohutd/CLionProjects/mavka-1.0.0/external/cmake-build-debug/mavka_parser/syntax/antlr4-cpp-runtime/CMakeFiles/edit_cache.dir
+/home/kohutd/CLionProjects/mavka-1.0.0/external/cmake-build-debug/mavka_parser/syntax/antlr4-cpp-runtime/CMakeFiles/rebuild_cache.dir

@@ -16,4 +16,4 @@ clang++ -o мавка \
   build/external/libmavka_external.a \
   build/external/mavka_parser/libmavka_parser.a \
   build/external/mavka_parser/syntax/libmavka_syntax.a \
-  build/external/mavka_parser/syntax/antlr4-cpp-runtime/runtime/libantlr4_cpp_runtime.a
+  build/external/mavka_parser/syntax/antlr4-cpp-runtime/libantlr4_cpp_runtime.a

@@ -1,0 +1,172 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.26"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						1
+					]
+				},
+				{
+					"build" : "mavka_parser",
+					"childIndexes" : 
+					[
+						2
+					],
+					"jsonFile" : "directory-mavka_parser-Debug-6e3135f26fd2afdeba1e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.26"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "mavka_parser",
+					"targetIndexes" : 
+					[
+						2
+					]
+				},
+				{
+					"build" : "mavka_parser/syntax",
+					"childIndexes" : 
+					[
+						3
+					],
+					"jsonFile" : "directory-mavka_parser.syntax-Debug-0d486d4b79a4ed95bb11.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.26"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 2,
+					"source" : "mavka_parser/syntax",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "mavka_parser/syntax/antlr4-cpp-runtime",
+					"jsonFile" : "directory-mavka_parser.syntax.antlr4-cpp-runtime-Debug-cf2cab358c0fa4719302.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.26"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "mavka_parser/syntax/antlr4-cpp-runtime",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "mavka_external",
+					"targetIndexes" : 
+					[
+						1
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						2
+					],
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "mavka_parser",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						2
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2,
+						3
+					],
+					"name" : "mavka_syntax",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						0,
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 3,
+					"id" : "antlr4_cpp_runtime::@3d6d7c675a58fb42248c",
+					"jsonFile" : "target-antlr4_cpp_runtime-Debug-161c6d7654d66b01d7c1.json",
+					"name" : "antlr4_cpp_runtime",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "mavka_external::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-mavka_external-Debug-86640c9c70caf294cd62.json",
+					"name" : "mavka_external",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "mavka_parser::@b5efcedfd77c289a630f",
+					"jsonFile" : "target-mavka_parser-Debug-bafc170cbe18c3d368b9.json",
+					"name" : "mavka_parser",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "mavka_syntax::@206cc03b2a0c87e62774",
+					"jsonFile" : "target-mavka_syntax-Debug-dc79fe6b2202cff840b0.json",
+					"name" : "mavka_syntax",
+					"projectIndex" : 2
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/kohutd/CLionProjects/mavka-1.0.0/external/cmake-build-debug",
+		"source" : "/home/kohutd/CLionProjects/mavka-1.0.0/external"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

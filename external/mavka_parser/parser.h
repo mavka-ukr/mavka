@@ -6,10 +6,10 @@
 #include <string>
 #include <vector>
 
-#include "syntax/antlr4-cpp-runtime/runtime/src/antlr4-runtime.h"
-#include "syntax/source/MavkaLexer.h"
-#include "syntax/source/MavkaParser.h"
-#include "syntax/source/MavkaParserBaseVisitor.h"
+#include "syntax/antlr4-cpp-runtime/src/antlr4-runtime.h"
+#include "syntax/generated/MavkaLexer.h"
+#include "syntax/generated/MavkaParser.h"
+#include "syntax/generated/MavkaParserBaseVisitor.h"
 #include "tools.h"
 #include "розбирач.h"
 
