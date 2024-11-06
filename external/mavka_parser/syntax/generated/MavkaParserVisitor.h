@@ -151,6 +151,8 @@ public:
 
     virtual std::any visitType(MavkaParser::TypeContext *context) = 0;
 
+    virtual std::any visitTypes(MavkaParser::TypesContext *context) = 0;
+
     virtual std::any visitParam(MavkaParser::ParamContext *context) = 0;
 
     virtual std::any visitTake(MavkaParser::TakeContext *context) = 0;

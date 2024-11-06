@@ -214,6 +214,9 @@ public:
   virtual void enterType(MavkaParser::TypeContext * /*ctx*/) override { }
   virtual void exitType(MavkaParser::TypeContext * /*ctx*/) override { }
 
+  virtual void enterTypes(MavkaParser::TypesContext * /*ctx*/) override { }
+  virtual void exitTypes(MavkaParser::TypesContext * /*ctx*/) override { }
+
   virtual void enterParam(MavkaParser::ParamContext * /*ctx*/) override { }
   virtual void exitParam(MavkaParser::ParamContext * /*ctx*/) override { }
 

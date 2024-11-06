@@ -67,7 +67,7 @@ expr: operation #expr_operation;
 structure_define: 'структура' id=ID ('є' s_parent=atom)? nl (structure_element nls (nl nls structure_element)*)? nls 'кінець';
 structure_element: param;
 
-diia_define: (d_async='тривала')? (d_spec='спец')? 'дія' ((d_structure=atom '.')? d_name=ID)? '(' nls (diia_param nls (',' nls diia_param)*)? nls ')' (d_type=type)? nl (d_body=body nl)? nls 'кінець';
+diia_define: (d_async='тривала')? (d_spec='спец')? 'дія' ((d_structure=atom '.')? d_name=ID)? '(' nls (diia_param nls (',' nls diia_param)*)? nls ')' (d_type=types)? nl (d_body=body nl)? nls 'кінець';
 diia_param: param;
 
 assign: id=ID (simpleas='=' | (parentas=':' '=')) (value_expr=expr);
@@ -93,8 +93,9 @@ body_element: structure_define
 return: 'вернути' (value_expr=expr)?;
 
 type: atom;
+types: type (nls 'або' nls type)*;
 
-param: id=ID (type)? ('=' expr)?;
+param: id=ID (types)? ('=' expr)?;
 
 take: 'взяти' (type_id=ID)? take_element ('.' take_element)*;
 take_element: ID | STRING;
