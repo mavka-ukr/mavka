@@ -562,7 +562,7 @@ namespace mavka::parser {
     if (ctx->body()) {
       асд_дані_дія->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
     } else {
-      асд_дані_дія->тіло = nullptr;
+      асд_дані_дія->тіло = AAVecToList({});
     }
     const auto асд_значення_дія = AV(this, ctx, АСДВидДія, асд_дані_дія);
     return асд_значення_дія;
