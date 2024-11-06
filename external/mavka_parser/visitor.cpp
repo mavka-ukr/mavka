@@ -174,6 +174,9 @@ namespace mavka::parser {
     if (const auto ctx = dynamic_cast<MavkaParser::ReturnContext*>(context)) {
       return visitReturn(ctx);
     }
+    if (const auto ctx = dynamic_cast<MavkaParser::TypeContext*>(context)) {
+      return visitType(ctx);
+    }
     if (const auto ctx = dynamic_cast<MavkaParser::ParamContext*>(context)) {
       return visitParam(ctx);
     }
@@ -658,6 +661,10 @@ namespace mavka::parser {
       асд_дані_вернути->значення = nullptr;
     }
     return AV(this, ctx, АСДВидВернути, асд_дані_вернути);
+  }
+
+  std::any MavkaASTVisitor::visitType(MavkaParser::TypeContext* ctx) {
+    return visitContext(ctx->atom());
   }
 
   std::any MavkaASTVisitor::visitParam(MavkaParser::ParamContext* ctx) {
