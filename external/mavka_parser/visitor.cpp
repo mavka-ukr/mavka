@@ -273,6 +273,8 @@ namespace mavka::parser {
     const auto асд_дані_текст = new АСДДаніТекст();
     if (ctx->tt != nullptr) {
       асд_дані_текст->ідентифікатор = ІД(this, ctx->tt, ctx->tt->getText());
+    } else {
+      асд_дані_текст->ідентифікатор = nullptr;
     }
     асд_дані_текст->значення =
         strdup(ctx->STRING()
