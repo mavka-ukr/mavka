@@ -279,6 +279,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitTypes(MavkaParser::TypesContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitParam(MavkaParser::ParamContext *ctx) override {
     return visitChildren(ctx);
   }

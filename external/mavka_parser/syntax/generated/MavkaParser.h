@@ -36,8 +36,8 @@ public:
     RuleExpr = 17, RuleStructure_define = 18, RuleStructure_element = 19, 
     RuleDiia_define = 20, RuleDiia_param = 21, RuleAssign = 22, RuleSet = 23, 
     RulePosition_set = 24, RuleIf = 25, RuleWhile = 26, RuleBody = 27, RuleBody_element = 28, 
-    RuleReturn = 29, RuleType = 30, RuleParam = 31, RuleTake = 32, RuleTake_element = 33, 
-    RuleNl = 34, RuleNls = 35
+    RuleReturn = 29, RuleType = 30, RuleTypes = 31, RuleParam = 32, RuleTake = 33, 
+    RuleTake_element = 34, RuleNl = 35, RuleNls = 36
   };
 
   explicit MavkaParser(antlr4::TokenStream *input);
@@ -88,6 +88,7 @@ public:
   class Body_elementContext;
   class ReturnContext;
   class TypeContext;
+  class TypesContext;
   class ParamContext;
   class TakeContext;
   class Take_elementContext;
@@ -1081,7 +1082,7 @@ public:
     antlr4::Token *d_spec = nullptr;
     MavkaParser::AtomContext *d_structure = nullptr;
     antlr4::Token *d_name = nullptr;
-    MavkaParser::TypeContext *d_type = nullptr;
+    MavkaParser::TypesContext *d_type = nullptr;
     MavkaParser::BodyContext *d_body = nullptr;
     Diia_defineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
@@ -1098,7 +1099,7 @@ public:
     antlr4::tree::TerminalNode *KW_ASYNC();
     antlr4::tree::TerminalNode *KW_SPEC();
     antlr4::tree::TerminalNode *ID();
-    TypeContext *type();
+    TypesContext *types();
     BodyContext *body();
     antlr4::tree::TerminalNode *DOT();
     std::vector<antlr4::tree::TerminalNode *> COMA();
@@ -1319,13 +1320,33 @@ public:
 
   TypeContext* type();
 
+  class  TypesContext : public antlr4::ParserRuleContext {
+  public:
+    TypesContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    std::vector<TypeContext *> type();
+    TypeContext* type(size_t i);
+    std::vector<NlsContext *> nls();
+    NlsContext* nls(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> KW_OR();
+    antlr4::tree::TerminalNode* KW_OR(size_t i);
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  TypesContext* types();
+
   class  ParamContext : public antlr4::ParserRuleContext {
   public:
     antlr4::Token *id = nullptr;
     ParamContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *ID();
-    TypeContext *type();
+    TypesContext *types();
     antlr4::tree::TerminalNode *EQUAL();
     ExprContext *expr();
 

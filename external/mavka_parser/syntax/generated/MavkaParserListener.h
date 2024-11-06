@@ -212,6 +212,9 @@ public:
   virtual void enterType(MavkaParser::TypeContext *ctx) = 0;
   virtual void exitType(MavkaParser::TypeContext *ctx) = 0;
 
+  virtual void enterTypes(MavkaParser::TypesContext *ctx) = 0;
+  virtual void exitTypes(MavkaParser::TypesContext *ctx) = 0;
+
   virtual void enterParam(MavkaParser::ParamContext *ctx) = 0;
   virtual void exitParam(MavkaParser::ParamContext *ctx) = 0;
 

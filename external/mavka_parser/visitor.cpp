@@ -554,11 +554,15 @@ namespace mavka::parser {
     }
     асд_дані_дія->кількість_параметрів = params.size();
     асд_дані_дія->параметри = VecToArr(params);
+
+    std::vector<АСДЗначення*> types;
     if (ctx->d_type) {
-      асд_дані_дія->тип_результату = AAV(visitContext(ctx->d_type));
-    } else {
-      асд_дані_дія->тип_результату = nullptr;
+      for (const auto& type : ctx->d_type->type()) {
+        types.push_back(AAV(visitContext(type)));
+      }
     }
+    асд_дані_дія->кількість_типів_результату = types.size();
+    асд_дані_дія->типи_результату = VecToArr(types);
     if (ctx->body()) {
       асд_дані_дія->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
     } else {
@@ -679,11 +683,14 @@ namespace mavka::parser {
     } else {
       параметр->ідентифікатор = nullptr;
     }
-    if (ctx->type()) {
-      параметр->тип = AAV(visitContext(ctx->type()));
-    } else {
-      параметр->тип = nullptr;
+    std::vector<АСДЗначення*> types;
+    if (ctx->types()) {
+      for (const auto& type : ctx->types()->type()) {
+        types.push_back(AAV(visitContext(type)));
+      }
     }
+    параметр->кількість_типів = types.size();
+    параметр->типи = VecToArr(types);
     if (ctx->expr()) {
       параметр->значення = AAV(visitContext(ctx->expr()));
     } else {
