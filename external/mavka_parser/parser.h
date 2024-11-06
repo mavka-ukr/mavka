@@ -185,6 +185,8 @@ namespace mavka::parser {
 
     std::any visitReturn(MavkaParser::ReturnContext* ctx) override;
 
+    std::any visitType(MavkaParser::TypeContext *ctx) override;
+
     std::any visitParam(MavkaParser::ParamContext* ctx) override;
 
     std::any visitTake(MavkaParser::TakeContext* ctx) override;
