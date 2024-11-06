@@ -676,9 +676,18 @@ namespace mavka::parser {
     const auto параметр = new Параметр();
     if (ctx->id) {
       параметр->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    } else {
+      параметр->ідентифікатор = nullptr;
     }
     if (ctx->type()) {
       параметр->тип = AAV(visitContext(ctx->type()));
+    } else {
+      параметр->тип = nullptr;
+    }
+    if (ctx->expr()) {
+      параметр->значення = AAV(visitContext(ctx->expr()));
+    } else {
+      параметр->значення = nullptr;
     }
     return параметр;
   }
