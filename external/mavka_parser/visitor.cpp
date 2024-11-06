@@ -525,6 +525,11 @@ namespace mavka::parser {
       MavkaParser::Structure_defineContext* ctx) {
     const auto асд_дані_структура = new АСДДаніСтруктура();
     асд_дані_структура->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    if (ctx->s_parent) {
+      асд_дані_структура->предок = AAV(visitContext(ctx->s_parent));
+    } else {
+      асд_дані_структура->предок = nullptr;
+    }
     std::vector<Параметр*> params;
     for (const auto& structureElement : ctx->structure_element()) {
       const auto any_param = visitParam(structureElement->param());
