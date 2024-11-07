@@ -183,6 +183,12 @@ namespace mavka::parser {
     if (const auto ctx = dynamic_cast<MavkaParser::TakeContext*>(context)) {
       return visitTake(ctx);
     }
+    if (const auto ctx = dynamic_cast<MavkaParser::TryContext*>(context)) {
+      return visitTry(ctx);
+    }
+    if (const auto ctx = dynamic_cast<MavkaParser::ThrowContext*>(context)) {
+      return visitThrow(ctx);
+    }
     std::cout << "[PARSER] Unknown context: " << context->getText()
               << std::endl;
     return nullptr;
@@ -658,6 +664,12 @@ namespace mavka::parser {
     if (ctx->take() != nullptr) {
       return visitTake(ctx->take());
     }
+    if (ctx->try_() != nullptr) {
+      return visitTry(ctx->try_());
+    }
+    if (ctx->throw_() != nullptr) {
+      return visitThrow(ctx->throw_());
+    }
     std::cout << "Unknown body element" << std::endl;
     return nullptr;
   }
@@ -711,4 +723,35 @@ namespace mavka::parser {
     return AV(this, ctx, АСДВидВзяти, асд_дані_взяти);
   }
 
+  std::any MavkaASTVisitor::visitTry(MavkaParser::TryContext* ctx) {
+    const auto асд_дані_спробувати = new АСДДаніСпробувати();
+    if (ctx->t_body) {
+      асд_дані_спробувати->тіло = AAVecToList(AAVec(visitBody(ctx->t_body)));
+    } else {
+      асд_дані_спробувати->тіло = AAVecToList({});
+    }
+    if (ctx->t_name) {
+      асд_дані_спробувати->ідентифікатор_зловити =
+          ІД(this, ctx->t_name, ctx->t_name->getText());
+    } else {
+      асд_дані_спробувати->ідентифікатор_зловити = nullptr;
+    }
+    if (ctx->t_catch_body) {
+      асд_дані_спробувати->тіло_зловити =
+          AAVecToList(AAVec(visitBody(ctx->t_catch_body)));
+    } else {
+      асд_дані_спробувати->тіло_зловити = AAVecToList({});
+    }
+    return AV(this, ctx, АСДВидСпробувати, асд_дані_спробувати);
+  }
+
+  std::any MavkaASTVisitor::visitThrow(MavkaParser::ThrowContext* ctx) {
+    const auto асд_дані_впасти = new АСДДаніВпасти();
+    if (ctx->t_value) {
+      асд_дані_впасти->значення = AAV(visitContext(ctx->t_value));
+    } else {
+      асд_дані_впасти->значення = nullptr;
+    }
+    return AV(this, ctx, АСДВидВпасти, асд_дані_впасти);
+  }
 } // namespace mavka::parser

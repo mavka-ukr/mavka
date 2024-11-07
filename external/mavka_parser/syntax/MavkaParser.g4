@@ -89,6 +89,8 @@ body_element: structure_define
             | while
             | expr
             | return
+            | try
+            | throw
             | take;
 return: 'вернути' (value_expr=expr)?;
 
@@ -99,6 +101,9 @@ param: id=ID (types)? ('=' expr)?;
 
 take: 'взяти' (type_id=ID)? take_element ('.' take_element)*;
 take_element: ID | STRING;
+
+try: 'спробувати' nl (t_body=body nl)? 'зловити' (t_name=ID)? nl (t_catch_body=body nl)? 'кінець';
+throw: 'впасти' (t_value=expr)?;
 
 nl: NL+;
 nls: NL*;

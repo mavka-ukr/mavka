@@ -226,6 +226,12 @@ public:
   virtual void enterTake_element(MavkaParser::Take_elementContext * /*ctx*/) override { }
   virtual void exitTake_element(MavkaParser::Take_elementContext * /*ctx*/) override { }
 
+  virtual void enterTry(MavkaParser::TryContext * /*ctx*/) override { }
+  virtual void exitTry(MavkaParser::TryContext * /*ctx*/) override { }
+
+  virtual void enterThrow(MavkaParser::ThrowContext * /*ctx*/) override { }
+  virtual void exitThrow(MavkaParser::ThrowContext * /*ctx*/) override { }
+
   virtual void enterNl(MavkaParser::NlContext * /*ctx*/) override { }
   virtual void exitNl(MavkaParser::NlContext * /*ctx*/) override { }
 

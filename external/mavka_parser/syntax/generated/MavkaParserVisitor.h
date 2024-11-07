@@ -159,6 +159,10 @@ public:
 
     virtual std::any visitTake_element(MavkaParser::Take_elementContext *context) = 0;
 
+    virtual std::any visitTry(MavkaParser::TryContext *context) = 0;
+
+    virtual std::any visitThrow(MavkaParser::ThrowContext *context) = 0;
+
     virtual std::any visitNl(MavkaParser::NlContext *context) = 0;
 
     virtual std::any visitNls(MavkaParser::NlsContext *context) = 0;

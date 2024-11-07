@@ -185,11 +185,15 @@ namespace mavka::parser {
 
     std::any visitReturn(MavkaParser::ReturnContext* ctx) override;
 
-    std::any visitType(MavkaParser::TypeContext *ctx) override;
+    std::any visitType(MavkaParser::TypeContext* ctx) override;
 
     std::any visitParam(MavkaParser::ParamContext* ctx) override;
 
     std::any visitTake(MavkaParser::TakeContext* ctx) override;
+
+    std::any visitTry(MavkaParser::TryContext* ctx) override;
+
+    std::any visitThrow(MavkaParser::ThrowContext* ctx) override;
   };
 
   class MavkaParserErrorListener final : public antlr4::BaseErrorListener {
