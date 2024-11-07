@@ -619,7 +619,11 @@ namespace mavka::parser {
   std::any MavkaASTVisitor::visitWhile(MavkaParser::WhileContext* ctx) {
     const auto асд_дані_поки = new АСДДаніПоки();
     асд_дані_поки->умова = AAV(visitContext(ctx->cond));
-    асд_дані_поки->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
+    if (ctx->body()) {
+      асд_дані_поки->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
+    } else {
+      асд_дані_поки->тіло = AAVecToList({});
+    }
     return AV(this, ctx, АСДВидПоки, асд_дані_поки);
   }
 
