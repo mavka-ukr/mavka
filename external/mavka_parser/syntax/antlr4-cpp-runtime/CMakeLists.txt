@@ -138,6 +138,8 @@ set(ANTLR4_CPP_RUNTIME_SRC
         src/tree/xpath/XPathWildcardElement.cpp
 )
 
+add_definitions(-DANTLR4CPP_STATIC)
+
 add_library(${ANTLR4_CPP_RUNTIME} ${ANTLR4_CPP_RUNTIME_SRC})
 
 target_include_directories(${ANTLR4_CPP_RUNTIME} PUBLIC src)

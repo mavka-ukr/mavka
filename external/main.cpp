@@ -1,8 +1,6 @@
 // наразі змушені використовувати точку входу з C++
 // так як Ціль ще не дуже може зробити те що треба на Windows
 
-#include <cstring>
-
 extern "C" int стартувати_мавку(int argc, unsigned char** argv);
 
 #ifdef _WIN32
@@ -14,8 +12,8 @@ int wmain(int argc, wchar_t** argv) {
   for (int i = 0; i < argc; i++) {
     int len = WideCharToMultiByte(CP_UTF8, 0, argv[i], -1, NULL, 0, NULL, NULL);
     argv8[i] = new unsigned char[len];
-    WideCharToMultiByte(CP_UTF8, 0, argv[i], -1, reinterpret_cast<char*>(argv8[i]), len, NULL,
-                        NULL);
+    WideCharToMultiByte(CP_UTF8, 0, argv[i], -1,
+                        reinterpret_cast<char*>(argv8[i]), len, NULL, NULL);
     argc8++;
   }
   int ret = стартувати_мавку(argc8, argv8);

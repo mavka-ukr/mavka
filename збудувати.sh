@@ -2,6 +2,15 @@
 set -e
 set -x
 
+export CC="clang"
+export CXX="clang++"
+export AR="llvm-ar"
+export RANLIB="llvm-ranlib"
+#export CC="zig cc -target x86_64-windows"
+#export CXX="zig c++ -target x86_64-windows"
+#export AR="zig ar -target x86_64-windows"
+#export RANLIB="zig ranlib -target-x86_64-windows"
+
 mkdir -p build/external
 cd build/external
 cmake ../../external -G Ninja -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always
@@ -23,7 +32,7 @@ cd -
 ціль .плавлення/МаМа/СкладенийОбʼєкт.ll скомпілювати МаМа/СкладенийОбʼєкт.ц
 ціль .плавлення/МаМа/Утилізатор.ll скомпілювати МаМа/Утилізатор.ц
 ціль .плавлення/старт.ll скомпілювати старт.ц
-clang++ -o build/мавка \
+$CXX -o build/мавка \
   .плавлення/мавка/компілятор.ll \
   .плавлення/МаМа/БазаНазв.ll \
   .плавлення/МаМа/Код.ll \
