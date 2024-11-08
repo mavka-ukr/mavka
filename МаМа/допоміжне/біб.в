@@ -3,6 +3,8 @@
 зовнішня дія mavka_sysext_realloc(ptr: адреса, size: size_t): адреса;
 зовнішня дія mavka_sysext_putchar(value: char): int;
 
+зовнішня дія strcmp(str1: адреса<п8>, str2: адреса<п8>): ц32;
+
 синонім памʼять<Т> = адреса<Т>;
 
 дія виділити<Т>(): адреса<Т>;
