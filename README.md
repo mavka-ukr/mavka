@@ -3,7 +3,7 @@
 Для будування треба:
 
 - Ціль >= 0.24.0
-- Clang або Zig
+- Clang
 - Ninja
 - Linux (на Windows поки нема Цілі)
 
