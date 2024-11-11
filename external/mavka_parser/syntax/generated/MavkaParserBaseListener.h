@@ -229,6 +229,9 @@ public:
   virtual void enterGive(MavkaParser::GiveContext * /*ctx*/) override { }
   virtual void exitGive(MavkaParser::GiveContext * /*ctx*/) override { }
 
+  virtual void enterGive_element(MavkaParser::Give_elementContext * /*ctx*/) override { }
+  virtual void exitGive_element(MavkaParser::Give_elementContext * /*ctx*/) override { }
+
   virtual void enterTry(MavkaParser::TryContext * /*ctx*/) override { }
   virtual void exitTry(MavkaParser::TryContext * /*ctx*/) override { }
 

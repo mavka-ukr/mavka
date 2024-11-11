@@ -227,6 +227,9 @@ public:
   virtual void enterGive(MavkaParser::GiveContext *ctx) = 0;
   virtual void exitGive(MavkaParser::GiveContext *ctx) = 0;
 
+  virtual void enterGive_element(MavkaParser::Give_elementContext *ctx) = 0;
+  virtual void exitGive_element(MavkaParser::Give_elementContext *ctx) = 0;
+
   virtual void enterTry(MavkaParser::TryContext *ctx) = 0;
   virtual void exitTry(MavkaParser::TryContext *ctx) = 0;
 

@@ -299,6 +299,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitGive_element(MavkaParser::Give_elementContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitTry(MavkaParser::TryContext *ctx) override {
     return visitChildren(ctx);
   }
