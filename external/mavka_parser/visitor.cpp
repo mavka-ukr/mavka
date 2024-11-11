@@ -717,7 +717,11 @@ namespace mavka::parser {
 
   std::any MavkaASTVisitor::visitTake(MavkaParser::TakeContext* ctx) {
     const auto асд_дані_взяти = new АСДДаніВзяти();
-    асд_дані_взяти->тип = ІД(this, ctx->type_id, ctx->type_id->getText());
+    if (ctx->type_id) {
+      асд_дані_взяти->тип = ІД(this, ctx->type_id, ctx->type_id->getText());
+    } else {
+      асд_дані_взяти->тип = nullptr;
+    }
     std::vector<Ідентифікатор*> шлях;
     for (const auto& take_element : ctx->take_element()) {
       шлях.push_back(ІД(this, take_element, take_element->getText()));
