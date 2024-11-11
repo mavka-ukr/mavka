@@ -37,7 +37,8 @@ public:
     RuleDiia_define = 20, RuleDiia_param = 21, RuleAssign = 22, RuleSet = 23, 
     RulePosition_set = 24, RuleIf = 25, RuleWhile = 26, RuleBody = 27, RuleBody_element = 28, 
     RuleReturn = 29, RuleType = 30, RuleTypes = 31, RuleParam = 32, RuleTake = 33, 
-    RuleTake_element = 34, RuleTry = 35, RuleThrow = 36, RuleNl = 37, RuleNls = 38
+    RuleTake_element = 34, RuleGive = 35, RuleTry = 36, RuleThrow = 37, 
+    RuleNl = 38, RuleNls = 39
   };
 
   explicit MavkaParser(antlr4::TokenStream *input);
@@ -92,6 +93,7 @@ public:
   class ParamContext;
   class TakeContext;
   class Take_elementContext;
+  class GiveContext;
   class TryContext;
   class ThrowContext;
   class NlContext;
@@ -1282,6 +1284,7 @@ public:
     TryContext *try_();
     ThrowContext *throw_();
     TakeContext *take();
+    GiveContext *give();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1399,6 +1402,23 @@ public:
   };
 
   Take_elementContext* take_element();
+
+  class  GiveContext : public antlr4::ParserRuleContext {
+  public:
+    antlr4::Token *id = nullptr;
+    GiveContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *KW_GIVE();
+    antlr4::tree::TerminalNode *ID();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  GiveContext* give();
 
   class  TryContext : public antlr4::ParserRuleContext {
   public:

@@ -189,6 +189,9 @@ namespace mavka::parser {
     if (const auto ctx = dynamic_cast<MavkaParser::ThrowContext*>(context)) {
       return visitThrow(ctx);
     }
+    if (const auto ctx = dynamic_cast<MavkaParser::GiveContext*>(context)) {
+      return visitGive(ctx);
+    }
     std::cout << "[PARSER] Unknown context: " << context->getText()
               << std::endl;
     return nullptr;
@@ -674,6 +677,9 @@ namespace mavka::parser {
     if (ctx->throw_() != nullptr) {
       return visitThrow(ctx->throw_());
     }
+    if (ctx->give() != nullptr) {
+      return visitGive(ctx->give());
+    }
     std::cout << "Unknown body element" << std::endl;
     return nullptr;
   }
@@ -761,5 +767,11 @@ namespace mavka::parser {
       асд_дані_впасти->значення = nullptr;
     }
     return AV(this, ctx, АСДВидВпасти, асд_дані_впасти);
+  }
+
+  std::any MavkaASTVisitor::visitGive(MavkaParser::GiveContext* ctx) {
+    const auto асд_дані_дати = new АСДДаніДати();
+    асд_дані_дати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    return AV(this, ctx, АСДВидДати, асд_дані_дати);
   }
 } // namespace mavka::parser
