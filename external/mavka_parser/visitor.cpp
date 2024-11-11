@@ -192,6 +192,9 @@ namespace mavka::parser {
     if (const auto ctx = dynamic_cast<MavkaParser::GiveContext*>(context)) {
       return visitGive(ctx);
     }
+    if (const auto ctx = dynamic_cast<MavkaParser::ModuleContext*>(context)) {
+      return visitModule(ctx);
+    }
     std::cout << "[PARSER] Unknown context: " << context->getText()
               << std::endl;
     return nullptr;
@@ -680,6 +683,9 @@ namespace mavka::parser {
     if (ctx->give() != nullptr) {
       return visitGive(ctx->give());
     }
+    if (ctx->module() != nullptr) {
+      return visitModule(ctx->module());
+    }
     std::cout << "Unknown body element" << std::endl;
     return nullptr;
   }
@@ -729,8 +735,8 @@ namespace mavka::parser {
       асд_дані_взяти->тип = nullptr;
     }
     std::vector<Ідентифікатор*> шлях;
-    for (const auto& take_element : ctx->take_element()) {
-      шлях.push_back(ІД(this, take_element, take_element->getText()));
+    for (const auto& take_part : ctx->take_part()) {
+      шлях.push_back(ІД(this, take_part, take_part->getText()));
     }
     асд_дані_взяти->довжина_шляху = шлях.size();
     асд_дані_взяти->шлях = VecToArr(шлях);
@@ -788,5 +794,20 @@ namespace mavka::parser {
     асд_дані_дати->кількість_елементів = elements.size();
     асд_дані_дати->елементи = VecToArr(elements);
     return AV(this, ctx, АСДВидДати, асд_дані_дати);
+  }
+
+  std::any MavkaASTVisitor::visitModule(MavkaParser::ModuleContext* ctx) {
+    const auto асд_дані_модуль = new АСДДаніМодуль();
+    if (ctx->id) {
+      асд_дані_модуль->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    } else {
+      асд_дані_модуль->ідентифікатор = nullptr;
+    }
+    if (ctx->body_) {
+      асд_дані_модуль->тіло = AAVecToList(AAVec(visitBody(ctx->body_)));
+    } else {
+      асд_дані_модуль->тіло = AAVecToList({});
+    }
+    return AV(this, ctx, АСДВидМодуль, асд_дані_модуль);
   }
 } // namespace mavka::parser

@@ -211,6 +211,9 @@ public:
   virtual void enterReturn(MavkaParser::ReturnContext * /*ctx*/) override { }
   virtual void exitReturn(MavkaParser::ReturnContext * /*ctx*/) override { }
 
+  virtual void enterModule(MavkaParser::ModuleContext * /*ctx*/) override { }
+  virtual void exitModule(MavkaParser::ModuleContext * /*ctx*/) override { }
+
   virtual void enterType(MavkaParser::TypeContext * /*ctx*/) override { }
   virtual void exitType(MavkaParser::TypeContext * /*ctx*/) override { }
 
@@ -223,8 +226,8 @@ public:
   virtual void enterTake(MavkaParser::TakeContext * /*ctx*/) override { }
   virtual void exitTake(MavkaParser::TakeContext * /*ctx*/) override { }
 
-  virtual void enterTake_element(MavkaParser::Take_elementContext * /*ctx*/) override { }
-  virtual void exitTake_element(MavkaParser::Take_elementContext * /*ctx*/) override { }
+  virtual void enterTake_part(MavkaParser::Take_partContext * /*ctx*/) override { }
+  virtual void exitTake_part(MavkaParser::Take_partContext * /*ctx*/) override { }
 
   virtual void enterGive(MavkaParser::GiveContext * /*ctx*/) override { }
   virtual void exitGive(MavkaParser::GiveContext * /*ctx*/) override { }

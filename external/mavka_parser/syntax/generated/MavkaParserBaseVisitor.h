@@ -275,6 +275,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitModule(MavkaParser::ModuleContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitType(MavkaParser::TypeContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -291,7 +295,7 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitTake_element(MavkaParser::Take_elementContext *ctx) override {
+  virtual std::any visitTake_part(MavkaParser::Take_partContext *ctx) override {
     return visitChildren(ctx);
   }
 
