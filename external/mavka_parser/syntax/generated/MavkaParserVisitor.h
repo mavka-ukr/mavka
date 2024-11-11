@@ -149,6 +149,8 @@ public:
 
     virtual std::any visitReturn(MavkaParser::ReturnContext *context) = 0;
 
+    virtual std::any visitModule(MavkaParser::ModuleContext *context) = 0;
+
     virtual std::any visitType(MavkaParser::TypeContext *context) = 0;
 
     virtual std::any visitTypes(MavkaParser::TypesContext *context) = 0;
@@ -157,7 +159,7 @@ public:
 
     virtual std::any visitTake(MavkaParser::TakeContext *context) = 0;
 
-    virtual std::any visitTake_element(MavkaParser::Take_elementContext *context) = 0;
+    virtual std::any visitTake_part(MavkaParser::Take_partContext *context) = 0;
 
     virtual std::any visitGive(MavkaParser::GiveContext *context) = 0;
 

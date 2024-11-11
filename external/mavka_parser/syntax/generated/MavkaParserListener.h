@@ -209,6 +209,9 @@ public:
   virtual void enterReturn(MavkaParser::ReturnContext *ctx) = 0;
   virtual void exitReturn(MavkaParser::ReturnContext *ctx) = 0;
 
+  virtual void enterModule(MavkaParser::ModuleContext *ctx) = 0;
+  virtual void exitModule(MavkaParser::ModuleContext *ctx) = 0;
+
   virtual void enterType(MavkaParser::TypeContext *ctx) = 0;
   virtual void exitType(MavkaParser::TypeContext *ctx) = 0;
 
@@ -221,8 +224,8 @@ public:
   virtual void enterTake(MavkaParser::TakeContext *ctx) = 0;
   virtual void exitTake(MavkaParser::TakeContext *ctx) = 0;
 
-  virtual void enterTake_element(MavkaParser::Take_elementContext *ctx) = 0;
-  virtual void exitTake_element(MavkaParser::Take_elementContext *ctx) = 0;
+  virtual void enterTake_part(MavkaParser::Take_partContext *ctx) = 0;
+  virtual void exitTake_part(MavkaParser::Take_partContext *ctx) = 0;
 
   virtual void enterGive(MavkaParser::GiveContext *ctx) = 0;
   virtual void exitGive(MavkaParser::GiveContext *ctx) = 0;

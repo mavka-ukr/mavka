@@ -92,16 +92,19 @@ body_element: structure_define
             | try
             | throw
             | take
+            | module
             | give;
 return: 'вернути' (value_expr=expr)?;
+
+module: 'модуль' (id=ID)? nl (body_=body nl)? 'кінець';
 
 type: atom;
 types: type (nls 'або' nls type)*;
 
 param: id=ID (types)? ('=' expr)?;
 
-take: 'взяти' (type_id=ID)? take_element ('.' take_element)*;
-take_element: ID | STRING;
+take: 'взяти' (type_id=ID)? take_part ('.' take_part)*;
+take_part: ID | STRING;
 give: 'дати' give_element (nls ',' nls give_element)*;
 give_element: id=ID (nls 'як' nls as=ID)?;
 

@@ -36,9 +36,9 @@ public:
     RuleExpr = 17, RuleStructure_define = 18, RuleStructure_element = 19, 
     RuleDiia_define = 20, RuleDiia_param = 21, RuleAssign = 22, RuleSet = 23, 
     RulePosition_set = 24, RuleIf = 25, RuleWhile = 26, RuleBody = 27, RuleBody_element = 28, 
-    RuleReturn = 29, RuleType = 30, RuleTypes = 31, RuleParam = 32, RuleTake = 33, 
-    RuleTake_element = 34, RuleGive = 35, RuleGive_element = 36, RuleTry = 37, 
-    RuleThrow = 38, RuleNl = 39, RuleNls = 40
+    RuleReturn = 29, RuleModule = 30, RuleType = 31, RuleTypes = 32, RuleParam = 33, 
+    RuleTake = 34, RuleTake_part = 35, RuleGive = 36, RuleGive_element = 37, 
+    RuleTry = 38, RuleThrow = 39, RuleNl = 40, RuleNls = 41
   };
 
   explicit MavkaParser(antlr4::TokenStream *input);
@@ -88,11 +88,12 @@ public:
   class BodyContext;
   class Body_elementContext;
   class ReturnContext;
+  class ModuleContext;
   class TypeContext;
   class TypesContext;
   class ParamContext;
   class TakeContext;
-  class Take_elementContext;
+  class Take_partContext;
   class GiveContext;
   class Give_elementContext;
   class TryContext;
@@ -1285,6 +1286,7 @@ public:
     TryContext *try_();
     ThrowContext *throw_();
     TakeContext *take();
+    ModuleContext *module();
     GiveContext *give();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1312,6 +1314,28 @@ public:
   };
 
   ReturnContext* return_();
+
+  class  ModuleContext : public antlr4::ParserRuleContext {
+  public:
+    antlr4::Token *id = nullptr;
+    MavkaParser::BodyContext *body_ = nullptr;
+    ModuleContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *KW_MODULE();
+    std::vector<NlContext *> nl();
+    NlContext* nl(size_t i);
+    antlr4::tree::TerminalNode *KW_END();
+    antlr4::tree::TerminalNode *ID();
+    BodyContext *body();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  ModuleContext* module();
 
   class  TypeContext : public antlr4::ParserRuleContext {
   public:
@@ -1373,8 +1397,8 @@ public:
     TakeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *KW_TAKE();
-    std::vector<Take_elementContext *> take_element();
-    Take_elementContext* take_element(size_t i);
+    std::vector<Take_partContext *> take_part();
+    Take_partContext* take_part(size_t i);
     std::vector<antlr4::tree::TerminalNode *> DOT();
     antlr4::tree::TerminalNode* DOT(size_t i);
     antlr4::tree::TerminalNode *ID();
@@ -1388,9 +1412,9 @@ public:
 
   TakeContext* take();
 
-  class  Take_elementContext : public antlr4::ParserRuleContext {
+  class  Take_partContext : public antlr4::ParserRuleContext {
   public:
-    Take_elementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    Take_partContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *ID();
     antlr4::tree::TerminalNode *STRING();
@@ -1402,7 +1426,7 @@ public:
    
   };
 
-  Take_elementContext* take_element();
+  Take_partContext* take_part();
 
   class  GiveContext : public antlr4::ParserRuleContext {
   public:
