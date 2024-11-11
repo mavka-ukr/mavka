@@ -771,7 +771,22 @@ namespace mavka::parser {
 
   std::any MavkaASTVisitor::visitGive(MavkaParser::GiveContext* ctx) {
     const auto асд_дані_дати = new АСДДаніДати();
-    асд_дані_дати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    std::vector<ЕлементиДати*> elements;
+    for (const auto& element : ctx->give_element()) {
+      const auto елемент_дати = new ЕлементиДати();
+      елемент_дати->ідентифікатор =
+          ІД(this, element->id, element->id->getText());
+      if (element->as) {
+        елемент_дати->ідентифікатор_як =
+            ІД(this, element->as, element->as->getText());
+      } else {
+        елемент_дати->ідентифікатор_як = nullptr;
+      }
+      елемент_дати->місцезнаходження = LOC(this, element);
+      elements.push_back(елемент_дати);
+    }
+    асд_дані_дати->кількість_елементів = elements.size();
+    асд_дані_дати->елементи = VecToArr(elements);
     return AV(this, ctx, АСДВидДати, асд_дані_дати);
   }
 } // namespace mavka::parser

@@ -102,7 +102,8 @@ param: id=ID (types)? ('=' expr)?;
 
 take: 'взяти' (type_id=ID)? take_element ('.' take_element)*;
 take_element: ID | STRING;
-give: 'дати' id=ID;
+give: 'дати' give_element (nls ',' nls give_element)*;
+give_element: id=ID (nls 'як' nls as=ID)?;
 
 try: 'спробувати' nl (t_body=body nl)? 'зловити' (t_name=ID)? nl (t_catch_body=body nl)? 'кінець';
 throw: 'впасти' (t_value=expr)?;

@@ -161,6 +161,8 @@ public:
 
     virtual std::any visitGive(MavkaParser::GiveContext *context) = 0;
 
+    virtual std::any visitGive_element(MavkaParser::Give_elementContext *context) = 0;
+
     virtual std::any visitTry(MavkaParser::TryContext *context) = 0;
 
     virtual std::any visitThrow(MavkaParser::ThrowContext *context) = 0;
