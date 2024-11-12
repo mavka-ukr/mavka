@@ -181,7 +181,7 @@ void mavkaparserParserInitialize() {
   	5,67,0,0,153,154,3,82,41,0,154,155,5,39,0,0,155,156,3,82,41,0,156,157,
   	3,34,17,0,157,7,1,0,0,0,158,164,5,62,0,0,159,161,5,67,0,0,160,159,1,0,
   	0,0,160,161,1,0,0,0,161,162,1,0,0,0,162,164,5,69,0,0,163,158,1,0,0,0,
-  	163,160,1,0,0,0,164,165,1,0,0,0,165,166,3,82,41,0,166,167,5,39,0,0,167,
+  	163,160,1,0,0,0,164,165,1,0,0,0,165,166,3,82,41,0,166,167,5,56,0,0,167,
   	168,3,82,41,0,168,169,3,34,17,0,169,9,1,0,0,0,170,171,5,67,0,0,171,172,
   	3,82,41,0,172,173,5,39,0,0,173,174,3,82,41,0,174,176,1,0,0,0,175,170,
   	1,0,0,0,175,176,1,0,0,0,176,177,1,0,0,0,177,178,3,34,17,0,178,11,1,0,
@@ -191,7 +191,7 @@ void mavkaparserParserInitialize() {
   	194,1,0,0,0,192,190,1,0,0,0,192,193,1,0,0,0,193,196,1,0,0,0,194,192,1,
   	0,0,0,195,184,1,0,0,0,195,196,1,0,0,0,196,197,1,0,0,0,197,198,3,82,41,
   	0,198,199,5,52,0,0,199,257,1,0,0,0,200,201,5,53,0,0,201,202,3,82,41,0,
-  	202,203,5,39,0,0,203,204,3,82,41,0,204,205,5,54,0,0,205,257,1,0,0,0,206,
+  	202,203,5,56,0,0,203,204,3,82,41,0,204,205,5,54,0,0,205,257,1,0,0,0,206,
   	207,5,53,0,0,207,208,3,82,41,0,208,216,3,8,4,0,209,210,3,82,41,0,210,
   	211,5,61,0,0,211,212,3,82,41,0,212,213,3,8,4,0,213,215,1,0,0,0,214,209,
   	1,0,0,0,215,218,1,0,0,0,216,214,1,0,0,0,216,217,1,0,0,0,217,219,1,0,0,
@@ -1089,8 +1089,8 @@ MavkaParser::NlsContext* MavkaParser::Dict_argContext::nls(size_t i) {
   return getRuleContext<MavkaParser::NlsContext>(i);
 }
 
-tree::TerminalNode* MavkaParser::Dict_argContext::EQUAL() {
-  return getToken(MavkaParser::EQUAL, 0);
+tree::TerminalNode* MavkaParser::Dict_argContext::COLON() {
+  return getToken(MavkaParser::COLON, 0);
 }
 
 MavkaParser::ExprContext* MavkaParser::Dict_argContext::expr() {
@@ -1178,7 +1178,7 @@ MavkaParser::Dict_argContext* MavkaParser::dict_arg() {
     setState(165);
     nls();
     setState(166);
-    match(MavkaParser::EQUAL);
+    match(MavkaParser::COLON);
     setState(167);
     nls();
     setState(168);
@@ -1360,8 +1360,8 @@ MavkaParser::NlsContext* MavkaParser::Operation_dict_emptyContext::nls(size_t i)
   return getRuleContext<MavkaParser::NlsContext>(i);
 }
 
-tree::TerminalNode* MavkaParser::Operation_dict_emptyContext::EQUAL() {
-  return getToken(MavkaParser::EQUAL, 0);
+tree::TerminalNode* MavkaParser::Operation_dict_emptyContext::COLON() {
+  return getToken(MavkaParser::COLON, 0);
 }
 
 tree::TerminalNode* MavkaParser::Operation_dict_emptyContext::BRACKET_CLOSE() {
@@ -2650,7 +2650,7 @@ MavkaParser::OperationContext* MavkaParser::operation(int precedence) {
       setState(201);
       nls();
       setState(202);
-      match(MavkaParser::EQUAL);
+      match(MavkaParser::COLON);
       setState(203);
       nls();
       setState(204);
