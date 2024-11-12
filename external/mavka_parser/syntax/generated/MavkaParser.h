@@ -278,7 +278,7 @@ public:
     virtual size_t getRuleIndex() const override;
     std::vector<NlsContext *> nls();
     NlsContext* nls(size_t i);
-    antlr4::tree::TerminalNode *EQUAL();
+    antlr4::tree::TerminalNode *COLON();
     ExprContext *expr();
     antlr4::tree::TerminalNode *NUMBER();
     antlr4::tree::TerminalNode *STRING();
@@ -351,7 +351,7 @@ public:
     antlr4::tree::TerminalNode *BRACKET_OPEN();
     std::vector<NlsContext *> nls();
     NlsContext* nls(size_t i);
-    antlr4::tree::TerminalNode *EQUAL();
+    antlr4::tree::TerminalNode *COLON();
     antlr4::tree::TerminalNode *BRACKET_CLOSE();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
