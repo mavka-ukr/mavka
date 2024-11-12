@@ -195,6 +195,18 @@ namespace mavka::parser {
     if (const auto ctx = dynamic_cast<MavkaParser::ModuleContext*>(context)) {
       return visitModule(ctx);
     }
+    if (const auto ctx =
+            dynamic_cast<MavkaParser::Operation_arrayContext*>(context)) {
+      return visitOperation_array(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<MavkaParser::Operation_dictContext*>(context)) {
+      return visitOperation_dict(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<MavkaParser::Operation_dict_emptyContext*>(context)) {
+      return visitOperation_dict_empty(ctx);
+    }
     std::cout << "[PARSER] Unknown context: " << context->getText()
               << std::endl;
     return nullptr;
@@ -260,10 +272,9 @@ namespace mavka::parser {
     return AV(this, ctx, АСДВидВиконати, асд_дані_виконати);
   }
 
-  std::any MavkaASTVisitor::visitOperation_number(
-      MavkaParser::Operation_numberContext* ctx) {
+  std::any visitNumberText(MavkaASTVisitor* visitor, antlr4::Token* token) {
     const auto асд_дані_число = new АСДДаніЧисло();
-    auto value = ctx->getText();
+    auto value = token->getText();
     асд_дані_число->база = 0;
     асд_дані_число->значення = nullptr;
     асд_дані_число->дробове = false;
@@ -280,23 +291,32 @@ namespace mavka::parser {
       асд_дані_число->дробове = true;
     }
     асд_дані_число->значення = strdup(value.c_str());
-    return AV(this, ctx, АСДВидЧисло, асд_дані_число);
+    return AV(visitor, token, АСДВидЧисло, асд_дані_число);
+  }
+
+  std::any MavkaASTVisitor::visitOperation_number(
+      MavkaParser::Operation_numberContext* ctx) {
+    return visitNumberText(this, ctx->NUMBER()->getSymbol());
+  }
+
+  std::any visitStringText(MavkaASTVisitor* visitor,
+                           Ідентифікатор* ідентифікатор,
+                           antlr4::Token* token) {
+    const auto асд_дані_текст = new АСДДаніТекст();
+    асд_дані_текст->ідентифікатор = ідентифікатор;
+    асд_дані_текст->значення =
+        strdup(token->getText().substr(1, token->getText().size() - 2).c_str());
+    return AV(visitor, token, АСДВидТекст, асд_дані_текст);
   }
 
   std::any MavkaASTVisitor::visitOperation_string(
       MavkaParser::Operation_stringContext* ctx) {
-    const auto асд_дані_текст = new АСДДаніТекст();
     if (ctx->tt != nullptr) {
-      асд_дані_текст->ідентифікатор = ІД(this, ctx->tt, ctx->tt->getText());
+      return visitStringText(this, ІД(this, ctx->tt, ctx->tt->getText()),
+                             ctx->STRING()->getSymbol());
     } else {
-      асд_дані_текст->ідентифікатор = nullptr;
+      return visitStringText(this, nullptr, ctx->STRING()->getSymbol());
     }
-    асд_дані_текст->значення =
-        strdup(ctx->STRING()
-                   ->getText()
-                   .substr(1, ctx->STRING()->getText().size() - 2)
-                   .c_str());
-    return AV(this, ctx, АСДВидТекст, асд_дані_текст);
   }
 
   std::any MavkaASTVisitor::visitOperation_atom(
@@ -809,5 +829,58 @@ namespace mavka::parser {
       асд_дані_модуль->тіло = AAVecToList({});
     }
     return AV(this, ctx, АСДВидМодуль, асд_дані_модуль);
+  }
+
+  std::any MavkaASTVisitor::visitOperation_array(
+      MavkaParser::Operation_arrayContext* ctx) {
+    const auto асд_дані_список = new АСДДаніСписок();
+    std::vector<АСДЗначення*> elements;
+    for (const auto& element : ctx->expr()) {
+      elements.push_back(AAV(visitContext(element)));
+    }
+    асд_дані_список->кількість_елементів = elements.size();
+    асд_дані_список->елементи = VecToArr(elements);
+    return AV(this, ctx, АСДВидСписок, асд_дані_список);
+  }
+
+  std::any MavkaASTVisitor::visitOperation_dict(
+      MavkaParser::Operation_dictContext* ctx) {
+    const auto асд_дані_словник = new АСДДаніСловник();
+    std::vector<ЕлементСловника*> elements;
+    for (const auto& element : ctx->dict_arg()) {
+      const auto елемент_словника = new ЕлементСловника();
+      if (element->key_number) {
+        елемент_словника->ключ =
+            AAV(visitNumberText(this, element->key_number));
+      } else if (element->key_string) {
+        if (element->key_string_tt != nullptr) {
+          елемент_словника->ключ =
+              AAV(visitStringText(this,
+                                  ІД(this, element->key_string_tt,
+                                     element->key_string_tt->getText()),
+                                  element->key_string));
+        } else {
+          елемент_словника->ключ =
+              AAV(visitStringText(this, nullptr, element->key_string));
+        }
+      } else {
+        елемент_словника->ключ = nullptr;
+      }
+      елемент_словника->значення = AAV(visitContext(element->value));
+      елемент_словника->місцезнаходження = LOC(this, element);
+      elements.push_back(елемент_словника);
+    }
+    асд_дані_словник->кількість_елементів = elements.size();
+    асд_дані_словник->елементи = VecToArr(elements);
+    return AV(this, ctx, АСДВидСловник, асд_дані_словник);
+  }
+
+  std::any MavkaASTVisitor::visitOperation_dict_empty(
+      MavkaParser::Operation_dict_emptyContext* ctx) {
+    const auto асд_дані_словник = new АСДДаніСловник();
+    асд_дані_словник->кількість_елементів = 0;
+    std::vector<ЕлементСловника*> elements;
+    асд_дані_словник->елементи = VecToArr(elements);
+    return AV(this, ctx, АСДВидСловник, асд_дані_словник);
   }
 } // namespace mavka::parser

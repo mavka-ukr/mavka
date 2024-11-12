@@ -271,7 +271,9 @@ public:
   class  Dict_argContext : public antlr4::ParserRuleContext {
   public:
     antlr4::Token *key_number = nullptr;
+    antlr4::Token *key_string_tt = nullptr;
     antlr4::Token *key_string = nullptr;
+    MavkaParser::ExprContext *value = nullptr;
     Dict_argContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     std::vector<NlsContext *> nls();
@@ -280,6 +282,7 @@ public:
     ExprContext *expr();
     antlr4::tree::TerminalNode *NUMBER();
     antlr4::tree::TerminalNode *STRING();
+    antlr4::tree::TerminalNode *ID();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -363,9 +366,9 @@ public:
     antlr4::tree::TerminalNode *BRACKET_OPEN();
     std::vector<NlsContext *> nls();
     NlsContext* nls(size_t i);
-    antlr4::tree::TerminalNode *BRACKET_CLOSE();
     std::vector<Dict_argContext *> dict_arg();
     Dict_argContext* dict_arg(size_t i);
+    antlr4::tree::TerminalNode *BRACKET_CLOSE();
     std::vector<antlr4::tree::TerminalNode *> COMA();
     antlr4::tree::TerminalNode* COMA(size_t i);
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
