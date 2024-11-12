@@ -198,6 +198,15 @@ namespace mavka::parser {
     std::any visitGive(MavkaParser::GiveContext* ctx) override;
 
     std::any visitModule(MavkaParser::ModuleContext* ctx) override;
+
+    std::any visitOperation_array(
+        MavkaParser::Operation_arrayContext* ctx) override;
+
+    std::any visitOperation_dict(
+        MavkaParser::Operation_dictContext* ctx) override;
+
+    std::any visitOperation_dict_empty(
+        MavkaParser::Operation_dict_emptyContext* ctx) override;
   };
 
   class MavkaParserErrorListener final : public antlr4::BaseErrorListener {
