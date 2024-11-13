@@ -1,18 +1,18 @@
 § Контрибуторам
 
 Машина Мавки створюється та розповсюджується відкрито.
-Для ведення розробки використовується GitHub (https://github.com/tsil-ukr/tsil).
+Для ведення розробки використовується GitHub (https://github.com/mavka-ukr/mama).
 
 §§ Ви можете зробити внесок як розробник декількома способами:
 
 1. Issue на GitHub:
-https://github.com/tsil-ukr/tsil/issues
+https://github.com/mavka-ukr/mama/issues
 
 - За допомогою Issue ви можете повідомити про помилку, запропонувати ідею або покращення.
 - Рекомендується вам самим спробувати виправити цю помилку або втілити це покращення та створити Pull Request.
 
 2. Pull Request на GitHub:
-https://github.com/tsil-ukr/tsil/pulls
+https://github.com/mavka-ukr/mama/pulls
 
 - Ви можете внести зміни в код Машини Мавки та створити Pull Request.
 - Робіть лише ті зміни, які стосуються мети вашого Pull Request.
