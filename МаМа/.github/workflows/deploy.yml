@@ -1,0 +1,41 @@
+name: Static Deploy
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    name: Build and push to static repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: "mavka-ukr/mama-static"
+          path: ".будування-вебсайту/збудоване"
+          ssh-key: ${{ secrets.SSH_DEPLOY_KEY }}
+          persist-credentials: true
+      - uses: actions/checkout@v4
+        with:
+          repository: "mavka-ukr/website"
+          path: ".будування-вебсайту/.вебсайт"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: |
+          npm i -g xdocs
+          npm i -g sass
+          bash збудувати-вебсайт.sh
+          cd .будування-вебсайту/збудоване
+          git config --local user.name "kohutd"
+          git config --local user.email "davyd.kohut@gmail.com"
+          git add .
+          git commit -m "🧬"
+      - uses: ad-m/github-push-action@master
+        with:
+          branch: main
+          directory: ".будування-вебсайту/збудоване"
+          repository: "mavka-ukr/mama-static"
+          ssh: true
+          github_token: ${{ secrets.SSH_DEPLOY_KEY }}
