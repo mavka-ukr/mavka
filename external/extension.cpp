@@ -4,22 +4,6 @@
 #include <cstring>
 #include <locale>
 
-extern "C" void* mavka_sysext_malloc(size_t size) {
-  return malloc(size);
-}
-
-extern "C" void mavka_sysext_free(void* ptr) {
-  free(ptr);
-}
-
-extern "C" void* mavka_sysext_realloc(void* ptr, size_t size) {
-  return realloc(ptr, size);
-}
-
-extern "C" int mavka_sysext_putchar(unsigned char value) {
-  return putchar(value);
-}
-
 extern "C" unsigned char* прочитати_файл(unsigned char* шлях) {
   FILE* file = fopen((char*)шлях, "rb");
   if (file == nullptr) {
