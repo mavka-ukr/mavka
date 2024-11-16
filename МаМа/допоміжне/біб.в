@@ -7,9 +7,9 @@
 зовнішня дія realloc(ptr: адреса, size: size_t): адреса;
 зовнішня дія strcmp(str1: адреса<п8>, str2: адреса<п8>): int;
 зовнішня дія strlen(str: адреса<п8>): int;
-зовнішня дія mavka_convert_utf32_to_utf8(input: адреса<unsigned_int>): адреса<unsigned_char>;
-зовнішня дія mavka_print_utf8(value: адреса<unsigned_char>);
-зовнішня дія mavka_println_utf8(value: адреса<unsigned_char>);
+зовнішня дія mama_convert_utf32_to_utf8(input: адреса<unsigned_int>): адреса<unsigned_char>;
+зовнішня дія mama_print_utf8(value: адреса<unsigned_char>);
+зовнішня дія mama_println_utf8(value: адреса<unsigned_char>);
 
 синонім памʼять<Т> = адреса<Т>;
 
@@ -39,15 +39,15 @@
 синонім Ю32 = памʼять<п32>;
 
 дія перетворити_ю32_в_ю8(вхід: Ю32): Ю8 {
-  вернути mavka_convert_utf32_to_utf8(вхід);
+  вернути mama_convert_utf32_to_utf8(вхід);
 }
 
 дія вивести_ю8(значення: Ю8) {
-  mavka_print_utf8(значення);
+  mama_print_utf8(значення);
 }
 
 дія надрукувати_ю8(значення: Ю8) {
-  mavka_println_utf8(значення);
+  mama_println_utf8(значення);
 }
 
 дія перетворити_п64_в_ю8(значення: п64): Ю8 {

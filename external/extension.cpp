@@ -23,14 +23,14 @@ extern "C" unsigned char* прочитати_файл(unsigned char* шлях) {
   return buffer;
 }
 
-extern "C" unsigned char* mavka_convert_utf32_to_utf8(char32_t* value) {
+extern "C" unsigned char* mama_convert_utf32_to_utf8(char32_t* value) {
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> utf32conv;
   std::u32string utf32 = value;
   return reinterpret_cast<unsigned char*>(
       strdup(utf32conv.to_bytes(utf32).c_str()));
 }
 
-extern "C" void mavka_print_utf8(unsigned char* value) {
+extern "C" void mama_print_utf8(unsigned char* value) {
 #ifdef _WIN32
   auto len = strlen((char*)value);
   auto value16 = (unsigned short int*)malloc((len + 1) * 2);
@@ -45,7 +45,7 @@ extern "C" void mavka_print_utf8(unsigned char* value) {
 #endif
 }
 
-extern "C" void mavka_println_utf8(unsigned char* value) {
+extern "C" void mama_println_utf8(unsigned char* value) {
 #ifdef _WIN32
   auto len = strlen((char*)value);
   auto value16 = (unsigned short int*)malloc((len + 1) * 2);
