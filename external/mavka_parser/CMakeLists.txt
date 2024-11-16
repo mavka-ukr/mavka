@@ -10,6 +10,8 @@ project(${MAVKA_PARSER})
 
 set(CMAKE_CXX_STANDARD 20)
 
+add_definitions(-DANTLR4CPP_STATIC)
+
 add_subdirectory(syntax)
 
 add_library(${MAVKA_PARSER} ${MAVKA_PARSER_SRC})
