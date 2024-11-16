@@ -11,18 +11,18 @@ export CC="clang"
 export CXX="clang++"
 export AR="llvm-ar"
 export RANLIB="llvm-ranlib"
-OUT="build/мавка"
+OUT="build-l/мавка"
 
 if [ "$PLATFORM" = "w" ]; then
   export CC="zig cc -target x86_64-windows"
   export CXX="zig c++ -target x86_64-windows"
   export AR="zig ar -target x86_64-windows"
-  export RANLIB="zig ranlib -target-x86_64-windows"
-  OUT="build/mavka.exe"
+  export RANLIB="zig ranlib -target x86_64-windows"
+  OUT="build-w/mavka.exe"
 fi
 
-mkdir -p build/external
-cd build/external
+mkdir -p build-"$PLATFORM"/external
+cd build-"$PLATFORM"/external
 cmake ../../external -G Ninja -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always
 ninja
 cd -
@@ -76,7 +76,8 @@ $CXX -o "$OUT" \
   .плавлення/МаМа/СкладенийОбʼєкт.ll \
   .плавлення/МаМа/Утилізатор.ll \
   .плавлення/старт.ll \
-  build/external/libmavka_external.a \
-  build/external/mavka_parser/libmavka_parser.a \
-  build/external/mavka_parser/syntax/libmavka_syntax.a \
-  build/external/mavka_parser/syntax/antlr4-cpp-runtime/libantlr4_cpp_runtime.a
+  build-"$PLATFORM"/external/libmavka_external.a \
+  build-"$PLATFORM"/external/libmavka_external.a \
+  build-"$PLATFORM"/external/mavka_parser/libmavka_parser.a \
+  build-"$PLATFORM"/external/mavka_parser/syntax/libmavka_syntax.a \
+  build-"$PLATFORM"/external/mavka_parser/syntax/antlr4-cpp-runtime/libantlr4_cpp_runtime.a
