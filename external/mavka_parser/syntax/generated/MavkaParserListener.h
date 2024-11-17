@@ -35,6 +35,9 @@ public:
   virtual void enterAtom_position_get(MavkaParser::Atom_position_getContext *ctx) = 0;
   virtual void exitAtom_position_get(MavkaParser::Atom_position_getContext *ctx) = 0;
 
+  virtual void enterOperation_symbol(MavkaParser::Operation_symbolContext *ctx) = 0;
+  virtual void exitOperation_symbol(MavkaParser::Operation_symbolContext *ctx) = 0;
+
   virtual void enterAtom_call(MavkaParser::Atom_callContext *ctx) = 0;
   virtual void exitAtom_call(MavkaParser::Atom_callContext *ctx) = 0;
 

@@ -33,6 +33,8 @@ public:
 
     virtual std::any visitAtom_position_get(MavkaParser::Atom_position_getContext *context) = 0;
 
+    virtual std::any visitOperation_symbol(MavkaParser::Operation_symbolContext *context) = 0;
+
     virtual std::any visitAtom_call(MavkaParser::Atom_callContext *context) = 0;
 
     virtual std::any visitObject_arg(MavkaParser::Object_argContext *context) = 0;

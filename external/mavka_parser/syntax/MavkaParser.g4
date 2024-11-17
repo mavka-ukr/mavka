@@ -10,18 +10,19 @@ program: nls body_element (nl body_element)* nls;
 
 atom: '(' nls expr nls ')' #atom_nested
     | (tt=ID)? STRING #operation_string
+    | (tt=ID)? SYMBOL #operation_symbol
     | id=ID #atom_subject
     | object=atom nls '.' nls id=ID #atom_get
     | object=atom nls '[' nls position=expr nls ']' #atom_position_get
     | object=atom '(' nls (call_arg nls (nls ',' nls call_arg)*)? nls ')' #atom_call;
 object_arg: id=ID nls '=' nls expr;
-dict_arg: (key_number=NUMBER | ((key_string_tt=ID)? key_string=STRING)) nls ':' nls value=expr;
+dict_arg: (key_number=NUMBER | ((key_string_tt=ID)? key_string=STRING) | ((key_symbol_tt=ID)? key_symbol=SYMBOL)) nls '=' nls value=expr;
 call_arg: (id=ID nls '=' nls)? expr;
 
 operation: NUMBER #operation_number
          | atom #operation_atom
          | '(' nls (object_arg (nls ',' nls object_arg)*)? nls ')' #operation_object
-         | '[' nls ':' nls ']' #operation_dict_empty
+         | '[' nls '=' nls ']' #operation_dict_empty
          | '[' nls dict_arg (nls ',' nls dict_arg)* nls ']' #operation_dict
          | '[' nls (expr (nls ',' nls expr)*)? nls ']' #operation_array
          | left=operation nls op='як' nls (right_type=type) #operation_as

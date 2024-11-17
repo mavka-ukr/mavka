@@ -24,8 +24,9 @@ public:
     POWER = 48, AND = 49, OR = 50, PAREN_OPEN = 51, PAREN_CLOSE = 52, BRACKET_OPEN = 53, 
     BRACKET_CLOSE = 54, QUESTION = 55, COLON = 56, TILDA = 57, QUOTE = 58, 
     DOUBLE_QUOTE = 59, EXCLAMATION = 60, COMA = 61, NUMBER = 62, INTEGER = 63, 
-    FLOAT = 64, HEX = 65, BIN = 66, ID = 67, STRING_MULTILINE = 68, STRING = 69, 
-    CHARACTER = 70, COMMENT = 71, LINE_COMMENT = 72, NL = 73, WS = 74
+    FLOAT = 64, HEX = 65, BIN = 66, ID = 67, SYMBOL = 68, STRING_MULTILINE = 69, 
+    STRING = 70, CHARACTER = 71, COMMENT = 72, LINE_COMMENT = 73, NL = 74, 
+    WS = 75
   };
 
   enum {
@@ -233,6 +234,19 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
+  class  Operation_symbolContext : public AtomContext {
+  public:
+    Operation_symbolContext(AtomContext *ctx);
+
+    antlr4::Token *tt = nullptr;
+    antlr4::tree::TerminalNode *SYMBOL();
+    antlr4::tree::TerminalNode *ID();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
   class  Atom_callContext : public AtomContext {
   public:
     Atom_callContext(AtomContext *ctx);
@@ -280,15 +294,18 @@ public:
     antlr4::Token *key_number = nullptr;
     antlr4::Token *key_string_tt = nullptr;
     antlr4::Token *key_string = nullptr;
+    antlr4::Token *key_symbol_tt = nullptr;
+    antlr4::Token *key_symbol = nullptr;
     MavkaParser::ExprContext *value = nullptr;
     Dict_argContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     std::vector<NlsContext *> nls();
     NlsContext* nls(size_t i);
-    antlr4::tree::TerminalNode *COLON();
+    antlr4::tree::TerminalNode *EQUAL();
     ExprContext *expr();
     antlr4::tree::TerminalNode *NUMBER();
     antlr4::tree::TerminalNode *STRING();
+    antlr4::tree::TerminalNode *SYMBOL();
     antlr4::tree::TerminalNode *ID();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -376,7 +393,7 @@ public:
     antlr4::tree::TerminalNode *BRACKET_OPEN();
     std::vector<NlsContext *> nls();
     NlsContext* nls(size_t i);
-    antlr4::tree::TerminalNode *COLON();
+    antlr4::tree::TerminalNode *EQUAL();
     antlr4::tree::TerminalNode *BRACKET_CLOSE();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

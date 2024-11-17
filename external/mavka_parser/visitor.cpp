@@ -36,6 +36,10 @@ namespace mavka::parser {
       return visitOperation_string(ctx);
     }
     if (const auto ctx =
+            dynamic_cast<MavkaParser::Operation_symbolContext*>(context)) {
+      return visitOperation_symbol(ctx);
+    }
+    if (const auto ctx =
             dynamic_cast<MavkaParser::Operation_atomContext*>(context)) {
       return visitOperation_atom(ctx);
     }
@@ -56,8 +60,16 @@ namespace mavka::parser {
       return visitOperation_pre_minus(ctx);
     }
     if (const auto ctx =
+            dynamic_cast<MavkaParser::Operation_powContext*>(context)) {
+      return visitOperation_pow(ctx);
+    }
+    if (const auto ctx =
             dynamic_cast<MavkaParser::Operation_mulContext*>(context)) {
       return visitOperation_mul(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<MavkaParser::Operation_div_divContext*>(context)) {
+      return visitOperation_div_div(ctx);
     }
     if (const auto ctx =
             dynamic_cast<MavkaParser::Operation_divContext*>(context)) {
@@ -336,6 +348,26 @@ namespace mavka::parser {
     }
   }
 
+  std::any visitSymbolText(MavkaASTVisitor* visitor,
+                           Ідентифікатор* ідентифікатор,
+                           antlr4::Token* token) {
+    const auto асд_дані_текст = new АСДДаніСимвол();
+    асд_дані_текст->ідентифікатор = ідентифікатор;
+    асд_дані_текст->значення =
+        strdup(token->getText().substr(1, token->getText().size() - 2).c_str());
+    return AV(visitor, token, АСДВидСимвол, асд_дані_текст);
+  }
+
+  std::any MavkaASTVisitor::visitOperation_symbol(
+      MavkaParser::Operation_symbolContext* ctx) {
+    if (ctx->tt != nullptr) {
+      return visitSymbolText(this, ІД(this, ctx->tt, ctx->tt->getText()),
+                             ctx->SYMBOL()->getSymbol());
+    } else {
+      return visitSymbolText(this, nullptr, ctx->SYMBOL()->getSymbol());
+    }
+  }
+
   std::any MavkaASTVisitor::visitOperation_atom(
       MavkaParser::Operation_atomContext* ctx) {
     return visitContext(ctx->atom());
@@ -373,11 +405,29 @@ namespace mavka::parser {
     return AV(this, ctx, АСДВидСамоОперація, асд_дані_само_операція);
   }
 
+  std::any MavkaASTVisitor::visitOperation_pow(
+      MavkaParser::Operation_powContext* ctx) {
+    const auto асд_дані_операція = new АСДДаніОперація();
+    асд_дані_операція->ліво = AAV(visitContext(ctx->left));
+    асд_дані_операція->операція = АСДОпераціяПіднесенняДоСтепеня;
+    асд_дані_операція->право = AAV(visitContext(ctx->right));
+    return AV(this, ctx, АСДВидОперація, асд_дані_операція);
+  }
+
   std::any MavkaASTVisitor::visitOperation_mul(
       MavkaParser::Operation_mulContext* ctx) {
     const auto асд_дані_операція = new АСДДаніОперація();
     асд_дані_операція->ліво = AAV(visitContext(ctx->left));
     асд_дані_операція->операція = АСДОпераціяМноження;
+    асд_дані_операція->право = AAV(visitContext(ctx->right));
+    return AV(this, ctx, АСДВидОперація, асд_дані_операція);
+  }
+
+  std::any MavkaASTVisitor::visitOperation_div_div(
+      MavkaParser::Operation_div_divContext* ctx) {
+    const auto асд_дані_операція = new АСДДаніОперація();
+    асд_дані_операція->ліво = AAV(visitContext(ctx->left));
+    асд_дані_операція->операція = АСДОпераціяДіленняНаціло;
     асд_дані_операція->право = AAV(visitContext(ctx->right));
     return AV(this, ctx, АСДВидОперація, асд_дані_операція);
   }
@@ -630,7 +680,6 @@ namespace mavka::parser {
   std::any MavkaASTVisitor::visitDiia_define(
       MavkaParser::Diia_defineContext* ctx) {
     const auto асд_дані_дія = new АСДДаніДія();
-    асд_дані_дія->видимість = АСДВидимістьВнутрішня;
     асд_дані_дія->ідентифікатор = ІД(this, ctx->d_name, ctx->d_name->getText());
     std::vector<Параметр*> params;
     for (const auto& param : ctx->diia_param()) {

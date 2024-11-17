@@ -37,6 +37,9 @@ public:
   virtual void enterAtom_position_get(MavkaParser::Atom_position_getContext * /*ctx*/) override { }
   virtual void exitAtom_position_get(MavkaParser::Atom_position_getContext * /*ctx*/) override { }
 
+  virtual void enterOperation_symbol(MavkaParser::Operation_symbolContext * /*ctx*/) override { }
+  virtual void exitOperation_symbol(MavkaParser::Operation_symbolContext * /*ctx*/) override { }
+
   virtual void enterAtom_call(MavkaParser::Atom_callContext * /*ctx*/) override { }
   virtual void exitAtom_call(MavkaParser::Atom_callContext * /*ctx*/) override { }
 
