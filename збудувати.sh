@@ -3,23 +3,12 @@ set -e
 set -x
 
 PLATFORM="l"
-if [ "$1" = "w" ]; then
-  PLATFORM="w"
-fi
 
 export CC="clang"
 export CXX="clang++"
 export AR="llvm-ar"
 export RANLIB="llvm-ranlib"
 OUT="build-l/мавка"
-
-if [ "$PLATFORM" = "w" ]; then
-  export CC="zig cc -target x86_64-windows"
-  export CXX="zig c++ -target x86_64-windows"
-  export AR="zig ar -target x86_64-windows"
-  export RANLIB="zig ranlib -target x86_64-windows"
-  OUT="build-w/mavka.exe"
-fi
 
 mkdir -p build-"$PLATFORM"/external
 cd build-"$PLATFORM"/external
