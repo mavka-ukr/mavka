@@ -59,6 +59,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitOperation_pow(MavkaParser::Operation_powContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitOperation_gte(MavkaParser::Operation_gteContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -115,6 +119,18 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitOperation_contains(MavkaParser::Operation_containsContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOperation_div_div(MavkaParser::Operation_div_divContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOperation_not_is(MavkaParser::Operation_not_isContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitOperation_as(MavkaParser::Operation_asContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -128,6 +144,10 @@ public:
   }
 
   virtual std::any visitOperation_mod(MavkaParser::Operation_modContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOperation_is(MavkaParser::Operation_isContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -163,6 +183,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitOperation_not_contains(MavkaParser::Operation_not_containsContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitOperation_div(MavkaParser::Operation_divContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -183,6 +207,14 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitOp_pow(MavkaParser::Op_powContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOp_div_div(MavkaParser::Op_div_divContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitOp_lshift(MavkaParser::Op_lshiftContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -195,7 +227,15 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitOp_lt(MavkaParser::Op_ltContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitOp_lte(MavkaParser::Op_lteContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOp_gt(MavkaParser::Op_gtContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -216,6 +256,14 @@ public:
   }
 
   virtual std::any visitOp_lor(MavkaParser::Op_lorContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOp_not_contains(MavkaParser::Op_not_containsContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOp_not_is(MavkaParser::Op_not_isContext *ctx) override {
     return visitChildren(ctx);
   }
 

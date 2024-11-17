@@ -29,7 +29,9 @@ operation: NUMBER #operation_number
          | op='~' nls right=operation #operation_pre_bw_not
          | op='+' nls right=operation #operation_pre_plus
          | op='-' nls right=operation #operation_pre_minus
+         | left=operation nls op=op_pow nls right=operation #operation_pow
          | left=operation nls op='*' nls right=operation #operation_mul
+         | left=operation nls op=op_div_div nls right=operation #operation_div_div
          | left=operation nls op='/' nls right=operation #operation_div
          | left=operation nls op='%' nls right=operation #operation_mod
          | left=operation nls op='+' nls right=operation #operation_add
@@ -37,10 +39,14 @@ operation: NUMBER #operation_number
          | left=operation nls op=op_lshift nls right=operation #operation_lshift
          | left=operation nls op=op_rshift nls right=operation #operation_rshift
          | left=operation nls op=op_urshift nls right=operation #operation_urshift
-         | left=operation nls op='<' nls right=operation #operation_lt
+         | left=operation nls op=op_lt nls right=operation #operation_lt
          | left=operation nls op=op_lte nls right=operation #operation_lte
-         | left=operation nls op='>' nls right=operation #operation_gt
+         | left=operation nls op=op_gt nls right=operation #operation_gt
          | left=operation nls op=op_gte nls right=operation #operation_gte
+         | left=operation nls op='містить' nls right=operation #operation_contains
+         | left=operation nls op=op_not_contains nls right=operation #operation_not_contains
+         | left=operation nls op='є' nls right=operation #operation_is
+         | left=operation nls op=op_not_is nls right=operation #operation_not_is
          | left=operation nls op=op_eq nls right=operation #operation_eq
          | left=operation nls op=op_neq nls right=operation #operation_neq
          | left=operation nls op='&' nls right=operation #operation_and
@@ -50,15 +56,21 @@ operation: NUMBER #operation_number
          | left=operation nls op=op_lor nls right=operation #operation_lor
          | cond=operation nls '?' nls ifok=operation nls ':' nls ifnot=operation #operation_ternary;
 
+op_pow: '*' '*';
+op_div_div: '/' '/';
 op_lshift: '<' '<';
 op_rshift: '>' '>';
 op_urshift: '>' '>' '>';
-op_lte: '<' '=';
-op_gte: '>' '=';
-op_eq: '=' '=';
-op_neq: '!' '=';
-op_land: '&' '&';
-op_lor: '|' '|';
+op_lt: '<' | 'менше';
+op_lte: ('<' '=') | ('не' 'більше');
+op_gt: '>' | 'більше';
+op_gte: ('>' '=') | ('не' 'менше');
+op_eq: ('=' '=') | 'рівно';
+op_neq: ('!' '=') | ('не' 'рівно');
+op_land: ('&' '&') | 'і';
+op_lor: ('|' '|') | 'або';
+op_not_contains: 'не' 'містить';
+op_not_is: 'не' 'є';
 
 gendef: ID;
 

@@ -104,6 +104,23 @@ namespace mavka::parser {
       return visitOperation_gte(ctx);
     }
     if (const auto ctx =
+            dynamic_cast<MavkaParser::Operation_containsContext*>(context)) {
+      return visitOperation_contains(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<MavkaParser::Operation_not_containsContext*>(
+                context)) {
+      return visitOperation_not_contains(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<MavkaParser::Operation_isContext*>(context)) {
+      return visitOperation_is(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<MavkaParser::Operation_not_isContext*>(context)) {
+      return visitOperation_not_is(ctx);
+    }
+    if (const auto ctx =
             dynamic_cast<MavkaParser::Operation_eqContext*>(context)) {
       return visitOperation_eq(ctx);
     }
@@ -460,6 +477,42 @@ namespace mavka::parser {
     const auto асд_дані_операція = new АСДДаніОперація();
     асд_дані_операція->ліво = AAV(visitContext(ctx->left));
     асд_дані_операція->операція = АСДОпераціяБільшеРівне;
+    асд_дані_операція->право = AAV(visitContext(ctx->right));
+    return AV(this, ctx, АСДВидОперація, асд_дані_операція);
+  }
+
+  std::any MavkaASTVisitor::visitOperation_contains(
+      MavkaParser::Operation_containsContext* ctx) {
+    const auto асд_дані_операція = new АСДДаніОперація();
+    асд_дані_операція->ліво = AAV(visitContext(ctx->left));
+    асд_дані_операція->операція = АСДОпераціяМістить;
+    асд_дані_операція->право = AAV(visitContext(ctx->right));
+    return AV(this, ctx, АСДВидОперація, асд_дані_операція);
+  }
+
+  std::any MavkaASTVisitor::visitOperation_not_contains(
+      MavkaParser::Operation_not_containsContext* ctx) {
+    const auto асд_дані_операція = new АСДДаніОперація();
+    асд_дані_операція->ліво = AAV(visitContext(ctx->left));
+    асд_дані_операція->операція = АСДОпераціяНеМістить;
+    асд_дані_операція->право = AAV(visitContext(ctx->right));
+    return AV(this, ctx, АСДВидОперація, асд_дані_операція);
+  }
+
+  std::any MavkaASTVisitor::visitOperation_is(
+      MavkaParser::Operation_isContext* ctx) {
+    const auto асд_дані_операція = new АСДДаніОперація();
+    асд_дані_операція->ліво = AAV(visitContext(ctx->left));
+    асд_дані_операція->операція = АСДОпераціяЄ;
+    асд_дані_операція->право = AAV(visitContext(ctx->right));
+    return AV(this, ctx, АСДВидОперація, асд_дані_операція);
+  }
+
+  std::any MavkaASTVisitor::visitOperation_not_is(
+      MavkaParser::Operation_not_isContext* ctx) {
+    const auto асд_дані_операція = new АСДДаніОперація();
+    асд_дані_операція->ліво = AAV(visitContext(ctx->left));
+    асд_дані_операція->операція = АСДОпераціяНеЄ;
     асд_дані_операція->право = AAV(visitContext(ctx->right));
     return AV(this, ctx, АСДВидОперація, асд_дані_операція);
   }

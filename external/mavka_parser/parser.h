@@ -103,8 +103,14 @@ namespace mavka::parser {
     std::any visitOperation_pre_minus(
         MavkaParser::Operation_pre_minusContext* ctx) override;
 
+    //    std::any visitOperation_pow(
+    //        MavkaParser::Operation_powContext* ctx) override;
+
     std::any visitOperation_mul(
         MavkaParser::Operation_mulContext* ctx) override;
+
+    //    std::any visitOperation_div_div(
+    //        MavkaParser::Operation_div_divContext* ctx) override;
 
     std::any visitOperation_div(
         MavkaParser::Operation_divContext* ctx) override;
@@ -136,6 +142,17 @@ namespace mavka::parser {
 
     std::any visitOperation_gte(
         MavkaParser::Operation_gteContext* ctx) override;
+
+    std::any visitOperation_contains(
+        MavkaParser::Operation_containsContext* ctx) override;
+
+    std::any visitOperation_not_contains(
+        MavkaParser::Operation_not_containsContext* ctx) override;
+
+    std::any visitOperation_is(MavkaParser::Operation_isContext* ctx) override;
+
+    std::any visitOperation_not_is(
+        MavkaParser::Operation_not_isContext* ctx) override;
 
     std::any visitOperation_eq(MavkaParser::Operation_eqContext* ctx) override;
 
