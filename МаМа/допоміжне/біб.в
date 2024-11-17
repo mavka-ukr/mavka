@@ -6,6 +6,7 @@
 зовнішня дія free(ptr: адреса);
 зовнішня дія realloc(ptr: адреса, size: size_t): адреса;
 зовнішня дія strcmp(str1: адреса<п8>, str2: адреса<п8>): int;
+зовнішня дія strcmp32(str1: адреса<п32>, str2: адреса<п32>): int;
 зовнішня дія strlen(str: адреса<п8>): int;
 зовнішня дія mama_convert_utf32_to_utf8(input: адреса<unsigned_int>): адреса<unsigned_char>;
 зовнішня дія mama_print_utf8(value: адреса<unsigned_char>);
