@@ -41,6 +41,8 @@ public:
 
     virtual std::any visitCall_arg(MavkaParser::Call_argContext *context) = 0;
 
+    virtual std::any visitOperation_pow(MavkaParser::Operation_powContext *context) = 0;
+
     virtual std::any visitOperation_gte(MavkaParser::Operation_gteContext *context) = 0;
 
     virtual std::any visitOperation_dict_empty(MavkaParser::Operation_dict_emptyContext *context) = 0;
@@ -69,6 +71,12 @@ public:
 
     virtual std::any visitOperation_pre_not(MavkaParser::Operation_pre_notContext *context) = 0;
 
+    virtual std::any visitOperation_contains(MavkaParser::Operation_containsContext *context) = 0;
+
+    virtual std::any visitOperation_div_div(MavkaParser::Operation_div_divContext *context) = 0;
+
+    virtual std::any visitOperation_not_is(MavkaParser::Operation_not_isContext *context) = 0;
+
     virtual std::any visitOperation_as(MavkaParser::Operation_asContext *context) = 0;
 
     virtual std::any visitOperation_atom(MavkaParser::Operation_atomContext *context) = 0;
@@ -76,6 +84,8 @@ public:
     virtual std::any visitOperation_sub(MavkaParser::Operation_subContext *context) = 0;
 
     virtual std::any visitOperation_mod(MavkaParser::Operation_modContext *context) = 0;
+
+    virtual std::any visitOperation_is(MavkaParser::Operation_isContext *context) = 0;
 
     virtual std::any visitOperation_mul(MavkaParser::Operation_mulContext *context) = 0;
 
@@ -93,6 +103,8 @@ public:
 
     virtual std::any visitOperation_urshift(MavkaParser::Operation_urshiftContext *context) = 0;
 
+    virtual std::any visitOperation_not_contains(MavkaParser::Operation_not_containsContext *context) = 0;
+
     virtual std::any visitOperation_div(MavkaParser::Operation_divContext *context) = 0;
 
     virtual std::any visitOperation_rshift(MavkaParser::Operation_rshiftContext *context) = 0;
@@ -103,13 +115,21 @@ public:
 
     virtual std::any visitOperation_and(MavkaParser::Operation_andContext *context) = 0;
 
+    virtual std::any visitOp_pow(MavkaParser::Op_powContext *context) = 0;
+
+    virtual std::any visitOp_div_div(MavkaParser::Op_div_divContext *context) = 0;
+
     virtual std::any visitOp_lshift(MavkaParser::Op_lshiftContext *context) = 0;
 
     virtual std::any visitOp_rshift(MavkaParser::Op_rshiftContext *context) = 0;
 
     virtual std::any visitOp_urshift(MavkaParser::Op_urshiftContext *context) = 0;
 
+    virtual std::any visitOp_lt(MavkaParser::Op_ltContext *context) = 0;
+
     virtual std::any visitOp_lte(MavkaParser::Op_lteContext *context) = 0;
+
+    virtual std::any visitOp_gt(MavkaParser::Op_gtContext *context) = 0;
 
     virtual std::any visitOp_gte(MavkaParser::Op_gteContext *context) = 0;
 
@@ -120,6 +140,10 @@ public:
     virtual std::any visitOp_land(MavkaParser::Op_landContext *context) = 0;
 
     virtual std::any visitOp_lor(MavkaParser::Op_lorContext *context) = 0;
+
+    virtual std::any visitOp_not_contains(MavkaParser::Op_not_containsContext *context) = 0;
+
+    virtual std::any visitOp_not_is(MavkaParser::Op_not_isContext *context) = 0;
 
     virtual std::any visitGendef(MavkaParser::GendefContext *context) = 0;
 

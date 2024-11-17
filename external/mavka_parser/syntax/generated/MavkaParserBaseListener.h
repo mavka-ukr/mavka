@@ -49,6 +49,9 @@ public:
   virtual void enterCall_arg(MavkaParser::Call_argContext * /*ctx*/) override { }
   virtual void exitCall_arg(MavkaParser::Call_argContext * /*ctx*/) override { }
 
+  virtual void enterOperation_pow(MavkaParser::Operation_powContext * /*ctx*/) override { }
+  virtual void exitOperation_pow(MavkaParser::Operation_powContext * /*ctx*/) override { }
+
   virtual void enterOperation_gte(MavkaParser::Operation_gteContext * /*ctx*/) override { }
   virtual void exitOperation_gte(MavkaParser::Operation_gteContext * /*ctx*/) override { }
 
@@ -91,6 +94,15 @@ public:
   virtual void enterOperation_pre_not(MavkaParser::Operation_pre_notContext * /*ctx*/) override { }
   virtual void exitOperation_pre_not(MavkaParser::Operation_pre_notContext * /*ctx*/) override { }
 
+  virtual void enterOperation_contains(MavkaParser::Operation_containsContext * /*ctx*/) override { }
+  virtual void exitOperation_contains(MavkaParser::Operation_containsContext * /*ctx*/) override { }
+
+  virtual void enterOperation_div_div(MavkaParser::Operation_div_divContext * /*ctx*/) override { }
+  virtual void exitOperation_div_div(MavkaParser::Operation_div_divContext * /*ctx*/) override { }
+
+  virtual void enterOperation_not_is(MavkaParser::Operation_not_isContext * /*ctx*/) override { }
+  virtual void exitOperation_not_is(MavkaParser::Operation_not_isContext * /*ctx*/) override { }
+
   virtual void enterOperation_as(MavkaParser::Operation_asContext * /*ctx*/) override { }
   virtual void exitOperation_as(MavkaParser::Operation_asContext * /*ctx*/) override { }
 
@@ -102,6 +114,9 @@ public:
 
   virtual void enterOperation_mod(MavkaParser::Operation_modContext * /*ctx*/) override { }
   virtual void exitOperation_mod(MavkaParser::Operation_modContext * /*ctx*/) override { }
+
+  virtual void enterOperation_is(MavkaParser::Operation_isContext * /*ctx*/) override { }
+  virtual void exitOperation_is(MavkaParser::Operation_isContext * /*ctx*/) override { }
 
   virtual void enterOperation_mul(MavkaParser::Operation_mulContext * /*ctx*/) override { }
   virtual void exitOperation_mul(MavkaParser::Operation_mulContext * /*ctx*/) override { }
@@ -127,6 +142,9 @@ public:
   virtual void enterOperation_urshift(MavkaParser::Operation_urshiftContext * /*ctx*/) override { }
   virtual void exitOperation_urshift(MavkaParser::Operation_urshiftContext * /*ctx*/) override { }
 
+  virtual void enterOperation_not_contains(MavkaParser::Operation_not_containsContext * /*ctx*/) override { }
+  virtual void exitOperation_not_contains(MavkaParser::Operation_not_containsContext * /*ctx*/) override { }
+
   virtual void enterOperation_div(MavkaParser::Operation_divContext * /*ctx*/) override { }
   virtual void exitOperation_div(MavkaParser::Operation_divContext * /*ctx*/) override { }
 
@@ -142,6 +160,12 @@ public:
   virtual void enterOperation_and(MavkaParser::Operation_andContext * /*ctx*/) override { }
   virtual void exitOperation_and(MavkaParser::Operation_andContext * /*ctx*/) override { }
 
+  virtual void enterOp_pow(MavkaParser::Op_powContext * /*ctx*/) override { }
+  virtual void exitOp_pow(MavkaParser::Op_powContext * /*ctx*/) override { }
+
+  virtual void enterOp_div_div(MavkaParser::Op_div_divContext * /*ctx*/) override { }
+  virtual void exitOp_div_div(MavkaParser::Op_div_divContext * /*ctx*/) override { }
+
   virtual void enterOp_lshift(MavkaParser::Op_lshiftContext * /*ctx*/) override { }
   virtual void exitOp_lshift(MavkaParser::Op_lshiftContext * /*ctx*/) override { }
 
@@ -151,8 +175,14 @@ public:
   virtual void enterOp_urshift(MavkaParser::Op_urshiftContext * /*ctx*/) override { }
   virtual void exitOp_urshift(MavkaParser::Op_urshiftContext * /*ctx*/) override { }
 
+  virtual void enterOp_lt(MavkaParser::Op_ltContext * /*ctx*/) override { }
+  virtual void exitOp_lt(MavkaParser::Op_ltContext * /*ctx*/) override { }
+
   virtual void enterOp_lte(MavkaParser::Op_lteContext * /*ctx*/) override { }
   virtual void exitOp_lte(MavkaParser::Op_lteContext * /*ctx*/) override { }
+
+  virtual void enterOp_gt(MavkaParser::Op_gtContext * /*ctx*/) override { }
+  virtual void exitOp_gt(MavkaParser::Op_gtContext * /*ctx*/) override { }
 
   virtual void enterOp_gte(MavkaParser::Op_gteContext * /*ctx*/) override { }
   virtual void exitOp_gte(MavkaParser::Op_gteContext * /*ctx*/) override { }
@@ -168,6 +198,12 @@ public:
 
   virtual void enterOp_lor(MavkaParser::Op_lorContext * /*ctx*/) override { }
   virtual void exitOp_lor(MavkaParser::Op_lorContext * /*ctx*/) override { }
+
+  virtual void enterOp_not_contains(MavkaParser::Op_not_containsContext * /*ctx*/) override { }
+  virtual void exitOp_not_contains(MavkaParser::Op_not_containsContext * /*ctx*/) override { }
+
+  virtual void enterOp_not_is(MavkaParser::Op_not_isContext * /*ctx*/) override { }
+  virtual void exitOp_not_is(MavkaParser::Op_not_isContext * /*ctx*/) override { }
 
   virtual void enterGendef(MavkaParser::GendefContext * /*ctx*/) override { }
   virtual void exitGendef(MavkaParser::GendefContext * /*ctx*/) override { }
