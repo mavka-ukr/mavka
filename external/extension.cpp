@@ -56,3 +56,10 @@ extern "C" void отримати_назву_файлу_без_розширенн
   std::filesystem::path p(path);
   *вихід = (unsigned char*)strdup(p.stem().string().c_str());
 }
+
+extern "C" int strcmp32(char32_t* a, char32_t* b) {
+  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> utf32conv;
+  std::u32string ua = a;
+  std::u32string ub = b;
+  return strcmp(utf32conv.to_bytes(ua).c_str(), utf32conv.to_bytes(ub).c_str());
+}
