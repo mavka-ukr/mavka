@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <filesystem>
 #include <locale>
 
 #ifdef _WIN32
@@ -59,4 +60,26 @@ extern "C" void mama_println_utf8(unsigned char* value) {
 #else
   printf("%s\n", (char*)value);
 #endif
+}
+
+extern "C" void виправити_шлях(unsigned char* шлях, unsigned char** вихід) {
+  std::string path = (char*)шлях;
+  std::filesystem::path p(path);
+  *вихід =
+      (unsigned char*)strdup(absolute(weakly_canonical(p)).string().c_str());
+}
+
+extern "C" unsigned char перевірити_чи_ю8_закінчується_на(
+    unsigned char* value,
+    unsigned char* suffix) {
+  std::string str = (char*)value;
+  std::string suf = (char*)suffix;
+  return str.ends_with(suf);
+}
+
+extern "C" void отримати_назву_файлу_без_розширення(unsigned char* шлях,
+                                                    unsigned char** вихід) {
+  std::string path = (char*)шлях;
+  std::filesystem::path p(path);
+  *вихід = (unsigned char*)strdup(p.stem().string().c_str());
 }
