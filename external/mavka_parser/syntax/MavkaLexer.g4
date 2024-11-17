@@ -96,6 +96,7 @@ fragment ID_CONTINUE
     | ID_START
     ;
 
+SYMBOL: '\'' ( ~['\n\r] | '\\\'' ) '\'';
 STRING_MULTILINE: '"' '"' '"' TRIPPLE_QUOTED_STRING_PART*? '"' '"' '"';
 STRING: '"' ( ~["\n\r] | '\\"' )* '"';
 CHARACTER: '\'' ( ~['\n\r] | '\\\'' )* '\'';
