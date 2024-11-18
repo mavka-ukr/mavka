@@ -204,7 +204,25 @@ namespace mavka::parser {
       return visitReturn(ctx);
     }
     if (const auto ctx = dynamic_cast<MavkaParser::TypeContext*>(context)) {
-      return visitType(ctx);
+      if (const auto ctx1 =
+              dynamic_cast<MavkaParser::Type_nestedContext*>(ctx)) {
+        return visitContext(ctx1->expr());
+      }
+      if (const auto ctx1 =
+              dynamic_cast<MavkaParser::Type_subjectContext*>(ctx)) {
+        const auto асд_дані_звернутись = new АСДДаніЗвернутись();
+        асд_дані_звернутись->ідентифікатор =
+            ІД(this, ctx1->id, ctx1->id->getText());
+        return AV(this, ctx1, АСДВидЗвернутись, асд_дані_звернутись);
+      }
+      if (const auto ctx1 = dynamic_cast<MavkaParser::Type_getContext*>(ctx)) {
+        const auto асд_дані_отримати = new АСДДаніОтримати();
+        асд_дані_отримати->обʼєкт = AAV(visitContext(ctx1->object));
+        асд_дані_отримати->ідентифікатор =
+            ІД(this, ctx1->id, ctx1->id->getText());
+        return AV(this, ctx, АСДВидОтримати, асд_дані_отримати);
+      }
+      return nullptr;
     }
     if (const auto ctx = dynamic_cast<MavkaParser::ParamContext*>(context)) {
       return visitParam(ctx);
@@ -820,10 +838,6 @@ namespace mavka::parser {
       асд_дані_вернути->значення = nullptr;
     }
     return AV(this, ctx, АСДВидВернути, асд_дані_вернути);
-  }
-
-  std::any MavkaASTVisitor::visitType(MavkaParser::TypeContext* ctx) {
-    return visitContext(ctx->atom());
   }
 
   std::any MavkaASTVisitor::visitParam(MavkaParser::ParamContext* ctx) {

@@ -331,7 +331,15 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitType(MavkaParser::TypeContext *ctx) override {
+  virtual std::any visitType_get(MavkaParser::Type_getContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitType_nested(MavkaParser::Type_nestedContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitType_subject(MavkaParser::Type_subjectContext *ctx) override {
     return visitChildren(ctx);
   }
 

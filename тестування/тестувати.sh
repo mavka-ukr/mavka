@@ -24,10 +24,12 @@ TESTS=(
 for test in ${TESTS[@]}; do
   echo -en "$test"
   result=$($MAVKA "$test")
-  if [ "$result" == "" ]; then
-      echo -en ": \e[32mпройдено\e[0m\n"
+  if [ $? -ne 0 ]; then
+    echo -en ":\n\e[31m$result\e[0m\n"
+  elif [ "$result" == "" ]; then
+    echo -en ": \e[32mпройдено\e[0m\n"
   else
-      echo -en ":\n\e[31m$result\e[0m\n"
+    echo -en ":\n\e[31m$result\e[0m\n"
   fi
 done
 

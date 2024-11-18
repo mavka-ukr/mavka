@@ -1579,18 +1579,62 @@ public:
   class  TypeContext : public antlr4::ParserRuleContext {
   public:
     TypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    AtomContext *atom();
+   
+    TypeContext() = default;
+    void copyFrom(TypeContext *context);
+    using antlr4::ParserRuleContext::copyFrom;
 
+    virtual size_t getRuleIndex() const override;
+
+   
+  };
+
+  class  Type_getContext : public TypeContext {
+  public:
+    Type_getContext(TypeContext *ctx);
+
+    MavkaParser::TypeContext *object = nullptr;
+    antlr4::Token *id = nullptr;
+    std::vector<NlsContext *> nls();
+    NlsContext* nls(size_t i);
+    antlr4::tree::TerminalNode *DOT();
+    TypeContext *type();
+    antlr4::tree::TerminalNode *ID();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
+  };
+
+  class  Type_nestedContext : public TypeContext {
+  public:
+    Type_nestedContext(TypeContext *ctx);
+
+    antlr4::tree::TerminalNode *PAREN_OPEN();
+    std::vector<NlsContext *> nls();
+    NlsContext* nls(size_t i);
+    ExprContext *expr();
+    antlr4::tree::TerminalNode *PAREN_CLOSE();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Type_subjectContext : public TypeContext {
+  public:
+    Type_subjectContext(TypeContext *ctx);
+
+    antlr4::Token *id = nullptr;
+    antlr4::tree::TerminalNode *ID();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
   TypeContext* type();
-
+  TypeContext* type(int precedence);
   class  TypesContext : public antlr4::ParserRuleContext {
   public:
     TypesContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -1788,6 +1832,7 @@ public:
 
   bool atomSempred(AtomContext *_localctx, size_t predicateIndex);
   bool operationSempred(OperationContext *_localctx, size_t predicateIndex);
+  bool typeSempred(TypeContext *_localctx, size_t predicateIndex);
 
   // By default the static state used to implement the parser is lazily initialized during the first
   // call to the constructor. You can call this function if you wish to initialize the static state

@@ -177,7 +177,11 @@ public:
 
     virtual std::any visitModule(MavkaParser::ModuleContext *context) = 0;
 
-    virtual std::any visitType(MavkaParser::TypeContext *context) = 0;
+    virtual std::any visitType_get(MavkaParser::Type_getContext *context) = 0;
+
+    virtual std::any visitType_nested(MavkaParser::Type_nestedContext *context) = 0;
+
+    virtual std::any visitType_subject(MavkaParser::Type_subjectContext *context) = 0;
 
     virtual std::any visitTypes(MavkaParser::TypesContext *context) = 0;
 
