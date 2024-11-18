@@ -139,7 +139,21 @@ namespace mavka::parser {
       antlr4::atn::ATNConfigSet* configs) {}
 } // namespace mavka::parser
 
+std::string trim(const std::string& str) {
+  const auto strBegin = str.find_first_not_of(" \t\r\n");
+  if (strBegin == std::string::npos) {
+    return "";
+  }
+  const auto strEnd = str.find_last_not_of(" \t\r\n");
+  const auto strRange = strEnd - strBegin + 1;
+  return str.substr(strBegin, strRange);
+}
+
 extern "C" РезультатРозборуМавки* розібрати_мавку(ТекстКоду* текст_коду) {
+  if (trim(std::string(текст_коду->значення)).empty()) {
+    return new РезультатРозборуМавки{
+        true, new СписокАСДЗначень{.довжина = 0, .елементи = nullptr}, nullptr};
+  }
   antlr4::ANTLRInputStream input(текст_коду->значення);
 
   const auto lexer_error_listener =
