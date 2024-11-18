@@ -25,11 +25,26 @@ public:
   virtual void enterAtom_nested(MavkaParser::Atom_nestedContext * /*ctx*/) override { }
   virtual void exitAtom_nested(MavkaParser::Atom_nestedContext * /*ctx*/) override { }
 
+  virtual void enterOperation_array(MavkaParser::Operation_arrayContext * /*ctx*/) override { }
+  virtual void exitOperation_array(MavkaParser::Operation_arrayContext * /*ctx*/) override { }
+
   virtual void enterOperation_string(MavkaParser::Operation_stringContext * /*ctx*/) override { }
   virtual void exitOperation_string(MavkaParser::Operation_stringContext * /*ctx*/) override { }
 
+  virtual void enterOperation_dict_empty(MavkaParser::Operation_dict_emptyContext * /*ctx*/) override { }
+  virtual void exitOperation_dict_empty(MavkaParser::Operation_dict_emptyContext * /*ctx*/) override { }
+
+  virtual void enterOperation_dict(MavkaParser::Operation_dictContext * /*ctx*/) override { }
+  virtual void exitOperation_dict(MavkaParser::Operation_dictContext * /*ctx*/) override { }
+
+  virtual void enterOperation_object(MavkaParser::Operation_objectContext * /*ctx*/) override { }
+  virtual void exitOperation_object(MavkaParser::Operation_objectContext * /*ctx*/) override { }
+
   virtual void enterAtom_get(MavkaParser::Atom_getContext * /*ctx*/) override { }
   virtual void exitAtom_get(MavkaParser::Atom_getContext * /*ctx*/) override { }
+
+  virtual void enterOperation_string_multiline(MavkaParser::Operation_string_multilineContext * /*ctx*/) override { }
+  virtual void exitOperation_string_multiline(MavkaParser::Operation_string_multilineContext * /*ctx*/) override { }
 
   virtual void enterAtom_subject(MavkaParser::Atom_subjectContext * /*ctx*/) override { }
   virtual void exitAtom_subject(MavkaParser::Atom_subjectContext * /*ctx*/) override { }
@@ -58,12 +73,6 @@ public:
   virtual void enterOperation_gte(MavkaParser::Operation_gteContext * /*ctx*/) override { }
   virtual void exitOperation_gte(MavkaParser::Operation_gteContext * /*ctx*/) override { }
 
-  virtual void enterOperation_dict_empty(MavkaParser::Operation_dict_emptyContext * /*ctx*/) override { }
-  virtual void exitOperation_dict_empty(MavkaParser::Operation_dict_emptyContext * /*ctx*/) override { }
-
-  virtual void enterOperation_dict(MavkaParser::Operation_dictContext * /*ctx*/) override { }
-  virtual void exitOperation_dict(MavkaParser::Operation_dictContext * /*ctx*/) override { }
-
   virtual void enterOperation_neq(MavkaParser::Operation_neqContext * /*ctx*/) override { }
   virtual void exitOperation_neq(MavkaParser::Operation_neqContext * /*ctx*/) override { }
 
@@ -88,9 +97,6 @@ public:
   virtual void enterOperation_land(MavkaParser::Operation_landContext * /*ctx*/) override { }
   virtual void exitOperation_land(MavkaParser::Operation_landContext * /*ctx*/) override { }
 
-  virtual void enterOperation_object(MavkaParser::Operation_objectContext * /*ctx*/) override { }
-  virtual void exitOperation_object(MavkaParser::Operation_objectContext * /*ctx*/) override { }
-
   virtual void enterOperation_or(MavkaParser::Operation_orContext * /*ctx*/) override { }
   virtual void exitOperation_or(MavkaParser::Operation_orContext * /*ctx*/) override { }
 
@@ -105,9 +111,6 @@ public:
 
   virtual void enterOperation_not_is(MavkaParser::Operation_not_isContext * /*ctx*/) override { }
   virtual void exitOperation_not_is(MavkaParser::Operation_not_isContext * /*ctx*/) override { }
-
-  virtual void enterOperation_as(MavkaParser::Operation_asContext * /*ctx*/) override { }
-  virtual void exitOperation_as(MavkaParser::Operation_asContext * /*ctx*/) override { }
 
   virtual void enterOperation_atom(MavkaParser::Operation_atomContext * /*ctx*/) override { }
   virtual void exitOperation_atom(MavkaParser::Operation_atomContext * /*ctx*/) override { }
@@ -129,9 +132,6 @@ public:
 
   virtual void enterOperation_eq(MavkaParser::Operation_eqContext * /*ctx*/) override { }
   virtual void exitOperation_eq(MavkaParser::Operation_eqContext * /*ctx*/) override { }
-
-  virtual void enterOperation_array(MavkaParser::Operation_arrayContext * /*ctx*/) override { }
-  virtual void exitOperation_array(MavkaParser::Operation_arrayContext * /*ctx*/) override { }
 
   virtual void enterOperation_pre_bw_not(MavkaParser::Operation_pre_bw_notContext * /*ctx*/) override { }
   virtual void exitOperation_pre_bw_not(MavkaParser::Operation_pre_bw_notContext * /*ctx*/) override { }
@@ -214,6 +214,15 @@ public:
   virtual void enterExpr_operation(MavkaParser::Expr_operationContext * /*ctx*/) override { }
   virtual void exitExpr_operation(MavkaParser::Expr_operationContext * /*ctx*/) override { }
 
+  virtual void enterExpr_diia(MavkaParser::Expr_diiaContext * /*ctx*/) override { }
+  virtual void exitExpr_diia(MavkaParser::Expr_diiaContext * /*ctx*/) override { }
+
+  virtual void enterExpr_structure(MavkaParser::Expr_structureContext * /*ctx*/) override { }
+  virtual void exitExpr_structure(MavkaParser::Expr_structureContext * /*ctx*/) override { }
+
+  virtual void enterFunction(MavkaParser::FunctionContext * /*ctx*/) override { }
+  virtual void exitFunction(MavkaParser::FunctionContext * /*ctx*/) override { }
+
   virtual void enterStructure_define(MavkaParser::Structure_defineContext * /*ctx*/) override { }
   virtual void exitStructure_define(MavkaParser::Structure_defineContext * /*ctx*/) override { }
 
@@ -240,6 +249,15 @@ public:
 
   virtual void enterWhile(MavkaParser::WhileContext * /*ctx*/) override { }
   virtual void exitWhile(MavkaParser::WhileContext * /*ctx*/) override { }
+
+  virtual void enterEach(MavkaParser::EachContext * /*ctx*/) override { }
+  virtual void exitEach(MavkaParser::EachContext * /*ctx*/) override { }
+
+  virtual void enterLoop_part(MavkaParser::Loop_partContext * /*ctx*/) override { }
+  virtual void exitLoop_part(MavkaParser::Loop_partContext * /*ctx*/) override { }
+
+  virtual void enterLoop(MavkaParser::LoopContext * /*ctx*/) override { }
+  virtual void exitLoop(MavkaParser::LoopContext * /*ctx*/) override { }
 
   virtual void enterBody(MavkaParser::BodyContext * /*ctx*/) override { }
   virtual void exitBody(MavkaParser::BodyContext * /*ctx*/) override { }

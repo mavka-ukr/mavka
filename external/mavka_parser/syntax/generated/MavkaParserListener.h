@@ -23,11 +23,26 @@ public:
   virtual void enterAtom_nested(MavkaParser::Atom_nestedContext *ctx) = 0;
   virtual void exitAtom_nested(MavkaParser::Atom_nestedContext *ctx) = 0;
 
+  virtual void enterOperation_array(MavkaParser::Operation_arrayContext *ctx) = 0;
+  virtual void exitOperation_array(MavkaParser::Operation_arrayContext *ctx) = 0;
+
   virtual void enterOperation_string(MavkaParser::Operation_stringContext *ctx) = 0;
   virtual void exitOperation_string(MavkaParser::Operation_stringContext *ctx) = 0;
 
+  virtual void enterOperation_dict_empty(MavkaParser::Operation_dict_emptyContext *ctx) = 0;
+  virtual void exitOperation_dict_empty(MavkaParser::Operation_dict_emptyContext *ctx) = 0;
+
+  virtual void enterOperation_dict(MavkaParser::Operation_dictContext *ctx) = 0;
+  virtual void exitOperation_dict(MavkaParser::Operation_dictContext *ctx) = 0;
+
+  virtual void enterOperation_object(MavkaParser::Operation_objectContext *ctx) = 0;
+  virtual void exitOperation_object(MavkaParser::Operation_objectContext *ctx) = 0;
+
   virtual void enterAtom_get(MavkaParser::Atom_getContext *ctx) = 0;
   virtual void exitAtom_get(MavkaParser::Atom_getContext *ctx) = 0;
+
+  virtual void enterOperation_string_multiline(MavkaParser::Operation_string_multilineContext *ctx) = 0;
+  virtual void exitOperation_string_multiline(MavkaParser::Operation_string_multilineContext *ctx) = 0;
 
   virtual void enterAtom_subject(MavkaParser::Atom_subjectContext *ctx) = 0;
   virtual void exitAtom_subject(MavkaParser::Atom_subjectContext *ctx) = 0;
@@ -56,12 +71,6 @@ public:
   virtual void enterOperation_gte(MavkaParser::Operation_gteContext *ctx) = 0;
   virtual void exitOperation_gte(MavkaParser::Operation_gteContext *ctx) = 0;
 
-  virtual void enterOperation_dict_empty(MavkaParser::Operation_dict_emptyContext *ctx) = 0;
-  virtual void exitOperation_dict_empty(MavkaParser::Operation_dict_emptyContext *ctx) = 0;
-
-  virtual void enterOperation_dict(MavkaParser::Operation_dictContext *ctx) = 0;
-  virtual void exitOperation_dict(MavkaParser::Operation_dictContext *ctx) = 0;
-
   virtual void enterOperation_neq(MavkaParser::Operation_neqContext *ctx) = 0;
   virtual void exitOperation_neq(MavkaParser::Operation_neqContext *ctx) = 0;
 
@@ -86,9 +95,6 @@ public:
   virtual void enterOperation_land(MavkaParser::Operation_landContext *ctx) = 0;
   virtual void exitOperation_land(MavkaParser::Operation_landContext *ctx) = 0;
 
-  virtual void enterOperation_object(MavkaParser::Operation_objectContext *ctx) = 0;
-  virtual void exitOperation_object(MavkaParser::Operation_objectContext *ctx) = 0;
-
   virtual void enterOperation_or(MavkaParser::Operation_orContext *ctx) = 0;
   virtual void exitOperation_or(MavkaParser::Operation_orContext *ctx) = 0;
 
@@ -103,9 +109,6 @@ public:
 
   virtual void enterOperation_not_is(MavkaParser::Operation_not_isContext *ctx) = 0;
   virtual void exitOperation_not_is(MavkaParser::Operation_not_isContext *ctx) = 0;
-
-  virtual void enterOperation_as(MavkaParser::Operation_asContext *ctx) = 0;
-  virtual void exitOperation_as(MavkaParser::Operation_asContext *ctx) = 0;
 
   virtual void enterOperation_atom(MavkaParser::Operation_atomContext *ctx) = 0;
   virtual void exitOperation_atom(MavkaParser::Operation_atomContext *ctx) = 0;
@@ -127,9 +130,6 @@ public:
 
   virtual void enterOperation_eq(MavkaParser::Operation_eqContext *ctx) = 0;
   virtual void exitOperation_eq(MavkaParser::Operation_eqContext *ctx) = 0;
-
-  virtual void enterOperation_array(MavkaParser::Operation_arrayContext *ctx) = 0;
-  virtual void exitOperation_array(MavkaParser::Operation_arrayContext *ctx) = 0;
 
   virtual void enterOperation_pre_bw_not(MavkaParser::Operation_pre_bw_notContext *ctx) = 0;
   virtual void exitOperation_pre_bw_not(MavkaParser::Operation_pre_bw_notContext *ctx) = 0;
@@ -212,6 +212,15 @@ public:
   virtual void enterExpr_operation(MavkaParser::Expr_operationContext *ctx) = 0;
   virtual void exitExpr_operation(MavkaParser::Expr_operationContext *ctx) = 0;
 
+  virtual void enterExpr_diia(MavkaParser::Expr_diiaContext *ctx) = 0;
+  virtual void exitExpr_diia(MavkaParser::Expr_diiaContext *ctx) = 0;
+
+  virtual void enterExpr_structure(MavkaParser::Expr_structureContext *ctx) = 0;
+  virtual void exitExpr_structure(MavkaParser::Expr_structureContext *ctx) = 0;
+
+  virtual void enterFunction(MavkaParser::FunctionContext *ctx) = 0;
+  virtual void exitFunction(MavkaParser::FunctionContext *ctx) = 0;
+
   virtual void enterStructure_define(MavkaParser::Structure_defineContext *ctx) = 0;
   virtual void exitStructure_define(MavkaParser::Structure_defineContext *ctx) = 0;
 
@@ -238,6 +247,15 @@ public:
 
   virtual void enterWhile(MavkaParser::WhileContext *ctx) = 0;
   virtual void exitWhile(MavkaParser::WhileContext *ctx) = 0;
+
+  virtual void enterEach(MavkaParser::EachContext *ctx) = 0;
+  virtual void exitEach(MavkaParser::EachContext *ctx) = 0;
+
+  virtual void enterLoop_part(MavkaParser::Loop_partContext *ctx) = 0;
+  virtual void exitLoop_part(MavkaParser::Loop_partContext *ctx) = 0;
+
+  virtual void enterLoop(MavkaParser::LoopContext *ctx) = 0;
+  virtual void exitLoop(MavkaParser::LoopContext *ctx) = 0;
 
   virtual void enterBody(MavkaParser::BodyContext *ctx) = 0;
   virtual void exitBody(MavkaParser::BodyContext *ctx) = 0;
