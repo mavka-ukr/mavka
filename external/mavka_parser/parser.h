@@ -88,6 +88,9 @@ namespace mavka::parser {
     std::any visitOperation_string(
         MavkaParser::Operation_stringContext* ctx) override;
 
+    std::any visitOperation_string_multiline(
+        MavkaParser::Operation_string_multilineContext* ctx) override;
+
     std::any visitOperation_symbol(
         MavkaParser::Operation_symbolContext* ctx) override;
 
@@ -176,13 +179,18 @@ namespace mavka::parser {
     std::any visitOperation_lor(
         MavkaParser::Operation_lorContext* ctx) override;
 
-    std::any visitOperation_as(MavkaParser::Operation_asContext* ctx) override;
-
     std::any visitOperation_ternary(
         MavkaParser::Operation_ternaryContext* ctx) override;
 
     std::any visitExpr_operation(
         MavkaParser::Expr_operationContext* ctx) override;
+
+    std::any visitExpr_diia(MavkaParser::Expr_diiaContext* ctx) override;
+
+    std::any visitExpr_structure(
+        MavkaParser::Expr_structureContext* ctx) override;
+
+    std::any visitFunction(MavkaParser::FunctionContext* ctx) override;
 
     std::any visitStructure_define(
         MavkaParser::Structure_defineContext* ctx) override;
@@ -198,6 +206,12 @@ namespace mavka::parser {
     std::any visitIf(MavkaParser::IfContext* ctx) override;
 
     std::any visitWhile(MavkaParser::WhileContext* ctx) override;
+
+    std::any visitEach(MavkaParser::EachContext* ctx) override;
+
+    std::any visitLoop(MavkaParser::LoopContext* ctx) override;
+
+    std::any visitLoop_part(MavkaParser::Loop_partContext* ctx) override;
 
     std::any visitBody(MavkaParser::BodyContext* ctx) override;
 

@@ -36,6 +36,11 @@ namespace mavka::parser {
       return visitOperation_string(ctx);
     }
     if (const auto ctx =
+            dynamic_cast<MavkaParser::Operation_string_multilineContext*>(
+                context)) {
+      return visitOperation_string_multiline(ctx);
+    }
+    if (const auto ctx =
             dynamic_cast<MavkaParser::Operation_symbolContext*>(context)) {
       return visitOperation_symbol(ctx);
     }
@@ -161,16 +166,23 @@ namespace mavka::parser {
       return visitOperation_lor(ctx);
     }
     if (const auto ctx =
-            dynamic_cast<MavkaParser::Operation_asContext*>(context)) {
-      return visitOperation_as(ctx);
-    }
-    if (const auto ctx =
             dynamic_cast<MavkaParser::Operation_ternaryContext*>(context)) {
       return visitOperation_ternary(ctx);
     }
     if (const auto ctx =
             dynamic_cast<MavkaParser::Expr_operationContext*>(context)) {
       return visitExpr_operation(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<MavkaParser::Expr_diiaContext*>(context)) {
+      return visitExpr_diia(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<MavkaParser::Expr_structureContext*>(context)) {
+      return visitExpr_structure(ctx);
+    }
+    if (const auto ctx = dynamic_cast<MavkaParser::FunctionContext*>(context)) {
+      return visitFunction(ctx);
     }
     if (const auto ctx =
             dynamic_cast<MavkaParser::Structure_defineContext*>(context)) {
@@ -363,6 +375,28 @@ namespace mavka::parser {
                              ctx->STRING()->getSymbol());
     } else {
       return visitStringText(this, nullptr, ctx->STRING()->getSymbol());
+    }
+  }
+
+  std::any visitStringMultilineText(MavkaASTVisitor* visitor,
+                                    Ідентифікатор* ідентифікатор,
+                                    antlr4::Token* token) {
+    const auto асд_дані_текст = new АСДДаніТекст();
+    асд_дані_текст->ідентифікатор = ідентифікатор;
+    асд_дані_текст->значення =
+        strdup(token->getText().substr(3, token->getText().size() - 4).c_str());
+    return AV(visitor, token, АСДВидТекст, асд_дані_текст);
+  }
+
+  std::any MavkaASTVisitor::visitOperation_string_multiline(
+      MavkaParser::Operation_string_multilineContext* ctx) {
+    if (ctx->tt != nullptr) {
+      return visitStringMultilineText(this,
+                                      ІД(this, ctx->tt, ctx->tt->getText()),
+                                      ctx->STRING_MULTILINE()->getSymbol());
+    } else {
+      return visitStringMultilineText(this, nullptr,
+                                      ctx->STRING_MULTILINE()->getSymbol());
     }
   }
 
@@ -648,18 +682,6 @@ namespace mavka::parser {
     return AV(this, ctx, АСДВидОперація, асд_дані_операція);
   }
 
-  std::any MavkaASTVisitor::visitOperation_as(
-      MavkaParser::Operation_asContext* ctx) {
-    const auto асд_дані_як = new АСДДаніЯк();
-    асд_дані_як->значення = AAV(visitContext(ctx->left));
-    if (ctx->right_type) {
-      асд_дані_як->тип = AAV(visitContext(ctx->right_type));
-    } else {
-      асд_дані_як->тип = nullptr;
-    }
-    return AV(this, ctx, АСДВидЯк, асд_дані_як);
-  }
-
   std::any MavkaASTVisitor::visitOperation_ternary(
       MavkaParser::Operation_ternaryContext* ctx) {
     const auto асд_дані_значення_якщо = new АСДДаніЗначенняЯкщо();
@@ -674,10 +696,48 @@ namespace mavka::parser {
     return visitContext(ctx->operation());
   }
 
+  std::any MavkaASTVisitor::visitExpr_diia(MavkaParser::Expr_diiaContext* ctx) {
+    return visitContext(ctx->diia_define());
+  }
+
+  std::any MavkaASTVisitor::visitExpr_structure(
+      MavkaParser::Expr_structureContext* ctx) {
+    return visitContext(ctx->structure_define());
+  }
+
+  std::any MavkaASTVisitor::visitFunction(MavkaParser::FunctionContext* ctx) {
+    const auto асд_дані_дія = new АСДДаніДія();
+    асд_дані_дія->ідентифікатор = nullptr;
+    std::vector<Параметр*> params;
+    for (const auto& param : ctx->diia_param()) {
+      const auto any_param = visitParam(param->param());
+      params.push_back(std::any_cast<Параметр*>(any_param));
+    }
+    асд_дані_дія->кількість_параметрів = params.size();
+    асд_дані_дія->параметри = VecToArr(params);
+    std::vector<АСДЗначення*> types;
+    if (ctx->d_type) {
+      for (const auto& type : ctx->d_type->type()) {
+        types.push_back(AAV(visitContext(type)));
+      }
+    }
+    асд_дані_дія->кількість_типів_результату = types.size();
+    асд_дані_дія->типи_результату = VecToArr(types);
+    std::vector<АСДЗначення*> body;
+    body.push_back(AAV(visitContext(ctx->d_body)));
+    асд_дані_дія->тіло = AAVecToList(body);
+    const auto асд_значення_дія = AV(this, ctx, АСДВидДія, асд_дані_дія);
+    return асд_значення_дія;
+  }
+
   std::any MavkaASTVisitor::visitStructure_define(
       MavkaParser::Structure_defineContext* ctx) {
     const auto асд_дані_структура = new АСДДаніСтруктура();
-    асд_дані_структура->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    if (ctx->id) {
+      асд_дані_структура->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    } else {
+      асд_дані_структура->ідентифікатор = nullptr;
+    }
     if (ctx->s_parent) {
       асд_дані_структура->предок = AAV(visitContext(ctx->s_parent));
     } else {
@@ -698,7 +758,12 @@ namespace mavka::parser {
   std::any MavkaASTVisitor::visitDiia_define(
       MavkaParser::Diia_defineContext* ctx) {
     const auto асд_дані_дія = new АСДДаніДія();
-    асд_дані_дія->ідентифікатор = ІД(this, ctx->d_name, ctx->d_name->getText());
+    if (ctx->d_name) {
+      асд_дані_дія->ідентифікатор =
+          ІД(this, ctx->d_name, ctx->d_name->getText());
+    } else {
+      асд_дані_дія->ідентифікатор = nullptr;
+    }
     std::vector<Параметр*> params;
     for (const auto& param : ctx->diia_param()) {
       const auto any_param = visitParam(param->param());
@@ -706,7 +771,6 @@ namespace mavka::parser {
     }
     асд_дані_дія->кількість_параметрів = params.size();
     асд_дані_дія->параметри = VecToArr(params);
-
     std::vector<АСДЗначення*> types;
     if (ctx->d_type) {
       for (const auto& type : ctx->d_type->type()) {
@@ -773,6 +837,52 @@ namespace mavka::parser {
     return AV(this, ctx, АСДВидПоки, асд_дані_поки);
   }
 
+  std::any MavkaASTVisitor::visitEach(MavkaParser::EachContext* ctx) {
+    const auto асд_дані_перебрати = new АСДДаніПеребрати();
+    асд_дані_перебрати->обʼєкт = AAV(visitContext(ctx->object));
+    асд_дані_перебрати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    if (ctx->body()) {
+      асд_дані_перебрати->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
+    } else {
+      асд_дані_перебрати->тіло = AAVecToList({});
+    }
+    return AV(this, ctx, АСДВидПеребрати, асд_дані_перебрати);
+  }
+
+  std::any MavkaASTVisitor::visitLoop(MavkaParser::LoopContext* ctx) {
+    const auto асд_дані_цикл = new АСДДаніЦикл();
+    std::vector<АСДЗначення*> start;
+    start.push_back(AAV(visitLoop_part(ctx->start)));
+    асд_дані_цикл->старт = AAVecToList(start);
+    асд_дані_цикл->умова = AAV(visitContext(ctx->cond));
+    std::vector<АСДЗначення*> iter;
+    start.push_back(AAV(visitLoop_part(ctx->iter)));
+    асд_дані_цикл->ітерація = AAVecToList(iter);
+    if (ctx->body()) {
+      асд_дані_цикл->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
+    } else {
+      асд_дані_цикл->тіло = AAVecToList({});
+    }
+    return AV(this, ctx, АСДВидЦикл, асд_дані_цикл);
+  }
+
+  std::any MavkaASTVisitor::visitLoop_part(MavkaParser::Loop_partContext* ctx) {
+    if (ctx->assign() != nullptr) {
+      return visitAssign(ctx->assign());
+    }
+    if (ctx->set() != nullptr) {
+      return visitSet(ctx->set());
+    }
+    if (ctx->position_set() != nullptr) {
+      return visitPosition_set(ctx->position_set());
+    }
+    if (ctx->expr() != nullptr) {
+      return visitContext(ctx->expr());
+    }
+    std::cout << "Unknown loop part" << std::endl;
+    return nullptr;
+  }
+
   std::any MavkaASTVisitor::visitBody(MavkaParser::BodyContext* ctx) {
     std::vector<АСДЗначення*> elements;
     for (const auto& bodyElement : ctx->body_element()) {
@@ -804,6 +914,12 @@ namespace mavka::parser {
     }
     if (ctx->while_() != nullptr) {
       return visitWhile(ctx->while_());
+    }
+    if (ctx->each() != nullptr) {
+      return visitEach(ctx->each());
+    }
+    if (ctx->loop() != nullptr) {
+      return visitLoop(ctx->loop());
     }
     if (ctx->expr() != nullptr) {
       return visitContext(ctx->expr());

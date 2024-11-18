@@ -25,9 +25,19 @@ public:
 
     virtual std::any visitAtom_nested(MavkaParser::Atom_nestedContext *context) = 0;
 
+    virtual std::any visitOperation_array(MavkaParser::Operation_arrayContext *context) = 0;
+
     virtual std::any visitOperation_string(MavkaParser::Operation_stringContext *context) = 0;
 
+    virtual std::any visitOperation_dict_empty(MavkaParser::Operation_dict_emptyContext *context) = 0;
+
+    virtual std::any visitOperation_dict(MavkaParser::Operation_dictContext *context) = 0;
+
+    virtual std::any visitOperation_object(MavkaParser::Operation_objectContext *context) = 0;
+
     virtual std::any visitAtom_get(MavkaParser::Atom_getContext *context) = 0;
+
+    virtual std::any visitOperation_string_multiline(MavkaParser::Operation_string_multilineContext *context) = 0;
 
     virtual std::any visitAtom_subject(MavkaParser::Atom_subjectContext *context) = 0;
 
@@ -47,10 +57,6 @@ public:
 
     virtual std::any visitOperation_gte(MavkaParser::Operation_gteContext *context) = 0;
 
-    virtual std::any visitOperation_dict_empty(MavkaParser::Operation_dict_emptyContext *context) = 0;
-
-    virtual std::any visitOperation_dict(MavkaParser::Operation_dictContext *context) = 0;
-
     virtual std::any visitOperation_neq(MavkaParser::Operation_neqContext *context) = 0;
 
     virtual std::any visitOperation_xor(MavkaParser::Operation_xorContext *context) = 0;
@@ -67,8 +73,6 @@ public:
 
     virtual std::any visitOperation_land(MavkaParser::Operation_landContext *context) = 0;
 
-    virtual std::any visitOperation_object(MavkaParser::Operation_objectContext *context) = 0;
-
     virtual std::any visitOperation_or(MavkaParser::Operation_orContext *context) = 0;
 
     virtual std::any visitOperation_pre_not(MavkaParser::Operation_pre_notContext *context) = 0;
@@ -78,8 +82,6 @@ public:
     virtual std::any visitOperation_div_div(MavkaParser::Operation_div_divContext *context) = 0;
 
     virtual std::any visitOperation_not_is(MavkaParser::Operation_not_isContext *context) = 0;
-
-    virtual std::any visitOperation_as(MavkaParser::Operation_asContext *context) = 0;
 
     virtual std::any visitOperation_atom(MavkaParser::Operation_atomContext *context) = 0;
 
@@ -94,8 +96,6 @@ public:
     virtual std::any visitOperation_gt(MavkaParser::Operation_gtContext *context) = 0;
 
     virtual std::any visitOperation_eq(MavkaParser::Operation_eqContext *context) = 0;
-
-    virtual std::any visitOperation_array(MavkaParser::Operation_arrayContext *context) = 0;
 
     virtual std::any visitOperation_pre_bw_not(MavkaParser::Operation_pre_bw_notContext *context) = 0;
 
@@ -151,6 +151,12 @@ public:
 
     virtual std::any visitExpr_operation(MavkaParser::Expr_operationContext *context) = 0;
 
+    virtual std::any visitExpr_diia(MavkaParser::Expr_diiaContext *context) = 0;
+
+    virtual std::any visitExpr_structure(MavkaParser::Expr_structureContext *context) = 0;
+
+    virtual std::any visitFunction(MavkaParser::FunctionContext *context) = 0;
+
     virtual std::any visitStructure_define(MavkaParser::Structure_defineContext *context) = 0;
 
     virtual std::any visitStructure_element(MavkaParser::Structure_elementContext *context) = 0;
@@ -168,6 +174,12 @@ public:
     virtual std::any visitIf(MavkaParser::IfContext *context) = 0;
 
     virtual std::any visitWhile(MavkaParser::WhileContext *context) = 0;
+
+    virtual std::any visitEach(MavkaParser::EachContext *context) = 0;
+
+    virtual std::any visitLoop_part(MavkaParser::Loop_partContext *context) = 0;
+
+    virtual std::any visitLoop(MavkaParser::LoopContext *context) = 0;
 
     virtual std::any visitBody(MavkaParser::BodyContext *context) = 0;
 

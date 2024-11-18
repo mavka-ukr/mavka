@@ -9,23 +9,23 @@ file: f_program=program EOF;
 program: nls body_element (nl body_element)* nls;
 
 atom: '(' nls expr nls ')' #atom_nested
+    | '(' nls (object_arg (nls ',' nls object_arg)*)? nls ')' #operation_object
+    | '[' nls '=' nls ']' #operation_dict_empty
+    | '[' nls dict_arg (nls ',' nls dict_arg)* nls ']' #operation_dict
+    | '[' nls (expr (nls ',' nls expr)*)? nls ']' #operation_array
     | (tt=ID)? STRING #operation_string
+    | (tt=ID)? STRING_MULTILINE #operation_string_multiline
     | (tt=ID)? CHARACTER #operation_symbol
     | id=ID #atom_subject
     | object=atom nls '.' nls id=ID #atom_get
     | object=atom nls '[' nls position=expr nls ']' #atom_position_get
     | object=atom '(' nls (call_arg nls (nls ',' nls call_arg)*)? nls ')' #atom_call;
 object_arg: id=ID nls '=' nls expr;
-dict_arg: (key_number=NUMBER | ((key_string_tt=ID)? key_string=STRING) | ((key_symbol_tt=ID)? key_symbol=CHARACTER)) nls '=' nls value=expr;
+dict_arg: (key_number=NUMBER | ((key_string_tt=ID)? key_string=STRING) | ((key_stringml_tt=ID)? key_stringml=STRING_MULTILINE) | ((key_symbol_tt=ID)? key_symbol=CHARACTER)) nls '=' nls value=expr;
 call_arg: (id=ID nls '=' nls)? expr;
 
 operation: NUMBER #operation_number
          | atom #operation_atom
-         | '(' nls (object_arg (nls ',' nls object_arg)*)? nls ')' #operation_object
-         | '[' nls '=' nls ']' #operation_dict_empty
-         | '[' nls dict_arg (nls ',' nls dict_arg)* nls ']' #operation_dict
-         | '[' nls (expr (nls ',' nls expr)*)? nls ']' #operation_array
-         | left=operation nls op='як' nls (right_type=type) #operation_as
          | op='!' nls right=operation #operation_pre_not
          | op='~' nls right=operation #operation_pre_bw_not
          | op='+' nls right=operation #operation_pre_plus
@@ -75,7 +75,10 @@ op_not_is: 'не' 'є';
 
 gendef: ID;
 
-expr: operation #expr_operation;
+expr: operation #expr_operation
+    | diia_define #expr_diia
+    | structure_define #expr_structure
+    | '(' nls (diia_param nls (',' nls diia_param)*)? nls ')' (d_type=types)? ':' d_body=expr #function;
 
 structure_define: 'структура' id=ID ('є' s_parent=atom)? nl (structure_element nls (nl nls structure_element)*)? nls 'кінець';
 structure_element: param;
@@ -92,6 +95,11 @@ if: 'якщо' cond=expr nl (ifok=body nl)? (('інакше' nl ifnot=body nl)? 
 
 while: 'поки' cond=operation nl (w_body=body nl)? 'кінець';
 
+each: 'перебрати' object=atom 'як' id=ID nl (e_body=body nl)? 'кінець';
+
+loop_part: assign | set | position_set | expr;
+loop: 'цикл' start=loop_part nls ',' nls cond=operation nls ',' nls iter=loop_part nl (w_body=body nl)? 'кінець';
+
 body: body_element (nl body_element)*;
 body_element: structure_define
             | diia_define
@@ -100,6 +108,8 @@ body_element: structure_define
             | position_set
             | if
             | while
+            | each
+            | loop
             | expr
             | return
             | try
