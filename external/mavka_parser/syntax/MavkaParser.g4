@@ -111,7 +111,9 @@ return: 'вернути' (value_expr=expr)?;
 
 module: 'модуль' (id=ID)? nl (body_=body nl)? 'кінець';
 
-type: atom;
+type: '(' nls expr nls ')' #type_nested
+    | id=ID #type_subject
+    | object=type nls '.' nls id=ID #type_get;
 types: type (nls 'або' nls type)*;
 
 param: id=ID (types)? ('=' expr)?;

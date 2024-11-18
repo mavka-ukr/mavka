@@ -253,8 +253,14 @@ public:
   virtual void enterModule(MavkaParser::ModuleContext * /*ctx*/) override { }
   virtual void exitModule(MavkaParser::ModuleContext * /*ctx*/) override { }
 
-  virtual void enterType(MavkaParser::TypeContext * /*ctx*/) override { }
-  virtual void exitType(MavkaParser::TypeContext * /*ctx*/) override { }
+  virtual void enterType_get(MavkaParser::Type_getContext * /*ctx*/) override { }
+  virtual void exitType_get(MavkaParser::Type_getContext * /*ctx*/) override { }
+
+  virtual void enterType_nested(MavkaParser::Type_nestedContext * /*ctx*/) override { }
+  virtual void exitType_nested(MavkaParser::Type_nestedContext * /*ctx*/) override { }
+
+  virtual void enterType_subject(MavkaParser::Type_subjectContext * /*ctx*/) override { }
+  virtual void exitType_subject(MavkaParser::Type_subjectContext * /*ctx*/) override { }
 
   virtual void enterTypes(MavkaParser::TypesContext * /*ctx*/) override { }
   virtual void exitTypes(MavkaParser::TypesContext * /*ctx*/) override { }

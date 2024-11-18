@@ -251,8 +251,14 @@ public:
   virtual void enterModule(MavkaParser::ModuleContext *ctx) = 0;
   virtual void exitModule(MavkaParser::ModuleContext *ctx) = 0;
 
-  virtual void enterType(MavkaParser::TypeContext *ctx) = 0;
-  virtual void exitType(MavkaParser::TypeContext *ctx) = 0;
+  virtual void enterType_get(MavkaParser::Type_getContext *ctx) = 0;
+  virtual void exitType_get(MavkaParser::Type_getContext *ctx) = 0;
+
+  virtual void enterType_nested(MavkaParser::Type_nestedContext *ctx) = 0;
+  virtual void exitType_nested(MavkaParser::Type_nestedContext *ctx) = 0;
+
+  virtual void enterType_subject(MavkaParser::Type_subjectContext *ctx) = 0;
+  virtual void exitType_subject(MavkaParser::Type_subjectContext *ctx) = 0;
 
   virtual void enterTypes(MavkaParser::TypesContext *ctx) = 0;
   virtual void exitTypes(MavkaParser::TypesContext *ctx) = 0;
