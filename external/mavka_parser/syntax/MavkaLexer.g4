@@ -96,8 +96,7 @@ fragment ID_CONTINUE
     | ID_START
     ;
 
-SYMBOL: '\'' ( ~['\n\r] | '\\\'' ) '\'';
-STRING_MULTILINE: '"' '"' '"' TRIPPLE_QUOTED_STRING_PART*? '"' '"' '"';
+STRING_MULTILINE: '"' '"' '"' (~["] | '\\"')* '"' '"' '"';
 STRING: '"' ( ~["\n\r] | '\\"' )* '"';
 CHARACTER: '\'' ( ~['\n\r] | '\\\'' )* '\'';
 
@@ -106,11 +105,3 @@ LINE_COMMENT: ';;' (LINE_COMMENT | ~[\r\n])* -> channel(HIDDEN);
 
 NL: ( '\r'? '\n' );
 WS: (' ' | '\t') -> channel(HIDDEN);
-
-fragment TRIPPLE_QUOTED_STRING_PART
-    : (ESCAPED_TRIPPLE_QUOTE | .)+?
-    ;
-
-fragment ESCAPED_TRIPPLE_QUOTE
-    : '\\"'
-    ;

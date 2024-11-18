@@ -362,9 +362,9 @@ namespace mavka::parser {
       MavkaParser::Operation_symbolContext* ctx) {
     if (ctx->tt != nullptr) {
       return visitSymbolText(this, ІД(this, ctx->tt, ctx->tt->getText()),
-                             ctx->SYMBOL()->getSymbol());
+                             ctx->CHARACTER()->getSymbol());
     } else {
-      return visitSymbolText(this, nullptr, ctx->SYMBOL()->getSymbol());
+      return visitSymbolText(this, nullptr, ctx->CHARACTER()->getSymbol());
     }
   }
 
