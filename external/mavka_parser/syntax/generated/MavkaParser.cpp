@@ -97,13 +97,12 @@ void mavkaparserParserInitialize() {
       "DOT", "PLUS", "MINUS", "MULTIPLY", "DIVIDE", "MOD", "POWER", "AND", 
       "OR", "PAREN_OPEN", "PAREN_CLOSE", "BRACKET_OPEN", "BRACKET_CLOSE", 
       "QUESTION", "COLON", "TILDA", "QUOTE", "DOUBLE_QUOTE", "EXCLAMATION", 
-      "COMA", "NUMBER", "INTEGER", "FLOAT", "HEX", "BIN", "ID", "SYMBOL", 
-      "STRING_MULTILINE", "STRING", "CHARACTER", "COMMENT", "LINE_COMMENT", 
-      "NL", "WS"
+      "COMA", "NUMBER", "INTEGER", "FLOAT", "HEX", "BIN", "ID", "STRING_MULTILINE", 
+      "STRING", "CHARACTER", "COMMENT", "LINE_COMMENT", "NL", "WS"
     }
   );
   static const int32_t serializedATNSegment[] = {
-  	4,1,75,765,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
+  	4,1,74,765,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
   	7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,14,7,
   	14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,7,20,2,21,7,
   	21,2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,2,26,7,26,2,27,7,27,2,28,7,
@@ -159,7 +158,7 @@ void mavkaparserParserInitialize() {
   	755,8,46,11,46,12,46,756,1,47,5,47,760,8,47,10,47,12,47,763,9,47,1,47,
   	0,2,4,12,48,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,
   	42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,
-  	88,90,92,94,0,3,2,0,27,27,41,41,2,0,26,26,40,40,2,0,67,67,70,70,825,0,
+  	88,90,92,94,0,3,2,0,27,27,41,41,2,0,26,26,40,40,2,0,67,67,69,69,825,0,
   	96,1,0,0,0,2,99,1,0,0,0,4,127,1,0,0,0,6,168,1,0,0,0,8,183,1,0,0,0,10,
   	195,1,0,0,0,12,276,1,0,0,0,14,449,1,0,0,0,16,452,1,0,0,0,18,455,1,0,0,
   	0,20,458,1,0,0,0,22,461,1,0,0,0,24,465,1,0,0,0,26,471,1,0,0,0,28,473,
@@ -176,8 +175,8 @@ void mavkaparserParserInitialize() {
   	1,0,0,0,108,106,1,0,0,0,109,110,3,94,47,0,110,3,1,0,0,0,111,112,6,2,-1,
   	0,112,113,5,51,0,0,113,114,3,94,47,0,114,115,3,46,23,0,115,116,3,94,47,
   	0,116,117,5,52,0,0,117,128,1,0,0,0,118,120,5,67,0,0,119,118,1,0,0,0,119,
-  	120,1,0,0,0,120,121,1,0,0,0,121,128,5,70,0,0,122,124,5,67,0,0,123,122,
-  	1,0,0,0,123,124,1,0,0,0,124,125,1,0,0,0,125,128,5,68,0,0,126,128,5,67,
+  	120,1,0,0,0,120,121,1,0,0,0,121,128,5,69,0,0,122,124,5,67,0,0,123,122,
+  	1,0,0,0,123,124,1,0,0,0,124,125,1,0,0,0,125,128,5,70,0,0,126,128,5,67,
   	0,0,127,111,1,0,0,0,127,119,1,0,0,0,127,123,1,0,0,0,127,126,1,0,0,0,128,
   	165,1,0,0,0,129,130,10,3,0,0,130,131,3,94,47,0,131,132,5,42,0,0,132,133,
   	3,94,47,0,133,134,5,67,0,0,134,164,1,0,0,0,135,136,10,2,0,0,136,137,3,
@@ -192,8 +191,8 @@ void mavkaparserParserInitialize() {
   	165,166,1,0,0,0,166,5,1,0,0,0,167,165,1,0,0,0,168,169,5,67,0,0,169,170,
   	3,94,47,0,170,171,5,39,0,0,171,172,3,94,47,0,172,173,3,46,23,0,173,7,
   	1,0,0,0,174,184,5,62,0,0,175,177,5,67,0,0,176,175,1,0,0,0,176,177,1,0,
-  	0,0,177,178,1,0,0,0,178,184,5,70,0,0,179,181,5,67,0,0,180,179,1,0,0,0,
-  	180,181,1,0,0,0,181,182,1,0,0,0,182,184,5,68,0,0,183,174,1,0,0,0,183,
+  	0,0,177,178,1,0,0,0,178,184,5,69,0,0,179,181,5,67,0,0,180,179,1,0,0,0,
+  	180,181,1,0,0,0,181,182,1,0,0,0,182,184,5,70,0,0,183,174,1,0,0,0,183,
   	176,1,0,0,0,183,180,1,0,0,0,184,185,1,0,0,0,185,186,3,94,47,0,186,187,
   	5,39,0,0,187,188,3,94,47,0,188,189,3,46,23,0,189,9,1,0,0,0,190,191,5,
   	67,0,0,191,192,3,94,47,0,192,193,5,39,0,0,193,194,3,94,47,0,194,196,1,
@@ -352,9 +351,9 @@ void mavkaparserParserInitialize() {
   	740,741,1,0,0,0,741,745,3,92,46,0,742,743,3,66,33,0,743,744,3,92,46,0,
   	744,746,1,0,0,0,745,742,1,0,0,0,745,746,1,0,0,0,746,747,1,0,0,0,747,748,
   	5,1,0,0,748,89,1,0,0,0,749,751,5,22,0,0,750,752,3,46,23,0,751,750,1,0,
-  	0,0,751,752,1,0,0,0,752,91,1,0,0,0,753,755,5,74,0,0,754,753,1,0,0,0,755,
+  	0,0,751,752,1,0,0,0,752,91,1,0,0,0,753,755,5,73,0,0,754,753,1,0,0,0,755,
   	756,1,0,0,0,756,754,1,0,0,0,756,757,1,0,0,0,757,93,1,0,0,0,758,760,5,
-  	74,0,0,759,758,1,0,0,0,760,763,1,0,0,0,761,759,1,0,0,0,761,762,1,0,0,
+  	73,0,0,759,758,1,0,0,0,760,763,1,0,0,0,761,759,1,0,0,0,761,762,1,0,0,
   	0,762,95,1,0,0,0,763,761,1,0,0,0,60,106,119,123,127,155,158,163,165,176,
   	180,183,195,212,215,236,252,255,276,444,446,471,479,484,490,495,500,516,
   	527,530,538,541,547,550,562,565,570,576,587,610,617,622,630,640,657,661,
@@ -772,8 +771,8 @@ std::any MavkaParser::Atom_position_getContext::accept(tree::ParseTreeVisitor *v
 }
 //----------------- Operation_symbolContext ------------------------------------------------------------------
 
-tree::TerminalNode* MavkaParser::Operation_symbolContext::SYMBOL() {
-  return getToken(MavkaParser::SYMBOL, 0);
+tree::TerminalNode* MavkaParser::Operation_symbolContext::CHARACTER() {
+  return getToken(MavkaParser::CHARACTER, 0);
 }
 
 tree::TerminalNode* MavkaParser::Operation_symbolContext::ID() {
@@ -933,7 +932,7 @@ MavkaParser::AtomContext* MavkaParser::atom(int precedence) {
         antlrcpp::downCast<Operation_symbolContext *>(_localctx)->tt = match(MavkaParser::ID);
       }
       setState(125);
-      match(MavkaParser::SYMBOL);
+      match(MavkaParser::CHARACTER);
       break;
     }
 
@@ -1020,7 +1019,7 @@ MavkaParser::AtomContext* MavkaParser::atom(int precedence) {
 
           _la = _input->LA(1);
           if (((((_la - 43) & ~ 0x3fULL) == 0) &&
-            ((1ULL << (_la - 43)) & 185222403) != 0)) {
+            ((1ULL << (_la - 43)) & 218776835) != 0)) {
             setState(146);
             call_arg();
             setState(147);
@@ -1183,8 +1182,8 @@ tree::TerminalNode* MavkaParser::Dict_argContext::STRING() {
   return getToken(MavkaParser::STRING, 0);
 }
 
-tree::TerminalNode* MavkaParser::Dict_argContext::SYMBOL() {
-  return getToken(MavkaParser::SYMBOL, 0);
+tree::TerminalNode* MavkaParser::Dict_argContext::CHARACTER() {
+  return getToken(MavkaParser::CHARACTER, 0);
 }
 
 tree::TerminalNode* MavkaParser::Dict_argContext::ID() {
@@ -1263,7 +1262,7 @@ MavkaParser::Dict_argContext* MavkaParser::dict_arg() {
         antlrcpp::downCast<Dict_argContext *>(_localctx)->key_symbol_tt = match(MavkaParser::ID);
       }
       setState(182);
-      antlrcpp::downCast<Dict_argContext *>(_localctx)->key_symbol = match(MavkaParser::SYMBOL);
+      antlrcpp::downCast<Dict_argContext *>(_localctx)->key_symbol = match(MavkaParser::CHARACTER);
       break;
     }
 
@@ -3047,7 +3046,7 @@ MavkaParser::OperationContext* MavkaParser::operation(int precedence) {
 
       _la = _input->LA(1);
       if (((((_la - 43) & ~ 0x3fULL) == 0) &&
-        ((1ULL << (_la - 43)) & 185222403) != 0)) {
+        ((1ULL << (_la - 43)) & 218776835) != 0)) {
         setState(244);
         expr();
         setState(252);
@@ -5389,7 +5388,7 @@ MavkaParser::Diia_defineContext* MavkaParser::diia_define() {
 
     _la = _input->LA(1);
     if (((((_la - 51) & ~ 0x3fULL) == 0) &&
-      ((1ULL << (_la - 51)) & 720897) != 0)) {
+      ((1ULL << (_la - 51)) & 851969) != 0)) {
       setState(569);
       antlrcpp::downCast<Diia_defineContext *>(_localctx)->d_type = types();
     }
@@ -5401,7 +5400,7 @@ MavkaParser::Diia_defineContext* MavkaParser::diia_define() {
     _la = _input->LA(1);
     if ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 5920008098487526220) != 0) || ((((_la - 67) & ~ 0x3fULL) == 0) &&
-      ((1ULL << (_la - 67)) & 11) != 0)) {
+      ((1ULL << (_la - 67)) & 13) != 0)) {
       setState(573);
       antlrcpp::downCast<Diia_defineContext *>(_localctx)->d_body = body();
       setState(574);
@@ -5850,7 +5849,7 @@ MavkaParser::IfContext* MavkaParser::if_() {
     _la = _input->LA(1);
     if ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 5920008098487526220) != 0) || ((((_la - 67) & ~ 0x3fULL) == 0) &&
-      ((1ULL << (_la - 67)) & 11) != 0)) {
+      ((1ULL << (_la - 67)) & 13) != 0)) {
       setState(607);
       antlrcpp::downCast<IfContext *>(_localctx)->ifok = body();
       setState(608);
@@ -5982,7 +5981,7 @@ MavkaParser::WhileContext* MavkaParser::while_() {
     _la = _input->LA(1);
     if ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 5920008098487526220) != 0) || ((((_la - 67) & ~ 0x3fULL) == 0) &&
-      ((1ULL << (_la - 67)) & 11) != 0)) {
+      ((1ULL << (_la - 67)) & 13) != 0)) {
       setState(627);
       antlrcpp::downCast<WhileContext *>(_localctx)->w_body = body();
       setState(628);
@@ -6363,7 +6362,7 @@ MavkaParser::ReturnContext* MavkaParser::return_() {
 
     _la = _input->LA(1);
     if (((((_la - 43) & ~ 0x3fULL) == 0) &&
-      ((1ULL << (_la - 43)) & 185222403) != 0)) {
+      ((1ULL << (_la - 43)) & 218776835) != 0)) {
       setState(660);
       antlrcpp::downCast<ReturnContext *>(_localctx)->value_expr = expr();
     }
@@ -6465,7 +6464,7 @@ MavkaParser::ModuleContext* MavkaParser::module() {
     _la = _input->LA(1);
     if ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 5920008098487526220) != 0) || ((((_la - 67) & ~ 0x3fULL) == 0) &&
-      ((1ULL << (_la - 67)) & 11) != 0)) {
+      ((1ULL << (_la - 67)) & 13) != 0)) {
       setState(668);
       antlrcpp::downCast<ModuleContext *>(_localctx)->body_ = body();
       setState(669);
@@ -6713,7 +6712,7 @@ MavkaParser::ParamContext* MavkaParser::param() {
 
     _la = _input->LA(1);
     if (((((_la - 51) & ~ 0x3fULL) == 0) &&
-      ((1ULL << (_la - 51)) & 720897) != 0)) {
+      ((1ULL << (_la - 51)) & 851969) != 0)) {
       setState(689);
       types();
     }
@@ -7211,7 +7210,7 @@ MavkaParser::TryContext* MavkaParser::try_() {
     _la = _input->LA(1);
     if ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 5920008098487526220) != 0) || ((((_la - 67) & ~ 0x3fULL) == 0) &&
-      ((1ULL << (_la - 67)) & 11) != 0)) {
+      ((1ULL << (_la - 67)) & 13) != 0)) {
       setState(732);
       antlrcpp::downCast<TryContext *>(_localctx)->t_body = body();
       setState(733);
@@ -7235,7 +7234,7 @@ MavkaParser::TryContext* MavkaParser::try_() {
     _la = _input->LA(1);
     if ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 5920008098487526220) != 0) || ((((_la - 67) & ~ 0x3fULL) == 0) &&
-      ((1ULL << (_la - 67)) & 11) != 0)) {
+      ((1ULL << (_la - 67)) & 13) != 0)) {
       setState(742);
       antlrcpp::downCast<TryContext *>(_localctx)->t_catch_body = body();
       setState(743);
@@ -7314,7 +7313,7 @@ MavkaParser::ThrowContext* MavkaParser::throw_() {
 
     _la = _input->LA(1);
     if (((((_la - 43) & ~ 0x3fULL) == 0) &&
-      ((1ULL << (_la - 43)) & 185222403) != 0)) {
+      ((1ULL << (_la - 43)) & 218776835) != 0)) {
       setState(750);
       antlrcpp::downCast<ThrowContext *>(_localctx)->t_value = expr();
     }
