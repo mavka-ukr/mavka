@@ -417,7 +417,7 @@ namespace mavka::parser {
     асд_дані_текст->ідентифікатор = ідентифікатор;
     асд_дані_текст->значення =
         strdup(replaceBackslashes(
-                   token->getText().substr(3, token->getText().size() - 4))
+                   token->getText().substr(3, token->getText().size() - 6))
                    .c_str());
     return AV(visitor, token, АСДВидТекст, асд_дані_текст);
   }
