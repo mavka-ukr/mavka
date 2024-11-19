@@ -8,6 +8,7 @@
 зовнішня дія strcmp(str1: адреса<п8>, str2: адреса<п8>): int;
 зовнішня дія strcmp32(str1: адреса<п32>, str2: адреса<п32>): int;
 зовнішня дія strlen(str: адреса<п8>): int;
+зовнішня дія strlen32(str: адреса<п32>): int;
 зовнішня дія exit(status: int);
 зовнішня дія mama_convert_utf32_to_utf8(input: адреса<unsigned_int>): адреса<unsigned_char>;
 зовнішня дія mama_print_utf8(value: адреса<unsigned_char>);
