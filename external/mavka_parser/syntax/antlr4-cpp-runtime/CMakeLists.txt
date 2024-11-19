@@ -142,4 +142,4 @@ add_library(${ANTLR4_CPP_RUNTIME} ${ANTLR4_CPP_RUNTIME_SRC})
 
 target_include_directories(${ANTLR4_CPP_RUNTIME} PUBLIC src)
 
-target_compile_options(${ANTLR4_CPP_RUNTIME} PRIVATE -w -O3)
+target_compile_options(${ANTLR4_CPP_RUNTIME} PRIVATE -O3)
