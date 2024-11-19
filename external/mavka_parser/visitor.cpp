@@ -794,6 +794,15 @@ namespace mavka::parser {
   std::any MavkaASTVisitor::visitDiia_define(
       MavkaParser::Diia_defineContext* ctx) {
     const auto асд_дані_дія = new АСДДаніДія();
+    if (ctx->d_structure) {
+      const auto асд_дані_звернутись = new АСДДаніЗвернутись();
+      асд_дані_звернутись->ідентифікатор =
+          ІД(this, ctx->d_structure, ctx->d_structure->getText());
+      асд_дані_дія->структура_ =
+          AV(this, ctx, АСДВидЗвернутись, асд_дані_звернутись);
+    } else {
+      асд_дані_дія->структура_ = nullptr;
+    }
     if (ctx->d_name) {
       асд_дані_дія->ідентифікатор =
           ІД(this, ctx->d_name, ctx->d_name->getText());
