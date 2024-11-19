@@ -16,5 +16,6 @@ add_subdirectory(syntax)
 
 add_library(${MAVKA_PARSER} ${MAVKA_PARSER_SRC})
 
+target_compile_options(${MAVKA_PARSER} PRIVATE -O3)
 target_include_directories(${MAVKA_PARSER} PUBLIC .)
 target_link_libraries(${MAVKA_PARSER} mavka_syntax)

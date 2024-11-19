@@ -8,5 +8,5 @@ file(READ "../ВЕРСІЯ" MAVKA_VERSION)
 add_subdirectory(mavka_parser)
 
 add_library(mavka_external main.cpp extension.cpp)
-target_compile_options(mavka_external PUBLIC -fexceptions -DMAVKA_VERSION="${MAVKA_EXTERNAL_VERSION}")
+target_compile_options(mavka_external PUBLIC -O3 -fexceptions -DMAVKA_VERSION="${MAVKA_EXTERNAL_VERSION}")
 target_link_libraries(mavka_external PUBLIC mavka_parser)
