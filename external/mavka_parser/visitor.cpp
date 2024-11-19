@@ -358,13 +358,45 @@ namespace mavka::parser {
     return visitNumberText(this, ctx->NUMBER()->getSymbol());
   }
 
+  void replaceAll(std::string& value,
+                  const std::string& from,
+                  const std::string& to) {
+    if (from.empty()) {
+      return;
+    }
+    size_t start_pos = 0;
+    while ((start_pos = value.find(from, start_pos)) != std::string::npos) {
+      value.replace(start_pos, from.length(), to);
+      start_pos += to.length();
+    }
+  }
+
+  inline std::string replaceBackslashes(std::string value) {
+    replaceAll(value, "\\n", "\n");
+    replaceAll(value, "\\н", "\n");
+    replaceAll(value, "\\\\", "\\");
+    replaceAll(value, "\\t", "\t");
+    replaceAll(value, "\\?", "?");
+    replaceAll(value, "\\v", "\v");
+    replaceAll(value, "\\\'", "'");
+    replaceAll(value, "\\b", "\b");
+    replaceAll(value, "\\\"", "\"");
+    replaceAll(value, "\\r", "\r");
+    replaceAll(value, "\\0", "\0");
+    replaceAll(value, "\\f", "\f");
+    replaceAll(value, "\\a", "\a");
+    return value;
+  }
+
   std::any visitStringText(MavkaASTVisitor* visitor,
                            Ідентифікатор* ідентифікатор,
                            antlr4::Token* token) {
     const auto асд_дані_текст = new АСДДаніТекст();
     асд_дані_текст->ідентифікатор = ідентифікатор;
     асд_дані_текст->значення =
-        strdup(token->getText().substr(1, token->getText().size() - 2).c_str());
+        strdup(replaceBackslashes(
+                   token->getText().substr(1, token->getText().size() - 2))
+                   .c_str());
     return AV(visitor, token, АСДВидТекст, асд_дані_текст);
   }
 
@@ -384,7 +416,9 @@ namespace mavka::parser {
     const auto асд_дані_текст = new АСДДаніТекст();
     асд_дані_текст->ідентифікатор = ідентифікатор;
     асд_дані_текст->значення =
-        strdup(token->getText().substr(3, token->getText().size() - 4).c_str());
+        strdup(replaceBackslashes(
+                   token->getText().substr(3, token->getText().size() - 4))
+                   .c_str());
     return AV(visitor, token, АСДВидТекст, асд_дані_текст);
   }
 
@@ -406,7 +440,9 @@ namespace mavka::parser {
     const auto асд_дані_текст = new АСДДаніСимвол();
     асд_дані_текст->ідентифікатор = ідентифікатор;
     асд_дані_текст->значення =
-        strdup(token->getText().substr(1, token->getText().size() - 2).c_str());
+        strdup(replaceBackslashes(
+                   token->getText().substr(1, token->getText().size() - 2))
+                   .c_str());
     return AV(visitor, token, АСДВидСимвол, асд_дані_текст);
   }
 
