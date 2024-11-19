@@ -63,3 +63,9 @@ extern "C" int strcmp32(char32_t* a, char32_t* b) {
   std::u32string ub = b;
   return strcmp(utf32conv.to_bytes(ua).c_str(), utf32conv.to_bytes(ub).c_str());
 }
+
+extern "C" int strlen32(char32_t* a) {
+  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> utf32conv;
+  std::u32string ua = a;
+  return strlen(utf32conv.to_bytes(ua).c_str());
+}
