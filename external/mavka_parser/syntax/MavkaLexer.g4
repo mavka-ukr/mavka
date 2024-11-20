@@ -74,8 +74,8 @@ fragment FLOAT_START: DIGIT;
 fragment FLOAT_CONTINUE: ('_')? DIGIT;
 
 HEX: '0' ('ш' | 'Ш') HEX_START HEX_CONTINUE*;
-fragment HEX_START: ('А' | 'а' | 'Б' | 'б' | 'В' | 'в' | 'Г' | 'г' | 'Ґ' | 'ґ' | 'Д' | 'д' | DIGIT);
-fragment HEX_CONTINUE: ('_')? ('А' | 'а' | 'Б' | 'б' | 'В' | 'в' | 'Г' | 'г' | 'Ґ' | 'ґ' | 'Д' | 'д' | DIGIT);
+fragment HEX_START: ('А' | 'а' | 'Б' | 'б' | 'В' | 'в' | 'Г' | 'г' | 'Д' | 'д' | 'Е' | 'е' | DIGIT);
+fragment HEX_CONTINUE: ('_')? ('А' | 'а' | 'Б' | 'б' | 'В' | 'в' | 'Г' | 'г' | 'Д' | 'д' | 'Е' | 'е' | DIGIT);
 
 BIN: '0' ('д' | 'Д') BIN_START BIN_CONTINUE*;
 fragment BIN_START: ('0' | '1');
