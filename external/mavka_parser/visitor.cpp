@@ -760,7 +760,9 @@ namespace mavka::parser {
     асд_дані_дія->кількість_типів_результату = types.size();
     асд_дані_дія->типи_результату = VecToArr(types);
     std::vector<АСДЗначення*> body;
-    body.push_back(AAV(visitContext(ctx->d_body)));
+    const auto вернути_асд_дані = new АСДДаніВернути();
+    вернути_асд_дані->значення = AAV(visitContext(ctx->d_body));
+    body.push_back(AV(this, ctx, АСДВидВернути, вернути_асд_дані));
     асд_дані_дія->тіло = AAVecToList(body);
     const auto асд_значення_дія = AV(this, ctx, АСДВидДія, асд_дані_дія);
     return асд_значення_дія;
