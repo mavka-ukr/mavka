@@ -10,6 +10,8 @@
 зовнішня дія strlen(str: адреса<п8>): int;
 зовнішня дія strlen32(str: адреса<п32>): int;
 зовнішня дія exit(status: int);
+зовнішня дія floor(value: double): double;
+зовнішня дія pow(base: double, exponent: double): double;
 зовнішня дія mama_convert_utf32_to_utf8(input: адреса<unsigned_int>): адреса<unsigned_char>;
 зовнішня дія mama_print_utf8(value: адреса<unsigned_char>);
 зовнішня дія mama_println_utf8(value: адреса<unsigned_char>);
