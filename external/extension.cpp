@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <iostream>
 #include <locale>
 
 extern "C" unsigned char* прочитати_файл(unsigned char* шлях) {
@@ -70,4 +71,14 @@ extern "C" int strlen32(char32_t* a) {
     len++;
   }
   return len;
+}
+
+extern "C" char* mavka_read_from_stdin(char* prefix) {
+  std::cout << prefix;
+  std::string line;
+  if (std::cin.eof()) {
+    return nullptr;
+  }
+  std::getline(std::cin, line);
+  return strdup(line.c_str());
 }
