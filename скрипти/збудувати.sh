@@ -8,7 +8,7 @@ export CC="clang"
 export CXX="clang++"
 export AR="llvm-ar"
 export RANLIB="llvm-ranlib"
-OUT="build-l/мавка"
+OUT="build-$PLATFORM/мавка"
 
 mkdir -p build-"$PLATFORM"/external
 cd build-"$PLATFORM"/external
