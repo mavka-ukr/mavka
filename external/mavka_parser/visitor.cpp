@@ -862,7 +862,11 @@ namespace mavka::parser {
   std::any MavkaASTVisitor::visitIf(MavkaParser::IfContext* ctx) {
     const auto асд_дані_якщо = new АСДДаніЯкщо();
     асд_дані_якщо->умова = AAV(visitContext(ctx->cond));
-    асд_дані_якщо->тіло = AAVecToList(AAVec(visitBody(ctx->ifok)));
+    if (ctx->ifok != nullptr) {
+      асд_дані_якщо->тіло = AAVecToList(AAVec(visitBody(ctx->ifok)));
+    } else {
+      асд_дані_якщо->тіло = AAVecToList({});
+    }
     if (ctx->ifnot != nullptr) {
       асд_дані_якщо->тіло_інакше = AAVecToList(AAVec(visitBody(ctx->ifnot)));
     } else if (ctx->ifnotif != nullptr) {
