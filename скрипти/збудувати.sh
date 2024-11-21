@@ -66,7 +66,6 @@ $CXX -o "$OUT" \
   .плавлення/МаМа/Утилізатор.ll \
   .плавлення/старт.ll \
   build-"$PLATFORM"/external/libmavka_external.a \
-  build-"$PLATFORM"/external/libmavka_external.a \
   build-"$PLATFORM"/external/mavka_parser/libmavka_parser.a \
   build-"$PLATFORM"/external/mavka_parser/syntax/libmavka_syntax.a \
   build-"$PLATFORM"/external/mavka_parser/syntax/antlr4-cpp-runtime/libantlr4_cpp_runtime.a
