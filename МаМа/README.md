@@ -16,3 +16,8 @@
 
 - [МаМа.в](./МаМа.в)
 - [https://машина.мавка.укр](https://машина.мавка.укр)
+
+## Приклади
+
+- [https://мавка.укр](https://мавка.укр)
+- [https://github.com/mavka-ukr/mavka](https://github.com/mavka-ukr/mavka)
