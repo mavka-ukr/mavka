@@ -82,3 +82,11 @@ extern "C" char* mavka_read_from_stdin(char* prefix) {
   std::getline(std::cin, line);
   return strdup(line.c_str());
 }
+
+extern "C" unsigned long mama_bitnot(unsigned long value) {
+  return ~value;
+}
+
+extern "C" double mama_negate(double value) {
+  return -value;
+}
