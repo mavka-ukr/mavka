@@ -203,6 +203,8 @@ public:
 
     virtual std::any visitTake_part(MavkaParser::Take_partContext *context) = 0;
 
+    virtual std::any visitTake_element(MavkaParser::Take_elementContext *context) = 0;
+
     virtual std::any visitGive(MavkaParser::GiveContext *context) = 0;
 
     virtual std::any visitGive_element(MavkaParser::Give_elementContext *context) = 0;
