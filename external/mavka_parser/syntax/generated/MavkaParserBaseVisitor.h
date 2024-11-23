@@ -311,6 +311,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitAssign_op(MavkaParser::Assign_opContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitSet(MavkaParser::SetContext *ctx) override {
     return visitChildren(ctx);
   }

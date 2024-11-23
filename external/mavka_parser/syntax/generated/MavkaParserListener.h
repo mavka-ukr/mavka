@@ -236,6 +236,9 @@ public:
   virtual void enterAssign(MavkaParser::AssignContext *ctx) = 0;
   virtual void exitAssign(MavkaParser::AssignContext *ctx) = 0;
 
+  virtual void enterAssign_op(MavkaParser::Assign_opContext *ctx) = 0;
+  virtual void exitAssign_op(MavkaParser::Assign_opContext *ctx) = 0;
+
   virtual void enterSet(MavkaParser::SetContext *ctx) = 0;
   virtual void exitSet(MavkaParser::SetContext *ctx) = 0;
 
