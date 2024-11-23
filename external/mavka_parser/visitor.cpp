@@ -836,10 +836,21 @@ namespace mavka::parser {
   }
 
   std::any MavkaASTVisitor::visitAssign(MavkaParser::AssignContext* ctx) {
-    const auto асд_дані_визначити = new АСДДаніВизначити();
-    асд_дані_визначити->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
-    асд_дані_визначити->значення = AAV(visitContext(ctx->value_expr));
-    return AV(this, ctx, АСДВидВизначити, асд_дані_визначити);
+    if (ctx->simpleas) {
+      const auto асд_дані_визначити = new АСДДаніВизначити();
+      асд_дані_визначити->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+      асд_дані_визначити->значення = AAV(visitContext(ctx->value_expr));
+      return AV(this, ctx, АСДВидВизначити, асд_дані_визначити);
+    } else if (ctx->parentas) {
+      const auto асд_дані_визначити_ззовні = new АСДДаніВизначитиЗзовні();
+      асд_дані_визначити_ззовні->ідентифікатор =
+          ІД(this, ctx->id, ctx->id->getText());
+      асд_дані_визначити_ззовні->значення = AAV(visitContext(ctx->value_expr));
+      return AV(this, ctx, АСДВидВизначитиЗзовні, асд_дані_визначити_ззовні);
+    } else {
+      std::cout << "Unknown assign type" << std::endl;
+      return nullptr;
+    }
   }
 
   std::any MavkaASTVisitor::visitSet(MavkaParser::SetContext* ctx) {
