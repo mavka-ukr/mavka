@@ -254,6 +254,12 @@ public:
   virtual void enterEach(MavkaParser::EachContext *ctx) = 0;
   virtual void exitEach(MavkaParser::EachContext *ctx) = 0;
 
+  virtual void enterEach_range_value(MavkaParser::Each_range_valueContext *ctx) = 0;
+  virtual void exitEach_range_value(MavkaParser::Each_range_valueContext *ctx) = 0;
+
+  virtual void enterEach_range(MavkaParser::Each_rangeContext *ctx) = 0;
+  virtual void exitEach_range(MavkaParser::Each_rangeContext *ctx) = 0;
+
   virtual void enterLoop_part(MavkaParser::Loop_partContext *ctx) = 0;
   virtual void exitLoop_part(MavkaParser::Loop_partContext *ctx) = 0;
 

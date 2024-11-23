@@ -96,7 +96,9 @@ if: 'якщо' cond=expr nl (ifok=body nl)? (('інакше' nl ifnot=body nl)? 
 
 while: 'поки' cond=operation nl (w_body=body nl)? 'кінець';
 
-each: 'перебрати' object=atom 'як' id=ID nl (e_body=body nl)? 'кінець';
+each: 'перебрати' (object=atom | each_range) 'як' id=ID nl (e_body=body nl)? 'кінець';
+each_range_value: erv_atom=atom | erv_number=NUMBER;
+each_range: from=each_range_value '.' '.' (incl='=')? to=each_range_value;
 
 loop_part: assign | set | position_set | expr;
 loop: 'цикл' start=loop_part nls ',' nls cond=operation nls ',' nls iter=loop_part nl (w_body=body nl)? 'кінець';
