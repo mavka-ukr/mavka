@@ -907,7 +907,7 @@ namespace mavka::parser {
     асд_дані_цикл->старт = AAVecToList(start);
     асд_дані_цикл->умова = AAV(visitContext(ctx->cond));
     std::vector<АСДЗначення*> iter;
-    start.push_back(AAV(visitLoop_part(ctx->iter)));
+    iter.push_back(AAV(visitLoop_part(ctx->iter)));
     асд_дані_цикл->ітерація = AAVecToList(iter);
     if (ctx->body()) {
       асд_дані_цикл->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
