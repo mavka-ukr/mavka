@@ -86,7 +86,7 @@ structure_element: param;
 diia_define: (d_async='тривала')? (d_spec='спец')? 'дія' ((d_structure=ID '.')? d_name=ID)? '(' nls (diia_param nls (',' nls diia_param)*)? nls ')' (d_type=types)? nl (d_body=body nl)? nls 'кінець';
 diia_param: param;
 
-assign: id=ID ((simpleas='=' | 'це') | (parentas=':' '=')) (value_expr=expr);
+assign: id=ID ((simpleas='=' | simpleas='це') | (parentas=':' '=')) (value_expr=expr);
 
 set: object=atom '.' id=ID '=' (value_expr=expr);
 position_set: object=atom '[' idx=expr ']' '=' (value_expr=expr);

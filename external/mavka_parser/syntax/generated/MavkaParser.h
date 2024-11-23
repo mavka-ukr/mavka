@@ -1433,8 +1433,8 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *ID();
     ExprContext *expr();
-    antlr4::tree::TerminalNode *KW_TSE();
     antlr4::tree::TerminalNode *EQUAL();
+    antlr4::tree::TerminalNode *KW_TSE();
     antlr4::tree::TerminalNode *COLON();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;

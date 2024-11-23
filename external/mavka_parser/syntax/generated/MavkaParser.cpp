@@ -5752,12 +5752,12 @@ MavkaParser::ExprContext* MavkaParser::AssignContext::expr() {
   return getRuleContext<MavkaParser::ExprContext>(0);
 }
 
-tree::TerminalNode* MavkaParser::AssignContext::KW_TSE() {
-  return getToken(MavkaParser::KW_TSE, 0);
-}
-
 tree::TerminalNode* MavkaParser::AssignContext::EQUAL() {
   return getToken(MavkaParser::EQUAL, 0);
+}
+
+tree::TerminalNode* MavkaParser::AssignContext::KW_TSE() {
+  return getToken(MavkaParser::KW_TSE, 0);
 }
 
 tree::TerminalNode* MavkaParser::AssignContext::COLON() {
@@ -5820,7 +5820,7 @@ MavkaParser::AssignContext* MavkaParser::assign() {
 
           case MavkaParser::KW_TSE: {
             setState(622);
-            match(MavkaParser::KW_TSE);
+            antlrcpp::downCast<AssignContext *>(_localctx)->simpleas = match(MavkaParser::KW_TSE);
             break;
           }
 
