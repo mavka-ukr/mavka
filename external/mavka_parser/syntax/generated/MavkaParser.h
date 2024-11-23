@@ -35,12 +35,12 @@ public:
     RuleOp_lte = 13, RuleOp_gt = 14, RuleOp_gte = 15, RuleOp_eq = 16, RuleOp_neq = 17, 
     RuleOp_land = 18, RuleOp_lor = 19, RuleOp_not_contains = 20, RuleOp_not_is = 21, 
     RuleGendef = 22, RuleExpr = 23, RuleStructure_define = 24, RuleStructure_element = 25, 
-    RuleDiia_define = 26, RuleDiia_param = 27, RuleAssign = 28, RuleSet = 29, 
-    RulePosition_set = 30, RuleIf = 31, RuleWhile = 32, RuleEach = 33, RuleLoop_part = 34, 
-    RuleLoop = 35, RuleBody = 36, RuleBody_element = 37, RuleReturn = 38, 
-    RuleModule = 39, RuleType = 40, RuleTypes = 41, RuleParam = 42, RuleTake = 43, 
-    RuleTake_part = 44, RuleTake_element = 45, RuleGive = 46, RuleGive_element = 47, 
-    RuleTry = 48, RuleThrow = 49, RuleNl = 50, RuleNls = 51
+    RuleDiia_define = 26, RuleDiia_param = 27, RuleAssign = 28, RuleAssign_op = 29, 
+    RuleSet = 30, RulePosition_set = 31, RuleIf = 32, RuleWhile = 33, RuleEach = 34, 
+    RuleLoop_part = 35, RuleLoop = 36, RuleBody = 37, RuleBody_element = 38, 
+    RuleReturn = 39, RuleModule = 40, RuleType = 41, RuleTypes = 42, RuleParam = 43, 
+    RuleTake = 44, RuleTake_part = 45, RuleTake_element = 46, RuleGive = 47, 
+    RuleGive_element = 48, RuleTry = 49, RuleThrow = 50, RuleNl = 51, RuleNls = 52
   };
 
   explicit MavkaParser(antlr4::TokenStream *input);
@@ -89,6 +89,7 @@ public:
   class Diia_defineContext;
   class Diia_paramContext;
   class AssignContext;
+  class Assign_opContext;
   class SetContext;
   class Position_setContext;
   class IfContext;
@@ -1426,15 +1427,14 @@ public:
   class  AssignContext : public antlr4::ParserRuleContext {
   public:
     antlr4::Token *id = nullptr;
-    antlr4::Token *simpleas = nullptr;
     antlr4::Token *parentas = nullptr;
     MavkaParser::ExprContext *value_expr = nullptr;
     AssignContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *ID();
+    Assign_opContext *assign_op();
     ExprContext *expr();
     antlr4::tree::TerminalNode *EQUAL();
-    antlr4::tree::TerminalNode *KW_TSE();
     antlr4::tree::TerminalNode *COLON();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1446,6 +1446,46 @@ public:
 
   AssignContext* assign();
 
+  class  Assign_opContext : public antlr4::ParserRuleContext {
+  public:
+    antlr4::Token *aop_mul = nullptr;
+    antlr4::Token *aop_div = nullptr;
+    MavkaParser::Op_div_divContext *aop_div_div = nullptr;
+    MavkaParser::Op_powContext *aop_pow = nullptr;
+    antlr4::Token *aop_mod = nullptr;
+    antlr4::Token *aop_plus = nullptr;
+    antlr4::Token *aop_minus = nullptr;
+    antlr4::Token *aop_and = nullptr;
+    antlr4::Token *aop_xor = nullptr;
+    antlr4::Token *aop_or = nullptr;
+    antlr4::Token *aop_itis = nullptr;
+    Assign_opContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *EQUAL();
+    Op_lshiftContext *op_lshift();
+    Op_rshiftContext *op_rshift();
+    Op_urshiftContext *op_urshift();
+    antlr4::tree::TerminalNode *MULTIPLY();
+    antlr4::tree::TerminalNode *DIVIDE();
+    Op_div_divContext *op_div_div();
+    Op_powContext *op_pow();
+    antlr4::tree::TerminalNode *MOD();
+    antlr4::tree::TerminalNode *PLUS();
+    antlr4::tree::TerminalNode *MINUS();
+    antlr4::tree::TerminalNode *AND();
+    antlr4::tree::TerminalNode *POWER();
+    antlr4::tree::TerminalNode *OR();
+    antlr4::tree::TerminalNode *KW_TSE();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Assign_opContext* assign_op();
+
   class  SetContext : public antlr4::ParserRuleContext {
   public:
     MavkaParser::AtomContext *object = nullptr;
@@ -1454,7 +1494,7 @@ public:
     SetContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *DOT();
-    antlr4::tree::TerminalNode *EQUAL();
+    Assign_opContext *assign_op();
     AtomContext *atom();
     antlr4::tree::TerminalNode *ID();
     ExprContext *expr();
@@ -1477,7 +1517,7 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *BRACKET_OPEN();
     antlr4::tree::TerminalNode *BRACKET_CLOSE();
-    antlr4::tree::TerminalNode *EQUAL();
+    Assign_opContext *assign_op();
     AtomContext *atom();
     std::vector<ExprContext *> expr();
     ExprContext* expr(size_t i);

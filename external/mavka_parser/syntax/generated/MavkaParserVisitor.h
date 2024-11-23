@@ -167,6 +167,8 @@ public:
 
     virtual std::any visitAssign(MavkaParser::AssignContext *context) = 0;
 
+    virtual std::any visitAssign_op(MavkaParser::Assign_opContext *context) = 0;
+
     virtual std::any visitSet(MavkaParser::SetContext *context) = 0;
 
     virtual std::any visitPosition_set(MavkaParser::Position_setContext *context) = 0;

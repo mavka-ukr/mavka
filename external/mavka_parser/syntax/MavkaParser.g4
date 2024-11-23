@@ -86,10 +86,11 @@ structure_element: param;
 diia_define: (d_async='тривала')? (d_spec='спец')? 'дія' ((d_structure=ID '.')? d_name=ID)? '(' nls (diia_param nls (',' nls diia_param)*)? nls ')' (d_type=types)? nl (d_body=body nl)? nls 'кінець';
 diia_param: param;
 
-assign: id=ID ((simpleas='=' | simpleas='це') | (parentas=':' '=')) (value_expr=expr);
+assign: id=ID (assign_op | (parentas=':' '=')) (value_expr=expr);
+assign_op: ((aop_mul='*' | aop_div='/' | aop_div_div=op_div_div | aop_pow=op_pow | aop_mod='%' | aop_plus='+' | aop_minus='-' | op_lshift | op_rshift | op_urshift | aop_and='&' | aop_xor='^' | aop_or='|')? '=') | aop_itis='це';
 
-set: object=atom '.' id=ID '=' (value_expr=expr);
-position_set: object=atom '[' idx=expr ']' '=' (value_expr=expr);
+set: object=atom '.' id=ID assign_op (value_expr=expr);
+position_set: object=atom '[' idx=expr ']' assign_op (value_expr=expr);
 
 if: 'якщо' cond=expr nl (ifok=body nl)? (('інакше' nl ifnot=body nl)? 'кінець' | ('інакше' ifnotif=if));
 

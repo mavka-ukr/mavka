@@ -238,6 +238,9 @@ public:
   virtual void enterAssign(MavkaParser::AssignContext * /*ctx*/) override { }
   virtual void exitAssign(MavkaParser::AssignContext * /*ctx*/) override { }
 
+  virtual void enterAssign_op(MavkaParser::Assign_opContext * /*ctx*/) override { }
+  virtual void exitAssign_op(MavkaParser::Assign_opContext * /*ctx*/) override { }
+
   virtual void enterSet(MavkaParser::SetContext * /*ctx*/) override { }
   virtual void exitSet(MavkaParser::SetContext * /*ctx*/) override { }
 
