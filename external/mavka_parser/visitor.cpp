@@ -1043,6 +1043,27 @@ namespace mavka::parser {
     }
     асд_дані_взяти->довжина_шляху = шлях.size();
     асд_дані_взяти->шлях = VecToArr(шлях);
+    if (ctx->as) {
+      асд_дані_взяти->ідентифікатор_як = ІД(this, ctx->as, ctx->as->getText());
+    } else {
+      асд_дані_взяти->ідентифікатор_як = nullptr;
+    }
+    std::vector<ЕлементВзяти*> elements;
+    for (const auto& element : ctx->take_element()) {
+      const auto елемент_взяти = new ЕлементВзяти();
+      елемент_взяти->ідентифікатор =
+          ІД(this, element->id, element->id->getText());
+      if (element->as) {
+        елемент_взяти->ідентифікатор_як =
+            ІД(this, element->as, element->as->getText());
+      } else {
+        елемент_взяти->ідентифікатор_як = nullptr;
+      }
+      елемент_взяти->місцезнаходження = LOC(this, element);
+      elements.push_back(елемент_взяти);
+    }
+    асд_дані_взяти->кількість_елементів = elements.size();
+    асд_дані_взяти->елементи = VecToArr(elements);
     return AV(this, ctx, АСДВидВзяти, асд_дані_взяти);
   }
 
@@ -1080,9 +1101,9 @@ namespace mavka::parser {
 
   std::any MavkaASTVisitor::visitGive(MavkaParser::GiveContext* ctx) {
     const auto асд_дані_дати = new АСДДаніДати();
-    std::vector<ЕлементиДати*> elements;
+    std::vector<ЕлементДати*> elements;
     for (const auto& element : ctx->give_element()) {
-      const auto елемент_дати = new ЕлементиДати();
+      const auto елемент_дати = new ЕлементДати();
       елемент_дати->ідентифікатор =
           ІД(this, element->id, element->id->getText());
       if (element->as) {

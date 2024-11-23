@@ -290,6 +290,9 @@ public:
   virtual void enterTake_part(MavkaParser::Take_partContext *ctx) = 0;
   virtual void exitTake_part(MavkaParser::Take_partContext *ctx) = 0;
 
+  virtual void enterTake_element(MavkaParser::Take_elementContext *ctx) = 0;
+  virtual void exitTake_element(MavkaParser::Take_elementContext *ctx) = 0;
+
   virtual void enterGive(MavkaParser::GiveContext *ctx) = 0;
   virtual void exitGive(MavkaParser::GiveContext *ctx) = 0;
 
