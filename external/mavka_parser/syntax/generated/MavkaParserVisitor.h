@@ -179,6 +179,10 @@ public:
 
     virtual std::any visitEach(MavkaParser::EachContext *context) = 0;
 
+    virtual std::any visitEach_range_value(MavkaParser::Each_range_valueContext *context) = 0;
+
+    virtual std::any visitEach_range(MavkaParser::Each_rangeContext *context) = 0;
+
     virtual std::any visitLoop_part(MavkaParser::Loop_partContext *context) = 0;
 
     virtual std::any visitLoop(MavkaParser::LoopContext *context) = 0;

@@ -335,6 +335,14 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitEach_range_value(MavkaParser::Each_range_valueContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitEach_range(MavkaParser::Each_rangeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitLoop_part(MavkaParser::Loop_partContext *ctx) override {
     return visitChildren(ctx);
   }

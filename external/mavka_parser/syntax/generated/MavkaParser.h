@@ -37,10 +37,11 @@ public:
     RuleGendef = 22, RuleExpr = 23, RuleStructure_define = 24, RuleStructure_element = 25, 
     RuleDiia_define = 26, RuleDiia_param = 27, RuleAssign = 28, RuleAssign_op = 29, 
     RuleSet = 30, RulePosition_set = 31, RuleIf = 32, RuleWhile = 33, RuleEach = 34, 
-    RuleLoop_part = 35, RuleLoop = 36, RuleBody = 37, RuleBody_element = 38, 
-    RuleReturn = 39, RuleModule = 40, RuleType = 41, RuleTypes = 42, RuleParam = 43, 
-    RuleTake = 44, RuleTake_part = 45, RuleTake_element = 46, RuleGive = 47, 
-    RuleGive_element = 48, RuleTry = 49, RuleThrow = 50, RuleNl = 51, RuleNls = 52
+    RuleEach_range_value = 35, RuleEach_range = 36, RuleLoop_part = 37, 
+    RuleLoop = 38, RuleBody = 39, RuleBody_element = 40, RuleReturn = 41, 
+    RuleModule = 42, RuleType = 43, RuleTypes = 44, RuleParam = 45, RuleTake = 46, 
+    RuleTake_part = 47, RuleTake_element = 48, RuleGive = 49, RuleGive_element = 50, 
+    RuleTry = 51, RuleThrow = 52, RuleNl = 53, RuleNls = 54
   };
 
   explicit MavkaParser(antlr4::TokenStream *input);
@@ -95,6 +96,8 @@ public:
   class IfContext;
   class WhileContext;
   class EachContext;
+  class Each_range_valueContext;
+  class Each_rangeContext;
   class Loop_partContext;
   class LoopContext;
   class BodyContext;
@@ -1592,8 +1595,9 @@ public:
     std::vector<NlContext *> nl();
     NlContext* nl(size_t i);
     antlr4::tree::TerminalNode *KW_END();
-    AtomContext *atom();
     antlr4::tree::TerminalNode *ID();
+    Each_rangeContext *each_range();
+    AtomContext *atom();
     BodyContext *body();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1604,6 +1608,46 @@ public:
   };
 
   EachContext* each();
+
+  class  Each_range_valueContext : public antlr4::ParserRuleContext {
+  public:
+    MavkaParser::AtomContext *erv_atom = nullptr;
+    antlr4::Token *erv_number = nullptr;
+    Each_range_valueContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    AtomContext *atom();
+    antlr4::tree::TerminalNode *NUMBER();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Each_range_valueContext* each_range_value();
+
+  class  Each_rangeContext : public antlr4::ParserRuleContext {
+  public:
+    MavkaParser::Each_range_valueContext *from = nullptr;
+    antlr4::Token *incl = nullptr;
+    MavkaParser::Each_range_valueContext *to = nullptr;
+    Each_rangeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    std::vector<antlr4::tree::TerminalNode *> DOT();
+    antlr4::tree::TerminalNode* DOT(size_t i);
+    std::vector<Each_range_valueContext *> each_range_value();
+    Each_range_valueContext* each_range_value(size_t i);
+    antlr4::tree::TerminalNode *EQUAL();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Each_rangeContext* each_range();
 
   class  Loop_partContext : public antlr4::ParserRuleContext {
   public:

@@ -256,6 +256,12 @@ public:
   virtual void enterEach(MavkaParser::EachContext * /*ctx*/) override { }
   virtual void exitEach(MavkaParser::EachContext * /*ctx*/) override { }
 
+  virtual void enterEach_range_value(MavkaParser::Each_range_valueContext * /*ctx*/) override { }
+  virtual void exitEach_range_value(MavkaParser::Each_range_valueContext * /*ctx*/) override { }
+
+  virtual void enterEach_range(MavkaParser::Each_rangeContext * /*ctx*/) override { }
+  virtual void exitEach_range(MavkaParser::Each_rangeContext * /*ctx*/) override { }
+
   virtual void enterLoop_part(MavkaParser::Loop_partContext * /*ctx*/) override { }
   virtual void exitLoop_part(MavkaParser::Loop_partContext * /*ctx*/) override { }
 

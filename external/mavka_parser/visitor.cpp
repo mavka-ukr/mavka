@@ -1351,15 +1351,58 @@ namespace mavka::parser {
   }
 
   std::any MavkaASTVisitor::visitEach(MavkaParser::EachContext* ctx) {
-    const auto асд_дані_перебрати = new АСДДаніПеребрати();
-    асд_дані_перебрати->обʼєкт = AAV(visitContext(ctx->object));
-    асд_дані_перебрати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
-    if (ctx->body()) {
-      асд_дані_перебрати->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
+    if (ctx->each_range()) {
+      const auto асд_дані_перебрати_діапазон = new АСДДаніПеребратиДіапазон();
+      if (ctx->each_range()->from->erv_atom) {
+        асд_дані_перебрати_діапазон->від =
+            AAV(visitContext(ctx->each_range()->from->erv_atom));
+      } else if (ctx->each_range()->from->erv_number) {
+        const auto асд_дані_число = new АСДДаніЧисло();
+        асд_дані_число->значення =
+            strdup(ctx->each_range()->from->erv_number->getText().c_str());
+        асд_дані_перебрати_діапазон->від =
+            AV(this, ctx, АСДВидЧисло, асд_дані_число);
+      } else {
+        std::cout << "Unknown each range from" << std::endl;
+      }
+      if (ctx->each_range()->incl) {
+        асд_дані_перебрати_діапазон->включно = true;
+      } else {
+        асд_дані_перебрати_діапазон->включно = false;
+      }
+      if (ctx->each_range()->to->erv_atom) {
+        асд_дані_перебрати_діапазон->до =
+            AAV(visitContext(ctx->each_range()->to->erv_atom));
+      } else if (ctx->each_range()->to->erv_number) {
+        const auto асд_дані_число = new АСДДаніЧисло();
+        асд_дані_число->значення =
+            strdup(ctx->each_range()->to->erv_number->getText().c_str());
+        асд_дані_перебрати_діапазон->до =
+            AV(this, ctx, АСДВидЧисло, асд_дані_число);
+      } else {
+        std::cout << "Unknown each range to" << std::endl;
+      }
+      асд_дані_перебрати_діапазон->ідентифікатор =
+          ІД(this, ctx->id, ctx->id->getText());
+      if (ctx->body()) {
+        асд_дані_перебрати_діапазон->тіло =
+            AAVecToList(AAVec(visitBody(ctx->body())));
+      } else {
+        асд_дані_перебрати_діапазон->тіло = AAVecToList({});
+      }
+      return AV(this, ctx, АСДВидПеребратиДіапазон,
+                асд_дані_перебрати_діапазон);
     } else {
-      асд_дані_перебрати->тіло = AAVecToList({});
+      const auto асд_дані_перебрати = new АСДДаніПеребрати();
+      асд_дані_перебрати->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_перебрати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+      if (ctx->body()) {
+        асд_дані_перебрати->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
+      } else {
+        асд_дані_перебрати->тіло = AAVecToList({});
+      }
+      return AV(this, ctx, АСДВидПеребрати, асд_дані_перебрати);
     }
-    return AV(this, ctx, АСДВидПеребрати, асд_дані_перебрати);
   }
 
   std::any MavkaASTVisitor::visitLoop(MavkaParser::LoopContext* ctx) {
