@@ -1676,13 +1676,13 @@ public:
     LoopContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *KW_CYCLE();
+    std::vector<NlContext *> nl();
+    NlContext* nl(size_t i);
+    antlr4::tree::TerminalNode *KW_END();
     std::vector<NlsContext *> nls();
     NlsContext* nls(size_t i);
     std::vector<antlr4::tree::TerminalNode *> COMA();
     antlr4::tree::TerminalNode* COMA(size_t i);
-    std::vector<NlContext *> nl();
-    NlContext* nl(size_t i);
-    antlr4::tree::TerminalNode *KW_END();
     std::vector<Loop_partContext *> loop_part();
     Loop_partContext* loop_part(size_t i);
     OperationContext *operation();
