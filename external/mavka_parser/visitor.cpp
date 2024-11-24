@@ -1406,20 +1406,30 @@ namespace mavka::parser {
   }
 
   std::any MavkaASTVisitor::visitLoop(MavkaParser::LoopContext* ctx) {
-    const auto асд_дані_цикл = new АСДДаніЦикл();
-    std::vector<АСДЗначення*> start;
-    start.push_back(AAV(visitLoop_part(ctx->start)));
-    асд_дані_цикл->старт = AAVecToList(start);
-    асд_дані_цикл->умова = AAV(visitContext(ctx->cond));
-    std::vector<АСДЗначення*> iter;
-    iter.push_back(AAV(visitLoop_part(ctx->iter)));
-    асд_дані_цикл->ітерація = AAVecToList(iter);
-    if (ctx->body()) {
-      асд_дані_цикл->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
+    if (ctx->start) {
+      const auto асд_дані_цикл = new АСДДаніЦикл();
+      std::vector<АСДЗначення*> start;
+      start.push_back(AAV(visitLoop_part(ctx->start)));
+      асд_дані_цикл->старт = AAVecToList(start);
+      асд_дані_цикл->умова = AAV(visitContext(ctx->cond));
+      std::vector<АСДЗначення*> iter;
+      iter.push_back(AAV(visitLoop_part(ctx->iter)));
+      асд_дані_цикл->ітерація = AAVecToList(iter);
+      if (ctx->body()) {
+        асд_дані_цикл->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
+      } else {
+        асд_дані_цикл->тіло = AAVecToList({});
+      }
+      return AV(this, ctx, АСДВидЦикл, асд_дані_цикл);
     } else {
-      асд_дані_цикл->тіло = AAVecToList({});
+      const auto асд_дані_вічний_цикл = new АСДДаніВічнийЦикл();
+      if (ctx->body()) {
+        асд_дані_вічний_цикл->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
+      } else {
+        асд_дані_вічний_цикл->тіло = AAVecToList({});
+      }
+      return AV(this, ctx, АСДВидВічнийЦикл, асд_дані_вічний_цикл);
     }
-    return AV(this, ctx, АСДВидЦикл, асд_дані_цикл);
   }
 
   std::any MavkaASTVisitor::visitLoop_part(MavkaParser::Loop_partContext* ctx) {
