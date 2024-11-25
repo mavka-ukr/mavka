@@ -79,6 +79,12 @@ public:
 
     virtual std::any visitOperation_contains(MavkaParser::Operation_containsContext *context) = 0;
 
+    virtual std::any visitOperation_delete_element(MavkaParser::Operation_delete_elementContext *context) = 0;
+
+    virtual std::any visitOperation_delete_prop(MavkaParser::Operation_delete_propContext *context) = 0;
+
+    virtual std::any visitOperation_wait(MavkaParser::Operation_waitContext *context) = 0;
+
     virtual std::any visitOperation_div_div(MavkaParser::Operation_div_divContext *context) = 0;
 
     virtual std::any visitOperation_not_is(MavkaParser::Operation_not_isContext *context) = 0;
@@ -96,6 +102,8 @@ public:
     virtual std::any visitOperation_gt(MavkaParser::Operation_gtContext *context) = 0;
 
     virtual std::any visitOperation_eq(MavkaParser::Operation_eqContext *context) = 0;
+
+    virtual std::any visitOperation_delete_id(MavkaParser::Operation_delete_idContext *context) = 0;
 
     virtual std::any visitOperation_pre_bw_not(MavkaParser::Operation_pre_bw_notContext *context) = 0;
 

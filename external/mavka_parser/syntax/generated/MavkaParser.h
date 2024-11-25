@@ -19,13 +19,14 @@ public:
     KW_WHILE = 23, KW_MODULE = 24, KW_EQ_WORD = 25, KW_GR_WORD = 26, KW_SM_WORD = 27, 
     KW_HAS_WORD = 28, KW_MOCKUP = 29, KW_NOT = 30, KW_PARENT = 31, KW_TSE = 32, 
     KW_PERELIK = 33, KW_COMPOSITION = 34, KW_PUBLIC = 35, KW_PRIVATE = 36, 
-    KW_PROTECTED = 37, KW_PROPERTY = 38, EQUAL = 39, GREATER = 40, LESSER = 41, 
-    DOT = 42, PLUS = 43, MINUS = 44, MULTIPLY = 45, DIVIDE = 46, MOD = 47, 
-    POWER = 48, AND = 49, OR = 50, PAREN_OPEN = 51, PAREN_CLOSE = 52, BRACKET_OPEN = 53, 
-    BRACKET_CLOSE = 54, QUESTION = 55, COLON = 56, TILDA = 57, QUOTE = 58, 
-    DOUBLE_QUOTE = 59, EXCLAMATION = 60, COMA = 61, NUMBER = 62, INTEGER = 63, 
-    FLOAT = 64, HEX = 65, BIN = 66, ID = 67, STRING_MULTILINE = 68, STRING = 69, 
-    CHARACTER = 70, COMMENT = 71, LINE_COMMENT = 72, NL = 73, WS = 74
+    KW_PROTECTED = 37, KW_PROPERTY = 38, KW_DELETE = 39, KW_OWN = 40, EQUAL = 41, 
+    GREATER = 42, LESSER = 43, DOT = 44, PLUS = 45, MINUS = 46, MULTIPLY = 47, 
+    DIVIDE = 48, MOD = 49, POWER = 50, AND = 51, OR = 52, PAREN_OPEN = 53, 
+    PAREN_CLOSE = 54, BRACKET_OPEN = 55, BRACKET_CLOSE = 56, QUESTION = 57, 
+    COLON = 58, TILDA = 59, QUOTE = 60, DOUBLE_QUOTE = 61, EXCLAMATION = 62, 
+    COMA = 63, NUMBER = 64, INTEGER = 65, FLOAT = 66, HEX = 67, BIN = 68, 
+    ID = 69, STRING_MULTILINE = 70, STRING = 71, CHARACTER = 72, COMMENT = 73, 
+    LINE_COMMENT = 74, NL = 75, WS = 76
   };
 
   enum {
@@ -668,6 +669,60 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
+  class  Operation_delete_elementContext : public OperationContext {
+  public:
+    Operation_delete_elementContext(OperationContext *ctx);
+
+    antlr4::Token *op = nullptr;
+    MavkaParser::AtomContext *object = nullptr;
+    MavkaParser::ExprContext *position = nullptr;
+    std::vector<NlsContext *> nls();
+    NlsContext* nls(size_t i);
+    antlr4::tree::TerminalNode *BRACKET_OPEN();
+    antlr4::tree::TerminalNode *BRACKET_CLOSE();
+    antlr4::tree::TerminalNode *KW_DELETE();
+    AtomContext *atom();
+    ExprContext *expr();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Operation_delete_propContext : public OperationContext {
+  public:
+    Operation_delete_propContext(OperationContext *ctx);
+
+    antlr4::Token *op = nullptr;
+    MavkaParser::AtomContext *object = nullptr;
+    antlr4::Token *id = nullptr;
+    std::vector<NlsContext *> nls();
+    NlsContext* nls(size_t i);
+    antlr4::tree::TerminalNode *DOT();
+    antlr4::tree::TerminalNode *KW_DELETE();
+    AtomContext *atom();
+    antlr4::tree::TerminalNode *ID();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Operation_waitContext : public OperationContext {
+  public:
+    Operation_waitContext(OperationContext *ctx);
+
+    antlr4::Token *op = nullptr;
+    MavkaParser::AtomContext *object = nullptr;
+    NlsContext *nls();
+    antlr4::tree::TerminalNode *KW_WAIT();
+    AtomContext *atom();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
   class  Operation_div_divContext : public OperationContext {
   public:
     Operation_div_divContext(OperationContext *ctx);
@@ -817,6 +872,21 @@ public:
     std::vector<OperationContext *> operation();
     OperationContext* operation(size_t i);
     Op_eqContext *op_eq();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Operation_delete_idContext : public OperationContext {
+  public:
+    Operation_delete_idContext(OperationContext *ctx);
+
+    antlr4::Token *op = nullptr;
+    antlr4::Token *id = nullptr;
+    NlsContext *nls();
+    antlr4::tree::TerminalNode *KW_DELETE();
+    antlr4::tree::TerminalNode *ID();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 
@@ -1377,6 +1447,7 @@ public:
   public:
     antlr4::Token *d_async = nullptr;
     antlr4::Token *d_spec = nullptr;
+    antlr4::Token *d_own = nullptr;
     antlr4::Token *d_structure = nullptr;
     antlr4::Token *d_name = nullptr;
     MavkaParser::TypesContext *d_type = nullptr;
@@ -1395,6 +1466,7 @@ public:
     Diia_paramContext* diia_param(size_t i);
     antlr4::tree::TerminalNode *KW_ASYNC();
     antlr4::tree::TerminalNode *KW_SPEC();
+    antlr4::tree::TerminalNode *KW_OWN();
     std::vector<antlr4::tree::TerminalNode *> ID();
     antlr4::tree::TerminalNode* ID(size_t i);
     TypesContext *types();

@@ -109,6 +109,18 @@ namespace mavka::parser {
     std::any visitOperation_pre_minus(
         MavkaParser::Operation_pre_minusContext* ctx) override;
 
+    std::any visitOperation_delete_id(
+        MavkaParser::Operation_delete_idContext* ctx) override;
+
+    std::any visitOperation_wait(
+        MavkaParser::Operation_waitContext* ctx) override;
+
+    std::any visitOperation_delete_prop(
+        MavkaParser::Operation_delete_propContext* ctx) override;
+
+    std::any visitOperation_delete_element(
+        MavkaParser::Operation_delete_elementContext* ctx) override;
+
     std::any visitOperation_pow(
         MavkaParser::Operation_powContext* ctx) override;
 

@@ -30,6 +30,10 @@ operation: NUMBER #operation_number
          | op='~' nls right=operation #operation_pre_bw_not
          | op='+' nls right=operation #operation_pre_plus
          | op='-' nls right=operation #operation_pre_minus
+         | op='видалити' nls id=ID #operation_delete_id
+         | op='видалити' nls object=atom nls '.' nls id=ID #operation_delete_prop
+         | op='видалити' nls object=atom nls '[' nls position=expr nls ']' #operation_delete_element
+         | op='чекати' nls object=atom #operation_wait
          | left=operation nls op=op_pow nls right=operation #operation_pow
          | left=operation nls op='*' nls right=operation #operation_mul
          | left=operation nls op=op_div_div nls right=operation #operation_div_div
@@ -83,7 +87,7 @@ expr: operation #expr_operation
 structure_define: 'структура' (id=ID)? ('є' s_parent=atom)? nl (structure_element nls (nl nls structure_element)*)? nls 'кінець';
 structure_element: param;
 
-diia_define: (d_async='тривала')? (d_spec='спец')? 'дія' ((d_structure=ID '.')? d_name=ID)? '(' nls (diia_param nls (',' nls diia_param)*)? nls ')' (d_type=types)? nl (d_body=body nl)? nls 'кінець';
+diia_define: (d_async='тривала')? (d_spec='спец' | d_own='власна')? 'дія' ((d_structure=ID '.')? d_name=ID)? '(' nls (diia_param nls (',' nls diia_param)*)? nls ')' (d_type=types)? nl (d_body=body nl)? nls 'кінець';
 diia_param: param;
 
 assign: id=ID (assign_op | (parentas=':' '=')) (value_expr=expr);

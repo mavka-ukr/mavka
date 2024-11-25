@@ -106,6 +106,15 @@ public:
   virtual void enterOperation_contains(MavkaParser::Operation_containsContext * /*ctx*/) override { }
   virtual void exitOperation_contains(MavkaParser::Operation_containsContext * /*ctx*/) override { }
 
+  virtual void enterOperation_delete_element(MavkaParser::Operation_delete_elementContext * /*ctx*/) override { }
+  virtual void exitOperation_delete_element(MavkaParser::Operation_delete_elementContext * /*ctx*/) override { }
+
+  virtual void enterOperation_delete_prop(MavkaParser::Operation_delete_propContext * /*ctx*/) override { }
+  virtual void exitOperation_delete_prop(MavkaParser::Operation_delete_propContext * /*ctx*/) override { }
+
+  virtual void enterOperation_wait(MavkaParser::Operation_waitContext * /*ctx*/) override { }
+  virtual void exitOperation_wait(MavkaParser::Operation_waitContext * /*ctx*/) override { }
+
   virtual void enterOperation_div_div(MavkaParser::Operation_div_divContext * /*ctx*/) override { }
   virtual void exitOperation_div_div(MavkaParser::Operation_div_divContext * /*ctx*/) override { }
 
@@ -132,6 +141,9 @@ public:
 
   virtual void enterOperation_eq(MavkaParser::Operation_eqContext * /*ctx*/) override { }
   virtual void exitOperation_eq(MavkaParser::Operation_eqContext * /*ctx*/) override { }
+
+  virtual void enterOperation_delete_id(MavkaParser::Operation_delete_idContext * /*ctx*/) override { }
+  virtual void exitOperation_delete_id(MavkaParser::Operation_delete_idContext * /*ctx*/) override { }
 
   virtual void enterOperation_pre_bw_not(MavkaParser::Operation_pre_bw_notContext * /*ctx*/) override { }
   virtual void exitOperation_pre_bw_not(MavkaParser::Operation_pre_bw_notContext * /*ctx*/) override { }
