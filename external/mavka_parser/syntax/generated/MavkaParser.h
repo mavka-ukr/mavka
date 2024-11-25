@@ -247,24 +247,6 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  class  Operation_objectContext : public AtomContext {
-  public:
-    Operation_objectContext(AtomContext *ctx);
-
-    antlr4::tree::TerminalNode *PAREN_OPEN();
-    std::vector<NlsContext *> nls();
-    NlsContext* nls(size_t i);
-    antlr4::tree::TerminalNode *PAREN_CLOSE();
-    std::vector<Object_argContext *> object_arg();
-    Object_argContext* object_arg(size_t i);
-    std::vector<antlr4::tree::TerminalNode *> COMA();
-    antlr4::tree::TerminalNode* COMA(size_t i);
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
   class  Atom_getContext : public AtomContext {
   public:
     Atom_getContext(AtomContext *ctx);

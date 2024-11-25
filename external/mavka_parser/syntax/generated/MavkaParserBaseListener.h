@@ -37,9 +37,6 @@ public:
   virtual void enterOperation_dict(MavkaParser::Operation_dictContext * /*ctx*/) override { }
   virtual void exitOperation_dict(MavkaParser::Operation_dictContext * /*ctx*/) override { }
 
-  virtual void enterOperation_object(MavkaParser::Operation_objectContext * /*ctx*/) override { }
-  virtual void exitOperation_object(MavkaParser::Operation_objectContext * /*ctx*/) override { }
-
   virtual void enterAtom_get(MavkaParser::Atom_getContext * /*ctx*/) override { }
   virtual void exitAtom_get(MavkaParser::Atom_getContext * /*ctx*/) override { }
 

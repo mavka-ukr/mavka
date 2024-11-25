@@ -33,8 +33,6 @@ public:
 
     virtual std::any visitOperation_dict(MavkaParser::Operation_dictContext *context) = 0;
 
-    virtual std::any visitOperation_object(MavkaParser::Operation_objectContext *context) = 0;
-
     virtual std::any visitAtom_get(MavkaParser::Atom_getContext *context) = 0;
 
     virtual std::any visitOperation_string_multiline(MavkaParser::Operation_string_multilineContext *context) = 0;
