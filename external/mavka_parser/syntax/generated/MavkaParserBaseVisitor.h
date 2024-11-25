@@ -135,6 +135,18 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitOperation_delete_element(MavkaParser::Operation_delete_elementContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOperation_delete_prop(MavkaParser::Operation_delete_propContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOperation_wait(MavkaParser::Operation_waitContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitOperation_div_div(MavkaParser::Operation_div_divContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -168,6 +180,10 @@ public:
   }
 
   virtual std::any visitOperation_eq(MavkaParser::Operation_eqContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOperation_delete_id(MavkaParser::Operation_delete_idContext *ctx) override {
     return visitChildren(ctx);
   }
 

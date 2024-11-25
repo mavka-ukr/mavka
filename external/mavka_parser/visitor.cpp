@@ -65,6 +65,23 @@ namespace mavka::parser {
       return visitOperation_pre_minus(ctx);
     }
     if (const auto ctx =
+            dynamic_cast<MavkaParser::Operation_delete_idContext*>(context)) {
+      return visitOperation_delete_id(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<MavkaParser::Operation_delete_propContext*>(context)) {
+      return visitOperation_delete_prop(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<MavkaParser::Operation_delete_elementContext*>(
+                context)) {
+      return visitOperation_delete_element(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<MavkaParser::Operation_waitContext*>(context)) {
+      return visitOperation_wait(ctx);
+    }
+    if (const auto ctx =
             dynamic_cast<MavkaParser::Operation_powContext*>(context)) {
       return visitOperation_pow(ctx);
     }
@@ -493,6 +510,38 @@ namespace mavka::parser {
     return AV(this, ctx, АСДВидСамоОперація, асд_дані_само_операція);
   }
 
+  std::any MavkaASTVisitor::visitOperation_delete_id(
+      MavkaParser::Operation_delete_idContext* ctx) {
+    const auto асд_дані_видалити = new АСДДаніВидалити();
+    асд_дані_видалити->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    return AV(this, ctx, АСДВидВидалити, асд_дані_видалити);
+  }
+
+  std::any MavkaASTVisitor::visitOperation_delete_prop(
+      MavkaParser::Operation_delete_propContext* ctx) {
+    const auto асд_дані_видалити_властивість = new АСДДаніВидалитиВластивість();
+    асд_дані_видалити_властивість->обʼєкт = AAV(visitContext(ctx->object));
+    асд_дані_видалити_властивість->ідентифікатор =
+        ІД(this, ctx->id, ctx->id->getText());
+    return AV(this, ctx, АСДВидВидалитиВластивість,
+              асд_дані_видалити_властивість);
+  }
+
+  std::any MavkaASTVisitor::visitOperation_delete_element(
+      MavkaParser::Operation_delete_elementContext* ctx) {
+    const auto асд_дані_видалити_елемент = new АСДДаніВидалитиЕлемент();
+    асд_дані_видалити_елемент->обʼєкт = AAV(visitContext(ctx->object));
+    асд_дані_видалити_елемент->позиція = AAV(visitContext(ctx->position));
+    return AV(this, ctx, АСДВидВидалитиЕлемент, асд_дані_видалити_елемент);
+  }
+
+  std::any MavkaASTVisitor::visitOperation_wait(
+      MavkaParser::Operation_waitContext* ctx) {
+    const auto асд_дані_чекати = new АСДДаніЧекати();
+    асд_дані_чекати->значення = AAV(visitContext(ctx->object));
+    return AV(this, ctx, АСДВидЧекати, асд_дані_чекати);
+  }
+
   std::any MavkaASTVisitor::visitOperation_pow(
       MavkaParser::Operation_powContext* ctx) {
     const auto асд_дані_операція = new АСДДаніОперація();
@@ -743,6 +792,9 @@ namespace mavka::parser {
 
   std::any MavkaASTVisitor::visitFunction(MavkaParser::FunctionContext* ctx) {
     const auto асд_дані_дія = new АСДДаніДія();
+    асд_дані_дія->тривала = false;
+    асд_дані_дія->модифікатор = 0;
+    асд_дані_дія->структура_ = nullptr;
     асд_дані_дія->ідентифікатор = nullptr;
     std::vector<Параметр*> params;
     for (const auto& param : ctx->diia_param()) {
@@ -796,6 +848,14 @@ namespace mavka::parser {
   std::any MavkaASTVisitor::visitDiia_define(
       MavkaParser::Diia_defineContext* ctx) {
     const auto асд_дані_дія = new АСДДаніДія();
+    асд_дані_дія->тривала = ctx->d_async != nullptr;
+    if (ctx->d_spec) {
+      асд_дані_дія->модифікатор = 1;
+    } else if (ctx->d_own) {
+      асд_дані_дія->модифікатор = 2;
+    } else {
+      асд_дані_дія->модифікатор = 0;
+    }
     if (ctx->d_structure) {
       const auto асд_дані_звернутись = new АСДДаніЗвернутись();
       асд_дані_звернутись->ідентифікатор =

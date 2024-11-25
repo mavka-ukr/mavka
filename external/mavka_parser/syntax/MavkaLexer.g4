@@ -38,6 +38,8 @@ KW_PUBLIC: 'зовнішня';
 KW_PRIVATE: 'внутрішня';
 KW_PROTECTED: 'місцева';
 KW_PROPERTY: 'властивість';
+KW_DELETE: 'видалити';
+KW_OWN: 'власна';
 
 EQUAL: '=';
 GREATER: '>';
