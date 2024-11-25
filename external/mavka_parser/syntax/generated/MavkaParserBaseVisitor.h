@@ -43,10 +43,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitOperation_object(MavkaParser::Operation_objectContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitAtom_get(MavkaParser::Atom_getContext *ctx) override {
     return visitChildren(ctx);
   }

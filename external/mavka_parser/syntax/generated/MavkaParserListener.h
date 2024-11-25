@@ -35,9 +35,6 @@ public:
   virtual void enterOperation_dict(MavkaParser::Operation_dictContext *ctx) = 0;
   virtual void exitOperation_dict(MavkaParser::Operation_dictContext *ctx) = 0;
 
-  virtual void enterOperation_object(MavkaParser::Operation_objectContext *ctx) = 0;
-  virtual void exitOperation_object(MavkaParser::Operation_objectContext *ctx) = 0;
-
   virtual void enterAtom_get(MavkaParser::Atom_getContext *ctx) = 0;
   virtual void exitAtom_get(MavkaParser::Atom_getContext *ctx) = 0;
 

@@ -9,7 +9,6 @@ file: f_program=program EOF;
 program: nls body_element (nl body_element)* nls;
 
 atom: '(' nls expr nls ')' #atom_nested
-    | '(' nls (object_arg (nls ',' nls object_arg)*)? nls ')' #operation_object
     | '[' nls '=' nls ']' #operation_dict_empty
     | '[' nls dict_arg (nls ',' nls dict_arg)* nls ']' #operation_dict
     | '[' nls (expr (nls ',' nls expr)*)? nls ']' #operation_array
