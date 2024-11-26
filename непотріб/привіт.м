@@ -1,1 +1,9 @@
-ю"Hello from Heaven!"
+дія factorial(n)
+  якщо n < 2
+    вернути 1
+  інакше
+    вернути n * factorial(n-1)
+  кінець
+кінець
+
+друк(factorial(999))
