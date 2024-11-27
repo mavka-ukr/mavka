@@ -51,28 +51,6 @@ extern double mama_floor(double value) { return floor(value); }
 
 extern double mama_exit(double value) { exit(value); }
 
-extern int mama_strcmp32(unsigned int *a, unsigned int *b) {
-  int i = 0;
-  while (a[i] != 0 && b[i] != 0) {
-    if (a[i] != b[i]) {
-      return a[i] - b[i];
-    }
-    i++;
-  }
-  return a[i] - b[i];
-}
-
-extern int mama_strcmp(unsigned char *a, unsigned char *b) {
-  int i = 0;
-  while (a[i] != 0 && b[i] != 0) {
-    if (a[i] != b[i]) {
-      return a[i] - b[i];
-    }
-    i++;
-  }
-  return a[i] - b[i];
-}
-
 extern void *mama_realloc(void *ptr, size_t size) { return realloc(ptr, size); }
 
 extern void mama_free(void *ptr) { free(ptr); }
