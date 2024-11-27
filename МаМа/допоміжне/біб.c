@@ -1,0 +1,92 @@
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+extern unsigned char *mama_convert_utf32_to_utf8(unsigned int *utf32) {
+  unsigned char *utf8 = (unsigned char *)malloc(4 * 4 + 1);
+  unsigned char *utf8_start = utf8;
+  for (int i = 0; i < 4; i++) {
+    unsigned int c = utf32[i];
+    if (c < 0x80) {
+      *utf8++ = c;
+    } else if (c < 0x800) {
+      *utf8++ = 0xC0 | c >> 6;
+      *utf8++ = 0x80 | (c & 0x3F);
+    } else if (c < 0x10000) {
+      *utf8++ = 0xE0 | c >> 12;
+      *utf8++ = 0x80 | (c >> 6 & 0x3F);
+      *utf8++ = 0x80 | (c & 0x3F);
+    } else {
+      *utf8++ = 0xF0 | c >> 18;
+      *utf8++ = 0x80 | (c >> 12 & 0x3F);
+      *utf8++ = 0x80 | (c >> 6 & 0x3F);
+      *utf8++ = 0x80 | (c & 0x3F);
+    }
+  }
+  *utf8 = 0;
+  return utf8_start;
+}
+
+extern void mama_print_utf8(unsigned char *value) {
+  printf("%s", (char *)value);
+}
+
+extern void mama_println_utf8(unsigned char *value) {
+  printf("%s\n", (char *)value);
+}
+
+extern unsigned long mama_bitnot(unsigned long value) { return ~value; }
+
+extern double mama_negate(double value) { return -value; }
+
+extern double mama_pow(double base, double exponent) {
+  return pow(base, exponent);
+}
+
+extern double mama_floor(double value) { return floor(value); }
+
+extern double mama_exit(double value) { exit(value); }
+
+extern int mama_strlen32(unsigned int *a) {
+  int len = 0;
+  while (a[len] != 0) {
+    len++;
+  }
+  return len;
+}
+
+extern int mama_strlen(unsigned char *a) {
+  int len = 0;
+  while (a[len] != 0) {
+    len++;
+  }
+  return len;
+}
+
+extern int mama_strcmp32(unsigned int *a, unsigned int *b) {
+  int i = 0;
+  while (a[i] != 0 && b[i] != 0) {
+    if (a[i] != b[i]) {
+      return a[i] - b[i];
+    }
+    i++;
+  }
+  return a[i] - b[i];
+}
+
+extern int mama_strcmp(unsigned char *a, unsigned char *b) {
+  int i = 0;
+  while (a[i] != 0 && b[i] != 0) {
+    if (a[i] != b[i]) {
+      return a[i] - b[i];
+    }
+    i++;
+  }
+  return a[i] - b[i];
+}
+
+extern void *mama_realloc(void *ptr, size_t size) { return realloc(ptr, size); }
+
+extern void mama_free(void *ptr) { free(ptr); }
+
+extern void *mama_malloc(size_t size) { return malloc(size); }
