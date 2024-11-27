@@ -56,3 +56,13 @@ extern void *mama_realloc(void *ptr, size_t size) { return realloc(ptr, size); }
 extern void mama_free(void *ptr) { free(ptr); }
 
 extern void *mama_malloc(size_t size) { return malloc(size); }
+
+extern size_t mama_double_to_string(double value, unsigned char **buffer) {
+  long decimal = (long)value;
+  if (decimal == value) {
+    *buffer = (unsigned char *)malloc(32);
+    return sprintf((char *)*buffer, "%ld", decimal);
+  }
+  *buffer = (unsigned char *)malloc(32);
+  return sprintf((char *)*buffer, "%.14f", value);
+}
