@@ -47,22 +47,6 @@ extern double mama_floor(double value) { return floor(value); }
 
 extern double mama_exit(double value) { exit(value); }
 
-extern int mama_strlen32(unsigned int *a) {
-  int len = 0;
-  while (a[len] != 0) {
-    len++;
-  }
-  return len;
-}
-
-extern int mama_strlen(unsigned char *a) {
-  int len = 0;
-  while (a[len] != 0) {
-    len++;
-  }
-  return len;
-}
-
 extern int mama_strcmp32(unsigned int *a, unsigned int *b) {
   int i = 0;
   while (a[i] != 0 && b[i] != 0) {
