@@ -21,21 +21,6 @@ extern "C" unsigned char* прочитати_файл(unsigned char* шлях) {
   return buffer;
 }
 
-extern "C" unsigned char* mama_convert_utf32_to_utf8(char32_t* value) {
-  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> utf32conv;
-  std::u32string utf32 = value;
-  return reinterpret_cast<unsigned char*>(
-      strdup(utf32conv.to_bytes(utf32).c_str()));
-}
-
-extern "C" void mama_print_utf8(unsigned char* value) {
-  printf("%s", (char*)value);
-}
-
-extern "C" void mama_println_utf8(unsigned char* value) {
-  printf("%s\n", (char*)value);
-}
-
 extern "C" void виправити_шлях(unsigned char* шлях, unsigned char** вихід) {
   std::string path = (char*)шлях;
   std::filesystem::path p(path);
@@ -81,14 +66,6 @@ extern "C" char* mavka_read_from_stdin(char* prefix) {
   }
   std::getline(std::cin, line);
   return strdup(line.c_str());
-}
-
-extern "C" unsigned long mama_bitnot(unsigned long value) {
-  return ~value;
-}
-
-extern "C" double mama_negate(double value) {
-  return -value;
 }
 
 extern "C" {
