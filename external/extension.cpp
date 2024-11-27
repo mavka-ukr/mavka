@@ -1,3 +1,4 @@
+#include <dlfcn.h>
 #include <codecvt>
 #include <cstdio>
 #include <cstdlib>
@@ -100,4 +101,20 @@ extern "C" size_t mavka_get_path_directory(unsigned char* path,
   std::filesystem::path p(str);
   *output = (unsigned char*)strdup(p.parent_path().string().c_str());
   return strlen((char*)*output);
+}
+
+extern "C" void* mavka_load_shared_object_function_ptr_from_file(
+    unsigned char* path,
+    unsigned char* name) {
+  void* dobject = dlopen((char*)path, RTLD_LAZY);
+  if (dobject == nullptr) {
+    return nullptr;
+  }
+  dlerror();
+  void* extfptr = dlsym(dobject, (char*)name);
+  if (extfptr == nullptr) {
+    return nullptr;
+  }
+  dlerror();
+  return extfptr;
 }
