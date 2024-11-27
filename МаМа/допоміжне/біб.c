@@ -39,7 +39,7 @@ extern void mama_println_utf8(unsigned char *value) {
   printf("%s\n", (char *)value);
 }
 
-extern unsigned long mama_bitnot(unsigned long value) { return ~value; }
+extern unsigned long mama_bitnot(long value) { return ~value; }
 
 extern double mama_negate(double value) { return -value; }
 
