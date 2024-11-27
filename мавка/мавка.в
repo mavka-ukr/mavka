@@ -7,10 +7,15 @@
 
 зовнішня дія mavka_read_from_stdin(prefix: адреса<п8>): адреса<п8>;
 зовнішня дія mavka_dialog(data: адреса, run: (data: адреса, value: адреса<unsigned_char>) -> ніщо);
+зовнішня дія mavka_get_path_directory(path: адреса<unsigned_char>, output: адреса<адреса<unsigned_char>>): size_t;
 
 секція мавка {
   дія прочитати_з_stdin(префікс: адреса<п8>): адреса<п8> {
     вернути mavka_read_from_stdin(префікс);
+  }
+
+  дія отримати_батьківську_директорію(шлях: адреса<unsigned_char>, вихід: адреса<адреса<unsigned_char>>): позитивне {
+    вернути mavka_get_path_directory(шлях, вихід);
   }
   
   синонім памʼять = адреса;

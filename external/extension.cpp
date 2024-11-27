@@ -93,3 +93,11 @@ void mavka_dialog(void* data, void (*run)(void* data, unsigned char* value)) {
   }
 }
 }
+
+extern "C" size_t mavka_get_path_directory(unsigned char* path,
+                                           unsigned char** output) {
+  std::string str = (char*)path;
+  std::filesystem::path p(str);
+  *output = (unsigned char*)strdup(p.parent_path().string().c_str());
+  return strlen((char*)*output);
+}
