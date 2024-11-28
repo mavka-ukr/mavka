@@ -194,7 +194,7 @@ return:                                           ; preds = %entry, %entry
   ret %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\B5\D0\B7\D1\83\D0\BB\D1\8C\D1\82\D0\B0\D1\82" %load25
 }
 
-define internal void @"\D0\A0\D0\9C\D0\B21::\D0\BF\D0\BE\D0\BA\D0\BB\D0\B0\D1\81\D1\82\D0\B8_\D0\B2_\D0\9D\D0\B0\D1\82\D0\9E"(ptr %0, ptr %1) {
+define internal void @"\D0\A0\D0\9C\D0\B21::\D0\B7\D0\B1\D0\B5\D1\80\D0\B5\D0\B3\D1\82\D0\B8_\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82"(ptr %0, ptr %1) {
 alloca:
   %"\D0\A0" = alloca ptr, align 8
   %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82" = alloca ptr, align 8
@@ -215,7 +215,7 @@ return:                                           ; preds = %entry
   ret void
 }
 
-define internal void @"\D0\A0\D0\9C\D0\B21::\D0\B7\D0\B0\D0\B1\D1\80\D0\B0\D1\82\D0\B8_\D0\B7_\D0\9D\D0\B0\D1\82\D0\9E"(ptr %0) {
+define internal void @"\D0\A0\D0\9C\D0\B21::\D0\B2\D0\B8\D0\B4\D0\B0\D0\BB\D0\B8\D1\82\D0\B8_\D0\B7\D0\B1\D0\B5\D1\80\D0\B5\D0\B6\D0\B5\D0\BD\D0\B8\D0\B9_\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82"(ptr %0) {
 alloca:
   %"\D0\A0" = alloca ptr, align 8
   br label %entry
@@ -1381,11 +1381,11 @@ while_body_exit:                                  ; preds = %while_cond
   store ptr %inst4, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82_\D1\81\D0\BB\D0\BE\D0\B2\D0\BD\D0\B8\D0\BA\D0\B0", align 8
   %load276 = load ptr, ptr %"\D0\A0", align 8
   %load277 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82_\D1\81\D0\BB\D0\BE\D0\B2\D0\BD\D0\B8\D0\BA\D0\B0", align 8
-  call void @"\D0\A0\D0\9C\D0\B21::\D0\BF\D0\BE\D0\BA\D0\BB\D0\B0\D1\81\D1\82\D0\B8_\D0\B2_\D0\9D\D0\B0\D1\82\D0\9E"(ptr %load276, ptr %load277)
+  call void @"\D0\A0\D0\9C\D0\B21::\D0\B7\D0\B1\D0\B5\D1\80\D0\B5\D0\B3\D1\82\D0\B8_\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82"(ptr %load276, ptr %load277)
   %load278 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82_\D1\81\D0\BB\D0\BE\D0\B2\D0\BD\D0\B8\D0\BA\D0\B0", align 8
   %load279 = load ptr, ptr %"\D0\A0", align 8
   call void @"\D0\A0\D0\9C\D0\B21::\D0\BD\D0\B0\D0\B4\D1\80\D1\83\D0\BA\D1\83\D0\B2\D0\B0\D1\82\D0\B8_\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82"(ptr %load278, ptr %load279, i64 0)
   %load280 = load ptr, ptr %"\D0\A0", align 8
-  call void @"\D0\A0\D0\9C\D0\B21::\D0\B7\D0\B0\D0\B1\D1\80\D0\B0\D1\82\D0\B8_\D0\B7_\D0\9D\D0\B0\D1\82\D0\9E"(ptr %load280)
+  call void @"\D0\A0\D0\9C\D0\B21::\D0\B2\D0\B8\D0\B4\D0\B0\D0\BB\D0\B8\D1\82\D0\B8_\D0\B7\D0\B1\D0\B5\D1\80\D0\B5\D0\B6\D0\B5\D0\BD\D0\B8\D0\B9_\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82"(ptr %load280)
   br label %return
 }
