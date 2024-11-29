@@ -1,8 +1,7 @@
 ; ModuleID = '/home/kohutd/CLionProjects/mavka-1.0.0/./непотріб/розширення_привіт.ц'
 source_filename = "/home/kohutd/CLionProjects/mavka-1.0.0/./\D0\BD\D0\B5\D0\BF\D0\BE\D1\82\D1\80\D1\96\D0\B1/\D1\80\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F_\D0\BF\D1\80\D0\B8\D0\B2\D1\96\D1\82.\D1\86"
 
-%"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F" = type { %"\D0\A0\D0\9C\D0\B21::\D0\92\D0\B5\D1\80\D1\81\D1\96\D1\8F\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr }
-%"\D0\A0\D0\9C\D0\B21::\D0\92\D0\B5\D1\80\D1\81\D1\96\D1\8F\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F" = type { i64, i64, i64 }
+%"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F" = type { i64, i64, i64, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr }
 %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\B5\D0\B7\D1\83\D0\BB\D1\8C\D1\82\D0\B0\D1\82" = type { ptr, ptr }
 
 @0 = private constant [14 x i8] c"\D0\9F\D1\80\D0\B8\D0\B2\D1\96\D1\82!\00"
@@ -23,7 +22,7 @@ alloca:
 entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\A0", align 8
   %load2 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load2, i32 0, i32 3
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load2, i32 0, i32 5
   %load3 = load ptr, ptr %inst, align 8
   %inst2 = call ptr %load3()
   store ptr %inst2, ptr %return1, align 8
@@ -45,7 +44,7 @@ entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\A0", align 8
   store ptr %1, ptr %"\D0\BF\D0\B0\D0\B4\D1\96\D0\BD\D0\BD\D1\8F", align 8
   %load4 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load4, i32 0, i32 4
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load4, i32 0, i32 6
   %load5 = load ptr, ptr %inst, align 8
   %load6 = load ptr, ptr %"\D0\BF\D0\B0\D0\B4\D1\96\D0\BD\D0\BD\D1\8F", align 8
   call void %load5(ptr %load6)
@@ -118,7 +117,7 @@ alloca:
 entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\A0", align 8
   %load15 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load15, i32 0, i32 5
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load15, i32 0, i32 7
   %load16 = load ptr, ptr %inst, align 8
   store ptr %load16, ptr %return1, align 8
   br label %return
@@ -139,7 +138,7 @@ entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\A0", align 8
   store ptr %1, ptr %"\D0\B4\D0\B0\D0\BD\D1\96", align 8
   %load17 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load17, i32 0, i32 1
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load17, i32 0, i32 3
   %load18 = load ptr, ptr %"\D0\B4\D0\B0\D0\BD\D1\96", align 8
   store ptr %load18, ptr %inst, align 8
   br label %return
@@ -158,7 +157,7 @@ entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\B7\D0\BD\D0\B0\D1\87\D0\B5\D0\BD\D0\BD\D1\8F", align 8
   store ptr %1, ptr %"\D0\A0", align 8
   %load19 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load19, i32 0, i32 8
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load19, i32 0, i32 10
   %load20 = load ptr, ptr %inst, align 8
   %load21 = load ptr, ptr %"\D0\B7\D0\BD\D0\B0\D1\87\D0\B5\D0\BD\D0\BD\D1\8F", align 8
   %load22 = load ptr, ptr %"\D0\A0", align 8
@@ -181,7 +180,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store i64 %2, ptr %"\D0\B3\D0\BB\D0\B8\D0\B1\D0\B8\D0\BD\D0\B0", align 4
   %load23 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load23, i32 0, i32 9
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load23, i32 0, i32 11
   %load24 = load ptr, ptr %inst, align 8
   %load25 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load26 = load ptr, ptr %"\D0\A0", align 8
@@ -206,7 +205,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\BD\D0\B0\D0\B7\D0\B2\D0\B0_\D0\BC\D0\BE\D0\B4\D1\83\D0\BB\D1\8F", align 8
   store ptr %2, ptr %"\D1\88\D0\BB\D1\8F\D1\85_\D0\B4\D0\BE_\D1\84\D0\B0\D0\B9\D0\BB\D1\83", align 8
   %load29 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load29, i32 0, i32 10
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load29, i32 0, i32 12
   %load30 = load ptr, ptr %inst, align 8
   %load31 = load ptr, ptr %"\D0\A0", align 8
   %load32 = load ptr, ptr %"\D0\BD\D0\B0\D0\B7\D0\B2\D0\B0_\D0\BC\D0\BE\D0\B4\D1\83\D0\BB\D1\8F", align 8
@@ -231,7 +230,7 @@ entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\A0", align 8
   store ptr %1, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load34 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load34, i32 0, i32 11
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load34, i32 0, i32 13
   %load35 = load ptr, ptr %inst, align 8
   %load36 = load ptr, ptr %"\D0\A0", align 8
   %load37 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
@@ -250,7 +249,7 @@ alloca:
 entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\A0", align 8
   %load38 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load38, i32 0, i32 12
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load38, i32 0, i32 14
   %load39 = load ptr, ptr %inst, align 8
   %load40 = load ptr, ptr %"\D0\A0", align 8
   call void %load39(ptr %load40)
@@ -271,7 +270,7 @@ entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\A0", align 8
   store ptr %1, ptr %"\D0\B7\D0\BD\D0\B0\D1\87\D0\B5\D0\BD\D0\BD\D1\8F", align 8
   %load42 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load42, i32 0, i32 13
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load42, i32 0, i32 15
   %load43 = load ptr, ptr %inst, align 8
   %load44 = load ptr, ptr %"\D0\A0", align 8
   %load45 = load ptr, ptr %"\D0\B7\D0\BD\D0\B0\D1\87\D0\B5\D0\BD\D0\BD\D1\8F", align 8
@@ -302,7 +301,7 @@ entry:                                            ; preds = %alloca
   store ptr %3, ptr %"\D0\B4\D0\B0\D0\BD\D1\96", align 8
   store ptr %4, ptr %"\D0\B2\D1\96\D0\B4\D0\BA\D0\BB\D0\B8\D0\BA_\D0\BF\D0\B5\D1\80\D0\B5\D0\B4_\D0\B7\D0\B2\D1\96\D0\BB\D1\8C\D0\BD\D0\B5\D0\BD\D0\BD\D1\8F\D0\BC", align 8
   %load47 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load47, i32 0, i32 14
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load47, i32 0, i32 16
   %load48 = load ptr, ptr %inst, align 8
   %load49 = load ptr, ptr %"\D0\A0", align 8
   %load50 = load ptr, ptr %"\D0\BD\D0\B0\D0\B7\D0\B2\D0\B0", align 8
@@ -330,7 +329,7 @@ entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\A0", align 8
   store double %1, ptr %"\D0\B7\D0\BD\D0\B0\D1\87\D0\B5\D0\BD\D0\BD\D1\8F", align 8
   %load55 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load55, i32 0, i32 15
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load55, i32 0, i32 17
   %load56 = load ptr, ptr %inst, align 8
   %load57 = load ptr, ptr %"\D0\A0", align 8
   %load58 = load double, ptr %"\D0\B7\D0\BD\D0\B0\D1\87\D0\B5\D0\BD\D0\BD\D1\8F", align 8
@@ -355,7 +354,7 @@ entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\A0", align 8
   store ptr %1, ptr %"\D0\B7\D0\BD\D0\B0\D1\87\D0\B5\D0\BD\D0\BD\D1\8F", align 8
   %load60 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load60, i32 0, i32 16
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load60, i32 0, i32 18
   %load61 = load ptr, ptr %inst, align 8
   %load62 = load ptr, ptr %"\D0\A0", align 8
   %load63 = load ptr, ptr %"\D0\B7\D0\BD\D0\B0\D1\87\D0\B5\D0\BD\D0\BD\D1\8F", align 8
@@ -380,7 +379,7 @@ entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\A0", align 8
   store ptr %1, ptr %"\D0\B7\D0\BD\D0\B0\D1\87\D0\B5\D0\BD\D0\BD\D1\8F", align 8
   %load65 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load65, i32 0, i32 17
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load65, i32 0, i32 19
   %load66 = load ptr, ptr %inst, align 8
   %load67 = load ptr, ptr %"\D0\A0", align 8
   %load68 = load ptr, ptr %"\D0\B7\D0\BD\D0\B0\D1\87\D0\B5\D0\BD\D0\BD\D1\8F", align 8
@@ -405,7 +404,7 @@ entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\A0", align 8
   store ptr %1, ptr %"\D0\BD\D0\B0\D0\B7\D0\B2\D0\B0", align 8
   %load70 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load70, i32 0, i32 18
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load70, i32 0, i32 20
   %load71 = load ptr, ptr %inst, align 8
   %load72 = load ptr, ptr %"\D0\A0", align 8
   %load73 = load ptr, ptr %"\D0\BD\D0\B0\D0\B7\D0\B2\D0\B0", align 8
@@ -428,7 +427,7 @@ alloca:
 entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\A0", align 8
   %load75 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load75, i32 0, i32 19
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load75, i32 0, i32 21
   %load76 = load ptr, ptr %inst, align 8
   %load77 = load ptr, ptr %"\D0\A0", align 8
   %inst2 = call ptr %load76(ptr %load77)
@@ -450,7 +449,7 @@ alloca:
 entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\A0", align 8
   %load79 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load79, i32 0, i32 20
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load79, i32 0, i32 22
   %load80 = load ptr, ptr %inst, align 8
   %load81 = load ptr, ptr %"\D0\A0", align 8
   %inst2 = call ptr %load80(ptr %load81)
@@ -472,7 +471,7 @@ alloca:
 entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\A0", align 8
   %load83 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load83, i32 0, i32 21
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load83, i32 0, i32 23
   %load84 = load ptr, ptr %inst, align 8
   %load85 = load ptr, ptr %"\D0\A0", align 8
   %inst2 = call ptr %load84(ptr %load85)
@@ -502,7 +501,7 @@ entry:                                            ; preds = %alloca
   store i64 %3, ptr %"\D0\BA\D1\96\D0\BB\D1\8C\D0\BA\D1\96\D1\81\D1\82\D1\8C_\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82\D1\96\D0\B2", align 4
   store ptr %4, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82\D0\B8", align 8
   %load87 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load87, i32 0, i32 22
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load87, i32 0, i32 24
   %load88 = load ptr, ptr %inst, align 8
   %load89 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load90 = load ptr, ptr %"\D0\A0", align 8
@@ -532,7 +531,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\BD\D0\B0\D0\B7\D0\B2\D0\B0", align 8
   %load95 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load95, i32 0, i32 23
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load95, i32 0, i32 25
   %load96 = load ptr, ptr %inst, align 8
   %load97 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load98 = load ptr, ptr %"\D0\A0", align 8
@@ -562,7 +561,7 @@ entry:                                            ; preds = %alloca
   store ptr %2, ptr %"\D0\BD\D0\B0\D0\B7\D0\B2\D0\B0", align 8
   store ptr %3, ptr %"\D0\B7\D0\BD\D0\B0\D1\87\D0\B5\D0\BD\D0\BD\D1\8F", align 8
   %load101 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load101, i32 0, i32 24
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load101, i32 0, i32 26
   %load102 = load ptr, ptr %inst, align 8
   %load103 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load104 = load ptr, ptr %"\D0\A0", align 8
@@ -591,7 +590,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\BD\D0\B0\D0\B7\D0\B2\D0\B0", align 8
   %load108 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load108, i32 0, i32 25
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load108, i32 0, i32 27
   %load109 = load ptr, ptr %inst, align 8
   %load110 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load111 = load ptr, ptr %"\D0\A0", align 8
@@ -623,7 +622,7 @@ entry:                                            ; preds = %alloca
   store i64 %3, ptr %"\D0\BA\D1\96\D0\BB\D1\8C\D0\BA\D1\96\D1\81\D1\82\D1\8C_\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82\D1\96\D0\B2", align 4
   store ptr %4, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82\D0\B8", align 8
   %load114 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load114, i32 0, i32 26
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load114, i32 0, i32 28
   %load115 = load ptr, ptr %inst, align 8
   %load116 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load117 = load ptr, ptr %"\D0\A0", align 8
@@ -653,7 +652,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\BA\D0\BB\D1\8E\D1\87", align 8
   %load122 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load122, i32 0, i32 27
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load122, i32 0, i32 29
   %load123 = load ptr, ptr %inst, align 8
   %load124 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load125 = load ptr, ptr %"\D0\A0", align 8
@@ -683,7 +682,7 @@ entry:                                            ; preds = %alloca
   store ptr %2, ptr %"\D0\BA\D0\BB\D1\8E\D1\87", align 8
   store ptr %3, ptr %"\D0\B7\D0\BD\D0\B0\D1\87\D0\B5\D0\BD\D0\BD\D1\8F", align 8
   %load128 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load128, i32 0, i32 28
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load128, i32 0, i32 30
   %load129 = load ptr, ptr %inst, align 8
   %load130 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load131 = load ptr, ptr %"\D0\A0", align 8
@@ -712,7 +711,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\BA\D0\BB\D1\8E\D1\87", align 8
   %load135 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load135, i32 0, i32 29
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load135, i32 0, i32 31
   %load136 = load ptr, ptr %inst, align 8
   %load137 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load138 = load ptr, ptr %"\D0\A0", align 8
@@ -738,7 +737,7 @@ entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   store ptr %1, ptr %"\D0\A0", align 8
   %load141 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load141, i32 0, i32 30
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load141, i32 0, i32 32
   %load142 = load ptr, ptr %inst, align 8
   %load143 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load144 = load ptr, ptr %"\D0\A0", align 8
@@ -765,7 +764,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82", align 8
   %load146 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load146, i32 0, i32 31
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load146, i32 0, i32 33
   %load147 = load ptr, ptr %inst, align 8
   %load148 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load149 = load ptr, ptr %"\D0\A0", align 8
@@ -793,7 +792,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82", align 8
   %load152 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load152, i32 0, i32 32
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load152, i32 0, i32 34
   %load153 = load ptr, ptr %inst, align 8
   %load154 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load155 = load ptr, ptr %"\D0\A0", align 8
@@ -821,7 +820,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82", align 8
   %load158 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load158, i32 0, i32 33
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load158, i32 0, i32 35
   %load159 = load ptr, ptr %inst, align 8
   %load160 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load161 = load ptr, ptr %"\D0\A0", align 8
@@ -849,7 +848,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82", align 8
   %load164 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load164, i32 0, i32 34
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load164, i32 0, i32 36
   %load165 = load ptr, ptr %inst, align 8
   %load166 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load167 = load ptr, ptr %"\D0\A0", align 8
@@ -877,7 +876,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82", align 8
   %load170 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load170, i32 0, i32 35
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load170, i32 0, i32 37
   %load171 = load ptr, ptr %inst, align 8
   %load172 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load173 = load ptr, ptr %"\D0\A0", align 8
@@ -905,7 +904,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82", align 8
   %load176 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load176, i32 0, i32 36
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load176, i32 0, i32 38
   %load177 = load ptr, ptr %inst, align 8
   %load178 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load179 = load ptr, ptr %"\D0\A0", align 8
@@ -933,7 +932,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82", align 8
   %load182 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load182, i32 0, i32 37
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load182, i32 0, i32 39
   %load183 = load ptr, ptr %inst, align 8
   %load184 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load185 = load ptr, ptr %"\D0\A0", align 8
@@ -961,7 +960,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82", align 8
   %load188 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load188, i32 0, i32 38
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load188, i32 0, i32 40
   %load189 = load ptr, ptr %inst, align 8
   %load190 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load191 = load ptr, ptr %"\D0\A0", align 8
@@ -989,7 +988,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82", align 8
   %load194 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load194, i32 0, i32 39
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load194, i32 0, i32 41
   %load195 = load ptr, ptr %inst, align 8
   %load196 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load197 = load ptr, ptr %"\D0\A0", align 8
@@ -1017,7 +1016,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82", align 8
   %load200 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load200, i32 0, i32 40
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load200, i32 0, i32 42
   %load201 = load ptr, ptr %inst, align 8
   %load202 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load203 = load ptr, ptr %"\D0\A0", align 8
@@ -1045,7 +1044,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82", align 8
   %load206 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load206, i32 0, i32 41
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load206, i32 0, i32 43
   %load207 = load ptr, ptr %inst, align 8
   %load208 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load209 = load ptr, ptr %"\D0\A0", align 8
@@ -1073,7 +1072,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82", align 8
   %load212 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load212, i32 0, i32 42
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load212, i32 0, i32 44
   %load213 = load ptr, ptr %inst, align 8
   %load214 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load215 = load ptr, ptr %"\D0\A0", align 8
@@ -1099,7 +1098,7 @@ entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   store ptr %1, ptr %"\D0\A0", align 8
   %load218 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load218, i32 0, i32 43
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load218, i32 0, i32 45
   %load219 = load ptr, ptr %inst, align 8
   %load220 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load221 = load ptr, ptr %"\D0\A0", align 8
@@ -1126,7 +1125,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82", align 8
   %load223 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load223, i32 0, i32 44
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load223, i32 0, i32 46
   %load224 = load ptr, ptr %inst, align 8
   %load225 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load226 = load ptr, ptr %"\D0\A0", align 8
@@ -1154,7 +1153,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82", align 8
   %load229 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load229, i32 0, i32 45
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load229, i32 0, i32 47
   %load230 = load ptr, ptr %inst, align 8
   %load231 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load232 = load ptr, ptr %"\D0\A0", align 8
@@ -1182,7 +1181,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82", align 8
   %load235 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load235, i32 0, i32 46
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load235, i32 0, i32 48
   %load236 = load ptr, ptr %inst, align 8
   %load237 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load238 = load ptr, ptr %"\D0\A0", align 8
@@ -1210,7 +1209,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82", align 8
   %load241 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load241, i32 0, i32 47
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load241, i32 0, i32 49
   %load242 = load ptr, ptr %inst, align 8
   %load243 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load244 = load ptr, ptr %"\D0\A0", align 8
@@ -1238,7 +1237,7 @@ entry:                                            ; preds = %alloca
   store ptr %1, ptr %"\D0\A0", align 8
   store ptr %2, ptr %"\D0\B0\D1\80\D0\B3\D1\83\D0\BC\D0\B5\D0\BD\D1\82", align 8
   %load247 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load247, i32 0, i32 48
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load247, i32 0, i32 50
   %load248 = load ptr, ptr %inst, align 8
   %load249 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load250 = load ptr, ptr %"\D0\A0", align 8
@@ -1264,7 +1263,7 @@ entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   store ptr %1, ptr %"\D0\A0", align 8
   %load253 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load253, i32 0, i32 49
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load253, i32 0, i32 51
   %load254 = load ptr, ptr %inst, align 8
   %load255 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load256 = load ptr, ptr %"\D0\A0", align 8
@@ -1289,7 +1288,7 @@ entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   store ptr %1, ptr %"\D0\A0", align 8
   %load258 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load258, i32 0, i32 50
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load258, i32 0, i32 52
   %load259 = load ptr, ptr %inst, align 8
   %load260 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load261 = load ptr, ptr %"\D0\A0", align 8
@@ -1314,7 +1313,7 @@ entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   store ptr %1, ptr %"\D0\A0", align 8
   %load263 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load263, i32 0, i32 51
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load263, i32 0, i32 53
   %load264 = load ptr, ptr %inst, align 8
   %load265 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load266 = load ptr, ptr %"\D0\A0", align 8
@@ -1339,7 +1338,7 @@ entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   store ptr %1, ptr %"\D0\A0", align 8
   %load268 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load268, i32 0, i32 52
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load268, i32 0, i32 54
   %load269 = load ptr, ptr %inst, align 8
   %load270 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load271 = load ptr, ptr %"\D0\A0", align 8
@@ -1364,7 +1363,7 @@ entry:                                            ; preds = %alloca
   store ptr %0, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   store ptr %1, ptr %"\D0\A0", align 8
   %load273 = load ptr, ptr %"\D0\A0", align 8
-  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load273, i32 0, i32 53
+  %inst = getelementptr %"\D0\A0\D0\9C\D0\B21::\D0\A0\D0\BE\D0\B7\D1\88\D0\B8\D1\80\D0\B5\D0\BD\D0\BD\D1\8F", ptr %load273, i32 0, i32 55
   %load274 = load ptr, ptr %inst, align 8
   %load275 = load ptr, ptr %"\D0\BE\D0\B1\CA\BC\D1\94\D0\BA\D1\82", align 8
   %load276 = load ptr, ptr %"\D0\A0", align 8
