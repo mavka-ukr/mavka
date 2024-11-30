@@ -7,7 +7,7 @@ extern unsigned char *mama_convert_utf32_to_utf8(unsigned int *utf32) {
   while (utf32[len] != 0) {
     len++;
   }
-  unsigned char *utf8 = (unsigned char *)malloc(len + 1);
+  unsigned char *utf8 = (unsigned char *)malloc(len * 4 + 1);
   unsigned char *utf8_start = utf8;
   for (int i = 0; i < len; i++) {
     unsigned int c = utf32[i];
