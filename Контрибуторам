@@ -1,18 +1,18 @@
 § Контрибуторам
 
 Мавка створюється та розповсюджується відкрито.
-Для ведення розробки використовується GitHub (https://github.com/mavka-ukr/mama).
+Для ведення розробки використовується GitHub (https://github.com/mavka-ukr/mavka).
 
 §§ Ви можете зробити внесок як розробник декількома способами:
 
 1. Issue на GitHub:
-https://github.com/mavka-ukr/mama/issues
+https://github.com/mavka-ukr/mavka/issues
 
 - За допомогою Issue ви можете повідомити про помилку, запропонувати ідею або покращення.
 - Рекомендується вам самим спробувати виправити цю помилку або втілити це покращення та створити Pull Request.
 
 2. Pull Request на GitHub:
-https://github.com/mavka-ukr/mama/pulls
+https://github.com/mavka-ukr/mavka/pulls
 
 - Ви можете внести зміни в код Мавка та створити Pull Request.
 - Робіть лише ті зміни, які стосуються мети вашого Pull Request.
