@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <iostream>
 #include <locale>
+#include <valarray>
 
 extern "C" unsigned char* прочитати_файл(unsigned char* шлях) {
   FILE* file = fopen((char*)шлях, "rb");
@@ -117,4 +118,60 @@ extern "C" void* mavka_load_shared_object_function_ptr_from_file(
   }
   dlerror();
   return extfptr;
+}
+
+extern "C" double mavka_sin(double value) {
+  return sin(value);
+}
+
+extern "C" double mavka_cos(double value) {
+  return cos(value);
+}
+
+extern "C" double mavka_tan(double value) {
+  return tan(value);
+}
+
+extern "C" double mavka_asin(double value) {
+  return asin(value);
+}
+
+extern "C" double mavka_acos(double value) {
+  return acos(value);
+}
+
+extern "C" double mavka_atan(double value) {
+  return atan(value);
+}
+
+extern "C" double mavka_atan2(double y, double x) {
+  return atan2(y, x);
+}
+
+extern "C" double mavka_abs(double value) {
+  return abs(value);
+}
+
+extern "C" double mavka_exp(double value) {
+  return exp(value);
+}
+
+extern "C" double mavka_sqrt(double value) {
+  return sqrt(value);
+}
+
+extern "C" double mavka_pow(double a, double b) {
+  return pow(a, b);
+}
+
+extern "C" double mavka_ceil(double value) {
+  return ceil(value);
+}
+
+extern "C" double mavka_floor(double value) {
+  return floor(value);
+}
+
+extern "C" double mavka_round(double value) {
+  return round(value);
 }
