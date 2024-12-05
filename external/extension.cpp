@@ -175,3 +175,10 @@ extern "C" double mavka_floor(double value) {
 extern "C" double mavka_round(double value) {
   return round(value);
 }
+
+extern "C" void mavka_get_version(unsigned char** output, size_t* length) {
+  *output = (unsigned char*)strdup(MAVKA_VERSION);
+  if (length != nullptr) {
+    *length = strlen(MAVKA_VERSION);
+  }
+}
