@@ -1,4 +1,5 @@
 #include <dlfcn.h>
+#include <cmath>
 #include <codecvt>
 #include <cstdio>
 #include <cstdlib>
@@ -6,7 +7,6 @@
 #include <filesystem>
 #include <iostream>
 #include <locale>
-#include <valarray>
 
 extern "C" unsigned char* прочитати_файл(unsigned char* шлях) {
   FILE* file = fopen((char*)шлях, "rb");
