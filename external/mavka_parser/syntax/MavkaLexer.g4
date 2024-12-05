@@ -98,7 +98,7 @@ fragment ID_CONTINUE
     | ID_START
     ;
 
-STRING_MULTILINE: '"' '"' '"' (~["] | '\\"')* '"' '"' '"';
+STRING_MULTILINE: '"' '"' '"' ('\\"' | .)*? '"' '"' '"';
 STRING: '"' ( ~["\n\r] | '\\"' )* '"';
 CHARACTER: '\'' ( ~['\n\r] | '\\\'' )* '\'';
 
