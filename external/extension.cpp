@@ -109,14 +109,18 @@ extern "C" void* mavka_load_shared_object_function_ptr_from_file(
     unsigned char* name) {
   void* dobject = dlopen((char*)path, RTLD_LAZY);
   if (dobject == nullptr) {
+    if (auto err = dlerror()) {
+      std::cout << err << std::endl;
+    }
     return nullptr;
   }
-  dlerror();
   void* extfptr = dlsym(dobject, (char*)name);
   if (extfptr == nullptr) {
+    if (auto err = dlerror()) {
+      std::cout << err << std::endl;
+    }
     return nullptr;
   }
-  dlerror();
   return extfptr;
 }
 
