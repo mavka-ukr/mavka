@@ -1,4 +1,20 @@
+взяти визначення МаМа;
 взяти визначення мавка/бібліотека;
+
+зовнішня дія mavka_sin(value: double): double;
+зовнішня дія mavka_cos(value: double): double;
+зовнішня дія mavka_tan(value: double): double;
+зовнішня дія mavka_asin(value: double): double;
+зовнішня дія mavka_acos(value: double): double;
+зовнішня дія mavka_atan(value: double): double;
+зовнішня дія mavka_atan2(a: double, b: double): double;
+зовнішня дія mavka_abs(value: double): double;
+зовнішня дія mavka_exp(value: double): double;
+зовнішня дія mavka_sqrt(value: double): double;
+зовнішня дія mavka_pow(a: double, b: double): double;
+зовнішня дія mavka_ceil(value: double): double;
+зовнішня дія mavka_floor(value: double): double;
+зовнішня дія mavka_round(value: double): double;
 
 секція мавка {
   секція бібліотека {
