@@ -289,4 +289,17 @@ namespace mavka::parser {
                                   antlr4::atn::ATNConfigSet* configs) override;
   };
 } // namespace mavka::parser
+
+struct РезультатРозборуТекстуМавки {
+  size_t успіх;
+  АСДЗначення* значення;
+  ПомилкаРозборуМавки* помилка;
+};
+
+extern "C" РезультатРозборуТекстуМавки* розібрати_текст_мавки(
+    ТекстКоду* текст_коду,
+    Ідентифікатор* ідентифікатор,
+    char* value,
+    size_t startLine,
+    size_t startColumn);
 #endif // MAVKA_PARSER_H
