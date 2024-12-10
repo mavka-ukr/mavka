@@ -60,14 +60,15 @@ extern "C" int strlen32(char32_t* a) {
   return len;
 }
 
-extern "C" char* mavka_read_from_stdin(char* prefix) {
+extern "C" uint64_t mavka_read_from_stdin(char* prefix, char** output) {
   std::cout << prefix;
   std::string line;
   if (std::cin.eof()) {
-    return nullptr;
+    return 0;
   }
   std::getline(std::cin, line);
-  return strdup(line.c_str());
+  *output = strdup(line.c_str());
+  return line.size();
 }
 
 extern "C" {
