@@ -414,6 +414,7 @@ namespace mavka::parser {
         strdup(replaceBackslashes(
                    token->getText().substr(1, token->getText().size() - 2))
                    .c_str());
+    асд_дані_текст->інтерпольовано = false;
     return AV(visitor, token, АСДВидТекст, асд_дані_текст);
   }
 
@@ -436,6 +437,7 @@ namespace mavka::parser {
         strdup(replaceBackslashes(
                    token->getText().substr(3, token->getText().size() - 6))
                    .c_str());
+    асд_дані_текст->інтерпольовано = false;
     return AV(visitor, token, АСДВидТекст, асд_дані_текст);
   }
 
