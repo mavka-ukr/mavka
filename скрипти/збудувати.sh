@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 set -e
 set -x
 
@@ -11,15 +11,14 @@ export RANLIB="llvm-ranlib"
 export TSIL="ціль"
 OUT="build-$PLATFORM/мавка"
 
+READLINE_AVAILABLE=0
+if [ -f /usr/include/readline/readline.h ]; then
+  READLINE_AVAILABLE=1
+fi
+
 mkdir -p build-"$PLATFORM"/external
 cd build-"$PLATFORM"/external
-cmake ../../external -G Ninja -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always
-ninja
-cd -
-
-mkdir -p "build-$PLATFORM/external/isocline"
-cd "build-$PLATFORM/external/isocline"
-cmake "../../../external/isocline" -G Ninja
+cmake ../../external -G Ninja -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always -DREADLINE_AVAILABLE="$READLINE_AVAILABLE"
 ninja
 cd -
 
@@ -39,6 +38,9 @@ $TSIL .плавлення/старт.ll скомпілювати старт.ц
 CXX_OPTIONS=(
   "-O3"
 )
+if [ "$READLINE_AVAILABLE" -eq 1 ]; then
+  CXX_OPTIONS+=("-lreadline")
+fi
 
 $CXX "${CXX_OPTIONS[@]}" -o "$OUT" \
   .плавлення/мавка/бібліотека/М.ll \
@@ -52,5 +54,4 @@ $CXX "${CXX_OPTIONS[@]}" -o "$OUT" \
   build-"$PLATFORM"/external/libmavka_external.a \
   build-"$PLATFORM"/external/mavka_parser/libmavka_parser.a \
   build-"$PLATFORM"/external/mavka_parser/syntax/libmavka_syntax.a \
-  build-"$PLATFORM"/external/mavka_parser/syntax/antlr4-cpp-runtime/libantlr4_cpp_runtime.a \
-  build-"$PLATFORM"/external/isocline/libisocline.a
+  build-"$PLATFORM"/external/mavka_parser/syntax/antlr4-cpp-runtime/libantlr4_cpp_runtime.a
