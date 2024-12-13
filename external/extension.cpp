@@ -8,7 +8,7 @@
 #include <iostream>
 #include <locale>
 
-extern "C" unsigned char* прочитати_файл(unsigned char* шлях) {
+extern "C" unsigned char* mavka_read_file(unsigned char* шлях) {
   FILE* file = fopen((char*)шлях, "rb");
   if (file == nullptr) {
     return nullptr;
@@ -23,23 +23,22 @@ extern "C" unsigned char* прочитати_файл(unsigned char* шлях) {
   return buffer;
 }
 
-extern "C" void виправити_шлях(unsigned char* шлях, unsigned char** вихід) {
+extern "C" void mavka_fix_path(unsigned char* шлях, unsigned char** вихід) {
   std::string path = (char*)шлях;
   std::filesystem::path p(path);
   *вихід =
       (unsigned char*)strdup(absolute(weakly_canonical(p)).string().c_str());
 }
 
-extern "C" unsigned char перевірити_чи_ю8_закінчується_на(
-    unsigned char* value,
-    unsigned char* suffix) {
+extern "C" unsigned char mavka_check_if_str_ends_with(unsigned char* value,
+                                                      unsigned char* suffix) {
   std::string str = (char*)value;
   std::string suf = (char*)suffix;
   return str.ends_with(suf);
 }
 
-extern "C" void отримати_назву_файлу_без_розширення(unsigned char* шлях,
-                                                    unsigned char** вихід) {
+extern "C" void mavka_get_filename_without_extension(unsigned char* шлях,
+                                                     unsigned char** вихід) {
   std::string path = (char*)шлях;
   std::filesystem::path p(path);
   *вихід = (unsigned char*)strdup(p.stem().string().c_str());
