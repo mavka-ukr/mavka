@@ -72,28 +72,35 @@ extern "C" uint64_t mavka_read_from_stdin(char* prefix, char** output) {
 }
 
 extern "C" {
-#include <locale.h>
 #include <stdlib.h>
-#include "isocline/include/isocline.h"
+#if MAVKA_READLINE == 1
+#include <readline/readline.h>
 
-static void completer(ic_completion_env_t* cenv, const char* input) {}
+char* _mavka_readline(char* prefix) {
+  return readline(prefix);
+}
+#else
+char* _mavka_readline(char* prefix) {
+  std::cout << prefix;
+  std::string line;
+  std::getline(std::cin, line);
+  return strdup(line.c_str());
+}
+#endif
 
-static void highlighter(ic_highlight_env_t* henv,
-                        const char* input,
-                        void* arg) {}
+void _mavka_readline_init() {
+  //
+}
 
 void mavka_dialog(void* data, void (*run)(void* data, unsigned char* value)) {
-  setlocale(LC_ALL, "C.UTF-8");
-  ic_set_default_completer(&completer, nullptr);
-  ic_set_default_highlighter(highlighter, nullptr);
-  ic_enable_auto_tab(true);
-  ic_set_prompt_marker(" ", nullptr);
-  ic_set_history(nullptr, 200);
+  _mavka_readline_init();
   unsigned char* input;
-  while ((input = (unsigned char*)ic_readline("\e[0m-")) != nullptr) {
+  char* prefix = strdup("- ");
+  while ((input = (unsigned char*)_mavka_readline(prefix)) != nullptr) {
     run(data, input);
     free(input);
   }
+  free(prefix);
 }
 }
 
