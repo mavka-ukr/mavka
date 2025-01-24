@@ -49,14 +49,6 @@ extern double mama_pow(double base, double exponent) {
 
 extern double mama_floor(double value) { return floor(value); }
 
-extern double mama_exit(double value) { exit(value); }
-
-extern void *mama_realloc(void *ptr, size_t size) { return realloc(ptr, size); }
-
-extern void mama_free(void *ptr) { free(ptr); }
-
-extern void *mama_malloc(size_t size) { return malloc(size); }
-
 extern size_t mama_double_to_string(double value, unsigned char **buffer) {
   long decimal = (long)value;
   if (decimal == value) {

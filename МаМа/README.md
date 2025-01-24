@@ -1,4 +1,4 @@
-<img src="./лого.svg" width="100" height="100" />
+<img src="ресурси/лого.svg" width="100" height="100" />
 
 # Машина Мавки
 
