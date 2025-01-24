@@ -187,6 +187,22 @@ extern "C" double mavka_round(double value) {
   return round(value);
 }
 
+extern "C" void* mavka_malloc(size_t size) {
+  return malloc(size);
+}
+
+extern "C" void* mavka_realloc(void* ptr, size_t size) {
+  return realloc(ptr, size);
+}
+
+extern "C" void mavka_free(void* ptr) {
+  free(ptr);
+}
+
+extern double mavka_exit(int value) {
+  exit(value);
+}
+
 extern "C" void mavka_get_version(unsigned char** output, size_t* length) {
   *output = (unsigned char*)strdup(MAVKA_VERSION);
   if (length != nullptr) {

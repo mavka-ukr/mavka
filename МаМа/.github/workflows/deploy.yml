@@ -26,7 +26,7 @@ jobs:
       - run: |
           npm i -g xdocs
           npm i -g sass
-          bash збудувати-вебсайт.sh
+          bash скрипти/збудувати-вебсайт.sh
           cd .будування-вебсайту/збудоване
           git config --local user.name "kohutd"
           git config --local user.email "davyd.kohut@gmail.com"

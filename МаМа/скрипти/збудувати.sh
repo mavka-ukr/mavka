@@ -14,7 +14,7 @@ export TSIL="ціль"
 
 TSIL_SOURCE_FILES=(
   "КД/КД.ц"
-  "допоміжне/біб.ц"
+  "біб.ц"
   "Код.ц"
   "Машина.ц"
   "Назва.ц"
@@ -46,12 +46,14 @@ CC_OPTIONS=(
 )
 
 for file in "${TSIL_SOURCE_FILES[@]}"; do
+  mkdir -p $(dirname ".плавлення/"$file".ll")
   $TSIL .плавлення/"$file".ll скомпілювати "$file"
   $CC "${CC_OPTIONS[@]}" -c -o .плавлення/"$file".o .плавлення/"$file".ll
   TSIL_OBJECT_FILES+=(".плавлення/$file.o")
 done
 
 for file in "${C_SOURCE_FILES[@]}"; do
+  mkdir -p $(dirname ".плавлення/"$file".o")
   $CC "${CC_OPTIONS[@]}" -c -o .плавлення/"$file".o "$file"
   C_OBJECT_FILES+=(".плавлення/$file.o")
 done
