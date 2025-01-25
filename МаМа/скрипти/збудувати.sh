@@ -37,7 +37,6 @@ TSIL_SOURCE_FILES=(
 )
 TSIL_OBJECT_FILES=()
 C_SOURCE_FILES=(
-  "допоміжне/біб.c"
 )
 C_OBJECT_FILES=()
 

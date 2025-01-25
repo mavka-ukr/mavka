@@ -217,3 +217,22 @@ extern "C" void mavka_exit(int value) {
 extern "C" void mavka_print_utf8(char* value, size_t length) {
   printf("%.*s", (int)length, value);
 }
+
+extern "C" size_t mavka_double_to_string(double value, char** buffer) {
+  long decimal = (long)value;
+  if (decimal == value) {
+    *buffer = (char*)malloc(32);
+    return sprintf((char*)*buffer, "%ld", decimal);
+  }
+  *buffer = (char*)malloc(32);
+  return sprintf((char*)*buffer, "%.14f", value);
+}
+
+extern "C" double mavka_bitnot(double value) {
+  long int_value = static_cast<long>(value);
+  return static_cast<double>(~int_value);
+}
+
+extern "C" double mavka_negate(double value) {
+  return -value;
+}

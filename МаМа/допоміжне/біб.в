@@ -1,5 +1,0 @@
-зовнішня дія mama_floor(value: double): double;
-зовнішня дія mama_pow(base: double, exponent: double): double;
-зовнішня дія mama_bitnot(value: long): long;
-зовнішня дія mama_negate(value: double): double;
-зовнішня дія mama_double_to_string(value: double, buffer: адреса): size_t;
