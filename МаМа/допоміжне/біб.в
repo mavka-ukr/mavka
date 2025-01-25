@@ -1,8 +1,5 @@
 зовнішня дія mama_floor(value: double): double;
 зовнішня дія mama_pow(base: double, exponent: double): double;
-зовнішня дія mama_convert_utf32_to_utf8(input: адреса<unsigned_int>): адреса<unsigned_char>;
-зовнішня дія mama_print_utf8(value: адреса<unsigned_char>);
-зовнішня дія mama_println_utf8(value: адреса<unsigned_char>);
 зовнішня дія mama_bitnot(value: long): long;
 зовнішня дія mama_negate(value: double): double;
 зовнішня дія mama_double_to_string(value: double, buffer: адреса): size_t;

@@ -199,7 +199,7 @@ extern "C" void mavka_free(void* ptr) {
   free(ptr);
 }
 
-extern double mavka_exit(int value) {
+extern "C" void mavka_exit(int value) {
   exit(value);
 }
 
@@ -208,4 +208,8 @@ extern "C" void mavka_get_version(unsigned char** output, size_t* length) {
   if (length != nullptr) {
     *length = strlen(MAVKA_VERSION);
   }
+}
+
+extern "C" void mavka_print_utf8(char* value, size_t length) {
+  printf("%.*s", (int)length, value);
 }
