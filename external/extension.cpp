@@ -8,26 +8,36 @@
 #include <iostream>
 #include <locale>
 
-extern "C" unsigned char* mavka_read_file(unsigned char* шлях) {
-  FILE* file = fopen((char*)шлях, "rb");
+extern "C" char* mavka_read_file(char* шлях,
+                                 size_t розмір_шляху,
+                                 size_t* buffer_size) {
+  char* path = (char*)malloc(розмір_шляху + 1);
+  memcpy(path, шлях, розмір_шляху);
+  path[розмір_шляху] = 0;
+  FILE* file = fopen(path, "rb");
+  free(path);
   if (file == nullptr) {
     return nullptr;
   }
   fseek(file, 0, SEEK_END);
   auto length = ftell(file);
   fseek(file, 0, SEEK_SET);
-  auto buffer = (unsigned char*)malloc(length + 1);
+  auto buffer = (char*)malloc(length + 1);
   fread(buffer, 1, length, file);
   fclose(file);
   buffer[length] = 0;
+  *buffer_size = length;
   return buffer;
 }
 
-extern "C" void mavka_fix_path(unsigned char* шлях, unsigned char** вихід) {
+extern "C" char* mavka_fix_path(char* шлях,
+                                size_t розмір_шляху,
+                                size_t* buffer_size) {
   std::string path = (char*)шлях;
   std::filesystem::path p(path);
-  *вихід =
-      (unsigned char*)strdup(absolute(weakly_canonical(p)).string().c_str());
+  char* fixed_path = strdup(absolute(weakly_canonical(p)).string().c_str());
+  *buffer_size = strlen(fixed_path);
+  return fixed_path;
 }
 
 extern "C" unsigned char mavka_check_if_str_ends_with(unsigned char* value,
@@ -91,12 +101,13 @@ void _mavka_readline_init() {
   //
 }
 
-void mavka_dialog(void* data, void (*run)(void* data, unsigned char* value)) {
+void mavka_dialog(void* data,
+                  void (*run)(void* data, char* value, size_t value_size)) {
   _mavka_readline_init();
-  unsigned char* input;
+  char* input;
   char* prefix = strdup("- ");
-  while ((input = (unsigned char*)_mavka_readline(prefix)) != nullptr) {
-    run(data, input);
+  while ((input = _mavka_readline(prefix)) != nullptr) {
+    run(data, input, strlen(input));
     free(input);
   }
   free(prefix);
@@ -201,13 +212,6 @@ extern "C" void mavka_free(void* ptr) {
 
 extern "C" void mavka_exit(int value) {
   exit(value);
-}
-
-extern "C" void mavka_get_version(unsigned char** output, size_t* length) {
-  *output = (unsigned char*)strdup(MAVKA_VERSION);
-  if (length != nullptr) {
-    *length = strlen(MAVKA_VERSION);
-  }
 }
 
 extern "C" void mavka_print_utf8(char* value, size_t length) {
