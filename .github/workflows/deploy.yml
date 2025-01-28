@@ -3,6 +3,7 @@ name: Windows Build Generation
 on:
   push:
     branches:
+      - main
       - windows
 jobs:
   deploy:
