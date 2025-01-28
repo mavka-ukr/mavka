@@ -21,6 +21,7 @@ jobs:
           unzip ціль-0.32.0-x86_64-linux-gnu.zip
           rm -rf mavka-windows/.плавлення
           rm -rf mavka-windows/external
+          rm -rf mavka-windows/README.md
           bash скрипти/згенерувати_для_будування_на_windows.sh ціль-0.32.0-x86_64-linux-gnu/ціль
           cd mavka-windows
           git config --local user.name "kohutd"
