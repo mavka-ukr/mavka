@@ -16,9 +16,11 @@ jobs:
           ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAVKA_WINDOWS }}
           persist-credentials: true
       - run: |
+          wget https://github.com/tsil-ukr/files/raw/main/випуски-цілі/0.32.0/ціль-0.32.0-x86_64-linux-gnu.zip
+          unzip ціль-0.32.0-x86_64-linux-gnu.zip
           rm -rf mavka-windows/.плавлення
           rm -rf mavka-windows/external
-          bash скрипти/згенерувати_для_будування_на_windows.sh
+          bash скрипти/згенерувати_для_будування_на_windows.sh ціль-0.32.0-x86_64-linux-gnu/ціль
       - uses: ad-m/github-push-action@master
         with:
           branch: main

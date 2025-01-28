@@ -2,7 +2,7 @@
 set -e
 set -x
 
-export TSIL="ціль"
+TSIL="$1"
 
 mkdir -p mavka-windows
 
