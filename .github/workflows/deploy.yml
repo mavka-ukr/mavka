@@ -1,0 +1,28 @@
+name: Windows Build Generation
+
+on:
+  push:
+    branches:
+      - windows
+jobs:
+  deploy:
+    name: Generate for Windows and push to the repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: "mavka-ukr/mavka-windows"
+          path: "mavka-windows"
+          ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAVKA_WINDOWS }}
+          persist-credentials: true
+      - run: |
+          rm -rf mavka-windows/.плавлення
+          rm -rf mavka-windows/external
+          bash скрипти/згенерувати_для_будування_на_windows.sh
+      - uses: ad-m/github-push-action@master
+        with:
+          branch: main
+          directory: "mavka-windows"
+          repository: "mavka-ukr/mavka-windows"
+          ssh: true
+          github_token: ${{ secrets.SSH_DEPLOY_KEY_MAVKA_WINDOWS }}
