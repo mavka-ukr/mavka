@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           repository: "mavka-ukr/mavka-windows"
           path: "mavka-windows"
@@ -21,6 +22,12 @@ jobs:
           rm -rf mavka-windows/.плавлення
           rm -rf mavka-windows/external
           bash скрипти/згенерувати_для_будування_на_windows.sh ціль-0.32.0-x86_64-linux-gnu/ціль
+          cd mavka-windows
+          git config --local user.name "kohutd"
+          git config --local user.email "davyd.kohut@gmail.com"
+          git add .
+          git commit -m "🧬"
+          cd -
       - uses: ad-m/github-push-action@master
         with:
           branch: main
