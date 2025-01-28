@@ -39,6 +39,8 @@ cp -a external/ mavka-windows/
 
 echo -en "# Мавка для Windows
 
+> Згенеровано автоматично. Може не працювати або працювати неправильно.
+
 \`\`\`shell
 mkdir build
 cd build
