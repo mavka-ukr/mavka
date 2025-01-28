@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - windows
 jobs:
   deploy:
     name: Generate for Windows and push to the repository
