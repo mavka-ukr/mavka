@@ -7,16 +7,22 @@ int main(int argc, char** argv) {
 #endif
 
 #ifdef _WIN32
-#include <windows.h>
 #include <string.h>
+#include <windows.h>
 
-int wmain(int argc, wchar_t** argv) {
+int WINAPI WinMain(HINSTANCE hInstance,
+                   HINSTANCE hPrevInstance,
+                   LPSTR lpCmdLine,
+                   int nCmdShow) {
+  int argc = 0;
+  LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
   int argc8 = 0;
   unsigned char** argv8 = new unsigned char*[argc];
   for (int i = 0; i < argc; i++) {
     int len = WideCharToMultiByte(CP_UTF8, 0, argv[i], -1, NULL, 0, NULL, NULL);
     argv8[i] = new unsigned char[len];
-    WideCharToMultiByte(CP_UTF8, 0, argv[i], -1, (char*)argv8[i], len, NULL, NULL);
+    WideCharToMultiByte(CP_UTF8, 0, argv[i], -1, (char*)argv8[i], len, NULL,
+                        NULL);
     argc8++;
   }
   int ret = стартувати_мавку(argc8, argv8);
