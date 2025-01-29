@@ -35,6 +35,7 @@ jobs:
       - uses: ad-m/github-push-action@master
         with:
           branch: main
+          tags: true
           directory: "mavka-windows"
           repository: "mavka-ukr/mavka-windows"
           ssh: true
