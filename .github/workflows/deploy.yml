@@ -17,6 +17,8 @@ jobs:
           ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAVKA_WINDOWS }}
           persist-credentials: true
       - run: |
+          export MAVKA_VERSION="$(cat ВЕРСІЯ)"
+          export GIT_LATEST_COMMIT_HASH="$(git rev-parse --short HEAD)"
           wget https://github.com/tsil-ukr/files/raw/main/випуски-цілі/0.32.0/ціль-0.32.0-x86_64-linux-gnu.zip
           unzip ціль-0.32.0-x86_64-linux-gnu.zip
           rm -rf mavka-windows/.плавлення
@@ -27,7 +29,8 @@ jobs:
           git config --local user.name "kohutd"
           git config --local user.email "davyd.kohut@gmail.com"
           git add .
-          git commit -m "🧬"
+          git tag "$MAVKA_VERSION-$GIT_LATEST_COMMIT_HASH"
+          git commit -m "$MAVKA_VERSION-$GIT_LATEST_COMMIT_HASH"
           cd -
       - uses: ad-m/github-push-action@master
         with:
