@@ -52,7 +52,6 @@ $TSIL .плавлення/старт.ll скомпілювати старт.ц
 
 CXX_OPTIONS=(
   "-O3"
-  "-municode"
 )
 if [ "$READLINE_AVAILABLE" -eq 1 ]; then
   CXX_OPTIONS+=("-lreadline")
@@ -90,4 +89,5 @@ $CXX "${CXX_OPTIONS[@]}" -o "$OUT" \
   build-"$PLATFORM"/external/libmavka_external.a \
   build-"$PLATFORM"/external/mavka_parser/libmavka_parser.a \
   build-"$PLATFORM"/external/mavka_parser/syntax/libmavka_syntax.a \
-  build-"$PLATFORM"/external/mavka_parser/syntax/antlr4-cpp-runtime/libantlr4_cpp_runtime.a
+  build-"$PLATFORM"/external/mavka_parser/syntax/antlr4-cpp-runtime/libantlr4_cpp_runtime.a \
+  external/main.cpp
