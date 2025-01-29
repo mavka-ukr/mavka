@@ -29,8 +29,8 @@ jobs:
           git config --local user.name "kohutd"
           git config --local user.email "davyd.kohut@gmail.com"
           git add .
-          git tag "$MAVKA_VERSION-$GIT_LATEST_COMMIT_HASH"
           git commit -m "$MAVKA_VERSION-$GIT_LATEST_COMMIT_HASH"
+          git tag "$MAVKA_VERSION-$GIT_LATEST_COMMIT_HASH"
           cd -
       - uses: ad-m/github-push-action@master
         with:
