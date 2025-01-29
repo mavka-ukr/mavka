@@ -36,6 +36,7 @@ $TSIL mavka-windows/.плавлення/МаМа/Утилізатор.ll ско�
 $TSIL mavka-windows/.плавлення/старт.ll скомпілювати старт.ц
 
 cp -a external/ mavka-windows/
+cp -a ВЕРСІЯ mavka-windows/
 
 echo -en "# Мавка для Windows
 

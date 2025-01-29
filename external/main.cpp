@@ -10,12 +10,7 @@ int main(int argc, char** argv) {
 #include <string.h>
 #include <windows.h>
 
-int WINAPI WinMain(HINSTANCE hInstance,
-                   HINSTANCE hPrevInstance,
-                   LPSTR lpCmdLine,
-                   int nCmdShow) {
-  int argc = 0;
-  LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+int wmain(int argc, wchar_t** argv) {
   int argc8 = 0;
   unsigned char** argv8 = new unsigned char*[argc];
   for (int i = 0; i < argc; i++) {
