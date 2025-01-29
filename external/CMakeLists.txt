@@ -10,10 +10,9 @@ IF (WIN32)
     add_executable(mavka
             main.cpp
             extension.cpp
-            mavka.a
     )
     target_compile_options(mavka PUBLIC -O3 -fexceptions -DMAVKA_READLINE=${READLINE_AVAILABLE})
-    target_link_libraries(mavka PUBLIC mavka_parser)
+    target_link_libraries(mavka PUBLIC mavka_parser mavka.a)
 ELSE ()
     project(mavka_external)
 
