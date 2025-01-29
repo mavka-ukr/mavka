@@ -23,6 +23,7 @@ cd -
 
 CXX_OPTIONS=(
   "-O3"
+  "-municode"
 )
 
 $CXX "${CXX_OPTIONS[@]}" -o "$OUT" \
