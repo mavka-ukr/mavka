@@ -7,6 +7,7 @@ int main(int argc, char** argv) {
 #endif
 
 #ifdef _WIN32
+#include <string.h>
 #include <windows.h>
 
 int wmain(int argc, wchar_t** argv) {
