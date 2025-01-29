@@ -4,6 +4,8 @@ IF (WIN32)
     project(mavka)
 
     set(CMAKE_CXX_STANDARD 20)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -target x86_64-w64-mingw32")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -target x86_64-w64-mingw32")
 
     add_subdirectory(mavka_parser)
 
