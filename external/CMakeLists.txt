@@ -37,7 +37,8 @@ IF (WIN32)
             ../build/МаМа/Помилка.o
             ../build/МаМа/Середовище.o
             ../build/МаМа/СкладенийОбʼєкт.o
-            ../build/МаМа/Утилізатор.o)
+            ../build/МаМа/Утилізатор.o
+    )
     target_compile_options(mavka PUBLIC -O3 -fexceptions -DMAVKA_READLINE=${READLINE_AVAILABLE})
     target_link_libraries(mavka PUBLIC mavka_parser)
 ELSE ()
