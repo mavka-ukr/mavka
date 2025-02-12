@@ -1938,6 +1938,7 @@ public:
 
   class  TakeContext : public antlr4::ParserRuleContext {
   public:
+    antlr4::Token *type_module = nullptr;
     antlr4::Token *type_id = nullptr;
     antlr4::Token *as = nullptr;
     TakeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -1945,10 +1946,11 @@ public:
     antlr4::tree::TerminalNode *KW_TAKE();
     std::vector<Take_partContext *> take_part();
     Take_partContext* take_part(size_t i);
-    std::vector<antlr4::tree::TerminalNode *> DOT();
-    antlr4::tree::TerminalNode* DOT(size_t i);
+    antlr4::tree::TerminalNode *KW_MODULE();
     std::vector<antlr4::tree::TerminalNode *> ID();
     antlr4::tree::TerminalNode* ID(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> DOT();
+    antlr4::tree::TerminalNode* DOT(size_t i);
     antlr4::tree::TerminalNode *KW_AS();
     antlr4::tree::TerminalNode *BRACKET_OPEN();
     std::vector<NlsContext *> nls();

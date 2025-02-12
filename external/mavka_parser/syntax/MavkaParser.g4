@@ -134,7 +134,7 @@ types: type (nls 'або' nls type)*;
 
 param: id=ID (types)? ('=' expr)?;
 
-take: 'взяти' (type_id=ID)? take_part ('.' take_part)* (('як' as=ID) | ('[' nls (take_element (nls ',' nls take_element)*)?  nls']'))?;
+take: 'взяти' (type_module='модуль' | type_id=ID) take_part ('.' take_part)* (('як' as=ID) | ('[' nls (take_element (nls ',' nls take_element)*)?  nls']'))?;
 take_part: ID | STRING;
 take_element: id=ID ('як' as=ID)?;
 give: 'дати' give_element (nls ',' nls give_element)*;
