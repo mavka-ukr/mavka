@@ -15,7 +15,6 @@ KW_IS: 'є';
 KW_SPEC: 'спец';
 KW_RETURN: 'вернути';
 KW_ASYNC: 'тривала';
-KW_SUBJECT: 'субʼєкт';
 KW_AND: 'і';
 KW_OR: 'або';
 KW_TRY: 'спробувати';

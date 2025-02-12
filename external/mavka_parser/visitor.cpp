@@ -246,7 +246,7 @@ namespace mavka::parser {
       }
       if (const auto ctx1 = dynamic_cast<MavkaParser::Type_getContext*>(ctx)) {
         const auto асд_дані_отримати = new АСДДаніОтримати();
-        асд_дані_отримати->обʼєкт = AAV(visitContext(ctx1->object));
+        асд_дані_отримати->предмет = AAV(visitContext(ctx1->object));
         асд_дані_отримати->ідентифікатор =
             ІД(this, ctx1->id, ctx1->id->getText());
         return AV(this, ctx, АСДВидОтримати, асд_дані_отримати);
@@ -314,7 +314,7 @@ namespace mavka::parser {
 
   std::any MavkaASTVisitor::visitAtom_get(MavkaParser::Atom_getContext* ctx) {
     const auto асд_дані_отримати = new АСДДаніОтримати();
-    асд_дані_отримати->обʼєкт = AAV(visitContext(ctx->object));
+    асд_дані_отримати->предмет = AAV(visitContext(ctx->object));
     асд_дані_отримати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
     return AV(this, ctx, АСДВидОтримати, асд_дані_отримати);
   }
@@ -322,7 +322,7 @@ namespace mavka::parser {
   std::any MavkaASTVisitor::visitAtom_position_get(
       MavkaParser::Atom_position_getContext* ctx) {
     const auto асд_дані_отримати_за_позицією = new АСДДаніОтриматиЗаПозицією();
-    асд_дані_отримати_за_позицією->обʼєкт = AAV(visitContext(ctx->object));
+    асд_дані_отримати_за_позицією->предмет = AAV(visitContext(ctx->object));
     асд_дані_отримати_за_позицією->позиція = AAV(visitContext(ctx->position));
     return AV(this, ctx, АСДВидОтриматиЗаПозицією,
               асд_дані_отримати_за_позицією);
@@ -330,7 +330,7 @@ namespace mavka::parser {
 
   std::any MavkaASTVisitor::visitAtom_call(MavkaParser::Atom_callContext* ctx) {
     const auto асд_дані_виконати = new АСДДаніВиконати();
-    асд_дані_виконати->обʼєкт = AAV(visitContext(ctx->object));
+    асд_дані_виконати->предмет = AAV(visitContext(ctx->object));
     std::vector<Аргумент*> arguments;
     for (const auto& argument : ctx->call_arg()) {
       auto arg = new Аргумент();
@@ -484,7 +484,7 @@ namespace mavka::parser {
       MavkaParser::Operation_pre_notContext* ctx) {
     const auto асд_дані_само_операція = new АСДДаніСамоОперація();
     асд_дані_само_операція->операція = АСДСамоОпераціяЛогічнеНі;
-    асд_дані_само_операція->обʼєкт = AAV(visitContext(ctx->right));
+    асд_дані_само_операція->предмет = AAV(visitContext(ctx->right));
     return AV(this, ctx, АСДВидСамоОперація, асд_дані_само_операція);
   }
 
@@ -492,7 +492,7 @@ namespace mavka::parser {
       MavkaParser::Operation_pre_bw_notContext* ctx) {
     const auto асд_дані_само_операція = new АСДДаніСамоОперація();
     асд_дані_само_операція->операція = АСДСамоОпераціяДвійковеНі;
-    асд_дані_само_операція->обʼєкт = AAV(visitContext(ctx->right));
+    асд_дані_само_операція->предмет = AAV(visitContext(ctx->right));
     return AV(this, ctx, АСДВидСамоОперація, асд_дані_само_операція);
   }
 
@@ -500,7 +500,7 @@ namespace mavka::parser {
       MavkaParser::Operation_pre_plusContext* ctx) {
     const auto асд_дані_само_операція = new АСДДаніСамоОперація();
     асд_дані_само_операція->операція = АСДСамоОпераціяПлюс;
-    асд_дані_само_операція->обʼєкт = AAV(visitContext(ctx->right));
+    асд_дані_само_операція->предмет = AAV(visitContext(ctx->right));
     return AV(this, ctx, АСДВидСамоОперація, асд_дані_само_операція);
   }
 
@@ -508,7 +508,7 @@ namespace mavka::parser {
       MavkaParser::Operation_pre_minusContext* ctx) {
     const auto асд_дані_само_операція = new АСДДаніСамоОперація();
     асд_дані_само_операція->операція = АСДСамоОпераціяМінус;
-    асд_дані_само_операція->обʼєкт = AAV(visitContext(ctx->right));
+    асд_дані_само_операція->предмет = AAV(visitContext(ctx->right));
     return AV(this, ctx, АСДВидСамоОперація, асд_дані_само_операція);
   }
 
@@ -522,7 +522,7 @@ namespace mavka::parser {
   std::any MavkaASTVisitor::visitOperation_delete_prop(
       MavkaParser::Operation_delete_propContext* ctx) {
     const auto асд_дані_видалити_властивість = new АСДДаніВидалитиВластивість();
-    асд_дані_видалити_властивість->обʼєкт = AAV(visitContext(ctx->object));
+    асд_дані_видалити_властивість->предмет = AAV(visitContext(ctx->object));
     асд_дані_видалити_властивість->ідентифікатор =
         ІД(this, ctx->id, ctx->id->getText());
     return AV(this, ctx, АСДВидВидалитиВластивість,
@@ -532,7 +532,7 @@ namespace mavka::parser {
   std::any MavkaASTVisitor::visitOperation_delete_element(
       MavkaParser::Operation_delete_elementContext* ctx) {
     const auto асд_дані_видалити_елемент = new АСДДаніВидалитиЕлемент();
-    асд_дані_видалити_елемент->обʼєкт = AAV(visitContext(ctx->object));
+    асд_дані_видалити_елемент->предмет = AAV(visitContext(ctx->object));
     асд_дані_видалити_елемент->позиція = AAV(visitContext(ctx->position));
     return AV(this, ctx, АСДВидВидалитиЕлемент, асд_дані_видалити_елемент);
   }
@@ -1064,11 +1064,11 @@ namespace mavka::parser {
 
   std::any MavkaASTVisitor::visitSet(MavkaParser::SetContext* ctx) {
     const auto асд_дані_змінити = new АСДДаніЗмінити();
-    асд_дані_змінити->обʼєкт = AAV(visitContext(ctx->object));
+    асд_дані_змінити->предмет = AAV(visitContext(ctx->object));
     асд_дані_змінити->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
     if (ctx->assign_op()->aop_mul) {
       const auto асд_дані_отримати = new АСДДаніОтримати();
-      асд_дані_отримати->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво =
@@ -1079,7 +1079,7 @@ namespace mavka::parser {
           AV(this, ctx, АСДВидОперація, асд_дані_операція);
     } else if (ctx->assign_op()->aop_div) {
       const auto асд_дані_отримати = new АСДДаніОтримати();
-      асд_дані_отримати->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво =
@@ -1090,7 +1090,7 @@ namespace mavka::parser {
           AV(this, ctx, АСДВидОперація, асд_дані_операція);
     } else if (ctx->assign_op()->aop_div_div) {
       const auto асд_дані_отримати = new АСДДаніОтримати();
-      асд_дані_отримати->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво =
@@ -1101,7 +1101,7 @@ namespace mavka::parser {
           AV(this, ctx, АСДВидОперація, асд_дані_операція);
     } else if (ctx->assign_op()->aop_pow) {
       const auto асд_дані_отримати = new АСДДаніОтримати();
-      асд_дані_отримати->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво =
@@ -1112,7 +1112,7 @@ namespace mavka::parser {
           AV(this, ctx, АСДВидОперація, асд_дані_операція);
     } else if (ctx->assign_op()->aop_mod) {
       const auto асд_дані_отримати = new АСДДаніОтримати();
-      асд_дані_отримати->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво =
@@ -1123,7 +1123,7 @@ namespace mavka::parser {
           AV(this, ctx, АСДВидОперація, асд_дані_операція);
     } else if (ctx->assign_op()->aop_plus) {
       const auto асд_дані_отримати = new АСДДаніОтримати();
-      асд_дані_отримати->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво =
@@ -1134,7 +1134,7 @@ namespace mavka::parser {
           AV(this, ctx, АСДВидОперація, асд_дані_операція);
     } else if (ctx->assign_op()->aop_minus) {
       const auto асд_дані_отримати = new АСДДаніОтримати();
-      асд_дані_отримати->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво =
@@ -1145,7 +1145,7 @@ namespace mavka::parser {
           AV(this, ctx, АСДВидОперація, асд_дані_операція);
     } else if (ctx->assign_op()->op_lshift()) {
       const auto асд_дані_отримати = new АСДДаніОтримати();
-      асд_дані_отримати->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво =
@@ -1156,7 +1156,7 @@ namespace mavka::parser {
           AV(this, ctx, АСДВидОперація, асд_дані_операція);
     } else if (ctx->assign_op()->op_rshift()) {
       const auto асд_дані_отримати = new АСДДаніОтримати();
-      асд_дані_отримати->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво =
@@ -1167,7 +1167,7 @@ namespace mavka::parser {
           AV(this, ctx, АСДВидОперація, асд_дані_операція);
     } else if (ctx->assign_op()->op_urshift()) {
       const auto асд_дані_отримати = new АСДДаніОтримати();
-      асд_дані_отримати->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво =
@@ -1178,7 +1178,7 @@ namespace mavka::parser {
           AV(this, ctx, АСДВидОперація, асд_дані_операція);
     } else if (ctx->assign_op()->aop_and) {
       const auto асд_дані_отримати = new АСДДаніОтримати();
-      асд_дані_отримати->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво =
@@ -1189,7 +1189,7 @@ namespace mavka::parser {
           AV(this, ctx, АСДВидОперація, асд_дані_операція);
     } else if (ctx->assign_op()->aop_xor) {
       const auto асд_дані_отримати = new АСДДаніОтримати();
-      асд_дані_отримати->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво =
@@ -1200,7 +1200,7 @@ namespace mavka::parser {
           AV(this, ctx, АСДВидОперація, асд_дані_операція);
     } else if (ctx->assign_op()->aop_or) {
       const auto асд_дані_отримати = new АСДДаніОтримати();
-      асд_дані_отримати->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво =
@@ -1218,12 +1218,12 @@ namespace mavka::parser {
   std::any MavkaASTVisitor::visitPosition_set(
       MavkaParser::Position_setContext* ctx) {
     const auto асд_дані_змінити_за_позицією = new АСДДаніЗмінитиЗаПозицією();
-    асд_дані_змінити_за_позицією->обʼєкт = AAV(visitContext(ctx->object));
+    асд_дані_змінити_за_позицією->предмет = AAV(visitContext(ctx->object));
     асд_дані_змінити_за_позицією->позиція = AAV(visitContext(ctx->idx));
     if (ctx->assign_op()->aop_mul) {
       const auto асд_дані_отримати_за_позицією =
           new АСДДаніОтриматиЗаПозицією();
-      асд_дані_отримати_за_позицією->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати_за_позицією->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати_за_позицією->позиція = AAV(visitContext(ctx->idx));
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво = AV(this, ctx, АСДВидОтриматиЗаПозицією,
@@ -1235,7 +1235,7 @@ namespace mavka::parser {
     } else if (ctx->assign_op()->aop_div) {
       const auto асд_дані_отримати_за_позицією =
           new АСДДаніОтриматиЗаПозицією();
-      асд_дані_отримати_за_позицією->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати_за_позицією->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати_за_позицією->позиція = AAV(visitContext(ctx->idx));
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво = AV(this, ctx, АСДВидОтриматиЗаПозицією,
@@ -1247,7 +1247,7 @@ namespace mavka::parser {
     } else if (ctx->assign_op()->aop_div_div) {
       const auto асд_дані_отримати_за_позицією =
           new АСДДаніОтриматиЗаПозицією();
-      асд_дані_отримати_за_позицією->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати_за_позицією->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати_за_позицією->позиція = AAV(visitContext(ctx->idx));
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво = AV(this, ctx, АСДВидОтриматиЗаПозицією,
@@ -1259,7 +1259,7 @@ namespace mavka::parser {
     } else if (ctx->assign_op()->aop_pow) {
       const auto асд_дані_отримати_за_позицією =
           new АСДДаніОтриматиЗаПозицією();
-      асд_дані_отримати_за_позицією->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати_за_позицією->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати_за_позицією->позиція = AAV(visitContext(ctx->idx));
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво = AV(this, ctx, АСДВидОтриматиЗаПозицією,
@@ -1271,7 +1271,7 @@ namespace mavka::parser {
     } else if (ctx->assign_op()->aop_mod) {
       const auto асд_дані_отримати_за_позицією =
           new АСДДаніОтриматиЗаПозицією();
-      асд_дані_отримати_за_позицією->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати_за_позицією->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати_за_позицією->позиція = AAV(visitContext(ctx->idx));
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво = AV(this, ctx, АСДВидОтриматиЗаПозицією,
@@ -1283,7 +1283,7 @@ namespace mavka::parser {
     } else if (ctx->assign_op()->aop_plus) {
       const auto асд_дані_отримати_за_позицією =
           new АСДДаніОтриматиЗаПозицією();
-      асд_дані_отримати_за_позицією->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати_за_позицією->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати_за_позицією->позиція = AAV(visitContext(ctx->idx));
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво = AV(this, ctx, АСДВидОтриматиЗаПозицією,
@@ -1295,7 +1295,7 @@ namespace mavka::parser {
     } else if (ctx->assign_op()->aop_minus) {
       const auto асд_дані_отримати_за_позицією =
           new АСДДаніОтриматиЗаПозицією();
-      асд_дані_отримати_за_позицією->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати_за_позицією->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати_за_позицією->позиція = AAV(visitContext(ctx->idx));
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво = AV(this, ctx, АСДВидОтриматиЗаПозицією,
@@ -1307,7 +1307,7 @@ namespace mavka::parser {
     } else if (ctx->assign_op()->op_lshift()) {
       const auto асд_дані_отримати_за_позицією =
           new АСДДаніОтриматиЗаПозицією();
-      асд_дані_отримати_за_позицією->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати_за_позицією->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати_за_позицією->позиція = AAV(visitContext(ctx->idx));
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво = AV(this, ctx, АСДВидОтриматиЗаПозицією,
@@ -1319,7 +1319,7 @@ namespace mavka::parser {
     } else if (ctx->assign_op()->op_rshift()) {
       const auto асд_дані_отримати_за_позицією =
           new АСДДаніОтриматиЗаПозицією();
-      асд_дані_отримати_за_позицією->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати_за_позицією->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати_за_позицією->позиція = AAV(visitContext(ctx->idx));
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво = AV(this, ctx, АСДВидОтриматиЗаПозицією,
@@ -1331,7 +1331,7 @@ namespace mavka::parser {
     } else if (ctx->assign_op()->op_urshift()) {
       const auto асд_дані_отримати_за_позицією =
           new АСДДаніОтриматиЗаПозицією();
-      асд_дані_отримати_за_позицією->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати_за_позицією->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати_за_позицією->позиція = AAV(visitContext(ctx->idx));
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво = AV(this, ctx, АСДВидОтриматиЗаПозицією,
@@ -1343,7 +1343,7 @@ namespace mavka::parser {
     } else if (ctx->assign_op()->aop_and) {
       const auto асд_дані_отримати_за_позицією =
           new АСДДаніОтриматиЗаПозицією();
-      асд_дані_отримати_за_позицією->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати_за_позицією->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати_за_позицією->позиція = AAV(visitContext(ctx->idx));
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво = AV(this, ctx, АСДВидОтриматиЗаПозицією,
@@ -1355,7 +1355,7 @@ namespace mavka::parser {
     } else if (ctx->assign_op()->aop_xor) {
       const auto асд_дані_отримати_за_позицією =
           new АСДДаніОтриматиЗаПозицією();
-      асд_дані_отримати_за_позицією->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати_за_позицією->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати_за_позицією->позиція = AAV(visitContext(ctx->idx));
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво = AV(this, ctx, АСДВидОтриматиЗаПозицією,
@@ -1367,7 +1367,7 @@ namespace mavka::parser {
     } else if (ctx->assign_op()->aop_or) {
       const auto асд_дані_отримати_за_позицією =
           new АСДДаніОтриматиЗаПозицією();
-      асд_дані_отримати_за_позицією->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_отримати_за_позицією->предмет = AAV(visitContext(ctx->object));
       асд_дані_отримати_за_позицією->позиція = AAV(visitContext(ctx->idx));
       const auto асд_дані_операція = new АСДДаніОперація();
       асд_дані_операція->ліво = AV(this, ctx, АСДВидОтриматиЗаПозицією,
@@ -1456,7 +1456,7 @@ namespace mavka::parser {
                 асд_дані_перебрати_діапазон);
     } else {
       const auto асд_дані_перебрати = new АСДДаніПеребрати();
-      асд_дані_перебрати->обʼєкт = AAV(visitContext(ctx->object));
+      асд_дані_перебрати->предмет = AAV(visitContext(ctx->object));
       асд_дані_перебрати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
       if (ctx->body()) {
         асд_дані_перебрати->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
