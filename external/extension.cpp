@@ -35,7 +35,7 @@ extern "C" char* mavka_read_file(char* шлях,
 extern "C" char* mavka_fix_path(char* шлях,
                                 size_t розмір_шляху,
                                 size_t* buffer_size) {
-  std::string path = (char*)шлях;
+  std::string path(шлях, розмір_шляху);
   std::filesystem::path p(path);
   char* fixed_path = strdup(absolute(weakly_canonical(p)).string().c_str());
   *buffer_size = strlen(fixed_path);
