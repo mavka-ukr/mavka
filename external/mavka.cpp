@@ -133,26 +133,38 @@ extern "C" логічне мавка_система_прочитати_зі_ст
   return true;
 }
 
-extern "C" void* mavka_load_shared_object_function_ptr_from_file(
-    char* path,
-    size_t path_size,
-    unsigned char* name) {
+extern "C" невідома_адреса мавка_система_відкрити_поширену_бібліотеку(
+    памʼять_п8 шлях,
+    позитивне розмір_шляху) {
 #if defined(__linux__)
-  void* dobject = dlopen(std::string(path, path_size).c_str(), RTLD_LAZY);
-  if (dobject == nullptr) {
-    if (auto err = dlerror()) {
-      std::cout << err << std::endl;
-    }
-    return nullptr;
-  }
-  void* extfptr = dlsym(dobject, (char*)name);
-  if (extfptr == nullptr) {
-    if (auto err = dlerror()) {
-      std::cout << err << std::endl;
-    }
-    return nullptr;
-  }
-  return extfptr;
+  char* path =
+      strdup(std::string(reinterpret_cast<char*>(шлях), розмір_шляху).c_str());
+  void* dobject = dlopen(path, RTLD_LAZY);
+  free(path);
+  return dobject;
+#else
+  return nullptr;
+#endif
+}
+
+extern "C" ніщо мавка_система_закрити_поширену_бібліотеку(
+    невідома_адреса поширена_бібліотека) {
+#if defined(__linux__)
+  dlclose(поширена_бібліотека);
+#endif
+}
+
+extern "C" невідома_адреса мавка_система_отримати_символ_поширеної_бібліотеки(
+    невідома_адреса поширена_бібліотека,
+    памʼять_п8 назва_символа,
+    позитивне розмір_назви_символа) {
+#if defined(__linux__)
+  char* name = strdup(
+      std::string(reinterpret_cast<char*>(назва_символа), розмір_назви_символа)
+          .c_str());
+  void* sym = dlsym(поширена_бібліотека, name);
+  free(name);
+  return sym;
 #else
   return nullptr;
 #endif
@@ -210,6 +222,25 @@ extern "C" д64 мавка_математика_підлога_д64(д64 зна�
   return floor(значення);
 }
 
+extern "C" size_t mavka_double_to_string(double value, char** buffer) {
+  long decimal = (long)value;
+  if (decimal == value) {
+    *buffer = (char*)malloc(32);
+    return sprintf((char*)*buffer, "%ld", decimal);
+  }
+  *buffer = (char*)malloc(32);
+  return sprintf((char*)*buffer, "%.14f", value);
+}
+
+extern "C" double mavka_bitnot(double value) {
+  long int_value = static_cast<long>(value);
+  return static_cast<double>(~int_value);
+}
+
+extern "C" double mavka_negate(double value) {
+  return -value;
+}
+
 extern "C" д64 мавка_математика_округлити_д64(д64 значення) {
   return round(значення);
 }
@@ -236,25 +267,6 @@ extern "C" void мавка_система_вв_вивести_в_стандар�
     памʼять_п8 значення,
     позитивне розмір_значення) {
   printf("%.*s", static_cast<int>(розмір_значення), значення);
-}
-
-extern "C" size_t mavka_double_to_string(double value, char** buffer) {
-  long decimal = (long)value;
-  if (decimal == value) {
-    *buffer = (char*)malloc(32);
-    return sprintf((char*)*buffer, "%ld", decimal);
-  }
-  *buffer = (char*)malloc(32);
-  return sprintf((char*)*buffer, "%.14f", value);
-}
-
-extern "C" double mavka_bitnot(double value) {
-  long int_value = static_cast<long>(value);
-  return static_cast<double>(~int_value);
-}
-
-extern "C" double mavka_negate(double value) {
-  return -value;
 }
 
 extern "C" int стартувати_мавку(int argc, unsigned char** argv);
