@@ -83,19 +83,6 @@ extern "C" логічне мавка_система_фс_отримати_наз
   return true;
 }
 
-extern "C" uint64_t mavka_read_from_stdin(char* prefix,
-                                          size_t prefix_size,
-                                          char** output) {
-  std::cout << std::string(prefix, prefix_size);
-  std::string line;
-  if (std::cin.eof()) {
-    return 0;
-  }
-  std::getline(std::cin, line);
-  *output = strdup(line.c_str());
-  return line.size();
-}
-
 extern "C" {
 #include <stdlib.h>
 #if MAVKA_READLINE == 1
