@@ -70,6 +70,19 @@ extern "C" логічне мавка_система_фс_виправити_шл
   return true;
 }
 
+extern "C" логічне мавка_система_фс_виправити_шлях_та_отримати_батьківський(
+    памʼять_п8 шлях,
+    позитивне розмір_шляху,
+    адреса_памʼять_п8 вихід,
+    адреса_позитивне вихід_розміру) {
+  std::string path(reinterpret_cast<char*>(шлях), розмір_шляху);
+  std::filesystem::path p(path);
+  std::string fp = absolute(weakly_canonical(p.parent_path())).string();
+  *вихід = reinterpret_cast<памʼять_п8>(strdup(fp.c_str()));
+  *вихід_розміру = fp.size();
+  return true;
+}
+
 extern "C" логічне мавка_система_фс_отримати_назву_файла_без_розширення(
     памʼять_п8 шлях,
     позитивне розмір_шляху,
@@ -118,14 +131,6 @@ extern "C" логічне мавка_система_прочитати_зі_ст
   *вихід = reinterpret_cast<памʼять_п8>(value);
   *вихід_розміру = strlen(value);
   return true;
-}
-
-extern "C" size_t mavka_get_path_directory(unsigned char* path,
-                                           unsigned char** output) {
-  std::string str = (char*)path;
-  std::filesystem::path p(str);
-  *output = (unsigned char*)strdup(p.parent_path().string().c_str());
-  return strlen((char*)*output);
 }
 
 extern "C" void* mavka_load_shared_object_function_ptr_from_file(
