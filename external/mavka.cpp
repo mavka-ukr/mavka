@@ -232,15 +232,6 @@ extern "C" size_t mavka_double_to_string(double value, char** buffer) {
   return sprintf((char*)*buffer, "%.14f", value);
 }
 
-extern "C" double mavka_bitnot(double value) {
-  long int_value = static_cast<long>(value);
-  return static_cast<double>(~int_value);
-}
-
-extern "C" double mavka_negate(double value) {
-  return -value;
-}
-
 extern "C" д64 мавка_математика_округлити_д64(д64 значення) {
   return round(значення);
 }
