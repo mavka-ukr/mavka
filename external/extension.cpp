@@ -10,52 +10,82 @@
 #include <iostream>
 #include <locale>
 
-extern "C" char *mavka_read_file(char *шлях, size_t розмір_шляху,
-                                 size_t *buffer_size) {
-  char *path = (char *)malloc(розмір_шляху + 1);
-  memcpy(path, шлях, розмір_шляху);
-  path[розмір_шляху] = 0;
-  FILE *file = fopen(path, "rb");
+#define п8 uint8_t
+#define п16 uint16_t
+#define п32 uint32_t
+#define п64 uint64_t
+#define ц8 int8_t
+#define ц16 int16_t
+#define ц32 int32_t
+#define ц64 int64_t
+#define д32 float
+#define д64 double
+#define логічне uint8_t
+#define позитивне п64
+#define ціле ц64
+#define дійсне д64
+#define ніщо void
+#define невідома_адреса void*
+#define невідома_памʼять void*
+#define памʼять_п8 п8*
+#define адреса_памʼять_п8 п8**
+#define адреса_позитивне позитивне*
+#define так true
+#define ні false
+#define пусто nullptr
+
+extern "C" логічне мавка_система_фс_прочитати_файл(
+    памʼять_п8 шлях,
+    позитивне розмір_шляху,
+    адреса_памʼять_п8 вихід,
+    адреса_позитивне вихід_розміру) {
+  char* path =
+      strdup(std::string(reinterpret_cast<char*>(шлях), розмір_шляху).c_str());
+  FILE* file = fopen(path, "rb");
   free(path);
   if (file == nullptr) {
-    return nullptr;
+    return false;
   }
   fseek(file, 0, SEEK_END);
   auto length = ftell(file);
   fseek(file, 0, SEEK_SET);
-  auto buffer = (char *)malloc(length + 1);
+  auto buffer = (char*)malloc(length);
   fread(buffer, 1, length, file);
   fclose(file);
-  buffer[length] = 0;
-  *buffer_size = length;
-  return buffer;
+  *вихід = reinterpret_cast<памʼять_п8>(buffer);
+  *вихід_розміру = length;
+  return true;
 }
 
-extern "C" char *mavka_fix_path(char *шлях, size_t розмір_шляху,
-                                size_t *buffer_size) {
-  std::string path(шлях, розмір_шляху);
+extern "C" логічне мавка_система_фс_виправити_шлях_та_зробити_абсолютним(
+    памʼять_п8 шлях,
+    позитивне розмір_шляху,
+    адреса_памʼять_п8 вихід,
+    адреса_позитивне вихід_розміру) {
+  std::string path(reinterpret_cast<char*>(шлях), розмір_шляху);
   std::filesystem::path p(path);
-  char *fixed_path = strdup(absolute(weakly_canonical(p)).string().c_str());
-  *buffer_size = strlen(fixed_path);
-  return fixed_path;
+  std::string fp = absolute(weakly_canonical(p)).string();
+  *вихід = reinterpret_cast<памʼять_п8>(strdup(fp.c_str()));
+  *вихід_розміру = fp.size();
+  return true;
 }
 
-extern "C" unsigned char mavka_check_if_str_ends_with(unsigned char *value,
-                                                      unsigned char *suffix) {
-  std::string str = (char *)value;
-  std::string suf = (char *)suffix;
-  return str.ends_with(suf);
-}
-
-extern "C" void mavka_get_filename_without_extension(unsigned char *шлях,
-                                                     unsigned char **вихід) {
-  std::string path = (char *)шлях;
+extern "C" логічне мавка_система_фс_отримати_назву_файла_без_розширення(
+    памʼять_п8 шлях,
+    позитивне розмір_шляху,
+    адреса_памʼять_п8 вихід,
+    адреса_позитивне вихід_розміру) {
+  std::string path(reinterpret_cast<char*>(шлях), розмір_шляху);
   std::filesystem::path p(path);
-  *вихід = (unsigned char *)strdup(p.stem().string().c_str());
+  std::string value = p.filename().stem().string();
+  *вихід = reinterpret_cast<памʼять_п8>(strdup(value.c_str()));
+  *вихід_розміру = value.size();
+  return true;
 }
 
-extern "C" uint64_t mavka_read_from_stdin(char *prefix, size_t prefix_size,
-                                          char **output) {
+extern "C" uint64_t mavka_read_from_stdin(char* prefix,
+                                          size_t prefix_size,
+                                          char** output) {
   std::cout << std::string(prefix, prefix_size);
   std::string line;
   if (std::cin.eof()) {
@@ -71,9 +101,11 @@ extern "C" {
 #if MAVKA_READLINE == 1
 #include <readline/readline.h>
 
-char *_mavka_readline(char *prefix) { return readline(prefix); }
+char* _mavka_readline(char* prefix) {
+  return readline(prefix);
+}
 #else
-char *_mavka_readline(char *prefix) {
+char* _mavka_readline(char* prefix) {
   std::cout << prefix;
   std::string line;
   if (std::cin.eof()) {
@@ -88,17 +120,20 @@ void _mavka_readline_init() {
   //
 }
 
-void mavka_dialog(void *data,
-                  void (*run)(void *data, char *value, size_t value_size)) {
+ніщо мавка_система_запустити_діалог(
+    невідома_адреса дані,
+    ніщо (*обробник)(невідома_адреса дані,
+                     памʼять_п8 значення,
+                     позитивне розмір_значення)) {
   _mavka_readline_init();
-  char *input;
-  char *prefix = strdup("- ");
+  char* input;
+  char* prefix = strdup("- ");
 read:
   input = _mavka_readline(prefix);
   if (input == nullptr) {
     goto out;
   }
-  run(data, input, strlen(input));
+  обробник(дані, reinterpret_cast<памʼять_п8>(input), strlen(input));
   free(input);
   goto read;
 out:
@@ -106,26 +141,27 @@ out:
 }
 }
 
-extern "C" size_t mavka_get_path_directory(unsigned char *path,
-                                           unsigned char **output) {
-  std::string str = (char *)path;
+extern "C" size_t mavka_get_path_directory(unsigned char* path,
+                                           unsigned char** output) {
+  std::string str = (char*)path;
   std::filesystem::path p(str);
-  *output = (unsigned char *)strdup(p.parent_path().string().c_str());
-  return strlen((char *)*output);
+  *output = (unsigned char*)strdup(p.parent_path().string().c_str());
+  return strlen((char*)*output);
 }
 
-extern "C" void *
-mavka_load_shared_object_function_ptr_from_file(char *path, size_t path_size,
-                                                unsigned char *name) {
+extern "C" void* mavka_load_shared_object_function_ptr_from_file(
+    char* path,
+    size_t path_size,
+    unsigned char* name) {
 #if defined(__linux__)
-  void *dobject = dlopen(std::string(path, path_size).c_str(), RTLD_LAZY);
+  void* dobject = dlopen(std::string(path, path_size).c_str(), RTLD_LAZY);
   if (dobject == nullptr) {
     if (auto err = dlerror()) {
       std::cout << err << std::endl;
     }
     return nullptr;
   }
-  void *extfptr = dlsym(dobject, (char *)name);
+  void* extfptr = dlsym(dobject, (char*)name);
   if (extfptr == nullptr) {
     if (auto err = dlerror()) {
       std::cout << err << std::endl;
@@ -138,56 +174,95 @@ mavka_load_shared_object_function_ptr_from_file(char *path, size_t path_size,
 #endif
 }
 
-extern "C" double mavka_sin(double value) { return sin(value); }
-
-extern "C" double mavka_cos(double value) { return cos(value); }
-
-extern "C" double mavka_tan(double value) { return tan(value); }
-
-extern "C" double mavka_asin(double value) { return asin(value); }
-
-extern "C" double mavka_acos(double value) { return acos(value); }
-
-extern "C" double mavka_atan(double value) { return atan(value); }
-
-extern "C" double mavka_atan2(double y, double x) { return atan2(y, x); }
-
-extern "C" double mavka_abs(double value) { return abs(value); }
-
-extern "C" double mavka_exp(double value) { return exp(value); }
-
-extern "C" double mavka_sqrt(double value) { return sqrt(value); }
-
-extern "C" double mavka_pow(double a, double b) { return pow(a, b); }
-
-extern "C" double mavka_ceil(double value) { return ceil(value); }
-
-extern "C" double mavka_floor(double value) { return floor(value); }
-
-extern "C" double mavka_round(double value) { return round(value); }
-
-extern "C" void *mavka_malloc(size_t size) { return malloc(size); }
-
-extern "C" void *mavka_realloc(void *ptr, size_t size) {
-  return realloc(ptr, size);
+extern "C" д64 мавка_математика_синус_д64(д64 значення) {
+  return sin(значення);
 }
 
-extern "C" void mavka_free(void *ptr) { free(ptr); }
-
-extern "C" void mavka_exit(int value) { exit(value); }
-
-extern "C" void mavka_print_utf8(char *value, size_t length) {
-  printf("%.*s", (int)length, value);
+extern "C" д64 мавка_математика_косинус_д64(д64 значення) {
+  return cos(значення);
 }
 
-extern "C" size_t mavka_double_to_string(double value, char **buffer) {
+extern "C" д64 мавка_математика_тангенс_д64(д64 значення) {
+  return tan(значення);
+}
+
+extern "C" д64 мавка_математика_арксинус_д64(д64 значення) {
+  return asin(значення);
+}
+
+extern "C" д64 мавка_математика_арккосинус_д64(д64 значення) {
+  return acos(значення);
+}
+
+extern "C" д64 мавка_математика_арктангенс_д64(д64 значення) {
+  return atan(значення);
+}
+
+extern "C" д64 мавка_математика_арктангенс2_д64(д64 а, д64 б) {
+  return atan2(а, б);
+}
+
+extern "C" д64 мавка_математика_абсолютне_д64(д64 значення) {
+  return abs(значення);
+}
+
+extern "C" д64 мавка_математика_експонента_д64(д64 значення) {
+  return exp(значення);
+}
+
+extern "C" д64 мавка_математика_корінь_д64(д64 значення) {
+  return sqrt(значення);
+}
+
+extern "C" д64 мавка_математика_степінь_д64(д64 а, д64 б) {
+  return pow(а, б);
+}
+
+extern "C" д64 мавка_математика_стеля_д64(д64 значення) {
+  return ceil(значення);
+}
+
+extern "C" д64 мавка_математика_підлога_д64(д64 значення) {
+  return floor(значення);
+}
+
+extern "C" д64 мавка_математика_округлити_д64(д64 значення) {
+  return round(значення);
+}
+
+extern "C" невідома_адреса мавка_система_виділити_сиру_памʼять(
+    позитивне розмір) {
+  return malloc(розмір);
+}
+
+extern "C" невідома_адреса мавка_система_певиділити_сиру_памʼять(
+    невідома_адреса значення,
+    позитивне новий_розмір) {
+  return realloc(значення, новий_розмір);
+}
+
+extern "C" ніщо мавка_система_звільнити_сиру_памʼять(невідома_адреса значення) {
+  free(значення);
+}
+
+extern "C" void мавка_система_процес_вийти(ц32 код) {
+  exit(код);
+}
+
+extern "C" void мавка_система_вв_вивести_в_стандартний_вивід(
+    памʼять_п8 значення,
+    позитивне розмір_значення) {
+  printf("%.*s", static_cast<int>(розмір_значення), значення);
+}
+
+extern "C" size_t mavka_double_to_string(double value, char** buffer) {
   long decimal = (long)value;
   if (decimal == value) {
-    *buffer = (char *)malloc(32);
-    return sprintf((char *)*buffer, "%ld", decimal);
+    *buffer = (char*)malloc(32);
+    return sprintf((char*)*buffer, "%ld", decimal);
   }
-  *buffer = (char *)malloc(32);
-  return sprintf((char *)*buffer, "%.14f", value);
+  *buffer = (char*)malloc(32);
+  return sprintf((char*)*buffer, "%.14f", value);
 }
 
 extern "C" double mavka_bitnot(double value) {
@@ -195,4 +270,6 @@ extern "C" double mavka_bitnot(double value) {
   return static_cast<double>(~int_value);
 }
 
-extern "C" double mavka_negate(double value) { return -value; }
+extern "C" double mavka_negate(double value) {
+  return -value;
+}
