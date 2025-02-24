@@ -222,14 +222,22 @@ extern "C" {
   return fmod(а, б);
 }
 
-size_t mavka_double_to_string(double value, char** buffer) {
-  long decimal = (long)value;
-  if (decimal == value) {
-    *buffer = (char*)malloc(32);
-    return sprintf((char*)*buffer, "%ld", decimal);
+логічне мавка_допоміжне_перетворити_д64_в_ю8(д64 значення,
+                                             адреса_памʼять_п8 вихід,
+                                             адреса_позитивне вихід_розміру) {
+  long decimal = (long)значення;
+  if (decimal == значення) {
+    auto value = (char*)malloc(32);
+    auto valueSize = sprintf(value, "%ld", decimal);
+    *вихід = reinterpret_cast<памʼять_п8>(value);
+    *вихід_розміру = valueSize;
+    return true;
   }
-  *buffer = (char*)malloc(32);
-  return sprintf((char*)*buffer, "%.14f", value);
+  auto value = (char*)malloc(32);
+  auto valueSize = sprintf(value, "%.14f", значення);
+  *вихід = reinterpret_cast<памʼять_п8>(value);
+  *вихід_розміру = valueSize;
+  return true;
 }
 
 д64 мавка_математика_округлити_д64(д64 значення) {
