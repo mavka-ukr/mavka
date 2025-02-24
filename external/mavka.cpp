@@ -7,8 +7,13 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <locale>
+#ifdef _WIN32
+#include <windows.h>
+#include <cwchar>
+#endif
 
 #define п8 uint8_t
 #define п16 uint16_t
@@ -39,21 +44,22 @@ extern "C" логічне мавка_система_фс_прочитати_фа
     позитивне розмір_шляху,
     адреса_памʼять_п8 вихід,
     адреса_позитивне вихід_розміру) {
-  char* path =
-      strdup(std::string(reinterpret_cast<char*>(шлях), розмір_шляху).c_str());
-  FILE* file = fopen(path, "rb");
-  free(path);
-  if (file == nullptr) {
+  auto p = std::filesystem::u8path(
+      std::string(reinterpret_cast<char*>(шлях), розмір_шляху));
+  if (!std::filesystem::exists(p)) {
     return false;
   }
-  fseek(file, 0, SEEK_END);
-  auto length = ftell(file);
-  fseek(file, 0, SEEK_SET);
-  auto buffer = (char*)malloc(length);
-  fread(buffer, 1, length, file);
-  fclose(file);
-  *вихід = reinterpret_cast<памʼять_п8>(buffer);
-  *вихід_розміру = length;
+  std::ifstream ifs(p, std::ios::binary);
+  if (!ifs) {
+    return false;
+  }
+  ifs.seekg(0, std::ios::end);
+  auto size = ifs.tellg();
+  ifs.seekg(0, std::ios::beg);
+  auto data = new п8[size];
+  ifs.read(reinterpret_cast<char*>(data), size);
+  *вихід = data;
+  *вихід_розміру = size;
   return true;
 }
 
@@ -93,43 +99,6 @@ extern "C" логічне мавка_система_фс_отримати_наз
   std::string value = p.filename().stem().string();
   *вихід = reinterpret_cast<памʼять_п8>(strdup(value.c_str()));
   *вихід_розміру = value.size();
-  return true;
-}
-
-extern "C" {
-#include <stdlib.h>
-#if MAVKA_READLINE == 1
-#include <readline/readline.h>
-
-char* _mavka_readline(char* prefix) {
-  return readline(prefix);
-}
-#else
-char* _mavka_readline(char* prefix) {
-  std::cout << prefix;
-  std::string line;
-  if (std::cin.eof()) {
-    return nullptr;
-  }
-  std::getline(std::cin, line);
-  return strdup(line.c_str());
-}
-#endif
-}
-
-extern "C" логічне мавка_система_прочитати_зі_стандартного_вводу(
-    памʼять_п8 префікс,
-    позитивне розмір_префіксу,
-    адреса_памʼять_п8 вихід,
-    адреса_позитивне вихід_розміру) {
-  char* prefix = strdup(
-      std::string(reinterpret_cast<char*>(префікс), розмір_префіксу).c_str());
-  char* value = _mavka_readline(prefix);
-  if (value == nullptr) {
-    return false;
-  }
-  *вихід = reinterpret_cast<памʼять_п8>(value);
-  *вихід_розміру = strlen(value);
   return true;
 }
 
@@ -199,7 +168,7 @@ extern "C" д64 мавка_математика_арктангенс2_д64(д64 
 }
 
 extern "C" д64 мавка_математика_абсолютне_д64(д64 значення) {
-  return abs(значення);
+  return fabs(значення);
 }
 
 extern "C" д64 мавка_математика_експонента_д64(д64 значення) {
@@ -260,6 +229,68 @@ extern "C" void мавка_система_вв_вивести_в_стандар�
   printf("%.*s", static_cast<int>(розмір_значення), значення);
 }
 
+#ifdef _WIN32
+std::wstring UTF8StringToWString(const std::string& utf8Str) {
+  int sizeNeeded =
+      MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, nullptr, 0);
+  std::wstring utf16Str(sizeNeeded, 0);
+  MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, &utf16Str[0],
+                      sizeNeeded);
+  return utf16Str;
+}
+#endif
+
+extern "C" void мавка_система_вв_вивести_ю8_в_стандартний_вивід(
+    памʼять_п8 значення,
+    позитивне розмір_значення) {
+#ifdef _WIN32
+  std::string value(reinterpret_cast<char*>(значення), розмір_значення);
+  std::wstring value16 = UTF8StringToWString(value);
+  WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), value16.c_str(),
+                lstrlenW(value16.c_str()), 0, NULL);
+#else
+  printf("%.*s", static_cast<int>(розмір_значення), значення);
+#endif
+}
+
+extern "C" {
+#include <stdlib.h>
+#if MAVKA_READLINE == 1
+#include <readline/readline.h>
+
+char* _mavka_readline(char* prefix) {
+  return readline(prefix);
+}
+#else
+char* _mavka_readline(char* prefix) {
+  мавка_система_вв_вивести_ю8_в_стандартний_вивід(
+      reinterpret_cast<памʼять_п8>(prefix), strlen(prefix));
+  std::string line;
+  if (std::cin.eof()) {
+    return nullptr;
+  }
+  std::getline(std::cin, line);
+  return strdup(line.c_str());
+}
+#endif
+}
+
+extern "C" логічне мавка_система_прочитати_зі_стандартного_вводу(
+    памʼять_п8 префікс,
+    позитивне розмір_префіксу,
+    адреса_памʼять_п8 вихід,
+    адреса_позитивне вихід_розміру) {
+  char* prefix = strdup(
+      std::string(reinterpret_cast<char*>(префікс), розмір_префіксу).c_str());
+  char* value = _mavka_readline(prefix);
+  if (value == nullptr) {
+    return false;
+  }
+  *вихід = reinterpret_cast<памʼять_п8>(value);
+  *вихід_розміру = strlen(value);
+  return true;
+}
+
 extern "C" int стартувати_мавку(int argc, unsigned char** argv);
 
 #if defined(__linux__) || defined(__APPLE__)
@@ -269,8 +300,6 @@ int main(int argc, char** argv) {
 #endif
 
 #ifdef _WIN32
-#include <windows.h>
-
 int wmain(int argc, wchar_t** argv) {
   int argc8 = 0;
   unsigned char** argv8 = new unsigned char*[argc];
