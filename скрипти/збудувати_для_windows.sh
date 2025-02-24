@@ -13,16 +13,9 @@ export USE_SYSTEMD=no
 export TSIL="ціль"
 OUT="build-$PLATFORM/mavka.exe"
 
-READLINE_AVAILABLE=0
-
-mkdir -p build-"$PLATFORM"/external
-cd build-"$PLATFORM"/external
-cmake ../../external -G Ninja -DREADLINE_AVAILABLE="$READLINE_AVAILABLE"
-ninja
-cd -
+mkdir -p "build-$PLATFORM"
 
 CXX_OPTIONS=(
-  "-O3"
   "-municode"
 )
 
@@ -31,7 +24,11 @@ $CXX "${CXX_OPTIONS[@]}" -o "$OUT" \
   .плавлення/мавка/бібліотека/мавка.ll \
   .плавлення/мавка/бібліотека/МаМа.ll \
   .плавлення/мавка/бібліотека/читати_юнікод.ll \
-  .плавлення/мавка/компілятор.ll \
+  .плавлення/мавка/розбирач/розбирач.ll \
+  .плавлення/мавка/компілятор/компілятор.ll \
+  .плавлення/мавка/математика.ll \
+  .плавлення/мавка/система.ll \
+  .плавлення/мавка/допоміжне.ll \
   .плавлення/мавка/мавка.ll \
   .плавлення/старт.ll \
   .плавлення/МаМа/КД/КД.ll \
@@ -56,8 +53,4 @@ $CXX "${CXX_OPTIONS[@]}" -o "$OUT" \
   .плавлення/МаМа/Середовище.ll \
   .плавлення/МаМа/СкладенийПредмет.ll \
   .плавлення/МаМа/Утилізатор.ll \
-  build-"$PLATFORM"/external/libmavka_external.a \
-  build-"$PLATFORM"/external/mavka_parser/libmavka_parser.a \
-  build-"$PLATFORM"/external/mavka_parser/syntax/libmavka_syntax.a \
-  build-"$PLATFORM"/external/mavka_parser/syntax/antlr4-cpp-runtime/libantlr4_cpp_runtime.a \
-  external/main.cpp
+  external/mavka.cpp
