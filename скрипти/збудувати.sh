@@ -11,7 +11,7 @@ export RANLIB="llvm-ranlib"
 export TSIL="ціль"
 OUT="build-$PLATFORM/мавка"
 
-mkdir "build-$PLATFORM"
+mkdir -p "build-$PLATFORM"
 
 READLINE_AVAILABLE=0
 if [ -f /usr/include/readline/readline.h ]; then
