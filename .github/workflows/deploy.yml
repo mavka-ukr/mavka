@@ -19,8 +19,8 @@ jobs:
       - run: |
           export MAVKA_VERSION="$(cat ВЕРСІЯ)"
           export GIT_LATEST_COMMIT_HASH="$(git rev-parse --short HEAD)"
-          wget https://github.com/tsil-ukr/files/raw/main/випуски-цілі/0.34.0/ціль-0.34.0-x86_64-linux-gnu.zip
-          unzip ціль-0.34.0-x86_64-linux-gnu.zip
+          wget https://github.com/tsil-ukr/files/raw/main/випуски-цілі/0.35.0/ціль-0.35.0-x86_64-linux-gnu.zip
+          unzip ціль-0.35.0-x86_64-linux-gnu.zip
           cp -a mavka-windows/.git .git-mavka-windows
           cp -a mavka-windows/.github .github-mavka-windows
           rm -rf mavka-windows
@@ -29,7 +29,7 @@ jobs:
           cp -a .github-mavka-windows/ mavka-windows/.github
           rm -rf .git-mavka-windows/
           rm -rf .github-mavka-windows/
-          bash скрипти/згенерувати_для_будування_на_windows.sh ціль-0.34.0-x86_64-linux-gnu/ціль
+          bash скрипти/згенерувати_для_будування_на_windows.sh ціль-0.35.0-x86_64-linux-gnu/ціль
           cd mavka-windows
           git config --local user.name "kohutd"
           git config --local user.email "davyd.kohut@gmail.com"
