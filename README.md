@@ -8,11 +8,26 @@
 - Clang++
 - Linux (на Windows поки нема Цілі)
 
-Будуємо:
+Компілюємо файли Цілі:
 
 ```shell
 TSIL="ціль" sh external/scripts/prepare.sh linux-x86_64
+```
+
+Переходимо в підготовлену теку:
+
+```shell
 cd build/linux-x86_64
+```
+
+Будуємо виконуваний файл:
+
+```shell
 sh build.sh
+```
+
+Пробуємо:
+
+```shell
 ./out/мавка
 ```
