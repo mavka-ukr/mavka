@@ -1,18 +1,17 @@
-name: Windows Build Generation
+name: external/scripts/prepare.sh
 
 on:
   push:
     branches:
       - main
 jobs:
-  deploy:
-    name: Generate for Windows and push to the repository
+  windows-x86_64:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
         with:
-          repository: "mavka-ukr/mavka-windows"
+          repository: "mavka-ukr-static/mavka-windows-x86_64"
           path: "build/windows-x86_64"
           ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAVKA_WINDOWS }}
           persist-credentials: true
@@ -44,6 +43,6 @@ jobs:
           branch: main
           tags: true
           directory: "build/windows-x86_64"
-          repository: "mavka-ukr/mavka-windows"
+          repository: "mavka-ukr-static/mavka-windows-x86_64"
           ssh: true
           github_token: ${{ secrets.SSH_DEPLOY_KEY_MAVKA_WINDOWS }}
