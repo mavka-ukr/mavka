@@ -35,7 +35,7 @@ jobs:
           cp ВЕРСІЯ build/windows-x86_64
           cd build/windows-x86_64
           statusResult=$(git status -u --porcelain)
-          if [ -z statusResult ]
+          if [ -z "$statusResult" ]
           then
             exit 0
           fi
@@ -81,7 +81,7 @@ jobs:
           cp ВЕРСІЯ build/linux-x86_64
           cd build/linux-x86_64
           statusResult=$(git status -u --porcelain)
-          if [ -z statusResult ]
+          if [ -z "$statusResult" ]
           then
             exit 0
           fi
