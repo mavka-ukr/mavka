@@ -7,6 +7,8 @@ on:
 jobs:
   windows-x86_64:
     runs-on: ubuntu-latest
+    outputs:
+      pushstatus: ${{ steps.pushstatus.outputs.should-push }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -32,6 +34,11 @@ jobs:
           TSIL=ціль-0.35.0-x86_64-linux-gnu/ціль sh external/scripts/prepare.sh windows-x86_64
           cp ВЕРСІЯ build/windows-x86_64
           cd build/windows-x86_64
+          statusResult=$(git status -u --porcelain)
+          if [ -z statusResult ]
+          then
+            exit 0
+          fi
           git config --local user.name "kohutd"
           git config --local user.email "davyd.kohut@gmail.com"
           git add .
@@ -73,6 +80,11 @@ jobs:
           TSIL=ціль-0.35.0-x86_64-linux-gnu/ціль sh external/scripts/prepare.sh linux-x86_64
           cp ВЕРСІЯ build/linux-x86_64
           cd build/linux-x86_64
+          statusResult=$(git status -u --porcelain)
+          if [ -z statusResult ]
+          then
+            exit 0
+          fi
           git config --local user.name "kohutd"
           git config --local user.email "davyd.kohut@gmail.com"
           git add .
