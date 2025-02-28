@@ -46,3 +46,44 @@ jobs:
           repository: "mavka-ukr-static/mavka-windows-x86_64"
           ssh: true
           github_token: ${{ secrets.SSH_DEPLOY_KEY_MAVKA_WINDOWS }}
+  linux-x86_64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: "mavka-ukr-static/mavka-linux-x86_64"
+          path: "build/linux-x86_64"
+          ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAVKA_LINUX_X86_64 }}
+          persist-credentials: true
+          fetch-depth: 1
+      - run: |
+          export MAVKA_VERSION="$(cat ВЕРСІЯ)"
+          export GIT_LATEST_COMMIT_HASH="$(git rev-parse --short HEAD)"
+          wget https://github.com/tsil-ukr/files/raw/main/випуски-цілі/0.35.0/ціль-0.35.0-x86_64-linux-gnu.zip
+          unzip ціль-0.35.0-x86_64-linux-gnu.zip
+          cp -a build/linux-x86_64/.git .git-build-linux-x86_64
+          cp -a build/linux-x86_64/.github .github-build-linux-x86_64
+          rm -rf build/linux-x86_64
+          mkdir -p build/linux-x86_64
+          cp -a .git-build-linux-x86_64/ build/linux-x86_64/.git
+          cp -a .github-build-linux-x86_64/ build/linux-x86_64/.github
+          rm -rf .git-build-linux-x86_64/
+          rm -rf .github-build-linux-x86_64/
+          TSIL=ціль-0.35.0-x86_64-linux-gnu/ціль sh external/scripts/prepare.sh linux-x86_64
+          cp ВЕРСІЯ build/linux-x86_64
+          cd build/linux-x86_64
+          git config --local user.name "kohutd"
+          git config --local user.email "davyd.kohut@gmail.com"
+          git add .
+          git commit -m "$MAVKA_VERSION-$GIT_LATEST_COMMIT_HASH"
+          git tag "$MAVKA_VERSION-$GIT_LATEST_COMMIT_HASH"
+          cd -
+      - uses: ad-m/github-push-action@master
+        with:
+          branch: main
+          tags: true
+          directory: "build/linux-x86_64"
+          repository: "mavka-ukr-static/mavka-linux-x86_64"
+          ssh: true
+          github_token: ${{ secrets.SSH_DEPLOY_KEY_MAVKA_LINUX_X86_64 }}
