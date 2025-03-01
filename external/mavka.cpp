@@ -113,9 +113,9 @@ extern "C" {
   return true;
 }
 
-невідома_адреса мавка_система_відкрити_поширену_бібліотеку(
-    памʼять_п8 шлях,
-    позитивне розмір_шляху) {
+невідома_адреса
+мавка_система_відкрити_поширену_бібліотеку(памʼять_п8 шлях,
+                                           позитивне розмір_шляху) {
 #if defined(__linux__)
   char* path =
       strdup(std::string(reinterpret_cast<char*>(шлях), розмір_шляху).c_str());
@@ -289,12 +289,58 @@ char* _mavka_readline(char* prefix) {
 char* _mavka_readline(char* prefix) {
   мавка_система_вв_вивести_ю8_в_стандартний_вивід(
       reinterpret_cast<памʼять_п8>(prefix), strlen(prefix));
+#if _WIN32
+  HANDLE hConsole = GetStdHandle(STD_INPUT_HANDLE);
+  if (hConsole == INVALID_HANDLE_VALUE) {
+    return nullptr;
+  }
+  const int initialBufferSize = 128;
+  DWORD charsRead = 0;
+  DWORD bufferSize = initialBufferSize;
+  std::vector<wchar_t> buffer(bufferSize);
+  while (true) {
+    BOOL success = ReadConsoleW(hConsole, buffer.data(), bufferSize - 1,
+                                &charsRead, nullptr);
+    if (!success) {
+      return nullptr;
+    }
+    buffer[charsRead] = L'\0';
+    if (charsRead == bufferSize - 1) {
+      bufferSize *= 2;
+      buffer.resize(bufferSize);
+      continue;
+    }
+    if (charsRead > 0) {
+      if (buffer[charsRead - 1] == L'\n') {
+        if (charsRead > 1 && buffer[charsRead - 2] == L'\r') {
+          buffer[charsRead - 2] = L'\0';
+          charsRead -= 2;
+        } else {
+          buffer[charsRead - 1] = L'\0';
+          charsRead--;
+        }
+      }
+    }
+    break;
+  }
+  int utf8Length = WideCharToMultiByte(CP_UTF8, 0, buffer.data(), charsRead,
+                                       nullptr, 0, nullptr, nullptr);
+  if (utf8Length == 0) {
+    return strdup("");
+  }
+  std::vector<char> utf8Buffer(utf8Length);
+  WideCharToMultiByte(CP_UTF8, 0, buffer.data(), -1, utf8Buffer.data(),
+                      utf8Length, nullptr, nullptr);
+  std::string line(utf8Buffer.data(), utf8Buffer.size());
+  return strdup(line.c_str());
+#else
   std::string line;
   if (std::cin.eof()) {
     return nullptr;
   }
   std::getline(std::cin, line);
   return strdup(line.c_str());
+#endif
 }
 #endif
 
