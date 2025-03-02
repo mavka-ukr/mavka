@@ -7,8 +7,8 @@ then
   Mode="release"
 fi
 
-export CC="clang"
-export CXX="clang++"
+export CC="clang -target x86_64-pc-linux-gnu"
+export CXX="clang++ -target x86_64-pc-linux-gnu"
 export AR="llvm-ar"
 export RANLIB="llvm-ranlib"
 CXX_OPTIONS=""
