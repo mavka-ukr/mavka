@@ -1,10 +1,4 @@
 .idea/
-.плавлення/
+out/
 build/
-build-l/
-build-w/
-cmake-build-debug/
-gen/
-випуски/
-mavka-windows/
-будування/
+vgcore.*
