@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 set -e
 
+MavkaVersion="$(cat Version)"
+
 Mode="$1"
 if [ -z "$Mode" ]
 then
@@ -11,38 +13,43 @@ export CC="clang -target x86_64-pc-linux-gnu"
 export CXX="clang++ -target x86_64-pc-linux-gnu"
 export AR="llvm-ar"
 export RANLIB="llvm-ranlib"
-CXX_OPTIONS=""
+CC_OPTIONS="-DMAVKA_VERSION=\"$MavkaVersion\""
 
-appendCxxOption() {
-  if [ -z "$CXX_OPTIONS" ]
+appendCcOption() {
+  if [ -z "$CC_OPTIONS" ]
   then
-    CXX_OPTIONS="$1"
+    CC_OPTIONS="$1"
   else
-    CXX_OPTIONS="$CXX_OPTIONS $1"
+    CC_OPTIONS="$CC_OPTIONS $1"
   fi
 }
 
 case "$Mode" in
   "release"*)
-    appendCxxOption "-O3"
-    appendCxxOption "-g0"
-    appendCxxOption "-flto"
-    appendCxxOption "-ffast-math"
-    appendCxxOption "-fvisibility=hidden"
+    appendCcOption "-O3"
+    appendCcOption "-g0"
+    appendCcOption "-flto"
+    appendCcOption "-ffast-math"
+    appendCcOption "-fvisibility=hidden"
+  ;;
+  "debug-asan"*)
+    appendCcOption "-g -fsanitize=address,undefined,leak"
   ;;
   "debug"*)
-    appendCxxOption "-g"
+    appendCcOption "-g"
   ;;
 esac
 
 if [ -f /usr/include/readline/readline.h ]
 then
-  appendCxxOption "-lreadline"
-  appendCxxOption "-DMAVKA_READLINE"
+  appendCcOption "-lreadline"
+  appendCcOption "-DMAVKA_READLINE"
 fi
+
+appendCcOption "-lm"
 
 SourceFiles="$(cat SourceFiles)"
 mkdir -p "out"
-Command="$CXX $CXX_OPTIONS -o out/мавка $SourceFiles"
+Command="$CC $CC_OPTIONS -o out/мавка $SourceFiles"
 echo "$Command"
 $Command
