@@ -53,4 +53,7 @@ CompilationFiles_HEREDOC_INPUT
 Command="cp $BuildFilesDir/* $OutDir"
 echo "$Command"
 $Command
+Command="cp Версія $OutDir/Version"
+echo "$Command"
+$Command
 printf "%s" "$LLCompilationFiles"> "$OutDir/SourceFiles"
