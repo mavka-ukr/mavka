@@ -1,17 +1,19 @@
 #!/usr/bin/env sh
 set -e
 
+MavkaVersion="$(cat Version)"
+
 Mode="$1"
 if [ -z "$Mode" ]
 then
   Mode="release"
 fi
 
-export CC="zig cc -target x86_64-windows-gnu"
-export CXX="zig c++ -target x86_64-windows-gnu"
-export AR="zig ar"
-export RANLIB="zig ranlib"
-CC_OPTIONS="-municode"
+export CC="clang -target x86_64-pc-w64-mingw"
+export CXX="clang++ -target x86_64-pc-w64-mingw"
+export AR="llvm-ar"
+export RANLIB="llvm-ranlib"
+CC_OPTIONS="-municode -DMAVKA_VERSION=\"$MavkaVersion\""
 
 appendCcOption() {
   if [ -z "$CC_OPTIONS" ]
@@ -26,9 +28,11 @@ case "$Mode" in
   "release"*)
     appendCcOption "-O3"
     appendCcOption "-g0"
-    appendCcOption "-flto"
     appendCcOption "-ffast-math"
     appendCcOption "-fvisibility=hidden"
+  ;;
+  "debug-asan"*)
+    appendCcOption "-g -fsanitize=address,undefined,leak"
   ;;
   "debug"*)
     appendCcOption "-g"
