@@ -47,7 +47,7 @@ typedef struct ю8 {
 #define памʼять_т8 т8*
 #define памʼять_ю8 ю8*
 
-const char* ю8_as_char(ю8 value) {
+char* ю8_as_char(ю8 value) {
   char* copy = (char*)malloc(value.розмір + 1);
   memcpy(copy, value.дані, value.розмір);
   copy[value.розмір] = 0;
@@ -243,15 +243,16 @@ extern логічне мавка_система_отримати_поточну_
 
 extern логічне мавка_система_отримати_назву_файлу_без_розширення(ю8 шлях,
                                                                  ю8* вихід) {
-  const char* path = ю8_as_char(шлях);
-  const char* bn = basename((char*)path);
+  char* path = ю8_as_char(шлях);
+  char* bn = strdup(basename((char*)path));
   free((void*)path);
   if (bn == NULL) {
     вихід->розмір = 0;
     вихід->дані = NULL;
     return false;
   }
-  const char* filename = strdup(bn);
+  char* filename = strdup(bn);
+  free((void*)bn);
   size_t len = 0;
   while (filename[len] != 0 && filename[len] != '.') {
     len++;
