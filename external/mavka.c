@@ -440,14 +440,12 @@ extern long long_to_chars(long value, char** out) {
 
 #ifdef __linux__
 int main(int argc, char** argv) {
-  памʼять_ю8 аргументи = (памʼять_ю8)malloc(argc * sizeof(ю8));
+  ю8 аргументи[argc];
   for (int i = 0; i < argc; ++i) {
     аргументи[i].розмір = strlen(argv[i]);
     аргументи[i].дані = (памʼять_п8)argv[i];
   }
-  int результат = запустити_мавку(argc, аргументи);
-  free(аргументи);
-  return результат;
+  return запустити_мавку(argc, аргументи);
 }
 #endif
 
