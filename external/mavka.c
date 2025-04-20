@@ -1,7 +1,7 @@
 #ifdef __linux__
 #include <dlfcn.h>
-#endif
 #include <libgen.h>
+#endif
 #include <math.h>
 #include <memory.h>
 #include <stdbool.h>
