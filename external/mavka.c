@@ -1,7 +1,5 @@
-#ifdef __linux__
 #include <dlfcn.h>
 #include <libgen.h>
-#endif
 #include <math.h>
 #include <memory.h>
 #include <stdbool.h>
@@ -9,11 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
-#ifdef _WIN32
-#include <windows.h>
-#define realpath(N, R) _fullpath((R), (N), _MAX_PATH)
-#endif
 
 #define п8 uint8_t
 #define п16 uint16_t
@@ -53,30 +46,6 @@ char* перетворити_ю8_в_chars(ю8 value) {
   copy[value.розмір] = 0;
   return copy;
 }
-
-#ifdef _WIN32
-wchar_t* UTF8StringToWString(const char* utf8Str) {
-  if (!utf8Str)
-    return NULL;
-
-  int sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, utf8Str, -1, NULL, 0);
-  if (sizeNeeded == 0)
-    return NULL;
-
-  wchar_t* utf16Str = (wchar_t*)malloc(sizeNeeded * sizeof(wchar_t));
-  if (!utf16Str)
-    return NULL;
-
-  int converted =
-      MultiByteToWideChar(CP_UTF8, 0, utf8Str, -1, utf16Str, sizeNeeded);
-  if (converted == 0) {
-    free(utf16Str);
-    return NULL;
-  }
-
-  return utf16Str; // Remember to free() it after use
-}
-#endif
 
 extern памʼять_п8 мавка_система_виділити_сиру_памʼять(позитивне розмір);
 extern памʼять_п8 мавка_система_перевиділити_сиру_памʼять(
@@ -130,20 +99,9 @@ extern ніщо мавка_система_звільнити_сиру_памʼя
 }
 
 extern ніщо мавка_система_вивести_ю8(позитивне розмір, памʼять_п8 дані) {
-#ifdef __linux__
   for (позитивне i = 0; i < розмір; ++i) {
     putchar(дані[i]);
   }
-#endif
-#ifdef _WIN32
-  const ю8 значення_ю8 = {розмір, дані};
-  const char* value = ю8_as_char(значення_ю8);
-  wchar_t* value16 = UTF8StringToWString(value);
-  //  free((void *)value);
-  WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), value16, lstrlenW(value16), 0,
-                NULL);
-  free(value16);
-#endif
 }
 
 extern ніщо мавка_система_вивести_позитивне(позитивне значення) {
@@ -275,7 +233,6 @@ extern логічне мавка_система_перевірити_чи_шля
   return false;
 }
 
-#ifdef __linux__
 #include <readline/history.h>
 #include <readline/readline.h>
 
@@ -286,88 +243,6 @@ const char* mavka_readline(const char* prefix) {
 void mavka_readline_add_history(const char* value) {
   add_history(value);
 }
-#endif
-
-#ifdef _WIN32
-char* ReadConsoleLineUTF8() {
-  HANDLE hConsole = GetStdHandle(STD_INPUT_HANDLE);
-  if (hConsole == INVALID_HANDLE_VALUE) {
-    return NULL;
-  }
-
-  const int initialBufferSize = 128;
-  DWORD charsRead = 0;
-  DWORD bufferSize = initialBufferSize;
-  wchar_t* buffer = (wchar_t*)malloc(bufferSize * sizeof(wchar_t));
-  if (!buffer)
-    return NULL;
-
-  while (1) {
-    BOOL success =
-        ReadConsoleW(hConsole, buffer, bufferSize - 1, &charsRead, NULL);
-    if (!success) {
-      free(buffer);
-      return NULL;
-    }
-    buffer[charsRead] = L'\0';
-
-    if (charsRead == bufferSize - 1) {
-      bufferSize *= 2;
-      wchar_t* newBuffer =
-          (wchar_t*)realloc(buffer, bufferSize * sizeof(wchar_t));
-      if (!newBuffer) {
-        free(buffer);
-        return NULL;
-      }
-      buffer = newBuffer;
-      continue;
-    }
-
-    if (charsRead > 0) {
-      if (buffer[charsRead - 1] == L'\n') {
-        if (charsRead > 1 && buffer[charsRead - 2] == L'\r') {
-          buffer[charsRead - 2] = L'\0';
-          charsRead -= 2;
-        } else {
-          buffer[charsRead - 1] = L'\0';
-          charsRead--;
-        }
-      }
-    }
-    break;
-  }
-
-  int utf8Length =
-      WideCharToMultiByte(CP_UTF8, 0, buffer, charsRead, NULL, 0, NULL, NULL);
-  if (utf8Length == 0) {
-    free(buffer);
-    return _strdup("");
-  }
-
-  char* utf8Buffer = (char*)malloc(utf8Length + 1);
-  if (!utf8Buffer) {
-    free(buffer);
-    return NULL;
-  }
-
-  WideCharToMultiByte(CP_UTF8, 0, buffer, -1, utf8Buffer, utf8Length + 1, NULL,
-                      NULL);
-  free(buffer);
-  return utf8Buffer;
-}
-
-const char* mavka_readline(const char* prefix) {
-  if (prefix) {
-    wchar_t* value16 = UTF8StringToWString(prefix);
-    WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), value16, lstrlenW(value16),
-                  0, NULL);
-    free(value16);
-  }
-  return ReadConsoleLineUTF8();
-}
-
-void mavka_readline_add_history(const char* value) {}
-#endif
 
 extern логічне мавка_система_прочитати_ю8_зі_стандартного_вводу(
     ю8 префікс,
@@ -457,36 +332,24 @@ extern д64 мавка_система_підлога_д64(д64 значення)
 }
 
 extern невідома_адреса мавка_система_відкрити_поширену_бібліотеку(ю8 шлях) {
-#ifdef __linux__
   const char* path = перетворити_ю8_в_chars(шлях);
   void* dobject = dlopen(path, RTLD_LAZY);
   free((void*)path);
   return dobject;
-#else
-  return NULL;
-#endif
 }
 
 extern ніщо мавка_система_закрити_поширену_бібліотеку(
     невідома_адреса поширена_бібліотека) {
-#ifdef __linux__
   dlclose(поширена_бібліотека);
-#else
-  return;
-#endif
 }
 
 extern невідома_адреса мавка_система_отримати_символ_поширеної_бібліотеки(
     невідома_адреса поширена_бібліотека,
     ю8 назва_символа) {
-#ifdef __linux__
   const char* name = перетворити_ю8_в_chars(назва_символа);
   void* sym = dlsym(поширена_бібліотека, name);
   free((void*)name);
   return sym;
-#else
-  return NULL;
-#endif
 }
 
 extern long long_to_chars(long value, char** out) {
@@ -497,7 +360,6 @@ extern long long_to_chars(long value, char** out) {
   return strlen(str);
 }
 
-#ifdef __linux__
 int main(int argc, char** argv) {
   ю8 аргументи[argc];
   for (int i = 0; i < argc; ++i) {
@@ -506,23 +368,3 @@ int main(int argc, char** argv) {
   }
   return запустити_мавку(argc, аргументи);
 }
-#endif
-
-#ifdef _WIN32
-int wmain(int argc, wchar_t** argv) {
-  памʼять_ю8 аргументи = (памʼять_ю8)malloc(argc * sizeof(ю8));
-  for (int i = 0; i < argc; i++) {
-    int len = WideCharToMultiByte(CP_UTF8, 0, argv[i], -1, NULL, 0, NULL, NULL);
-    аргументи[i].розмір = len;
-    аргументи[i].дані = (памʼять_п8)malloc(len);
-    WideCharToMultiByte(CP_UTF8, 0, argv[i], -1, (char*)аргументи[i].дані, len,
-                        NULL, NULL);
-  }
-  int результат = запустити_мавку(argc, аргументи);
-  for (int i = 0; i < argc; i++) {
-    free(аргументи[i].дані);
-  }
-  free(аргументи);
-  return результат;
-}
-#endif
