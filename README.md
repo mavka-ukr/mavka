@@ -31,3 +31,9 @@ sh build.sh
 ```shell
 ./out/мавка
 ```
+
+За бажанням, Мавку можна встановити глобально:
+
+```shell
+sudo cp ./out/мавка /usr/local/bin
+```
