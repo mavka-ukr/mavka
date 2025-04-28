@@ -10,6 +10,18 @@ then
   exit 1
 fi
 
+Triple=""
+
+if [ "$Target" = "linux-x86_64" ]
+then
+  Triple="x86_64-pc-linux-gnu"
+fi
+
+if [ "$Target" = "windows-x86_64" ]
+then
+  Triple="x86_64-pc-windows-gnu"
+fi
+
 if [ -z "$TSIL" ]
 then
   TSIL="ціль"
@@ -26,7 +38,7 @@ do
   case "$CompilationFile" in
     *".ц")
       LLCompilationFile="${CompilationFile%.ц}.ll"
-      Command="$TSIL $OutDir/source/$LLCompilationFile скомпілювати $CompilationFile"
+      Command="$TSIL $OutDir/source/$LLCompilationFile --triple=$Triple скомпілювати $CompilationFile"
       echo "$Command"
       $Command
       if [ -z "$LLCompilationFiles" ]; then
