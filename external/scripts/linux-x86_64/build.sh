@@ -42,8 +42,11 @@ esac
 
 if [ -f /usr/include/readline/readline.h ]
 then
-  appendCcOption "-lreadline"
-  appendCcOption "-DMAVKA_READLINE"
+  if [ -f /usr/include/readline/history.h ]
+  then
+    appendCcOption "-lreadline"
+    appendCcOption "-DMAVKA_READLINE"
+  fi
 fi
 
 appendCcOption "-lm"

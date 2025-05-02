@@ -40,7 +40,7 @@ typedef struct ю8 {
 #define памʼять_т8 т8*
 #define памʼять_ю8 ю8*
 
-char* перетворити_ю8_в_chars(ю8 value) {
+static char* перетворити_ю8_в_chars(ю8 value) {
   char* copy = (char*)malloc(value.розмір + 1);
   memcpy(copy, value.дані, value.розмір);
   copy[value.розмір] = 0;
