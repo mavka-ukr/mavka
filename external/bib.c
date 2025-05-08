@@ -1,3 +1,4 @@
+#include <arpa/inet.h>
 #include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -14,6 +15,127 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+// --- Mavka Epoll Lib START ---
+
+// TODO: use hashmap instead of linked list
+
+typedef struct MEpoll MEpoll;
+typedef struct MEpollListener MEpollListener;
+
+typedef void (*MEpollHandler)(MEpoll* mepoll,
+                              MEpollListener* listener,
+                              uint32_t event);
+
+typedef struct MEpoll {
+  int fd;
+  size_t listeners_count;
+  MEpollListener* first_listener;
+  MEpollListener* last_listener;
+} MEpoll;
+
+typedef struct MEpollListener {
+  MEpollListener* prev;
+  MEpollListener* next;
+  int fd;
+  MEpollHandler handler;
+  void* arg;
+} MEpollListener;
+
+MEpoll* global_mepoll = NULL;
+
+MEpoll* mepoll_get_global() {
+  if (global_mepoll == NULL) {
+    global_mepoll = (MEpoll*)malloc(sizeof(MEpoll));
+    global_mepoll->fd = epoll_create(1);
+    global_mepoll->listeners_count = 0;
+    global_mepoll->first_listener = NULL;
+    global_mepoll->last_listener = NULL;
+  }
+  return global_mepoll;
+}
+
+MEpollListener* mepoll_create_listener(MEpoll* mepoll,
+                                       int fd,
+                                       MEpollHandler handler,
+                                       void* arg) {
+  MEpollListener* listener = (MEpollListener*)malloc(sizeof(MEpollListener));
+  listener->prev = NULL;
+  listener->next = NULL;
+  listener->fd = fd;
+  listener->handler = handler;
+  listener->arg = arg;
+
+  if (mepoll->first_listener == NULL) {
+    mepoll->first_listener = listener;
+  }
+  if (mepoll->last_listener == NULL) {
+    mepoll->last_listener = listener;
+  } else {
+    listener->prev = mepoll->last_listener;
+    mepoll->last_listener->next = listener;
+    mepoll->last_listener = listener;
+  }
+
+  mepoll->listeners_count++;
+
+  return listener;
+}
+
+void mepoll_delete_listener(MEpoll* mepoll, MEpollListener* listener) {
+  MEpollListener* prev = listener->prev;
+  MEpollListener* next = listener->next;
+
+  if (prev != NULL) {
+    prev->next = next;
+  }
+  if (next != NULL) {
+    next->prev = prev;
+  }
+
+  if (mepoll->first_listener == listener) {
+    mepoll->first_listener = next;
+  }
+  if (mepoll->last_listener == listener) {
+    mepoll->last_listener = prev;
+  }
+
+  free(listener);
+
+  mepoll->listeners_count--;
+}
+
+#define MAX_EVENTS 64
+
+typedef void (*BeforeEachEventHandler)(MEpoll* mepoll, void* arg);
+
+MEpoll* mepoll_run(MEpoll* mepoll,
+                   BeforeEachEventHandler before_each,
+                   void* before_each_arg) {
+  struct epoll_event events[MAX_EVENTS];
+
+  while (mepoll->listeners_count > 0) {
+    before_each(mepoll, before_each_arg);
+
+    int n = epoll_wait(mepoll->fd, events, MAX_EVENTS, -1);
+
+    for (int i = 0; i < n; i++) {
+      MEpollListener* listener = mepoll->first_listener;
+
+      while (listener != NULL) {
+        if (events[i].data.fd == listener->fd) {
+          listener->handler(mepoll, listener, events[i].events);
+          break;
+        }
+
+        listener = listener->next;
+      }
+    }
+  }
+
+  return 0;
+}
+// --- Mavka Epoll Lib END ---
 
 #define п8 uint8_t
 #define п16 uint16_t
@@ -54,6 +176,9 @@ static char* перетворити_ю8_в_chars(ю8 value) {
   return copy;
 }
 
+typedef MEpoll Рушій;
+typedef MEpollListener Слухач;
+
 static int setnonblocking(int sockfd) {
   if (fcntl(sockfd, F_SETFL, fcntl(sockfd, F_GETFL, 0) | O_NONBLOCK) == -1) {
     return -1;
@@ -62,7 +187,7 @@ static int setnonblocking(int sockfd) {
 }
 
 static void epoll_ctl_add(int epfd, int fd, uint32_t events) {
-  struct epoll_event ev;
+  struct epoll_event ev = {0};
   ev.events = events;
   ev.data.fd = fd;
   if (epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev) == -1) {
@@ -71,65 +196,84 @@ static void epoll_ctl_add(int epfd, int fd, uint32_t events) {
   }
 }
 
-typedef struct Рушій Рушій;
-typedef struct Обслуговувач Обслуговувач;
-typedef struct Клієнт Клієнт;
-
-typedef struct Клієнт {
-  Клієнт* наступний;
-  int fd;
-} Клієнт;
-
 typedef void (*ВідкликНаПідключення)(Рушій* рушій,
-                                     Обслуговувач* обслуговувач,
+                                     Слухач* обслуговувач,
                                      невідома_адреса аргумент,
-                                     ц32 оф);
+                                     ц32 оф,
+                                     ю8 адр,
+                                     ю8 прт);
 typedef void (*ВідкликНаВідключення)(Рушій* рушій,
-                                     Обслуговувач* обслуговувач,
+                                     Слухач* обслуговувач,
                                      невідома_адреса аргумент,
                                      ц32 оф);
 typedef void (*ВідкликНаДані)(Рушій* рушій,
-                              Обслуговувач* обслуговувач,
+                              Слухач* обслуговувач,
                               невідома_адреса аргумент,
                               ц32 оф,
                               size_t розмір,
                               памʼять_п8 дані);
 typedef void (*ВідкликНаЗупинку)(Рушій* рушій,
-                                 Обслуговувач* обслуговувач,
+                                 Слухач* обслуговувач,
                                  невідома_адреса аргумент);
 
-typedef struct Обслуговувач {
-  Обслуговувач* наступний;
-  ц32 оф;
+typedef struct ДаніОбслуговувача {
   невідома_адреса аргумент;
-  Клієнт* перший_клієнт;
-  Клієнт* останній_клієнт;
   ВідкликНаПідключення відклик_на_підключення;
   ВідкликНаДані відклик_на_дані;
   ВідкликНаВідключення відклик_на_відключення;
   ВідкликНаЗупинку відклик_на_зупинку;
-} Обслуговувач;
+} ДаніОбслуговувача;
 
-typedef struct Рушій {
-  int epoll_fd;
-  Обслуговувач* перший_обслуговувач;
-  Обслуговувач* останній_обслуговувач;
-} Рушій;
+void tcp_client_event_handler(MEpoll* mepoll,
+                              MEpollListener* tcp_client_listener,
+                              uint32_t event) {
+  MEpollListener* tcp_server_listener =
+      (MEpollListener*)tcp_client_listener->arg;
+  ДаніОбслуговувача* дані = (ДаніОбслуговувача*)tcp_server_listener->arg;
 
-Рушій* глобальний_рушій = NULL;
-
-extern Рушій* мавка_біб_отримати_рушій() {
-  if (глобальний_рушій == NULL) {
-    Рушій* рушій = (Рушій*)malloc(sizeof(Рушій));
-    рушій->epoll_fd = epoll_create(1);
-    рушій->перший_обслуговувач = NULL;
-    рушій->останній_обслуговувач = NULL;
-    глобальний_рушій = рушій;
+  if (event & EPOLLIN) {
+    char* buf = (char*)malloc(128);
+    int n = read(tcp_client_listener->fd, buf, 128);
+    if (n <= 0 || errno == EAGAIN || errno == EWOULDBLOCK) {
+    } else {
+      дані->відклик_на_дані(mepoll, tcp_server_listener, дані->аргумент,
+                            tcp_client_listener->fd, n, (памʼять_п8)buf);
+    }
   }
-  return глобальний_рушій;
+  if (event & (EPOLLRDHUP | EPOLLHUP)) {
+    дані->відклик_на_відключення(mepoll, tcp_server_listener, дані->аргумент,
+                                 tcp_client_listener->fd);
+    epoll_ctl(mepoll->fd, EPOLL_CTL_DEL, tcp_client_listener->fd, NULL);
+    close(tcp_client_listener->fd);
+    mepoll_delete_listener(mepoll, tcp_client_listener);
+  }
 }
 
-extern Обслуговувач* мавка_біб_запустити_обслуговувач(
+void tcp_server_listener_event_handler(MEpoll* mepoll,
+                                       MEpollListener* tcp_server_listener,
+                                       uint32_t event) {
+  struct sockaddr_in cli_addr = {0};
+  socklen_t addr_len = {0};
+
+  int conn_sock =
+      accept(tcp_server_listener->fd, (struct sockaddr*)&cli_addr, &addr_len);
+  setnonblocking(conn_sock);
+  epoll_ctl_add(mepoll->fd, conn_sock,
+                EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP);
+
+  mepoll_create_listener(mepoll, conn_sock, tcp_client_event_handler,
+                         tcp_server_listener);
+
+  ю8 адр = {0};
+  ю8 прт = {0};
+
+  ДаніОбслуговувача* дані = (ДаніОбслуговувача*)tcp_server_listener->arg;
+
+  дані->відклик_на_підключення(mepoll, tcp_server_listener, дані->аргумент,
+                               conn_sock, адр, прт);
+}
+
+extern Слухач* мавка_біб_запустити_обслуговувач(
     Рушій* рушій,
     ю8 адреса,
     ц32 порт,
@@ -142,7 +286,7 @@ extern Обслуговувач* мавка_біб_запустити_обслу
 
   struct sockaddr_in addr = {0};
   addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = INADDR_ANY;
+  addr.sin_addr.s_addr = inet_addr(addr_str);
   addr.sin_port = htons(порт);
 
   free((void*)addr_str);
@@ -154,33 +298,23 @@ extern Обслуговувач* мавка_біб_запустити_обслу
 
   setnonblocking(sockfd);
   listen(sockfd, 128);
-  epoll_ctl_add(рушій->epoll_fd, sockfd, EPOLLIN | EPOLLOUT | EPOLLET);
-  printf("imhere\n");
+  epoll_ctl_add(рушій->fd, sockfd, EPOLLIN | EPOLLOUT | EPOLLET);
 
-  // todo: handle errors
+  ДаніОбслуговувача* дані =
+      (ДаніОбслуговувача*)malloc(sizeof(ДаніОбслуговувача));
+  дані->аргумент = аргумент;
+  дані->відклик_на_підключення = відклик_на_підключення;
+  дані->відклик_на_дані = відклик_на_дані;
+  дані->відклик_на_відключення = відклик_на_відключення;
+  дані->відклик_на_зупинку = відклик_на_зупинку;
 
-  Обслуговувач* обслуговувач = (Обслуговувач*)malloc(sizeof(Обслуговувач));
-  обслуговувач->наступний = NULL;
-  обслуговувач->оф = sockfd;
-  обслуговувач->аргумент = аргумент;
-  обслуговувач->перший_клієнт = NULL;
-  обслуговувач->останній_клієнт = NULL;
-  обслуговувач->відклик_на_підключення = відклик_на_підключення;
-  обслуговувач->відклик_на_дані = відклик_на_дані;
-  обслуговувач->відклик_на_відключення = відклик_на_відключення;
-  обслуговувач->відклик_на_зупинку = відклик_на_зупинку;
+  MEpollListener* listener = mepoll_create_listener(
+      рушій, sockfd, tcp_server_listener_event_handler, дані);
 
-  if (рушій->перший_обслуговувач == NULL) {
-    рушій->перший_обслуговувач = обслуговувач;
-  }
-  if (рушій->останній_обслуговувач == NULL) {
-    рушій->останній_обслуговувач = обслуговувач;
-  } else {
-    рушій->останній_обслуговувач->наступний = обслуговувач;
-    рушій->останній_обслуговувач = обслуговувач;
-  }
-
-  return обслуговувач;
+  return listener;
+}
+extern Рушій* мавка_біб_отримати_рушій() {
+  return mepoll_get_global();
 }
 
 extern ніщо мавка_біб_надіслати(Рушій* рушій,
@@ -196,88 +330,5 @@ typedef void (*ОбробникПодіїРушія)(Рушій* рушій,
 extern ніщо мавка_біб_запустити_рушій(Рушій* рушій,
                                       ОбробникПодіїРушія обробник_події,
                                       невідома_адреса дані_обробника_події) {
-  struct epoll_event events[32];
-
-  for (;;) {
-    обробник_події(рушій, дані_обробника_події);
-
-    if (рушій->перший_обслуговувач == NULL) {
-      return;
-    }
-    printf("wait\n");
-
-    int nfds = epoll_wait(рушій->epoll_fd, events, 32, -1);
-
-    if (nfds == -1) {
-      return;
-    }
-
-    for (int i = 0; i < nfds; i++) {
-      обробник_події(рушій, дані_обробника_події);
-      Обслуговувач* обслуговувач = рушій->перший_обслуговувач;
-      while (обслуговувач != NULL) {
-        if (обслуговувач->оф == events[i].data.fd) {
-          struct sockaddr_in cli_addr;
-          socklen_t socklen;
-          int conn_sock =
-              accept(обслуговувач->оф, (struct sockaddr*)&cli_addr, &socklen);
-          setnonblocking(conn_sock);
-          epoll_ctl_add(рушій->epoll_fd, conn_sock,
-                        EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP);
-
-          Клієнт* клієнт = (Клієнт*)malloc(sizeof(Клієнт));
-          клієнт->наступний = NULL;
-          клієнт->fd = conn_sock;
-
-          if (обслуговувач->перший_клієнт == NULL) {
-            обслуговувач->перший_клієнт = клієнт;
-          }
-          if (обслуговувач->останній_клієнт == NULL) {
-            обслуговувач->останній_клієнт = клієнт;
-          } else {
-            обслуговувач->останній_клієнт->наступний = клієнт;
-            обслуговувач->останній_клієнт = клієнт;
-          }
-
-          обслуговувач->відклик_на_підключення(
-              рушій, обслуговувач, обслуговувач->аргумент, conn_sock);
-          break;
-        }
-        обслуговувач = обслуговувач->наступний;
-      }
-      if (events[i].events & EPOLLIN) {
-        char* buf = (char*)malloc(128);
-        int n = read(events[i].data.fd, buf, 128);
-        if (n <= 0 /* || errno == EAGAIN */) {
-          free(buf);
-          goto next;
-        }
-        Обслуговувач* обслуговувач = рушій->перший_обслуговувач;
-        while (обслуговувач != NULL) {
-          Клієнт* клієнт = обслуговувач->перший_клієнт;
-          while (клієнт != NULL) {
-            if (клієнт->fd == events[i].data.fd) {
-              обслуговувач->відклик_на_дані(рушій, обслуговувач,
-                                            обслуговувач->аргумент, клієнт->fd,
-                                            n, (памʼять_п8)buf);
-              goto next;
-            }
-
-            клієнт = клієнт->наступний;
-          }
-
-          обслуговувач = обслуговувач->наступний;
-        }
-      }
-    next:
-      /* check if the connection is closing */
-      if (events[i].events & (EPOLLRDHUP | EPOLLHUP)) {
-        printf("[+] connection closed\n");
-        epoll_ctl(рушій->epoll_fd, EPOLL_CTL_DEL, events[i].data.fd, NULL);
-        close(events[i].data.fd);
-        continue;
-      }
-      printf("event\n");
-    }
-  }
+  mepoll_run(рушій, обробник_події, дані_обробника_події);
 }
