@@ -18,7 +18,30 @@
 
 // --- Mavka Epoll Lib START ---
 
+static int setnonblocking(int sockfd) {
+  return fcntl(sockfd, F_SETFL, fcntl(sockfd, F_GETFL, 0) | O_NONBLOCK);
+}
+
+static int epoll_ctl_add(int epfd, int fd, uint32_t events) {
+  struct epoll_event ev = {0};
+  ev.events = events;
+  ev.data.fd = fd;
+  return epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev);
+}
+
+static int epoll_ctl_del(int epfd, int fd) {
+  return epoll_ctl(epfd, EPOLL_CTL_DEL, fd, NULL);
+}
+
+static int epoll_ctl_mod(int epfd, int fd, uint32_t events) {
+  struct epoll_event ev = {0};
+  ev.events = events;
+  ev.data.fd = fd;
+  return epoll_ctl(epfd, EPOLL_CTL_MOD, fd, &ev);
+}
+
 typedef struct MEpoll MEpoll;
+typedef struct MEpollListenerWriteData MEpollListenerWriteData;
 typedef struct MEpollListener MEpollListener;
 
 typedef void (*MEpollHandler)(MEpoll* mepoll,
@@ -32,12 +55,21 @@ typedef struct MEpoll {
   MEpollListener* last_listener;
 } MEpoll;
 
+typedef struct MEpollListenerWriteData {
+  MEpollListenerWriteData* next;
+  char* data;
+  size_t data_size;
+  size_t total_written;
+} MEpollListenerWriteData;
+
 typedef struct MEpollListener {
   MEpollListener* prev;
   MEpollListener* next;
   int fd;
   MEpollHandler handler;
   void* arg;
+  MEpollListenerWriteData* first_write_data;
+  MEpollListenerWriteData* last_write_data;
 } MEpollListener;
 
 MEpoll* global_mepoll = NULL;
@@ -45,7 +77,7 @@ MEpoll* global_mepoll = NULL;
 MEpoll* mepoll_get_global() {
   if (global_mepoll == NULL) {
     global_mepoll = (MEpoll*)malloc(sizeof(MEpoll));
-    global_mepoll->fd = epoll_create(1);
+    global_mepoll->fd = epoll_create1(0);
     global_mepoll->listeners_count = 0;
     global_mepoll->first_listener = NULL;
     global_mepoll->last_listener = NULL;
@@ -63,6 +95,8 @@ MEpollListener* mepoll_create_listener(MEpoll* mepoll,
   listener->fd = fd;
   listener->handler = handler;
   listener->arg = arg;
+  listener->first_write_data = NULL;
+  listener->last_write_data = NULL;
 
   if (mepoll->first_listener == NULL) {
     mepoll->first_listener = listener;
@@ -98,9 +132,79 @@ void mepoll_delete_listener(MEpoll* mepoll, MEpollListener* listener) {
     mepoll->last_listener = prev;
   }
 
+  // todo: free write datas
+
   free(listener);
 
   mepoll->listeners_count--;
+}
+
+void mepoll_listener_add_write_data(MEpoll* mepoll,
+                                    MEpollListener* listener,
+                                    char* data,
+                                    size_t data_size,
+                                    size_t total_written) {
+  MEpollListenerWriteData* write_data =
+      (MEpollListenerWriteData*)malloc(sizeof(MEpollListenerWriteData));
+  write_data->next = NULL;
+  write_data->data = strndup(data, data_size);
+  write_data->data_size = data_size;
+  write_data->total_written = total_written;
+  if (listener->first_write_data == NULL) {
+    listener->first_write_data = write_data;
+  }
+  if (listener->last_write_data == NULL) {
+    listener->last_write_data = write_data;
+  } else {
+    listener->last_write_data->next = write_data;
+    listener->last_write_data = write_data;
+  }
+}
+
+MEpollListener* mepoll_find_listener(MEpoll* mepoll, int fd) {
+  MEpollListener* listener = mepoll->first_listener;
+  while (listener != NULL) {
+    if (listener->fd == fd) {
+      return listener;
+    }
+    listener = listener->next;
+  }
+  return NULL;
+}
+
+void mepoll_write_out_listener_data(MEpoll* mepoll, MEpollListener* listener) {
+  while (listener->first_write_data != NULL) {
+    MEpollListenerWriteData* write_data = listener->first_write_data;
+
+    while (write_data->total_written < write_data->data_size) {
+      ssize_t written =
+          write(listener->fd, write_data->data + write_data->total_written,
+                write_data->data_size - write_data->total_written);
+      if (written < 0) {
+        if (errno == EINTR) {
+          continue;
+        }
+        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+          return;
+        }
+        return;
+      }
+      write_data->total_written += written;
+    }
+
+    listener->first_write_data = write_data->next;
+
+    if (listener->last_write_data == write_data) {
+      listener->last_write_data = NULL;
+    }
+
+    free(write_data->data);
+    free(write_data);
+  }
+  if (epoll_ctl_mod(mepoll->fd, listener->fd, EPOLLIN | EPOLLET) == -1) {
+    // потім: помилка
+    perror("wtf");
+  }
 }
 
 #define MAX_EVENTS 64
@@ -117,6 +221,7 @@ MEpoll* mepoll_run(MEpoll* mepoll,
 
     int n = epoll_wait(mepoll->fd, events, MAX_EVENTS, -1);
     if (n == -1) {
+      perror("e10: ");
       // потім: помилка
     }
 
@@ -126,6 +231,9 @@ MEpoll* mepoll_run(MEpoll* mepoll,
       // це трохи тупо, але на початок піде
       while (listener != NULL) {
         if (events[i].data.fd == listener->fd) {
+          if (listener->fd & EPOLLOUT) {
+            mepoll_write_out_listener_data(mepoll, listener);
+          }
           listener->handler(mepoll, listener, events[i].events);
           break;
         }
@@ -181,21 +289,6 @@ static char* перетворити_ю8_в_chars(ю8 value) {
 typedef MEpoll Рушій;
 typedef MEpollListener Слухач;
 
-static int setnonblocking(int sockfd) {
-  return fcntl(sockfd, F_SETFL, fcntl(sockfd, F_GETFL, 0) | O_NONBLOCK);
-}
-
-static int epoll_ctl_add(int epfd, int fd, uint32_t events) {
-  struct epoll_event ev = {0};
-  ev.events = events;
-  ev.data.fd = fd;
-  return epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev);
-}
-
-static int epoll_ctl_del(int epfd, int fd) {
-  return epoll_ctl(epfd, EPOLL_CTL_DEL, fd, NULL);
-}
-
 typedef void (*ВідкликНаПідключення)(Рушій* рушій,
                                      Слухач* обслуговувач,
                                      невідома_адреса аргумент,
@@ -234,44 +327,55 @@ void tcp_client_event_handler(MEpoll* mepoll,
   ДаніОбслуговувача* дані = (ДаніОбслуговувача*)tcp_server_listener->arg;
 
   if (event & EPOLLIN) {
-    char* buf = (char*)malloc(128);
+    while (1) {
+      char* buf = (char*)malloc(128);
 
-    int n = read(tcp_client_listener->fd, buf, 128);
+      int n = read(tcp_client_listener->fd, buf, 128);
 
-    if (n == -1) {
-      // потім: помилка
-      return;
+      if (n == -1) {
+        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+          free(buf);
+          break;
+        }
+
+        // потім: помилка
+        perror("e1: ");
+        free(buf);
+        break;
+      } else if (n == 0) {
+        free(buf);
+        goto handle_close;
+      } else {
+        дані->відклик_на_дані(mepoll, tcp_server_listener, дані->аргумент,
+                              tcp_client_listener->fd, n, (памʼять_п8)buf);
+      }
     }
 
-    if (n == 0 || errno == EAGAIN || errno == EWOULDBLOCK) {
-      // skip
-    } else {
-      дані->відклик_на_дані(mepoll, tcp_server_listener, дані->аргумент,
-                            tcp_client_listener->fd, n, (памʼять_п8)buf);
-    }
+    return;
   }
 
-  if (event & (EPOLLRDHUP | EPOLLHUP)) {
-    дані->відклик_на_відключення(mepoll, tcp_server_listener, дані->аргумент,
-                                 tcp_client_listener->fd);
+handle_close:
+  дані->відклик_на_відключення(mepoll, tcp_server_listener, дані->аргумент,
+                               tcp_client_listener->fd);
 
-    if (epoll_ctl_del(mepoll->fd, tcp_client_listener->fd) == -1) {
-      // потім: помилка
-    }
+  if (epoll_ctl_del(mepoll->fd, tcp_client_listener->fd) == -1) {
+    perror("e2: ");
+    // потім: помилка
+  }
 
-    if (close(tcp_client_listener->fd) == -1) {
-      // потім: помилка
-    }
+  if (close(tcp_client_listener->fd) == -1) {
+    perror("e3: ");
+    // потім: помилка
+  }
 
-    mepoll_delete_listener(mepoll, tcp_client_listener);
+  mepoll_delete_listener(mepoll, tcp_client_listener);
 
-    дані->кількість_підключених_клієнтів--;
+  дані->кількість_підключених_клієнтів--;
 
-    if (дані->обслуговувач_зупинено &&
-        дані->кількість_підключених_клієнтів == 0) {
-      // потім: відклик на зупинку
-      free(дані);
-    }
+  if (дані->обслуговувач_зупинено &&
+      дані->кількість_підключених_клієнтів == 0) {
+    // потім: відклик на зупинку
+    free(дані);
   }
 }
 
@@ -284,17 +388,19 @@ void tcp_server_listener_event_handler(MEpoll* mepoll,
   int conn_sock =
       accept(tcp_server_listener->fd, (struct sockaddr*)&cli_addr, &addr_len);
   if (conn_sock == -1) {
+    perror("e4: ");
     // потім: помилка
     return;
   }
 
   if (setnonblocking(conn_sock) == -1) {
+    perror("e5: ");
     // потім: помилка
     return;
   }
 
-  if (epoll_ctl_add(mepoll->fd, conn_sock,
-                    EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP) == -1) {
+  if (epoll_ctl_add(mepoll->fd, conn_sock, EPOLLIN | EPOLLET) == -1) {
+    perror("e6: ");
     // потім: помилка
     return;
   }
@@ -357,7 +463,7 @@ extern int мавка_біб_запустити_обслуговувач(
     return -1;
   }
 
-  if (epoll_ctl_add(рушій->fd, sockfd, EPOLLIN | EPOLLOUT | EPOLLET) == -1) {
+  if (epoll_ctl_add(рушій->fd, sockfd, EPOLLIN | EPOLLET) == -1) {
     return -1;
   }
 
@@ -379,14 +485,17 @@ extern int мавка_біб_запустити_обслуговувач(
 
 extern int мавка_біб_зупинити_обслуговувач(Рушій* рушій, ц32 оф) {
   if (epoll_ctl_del(рушій->fd, оф) == -1) {
+    perror("e7: ");
     // потім: помилка
   }
 
   if (shutdown(оф, SHUT_RDWR) == -1) {
+    perror("e8: ");
     // потім: помилка
   }
 
   if (close(оф) == -1) {
+    perror("e9: ");
     // потім: помилка
   }
 
@@ -403,7 +512,32 @@ extern int мавка_біб_надіслати(Рушій* рушій,
                                ц32 оф,
                                позитивне розмір,
                                памʼять_п8 дані) {
-  return write(оф, дані, розмір);
+  size_t total_written = 0;
+  while (total_written < розмір) {
+    ssize_t written = write(оф, дані + total_written, розмір - total_written);
+    if (written < 0) {
+      if (errno == EINTR) {
+        continue;
+      }
+      if (errno == EAGAIN || errno == EWOULDBLOCK) {
+        MEpollListener* listener = mepoll_find_listener(рушій, оф);
+        if (listener) {
+          if (epoll_ctl_mod(рушій->fd, listener->fd,
+                            EPOLLIN | EPOLLOUT | EPOLLET) == -1) {
+            perror("wtf2");
+            return -1;
+          }
+          mepoll_listener_add_write_data(рушій, listener, (char*)дані, розмір,
+                                         total_written);
+          return 0;
+        }
+        return -1;
+      }
+      return -1;
+    }
+    total_written += written;
+  }
+  return 0;
 }
 
 typedef void (*ОбробникПодіїРушія)(Рушій* рушій,

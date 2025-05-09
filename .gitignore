@@ -4,3 +4,4 @@ build/
 vgcore.*
 /*.so
 /*.ll
+tmp/
