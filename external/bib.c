@@ -16,10 +16,12 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-// --- Mavka Epoll Lib START ---
-
-static int setnonblocking(int sockfd) {
-  return fcntl(sockfd, F_SETFL, fcntl(sockfd, F_GETFL, 0) | O_NONBLOCK);
+static int set_non_blocking(int fd) {
+  int flags = fcntl(fd, F_GETFL, 0);
+  if (flags == -1) {
+    return -1;
+  }
+  return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 }
 
 static int epoll_ctl_add(int epfd, int fd, uint32_t events) {
@@ -39,6 +41,8 @@ static int epoll_ctl_mod(int epfd, int fd, uint32_t events) {
   ev.data.fd = fd;
   return epoll_ctl(epfd, EPOLL_CTL_MOD, fd, &ev);
 }
+
+// --- Mavka Epoll Lib START ---
 
 typedef struct MEpoll MEpoll;
 typedef struct MEpollListenerWriteData MEpollListenerWriteData;
@@ -132,11 +136,36 @@ void mepoll_delete_listener(MEpoll* mepoll, MEpollListener* listener) {
     mepoll->last_listener = prev;
   }
 
-  // todo: free write datas
+  while (listener->first_write_data) {
+    MEpollListenerWriteData* write_data = listener->first_write_data;
+
+    listener->first_write_data = write_data->next;
+
+    if (listener->last_write_data == write_data) {
+      listener->last_write_data = NULL;
+    }
+
+    free(write_data->data);
+    free(write_data);
+  }
 
   free(listener);
 
   mepoll->listeners_count--;
+}
+
+void mepoll_destroy(MEpoll* mepoll) {
+  if (mepoll == global_mepoll) {
+    global_mepoll = NULL;
+  }
+
+  while (mepoll->listeners_count > 0) {
+    mepoll_delete_listener(mepoll, mepoll->first_listener);
+  }
+
+  close(mepoll->fd);
+
+  free(mepoll);
 }
 
 void mepoll_listener_add_write_data(MEpoll* mepoll,
@@ -201,6 +230,7 @@ void mepoll_write_out_listener_data(MEpoll* mepoll, MEpollListener* listener) {
     free(write_data->data);
     free(write_data);
   }
+
   if (epoll_ctl_mod(mepoll->fd, listener->fd, EPOLLIN | EPOLLET) == -1) {
     // потім: помилка
     perror("wtf");
@@ -398,7 +428,7 @@ void tcp_server_listener_event_handler(MEpoll* mepoll,
     return;
   }
 
-  if (setnonblocking(conn_sock) == -1) {
+  if (set_non_blocking(conn_sock) == -1) {
     perror("e5: ");
     // потім: помилка
     return;
@@ -460,7 +490,7 @@ extern int мавка_біб_запустити_обслуговувач(
     return -1;
   }
 
-  if (setnonblocking(sockfd) == -1) {
+  if (set_non_blocking(sockfd) == -1) {
     return -1;
   }
 
@@ -730,4 +760,8 @@ extern ніщо мавка_біб_запустити_рушій(Рушій* ру
                                       ОбробникПодіїРушія обробник_події,
                                       невідома_адреса дані_обробника_події) {
   mepoll_run(рушій, обробник_події, дані_обробника_події);
+}
+
+extern ніщо мавка_біб_знищити_рушій(Рушій* рушій) {
+  mepoll_destroy(рушій);
 }
