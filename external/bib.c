@@ -421,12 +421,6 @@ handle_close:
   mepoll_delete_listener(mepoll, tcp_client_listener);
 
   дані->кількість_підключених_клієнтів--;
-
-  if (дані->обслуговувач_зупинено &&
-      дані->кількість_підключених_клієнтів == 0) {
-    // потім: відклик на зупинку
-    free(дані);
-  }
 }
 
 void tcp_server_listener_event_handler(MEpoll* mepoll,
@@ -658,8 +652,6 @@ handle_close:
   }
 
   mepoll_delete_listener(mepoll, tcp_client_listener);
-
-  free(дані);
 }
 
 int make_socket_non_blocking(int sockfd) {
