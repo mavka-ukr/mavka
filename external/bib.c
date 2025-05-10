@@ -216,8 +216,12 @@ MEpoll* mepoll_run(MEpoll* mepoll,
                    void* before_each_arg) {
   struct epoll_event events[MAX_EVENTS];
 
-  while (mepoll->listeners_count > 0) {
+  while (true) {
     before_each(mepoll, before_each_arg);
+
+    if (mepoll->listeners_count == 0) {
+      break;
+    }
 
     int n = epoll_wait(mepoll->fd, events, MAX_EVENTS, -1);
     if (n == -1) {
@@ -231,9 +235,6 @@ MEpoll* mepoll_run(MEpoll* mepoll,
       // це трохи тупо, але на початок піде
       while (listener != NULL) {
         if (events[i].data.fd == listener->fd) {
-          if (listener->fd & EPOLLOUT) {
-            mepoll_write_out_listener_data(mepoll, listener);
-          }
           listener->handler(mepoll, listener, events[i].events);
           break;
         }
@@ -326,6 +327,10 @@ void tcp_client_event_handler(MEpoll* mepoll,
       (MEpollListener*)tcp_client_listener->arg;
   ДаніОбслуговувача* дані = (ДаніОбслуговувача*)tcp_server_listener->arg;
 
+  if (event & EPOLLOUT) {
+    mepoll_write_out_listener_data(mepoll, tcp_client_listener);
+  }
+
   if (event & EPOLLIN) {
     while (1) {
       char* buf = (char*)malloc(128);
@@ -350,9 +355,9 @@ void tcp_client_event_handler(MEpoll* mepoll,
                               tcp_client_listener->fd, n, (памʼять_п8)buf);
       }
     }
-
-    return;
   }
+
+  return;
 
 handle_close:
   дані->відклик_на_відключення(mepoll, tcp_server_listener, дані->аргумент,
@@ -504,6 +509,9 @@ extern int мавка_біб_зупинити_обслуговувач(Руші�
   return -1;
 }
 
+typedef void (*ВідкликНаПідключенняКлієнта)(Рушій* рушій,
+                                            Слухач* клієнт,
+                                            невідома_адреса аргумент);
 typedef void (*ВідкликНаВідключенняКлієнта)(Рушій* рушій,
                                             Слухач* клієнт,
                                             невідома_адреса аргумент);
@@ -515,14 +523,39 @@ typedef void (*ВідкликНаДаніКлієнта)(Рушій* рушій,
 
 typedef struct ДаніКлієнта {
   невідома_адреса аргумент;
+  ВідкликНаПідключенняКлієнта відклик_на_підключення;
   ВідкликНаДаніКлієнта відклик_на_дані;
   ВідкликНаВідключенняКлієнта відклик_на_відключення;
+  логічне підключено;
 } ДаніКлієнта;
 
 void tcp_client_listener_event_handler(MEpoll* mepoll,
                                        MEpollListener* tcp_client_listener,
                                        uint32_t event) {
   ДаніКлієнта* дані = (ДаніКлієнта*)tcp_client_listener->arg;
+
+  if (event & EPOLLOUT) {
+    if (дані->підключено) {
+      mepoll_write_out_listener_data(mepoll, tcp_client_listener);
+    } else {
+      int err;
+      socklen_t len = sizeof(err);
+      if (getsockopt(tcp_client_listener->fd, SOL_SOCKET, SO_ERROR, &err,
+                     &len) < 0 ||
+          err != 0) {
+        fprintf(stderr, "Connection failed: %s\n", strerror(err));
+        goto handle_close;
+      }
+      дані->підключено = true;
+      if (epoll_ctl_mod(mepoll->fd, tcp_client_listener->fd,
+                        EPOLLIN | EPOLLET) == -1) {
+        // потім: помилка
+        perror("wtf2");
+      }
+
+      дані->відклик_на_підключення(mepoll, tcp_client_listener, дані->аргумент);
+    }
+  }
 
   if (event & EPOLLIN) {
     while (1) {
@@ -537,9 +570,9 @@ void tcp_client_listener_event_handler(MEpoll* mepoll,
         }
 
         // потім: помилка
-        perror("e1: ");
+        perror("ce1: ");
         free(buf);
-        break;
+        goto handle_close;
       } else if (n == 0) {
         free(buf);
         goto handle_close;
@@ -548,9 +581,9 @@ void tcp_client_listener_event_handler(MEpoll* mepoll,
                               (памʼять_п8)buf);
       }
     }
-
-    return;
   }
+
+  return;
 
 handle_close:
   дані->відклик_на_відключення(mepoll, tcp_client_listener, дані->аргумент);
@@ -582,6 +615,7 @@ extern int мавка_біб_підключити_клієнт(
     ю8 адреса,
     ц32 порт,
     невідома_адреса аргумент,
+    ВідкликНаПідключенняКлієнта відклик_на_підключення,
     ВідкликНаДаніКлієнта відклик_на_дані,
     ВідкликНаВідключенняКлієнта відклик_на_відключення) {
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -612,7 +646,7 @@ extern int мавка_біб_підключити_клієнт(
     }
   }
 
-  if (epoll_ctl_add(рушій->fd, sockfd, EPOLLIN | EPOLLET) == -1) {
+  if (epoll_ctl_add(рушій->fd, sockfd, EPOLLIN | EPOLLOUT | EPOLLET) == -1) {
     perror("epoll_ctl_add");
     close(sockfd);
     // потім: помилка
@@ -621,8 +655,10 @@ extern int мавка_біб_підключити_клієнт(
 
   ДаніКлієнта* дані = (ДаніКлієнта*)malloc(sizeof(ДаніКлієнта));
   дані->аргумент = аргумент;
+  дані->відклик_на_підключення = відклик_на_підключення;
   дані->відклик_на_дані = відклик_на_дані;
   дані->відклик_на_відключення = відклик_на_відключення;
+  дані->підключено = false;
 
   mepoll_create_listener(рушій, sockfd, tcp_client_listener_event_handler,
                          дані);
