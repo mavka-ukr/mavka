@@ -378,9 +378,9 @@ void tcp_client_event_handler(MEpoll* mepoll,
 
   if (event & EPOLLIN) {
     while (1) {
-      char* buf = (char*)malloc(128);
+      char* buf = (char*)malloc(4096);
 
-      int n = read(tcp_client_listener->fd, buf, 128);
+      int n = read(tcp_client_listener->fd, buf, 4096);
 
       if (n == -1) {
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -612,9 +612,9 @@ void tcp_client_listener_event_handler(MEpoll* mepoll,
 
   if (event & EPOLLIN) {
     while (1) {
-      char* buf = (char*)malloc(128);
+      char* buf = (char*)malloc(4096);
 
-      int n = read(tcp_client_listener->fd, buf, 128);
+      int n = read(tcp_client_listener->fd, buf, 4096);
 
       if (n == -1) {
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
