@@ -32,6 +32,7 @@ CompilationFiles="$(cat ФайлиКомпіляції)"
 LLCompilationFiles=""
 
 mkdir -p "$OutDir/source/external"
+mkdir -p "$OutDir/source/турбо"
 
 while IFS='' read -r CompilationFile
 do
