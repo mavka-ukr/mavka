@@ -33,6 +33,7 @@ LLCompilationFiles=""
 
 mkdir -p "$OutDir/source/external"
 mkdir -p "$OutDir/source/турбо"
+mkdir -p "$OutDir/source/біб"
 
 while IFS='' read -r CompilationFile
 do
