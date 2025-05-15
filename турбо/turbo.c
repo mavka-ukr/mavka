@@ -13,6 +13,7 @@
 #include <string.h>
 #include <sys/epoll.h>
 #include <sys/socket.h>
+#include <sys/timerfd.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -97,6 +98,7 @@ typedef struct ТурбоПомилка ТурбоПомилка;
 typedef struct ТурбоВихідІнтернетОбслуговувача ТурбоВихідІнтернетОбслуговувача;
 typedef struct ТурбоВихідІнтернетКлієнта ТурбоВихідІнтернетКлієнта;
 typedef struct ТурбоВихідІнтернетЗвʼязку ТурбоВихідІнтернетЗвʼязку;
+typedef struct ТурбоВихідВідкладеного ТурбоВихідВідкладеного;
 
 typedef void (*ТурбоВідкликНаДоступністьЧитання)(
     ТурбоРушій* рушій,
@@ -171,6 +173,10 @@ typedef struct ТурбоВихідІнтернетЗвʼязку {
   ю8 іа;
   п64 порт;
 } ТурбоВихідІнтернетЗвʼязку;
+
+typedef struct ТурбоВихідВідкладеного {
+  ц64 ідентифікатор;
+} ТурбоВихідВідкладеного;
 
 ТурбоРушій* глобальний_рушій = NULL;
 
@@ -718,6 +724,53 @@ void турбо_записати(ТурбоРушій* рушій,
     вихід_помилки->дані = NULL;
     return false;
   }
+  return true;
+}
+
+логічне турбо_створити_відкладене(позитивне тривалість_очікування,
+                                  ТурбоВихідВідкладеного* вихід_відкладеного,
+                                  ТурбоПомилка* вихід_помилки) {
+  int tfd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK);
+  if (tfd == -1) {
+    perror("wtf");
+    вихід_помилки->код = errno;
+    вихід_помилки->дані = NULL;
+    return false;
+  }
+
+  struct itimerspec ts = {0};
+  ts.it_value.tv_sec = (long int)тривалість_очікування / 1000;
+  ts.it_value.tv_nsec = (long int)(тривалість_очікування % 1000) * 1000000;
+
+  if (timerfd_settime(tfd, 0, &ts, NULL) == -1) {
+    close(tfd);
+    вихід_помилки->код = errno;
+    вихід_помилки->дані = NULL;
+    return false;
+  }
+
+  if (set_non_blocking(tfd) == -1) {
+    вихід_помилки->код = errno;
+    вихід_помилки->дані = NULL;
+    close(tfd);
+    return false;
+  }
+
+  вихід_відкладеного->ідентифікатор = tfd;
+
+  return true;
+}
+
+логічне
+турбо_закрити_відкладене(ц32 ідентифікатор_відкладеного,
+                         ТурбоПомилка* вихід_помилки) {
+  int close_result = close(ідентифікатор_відкладеного);
+  if (close_result == -1) {
+    вихід_помилки->код = errno;
+    вихід_помилки->дані = NULL;
+    return false;
+  }
+
   return true;
 }
 
