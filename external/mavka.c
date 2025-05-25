@@ -99,21 +99,23 @@ extern ніщо мавка_система_звільнити_сиру_памʼя
 }
 
 extern ніщо мавка_система_вивести_ю8(позитивне розмір, памʼять_п8 дані) {
-  for (позитивне i = 0; i < розмір; ++i) {
-    putchar(дані[i]);
-  }
+  printf("%.*s", (int)розмір, дані);
+  fflush(stdout);
 }
 
 extern ніщо мавка_система_вивести_позитивне(позитивне значення) {
   printf("%lu", значення);
+  fflush(stdout);
 }
 
 extern ніщо мавка_система_вивести_ціле(ціле значення) {
   printf("%ld", значення);
+  fflush(stdout);
 }
 
 extern ніщо print_long(long значення) {
   printf("%ld", значення);
+  fflush(stdout);
 }
 
 char* doubleToString(double value) {
@@ -131,6 +133,7 @@ char* doubleToString(double value) {
 extern ніщо мавка_система_вивести_д64(д64 значення) {
   char* dv = doubleToString(значення);
   printf("%s", dv);
+  fflush(stdout);
   free(dv);
 }
 
