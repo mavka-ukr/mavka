@@ -50,7 +50,9 @@ then
 fi
 
 appendCcOption "-lm"
-appendCcOption "-luring -lidn2"
+appendCcOption "-luring"
+appendCcOption "-lidn2"
+appendCcOption "-lpthread"
 
 SourceFiles="$(cat SourceFiles)"
 mkdir -p "out"

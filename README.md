@@ -37,3 +37,9 @@ sh build.sh
 ```shell
 sudo cp ./out/мавка /usr/local/bin
 ```
+
+Зробити випуск Мавки (після `sh build.sh`):
+
+```shell
+sh package.sh
+```
