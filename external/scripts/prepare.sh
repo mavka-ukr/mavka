@@ -70,4 +70,7 @@ $Command
 Command="cp Версія $OutDir/Version"
 echo "$Command"
 $Command
+Command="cp РМв1.ю8.в $OutDir/РМв1.ю8.в"
+echo "$Command"
+$Command
 printf "%s" "$LLCompilationFiles"> "$OutDir/SourceFiles"
