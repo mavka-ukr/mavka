@@ -5,3 +5,4 @@ vgcore.*
 /*.so
 /*.ll
 tmp/
+releases/
