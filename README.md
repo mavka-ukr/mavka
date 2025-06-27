@@ -4,7 +4,7 @@
 
 Для будування треба:
 
-- Ціль 0.37.0
+- Ціль 0.37.1
 - Clang
 - Linux 5.1+
 - lib `m`, `readline`, `uring`, `idn2`, `pthread`
