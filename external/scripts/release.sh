@@ -10,14 +10,13 @@ if [ -d "releases/$Version" ]; then
   exit 1
 fi
 
-
-mkdir -p "releases/$Version"
-
 sh external/scripts/prepare.sh linux-x86_64
 cd build/linux-x86_64
 sh build.sh
 sh package.sh
 cd -
+
+mkdir -p "releases/$Version"
 
 cp "build/linux-x86_64/package/мавка-$Version-linux-x86_64.tar.gz" "releases/$Version"
 cp "build/linux-x86_64/package/мавка-$Version-linux-x86_64-prepared.tar.gz" "releases/$Version"
