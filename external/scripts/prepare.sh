@@ -26,21 +26,22 @@ if [ -z "$TSIL" ]
 then
   TSIL="ціль"
 fi
-OutDir="build/$Target"
+BuildDir="build/$Target"
 BuildFilesDir="$ScriptDir/$Target"
 CompilationFiles="$(cat ФайлиКомпіляції)"
 LLCompilationFiles=""
 
-mkdir -p "$OutDir/source/external"
-mkdir -p "$OutDir/source/турбо"
-mkdir -p "$OutDir/source/біб"
+mkdir -p "$BuildDir/source/external"
+mkdir -p "$BuildDir/source/турбо"
+mkdir -p "$BuildDir/source/біб"
 
 while IFS='' read -r CompilationFile
 do
   case "$CompilationFile" in
     *".ц")
-      LLCompilationFile="${CompilationFile%.ц}.ll"
-      Command="$TSIL $OutDir/source/$LLCompilationFile --triple=$Triple скомпілювати $CompilationFile"
+      LLCompilationFile="$CompilationFile.ll"
+      mkdir -p "$(dirname "$BuildDir/source/$LLCompilationFile")"
+      Command="$TSIL $BuildDir/source/$LLCompilationFile --triple=$Triple скомпілювати $CompilationFile"
       echo "$Command"
       $Command
       if [ -z "$LLCompilationFiles" ]; then
@@ -50,7 +51,8 @@ do
       fi
       ;;
     *)
-      Command="cp $CompilationFile $OutDir/source/$CompilationFile"
+      mkdir -p "$(dirname "$BuildDir/source/$CompilationFile")"
+      Command="cp $CompilationFile $BuildDir/source/$CompilationFile"
       echo "$Command"
       $Command
       if [ -z "$LLCompilationFiles" ]; then
@@ -64,13 +66,13 @@ done <<CompilationFiles_HEREDOC_INPUT
 $CompilationFiles
 CompilationFiles_HEREDOC_INPUT
 
-Command="cp $BuildFilesDir/* $OutDir"
+Command="cp $BuildFilesDir/* $BuildDir"
 echo "$Command"
 $Command
-Command="cp Версія $OutDir/Version"
+Command="cp Версія $BuildDir/Version"
 echo "$Command"
 $Command
-Command="cp РМв1.ю8.в $OutDir/РМв1.ю8.в"
+Command="cp РМв1.ю8.в $BuildDir/РМв1.ю8.в"
 echo "$Command"
 $Command
-printf "%s" "$LLCompilationFiles"> "$OutDir/SourceFiles"
+printf "%s" "$LLCompilationFiles"> "$BuildDir/SourceFiles"
