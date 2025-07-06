@@ -19,14 +19,14 @@ jobs:
       - run: |
           export MAVKA_VERSION="$(cat Версія)"
           export GIT_LATEST_COMMIT_HASH="$(git rev-parse --short HEAD)"
-          wget https://github.com/tsil-ukr/files/raw/main/випуски-цілі/0.38.0/ціль-0.38.0-x86_64-linux-gnu.tar.gz
-          tar -xvzf ціль-0.38.0-x86_64-linux-gnu.tar.gz
+          wget https://github.com/tsil-ukr/files/raw/main/випуски-цілі/0.38.0/ціль-0.38.0-linux-x86_64.tar.gz
+          tar -xvzf ціль-0.38.0-linux-x86_64.tar.gz
           cp -a build/windows-x86_64/.git .git-build-windows-x86_64
           rm -rf build/windows-x86_64
           mkdir -p build/windows-x86_64
           cp -a .git-build-windows-x86_64/ build/windows-x86_64/.git
           rm -rf .git-build-windows-x86_64/
-          TSIL=ціль-0.38.0-x86_64-linux-gnu/bin/ціль sh external/scripts/prepare.sh windows-x86_64
+          TSIL=ціль-0.38.0-linux-x86_64/bin/ціль sh external/scripts/prepare.sh windows-x86_64
           cp Версія build/windows-x86_64
           cd build/windows-x86_64
           statusResult=$(git status -u --porcelain)
@@ -62,14 +62,14 @@ jobs:
       - run: |
           export MAVKA_VERSION="$(cat Версія)"
           export GIT_LATEST_COMMIT_HASH="$(git rev-parse --short HEAD)"
-          wget https://github.com/tsil-ukr/files/raw/main/випуски-цілі/0.38.0/ціль-0.38.0-x86_64-linux-gnu.tar.gz
-          tar -xvzf ціль-0.38.0-x86_64-linux-gnu.tar.gz
+          wget https://github.com/tsil-ukr/files/raw/main/випуски-цілі/0.38.0/ціль-0.38.0-linux-x86_64.tar.gz
+          tar -xvzf ціль-0.38.0-linux-x86_64.tar.gz
           cp -a build/linux-x86_64/.git .git-build-linux-x86_64
           rm -rf build/linux-x86_64
           mkdir -p build/linux-x86_64
           cp -a .git-build-linux-x86_64/ build/linux-x86_64/.git
           rm -rf .git-build-linux-x86_64/
-          TSIL=ціль-0.38.0-x86_64-linux-gnu/bin/ціль sh external/scripts/prepare.sh linux-x86_64
+          TSIL=ціль-0.38.0-linux-x86_64/bin/ціль sh external/scripts/prepare.sh linux-x86_64
           cp Версія build/linux-x86_64
           cd build/linux-x86_64
           statusResult=$(git status -u --porcelain)
