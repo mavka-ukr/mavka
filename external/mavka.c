@@ -236,6 +236,10 @@ extern логічне мавка_система_перевірити_чи_шля
   return false;
 }
 
+#ifndef MAVKA_VERSION
+#define MAVKA_VERSION "0.0.0"
+#endif
+
 extern ю8 мавка_отримати_версію_мавки_як_ю8() {
   ю8 значення = {.розмір = strlen(MAVKA_VERSION),
                  .дані = (памʼять_п8)MAVKA_VERSION};
