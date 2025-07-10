@@ -72,7 +72,7 @@ $Command
 Command="cp Версія $BuildDir/Version"
 echo "$Command"
 $Command
-Command="cp РМв1.ю8.в $BuildDir/РМв1.ю8.в"
+Command="cp РМв1.в.ц $BuildDir/РМв1.в.ц"
 echo "$Command"
 $Command
 printf "%s" "$LLCompilationFiles"> "$BuildDir/SourceFiles"
