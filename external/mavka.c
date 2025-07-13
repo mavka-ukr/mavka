@@ -1,4 +1,5 @@
 #include <dlfcn.h>
+#include <inttypes.h>
 #include <libgen.h>
 #include <math.h>
 #include <memory.h>
@@ -370,6 +371,81 @@ extern long long_to_chars(long value, char** out) {
   snprintf(str, length + 1, "%ld", value);
   *out = str;
   return strlen(str);
+}
+
+extern логічне мавка_система_перетворити_ц64_на_ю8(ц64 значення, ю8* вихід) {
+  int length = snprintf(NULL, 0, "%ld", значення);
+  if (length < 0) {
+    return false;
+  }
+
+  char* str = (char*)malloc(length + 1);
+  if (!str) {
+    return false;
+  }
+
+  snprintf(str, length + 1, "%ld", значення);
+
+  вихід->розмір = strlen(str);
+  вихід->дані = (памʼять_п8)str;
+  return true;
+}
+
+extern логічне мавка_система_перетворити_н64_на_ю8(п64 значення, ю8* вихід) {
+  int length = snprintf(NULL, 0, "%" PRIu64, значення);
+  if (length < 0) {
+    return false;
+  }
+
+  char* str = (char*)malloc(length + 1);
+  if (!str) {
+    return false;
+  }
+
+  snprintf(str, length + 1, "%" PRIu64, значення);
+
+  вихід->розмір = strlen(str);
+  вихід->дані = (памʼять_п8)str;
+  return true;
+}
+
+extern логічне мавка_система_перетворити_д64_на_ю8(д64 значення, ю8* вихід) {
+  int length = snprintf(NULL, 0, "%.9g", значення);
+  if (length < 0) {
+    return false;
+  }
+
+  char* buffer = malloc(length + 1);
+  if (!buffer) {
+    return false;
+  }
+
+  snprintf(buffer, length + 1, "%.9g", значення);
+
+  вихід->розмір = strlen(buffer);
+  вихід->дані = (памʼять_п8)buffer;
+  return true;
+}
+
+extern логічне мавка_система_перетворити_ю8_на_ц64(
+    ю8* значення,
+    ц64* вихід,
+    позитивне* вихід_позиції_помилки) {
+  return false;
+}
+
+extern логічне мавка_система_перетворити_ю8_на_н64(
+    ю8* значення,
+    п64* вихід,
+    позитивне* вихід_позиції_помилки) {
+  return false;
+}
+
+extern логічне мавка_система_перетворити_ю8_на_д64(
+    ю8* значення,
+    д64* вихід,
+    позитивне* вихід_позиції_помилки) {
+  return false;
 }
 
 int main(int argc, char** argv) {
