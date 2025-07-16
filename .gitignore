@@ -14,3 +14,4 @@ releases/
 /тест_обслуговувач.м
 /тест_планувальник.м
 .releasegpgkey
+.releasegpgkeypassphrase
