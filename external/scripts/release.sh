@@ -2,6 +2,8 @@
 set -e
 set -x
 
+RunDir="$PWD"
+
 Version="$(cat Версія)"
 ReleaseFiles=$(cat ФайлиВипуску)
 
@@ -35,3 +37,28 @@ tar -czvf "мавка-$Version.tar.gz" "мавка-$Version"
 cd -
 
 rm -rf "releases/$Version/мавка-$Version"
+
+cd "releases/$Version"
+
+PRIVATE_KEY_FILE="$RunDir/.releasegpgkey"
+
+FINGERPRINT=$(gpg --with-colons --import-options show-only --import "$PRIVATE_KEY_FILE" 2>/dev/null \
+  | awk -F: '/^fpr:/ {print $10; exit}')
+
+if [ -z "$FINGERPRINT" ]; then
+  echo "Failed to get fingerprint"
+  exit 1
+fi
+
+echo "Using fingerprint: $FINGERPRINT"
+
+for file in мавка-$Version-linux-x86_64.tar.gz мавка-$Version-linux-x86_64-prepared.tar.gz мавка-$Version.tar.gz; do
+  sha256sum "$file" > "$file.sha256"
+
+  gpg --local-user "$FINGERPRINT" --clearsign --output "$file".sha256.signed "$file".sha256
+done
+
+gpg --batch --yes --delete-secret-keys "$FINGERPRINT"
+gpg --batch --yes --delete-keys "$FINGERPRINT"
+
+cd -
