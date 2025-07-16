@@ -20,8 +20,8 @@ cd -
 
 mkdir -p "releases/$Version"
 
-cp "build/linux-x86_64/package/мавка-$Version-linux-x86_64.tar.gz" "releases/$Version"
-cp "build/linux-x86_64/package/мавка-$Version-linux-x86_64-prepared.tar.gz" "releases/$Version"
+cp "build/linux-x86_64/package/мавка-$Version-linux-x86_64.tar.xz" "releases/$Version"
+cp "build/linux-x86_64/package/мавка-$Version-linux-x86_64-prepared.tar.xz" "releases/$Version"
 
 mkdir -p "releases/$Version/мавка-$Version"
 
@@ -33,7 +33,7 @@ $ReleaseFiles
 ReleaseFiles_HEREDOC_INPUT
 
 cd "releases/$Version"
-tar -czvf "мавка-$Version.tar.gz" "мавка-$Version"
+tar -cJvf "мавка-$Version.tar.xz" "мавка-$Version"
 cd -
 
 rm -rf "releases/$Version/мавка-$Version"
@@ -41,24 +41,42 @@ rm -rf "releases/$Version/мавка-$Version"
 cd "releases/$Version"
 
 PRIVATE_KEY_FILE="$RunDir/.releasegpgkey"
+PRIVATE_KEY_FILE_PASSPHRASE="$RunDir/.releasegpgkeypassphrase"
+TMP_GPG_HOME=$(mktemp -d)
 
-FINGERPRINT=$(gpg --with-colons --import-options show-only --import "$PRIVATE_KEY_FILE" 2>/dev/null \
+export GNUPGHOME="$TMP_GPG_HOME"
+
+# Import the private key into temporary keyring
+gpg --batch --yes --import "$PRIVATE_KEY_FILE" >/dev/null 2>&1
+
+# Get fingerprint from this keyring
+FINGERPRINT=$(gpg --with-colons --list-secret-keys --fingerprint \
   | awk -F: '/^fpr:/ {print $10; exit}')
 
 if [ -z "$FINGERPRINT" ]; then
-  echo "Failed to get fingerprint"
+  echo "Failed to get fingerprint (no secret key found)"
   exit 1
 fi
 
 echo "Using fingerprint: $FINGERPRINT"
 
-for file in мавка-$Version-linux-x86_64.tar.gz мавка-$Version-linux-x86_64-prepared.tar.gz мавка-$Version.tar.gz; do
+# Read passphrase from file (trim spaces/newlines)
+PASSPHRASE=$(<"$PRIVATE_KEY_FILE_PASSPHRASE")
+
+for file in мавка-$Version-linux-x86_64.tar.xz мавка-$Version-linux-x86_64-prepared.tar.xz мавка-$Version.tar.xz; do
+  if [ ! -f "$file" ]; then
+    echo "File not found: $file"
+    continue
+  fi
+
   sha256sum "$file" > "$file.sha256"
 
-  gpg --local-user "$FINGERPRINT" --clearsign --output "$file".sha256.signed "$file".sha256
+  # Sign using the imported key ONLY inside this GNUPGHOME
+  gpg --batch --yes --pinentry-mode loopback --passphrase "$PASSPHRASE" \
+    --local-user "$FINGERPRINT" --clearsign --output "$file.sha256.signed" "$file.sha256"
 done
 
-gpg --batch --yes --delete-secret-keys "$FINGERPRINT"
-gpg --batch --yes --delete-keys "$FINGERPRINT"
+# Clean up the temporary keyring
+rm -rf "$TMP_GPG_HOME"
 
 cd -
