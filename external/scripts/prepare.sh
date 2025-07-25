@@ -41,7 +41,7 @@ do
     *".ц")
       LLCompilationFile="$CompilationFile.ll"
       mkdir -p "$(dirname "$BuildDir/source/$LLCompilationFile")"
-      Command="$TSIL $BuildDir/source/$LLCompilationFile --формат=ллвмір --архітектура=ікс86_64 --постачальник=загальний --система=лінукс скомпілювати $CompilationFile"
+      Command="$TSIL $BuildDir/source/$LLCompilationFile --формат=ллвмір --архітектура=ікс86_64 --постачальник=загальний --система=лінукс скомпілювати $CompilationFile --біб=./біб"
       echo "$Command"
       $Command
       if [ -z "$LLCompilationFiles" ]; then
