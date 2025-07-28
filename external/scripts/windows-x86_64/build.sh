@@ -28,7 +28,6 @@ case "$Mode" in
   "release"*)
     appendCcOption "-O3"
     appendCcOption "-g0"
-    appendCcOption "-ffast-math"
     appendCcOption "-fvisibility=hidden"
   ;;
   "debug-asan"*)

@@ -29,7 +29,6 @@ case "$Mode" in
     appendCcOption "-O3"
     appendCcOption "-g0"
     appendCcOption "-flto"
-    appendCcOption "-ffast-math"
     appendCcOption "-fvisibility=hidden"
   ;;
   "debug-asan"*)
