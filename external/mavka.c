@@ -365,12 +365,26 @@ extern невідома_адреса мавка_система_отримати_
   return sym;
 }
 
+void trim_trailing_zeros(char *str) {
+    char *dot = strchr(str, '.');
+    if (!dot) return;
+
+    char *end = str + strlen(str) - 1;
+    while (end > dot && *end == '0') {
+        *end-- = '\0';
+    }
+    if (end == dot) {
+        *end = '\0';
+    }
+}
+
 extern long long_to_chars(long value, char** out) {
   int length = snprintf(NULL, 0, "%ld", value);
-  char* str = (char*)malloc(length + 1);
-  snprintf(str, length + 1, "%ld", value);
-  *out = str;
-  return strlen(str);
+  char* buffer = (char*)malloc(length + 1);
+  snprintf(buffer, length + 1, "%ld", value);
+  trim_trailing_zeros(buffer);
+  *out = buffer;
+  return strlen(buffer);
 }
 
 extern логічне мавка_система_перетворити_ц64_на_ю8(ц64 значення, ю8* вихід) {
@@ -379,15 +393,17 @@ extern логічне мавка_система_перетворити_ц64_на
     return false;
   }
 
-  char* str = (char*)malloc(length + 1);
-  if (!str) {
+  char* buffer = (char*)malloc(length + 1);
+  if (!buffer) {
     return false;
   }
 
-  snprintf(str, length + 1, "%ld", значення);
+  snprintf(buffer, length + 1, "%ld", значення);
 
-  вихід->розмір = strlen(str);
-  вихід->дані = (памʼять_н8)str;
+  trim_trailing_zeros(buffer);
+
+  вихід->розмір = strlen(buffer);
+  вихід->дані = (памʼять_н8)buffer;
   return true;
 }
 
@@ -397,34 +413,60 @@ extern логічне мавка_система_перетворити_н64_на
     return false;
   }
 
-  char* str = (char*)malloc(length + 1);
-  if (!str) {
-    return false;
-  }
-
-  snprintf(str, length + 1, "%" PRIu64, значення);
-
-  вихід->розмір = strlen(str);
-  вихід->дані = (памʼять_н8)str;
-  return true;
-}
-
-extern логічне мавка_система_перетворити_р64_на_ю8(р64 значення, ю8* вихід) {
-  int length = snprintf(NULL, 0, "%.9g", значення);
-  if (length < 0) {
-    return false;
-  }
-
-  char* buffer = malloc(length + 1);
+  char* buffer = (char*)malloc(length + 1);
   if (!buffer) {
     return false;
   }
 
-  snprintf(buffer, length + 1, "%.9g", значення);
+  snprintf(buffer, length + 1, "%" PRIu64, значення);
+
+  trim_trailing_zeros(buffer);
 
   вихід->розмір = strlen(buffer);
   вихід->дані = (памʼять_н8)buffer;
   return true;
+}
+
+void replace_scientific_notation(char *str) {
+  char *e = strpbrk(str, "eE");
+  if (e) {
+    size_t tail_len = strlen(e + 1);
+    memmove(e + 2, e + 1, tail_len + 1); // make room for 2-byte UTF-8 char
+    e[0] = (char)0xD0;
+    e[1] = (char)0xB5;
+  }
+}
+
+
+extern логічне мавка_система_перетворити_р64_на_ю8(р64 значення, ю8* вихід) {
+  int length = snprintf(NULL, 0, "%.21g", значення);
+  if (length < 0) {
+    return false;
+  }
+
+  char *buffer = malloc(length + 3);
+  if (!buffer) {
+    return false;
+  }
+
+  snprintf(buffer, length + 1, "%.21g", значення);
+  
+  replace_scientific_notation(buffer);
+  
+  trim_trailing_zeros(buffer);
+
+  вихід->розмір = strlen(buffer);
+  вихід->дані = (памʼять_н8)buffer;
+
+  return true;
+}
+
+extern логічне мавка_система_перевірити_чи_р64_нескінченність(р64 значення) {
+  return isinf(значення);
+}
+
+extern логічне мавка_система_перевірити_чи_р64_невизначеність(р64 значення) {
+  return isnan(значення);
 }
 
 extern логічне мавка_система_перетворити_ю8_на_ц64(
