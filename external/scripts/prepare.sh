@@ -69,6 +69,9 @@ CompilationFiles_HEREDOC_INPUT
 Command="cp $BuildFilesDir/* $BuildDir"
 echo "$Command"
 $Command
+Command="cp -a визначення $BuildDir"
+echo "$Command"
+$Command
 Command="cp Версія $BuildDir/Version"
 echo "$Command"
 $Command
