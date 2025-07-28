@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #define н8 uint8_t
 #define н16 uint16_t
@@ -226,15 +227,18 @@ extern логічне мавка_система_отримати_назву_фа
   return true;
 }
 
+bool is_regular_file(const char* path) {
+    struct stat path_stat;
+    if (stat(path, &path_stat) != 0)
+        return false;
+    return S_ISREG(path_stat.st_mode);
+}
+
 extern логічне мавка_система_перевірити_чи_шлях_існує_і_є_файлом(ю8* шлях) {
   const char* path = перетворити_ю8_в_chars(*шлях);
-  FILE* file = fopen(path, "r");
+  bool res = is_regular_file(path);
   free((void*)path);
-  if (file) {
-    fclose(file);
-    return true;
-  }
-  return false;
+  return res;
 }
 
 #ifndef MAVKA_VERSION
