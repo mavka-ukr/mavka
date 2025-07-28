@@ -56,6 +56,6 @@ appendCcOption "-lpthread"
 
 SourceFiles="$(cat SourceFiles)"
 mkdir -p "out"
-Command="$CC $CC_OPTIONS -o out/мавка $SourceFiles"
+Command="$CC -rdynamic $CC_OPTIONS -o out/мавка $SourceFiles"
 echo "$Command"
 $Command

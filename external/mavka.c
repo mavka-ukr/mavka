@@ -346,7 +346,7 @@ extern р64 мавка_система_підлога_р64(р64 значення)
 
 extern невідома_адреса мавка_система_відкрити_поширену_бібліотеку(ю8* шлях) {
   const char* path = перетворити_ю8_в_chars(*шлях);
-  void* dobject = dlopen(path, RTLD_LAZY);
+  void* dobject = dlopen(path, RTLD_NOW | RTLD_LOCAL);
   free((void*)path);
   return dobject;
 }
