@@ -42,6 +42,12 @@ cd "releases/$Version"
 
 PRIVATE_KEY_FILE="$RunDir/.releasegpgkey"
 PRIVATE_KEY_FILE_PASSPHRASE="$RunDir/.releasegpgkeypassphrase"
+
+if [[ ! -f "$PRIVATE_KEY_FILE" || ! -f "$PRIVATE_KEY_FILE_PASSPHRASE" ]]; then
+    echo "Error: Required key files not found." >&2
+    exit 1
+fi
+
 TMP_GPG_HOME=$(mktemp -d)
 
 export GNUPGHOME="$TMP_GPG_HOME"
