@@ -54,10 +54,9 @@ appendCcOption "-lm"
 appendCcOption "-luring"
 appendCcOption "-lidn2"
 appendCcOption "-lpthread"
-appendCcOption "-I./source/external/raylib/raylib-5.5_linux_amd64/include"
 
 SourceFiles="$(cat SourceFiles)"
 mkdir -p "out"
-Command="$CC $CC_OPTIONS -o out/мавка $SourceFiles ./source/external/raylib/raylib-5.5_linux_amd64/lib/libraylib.a"
+Command="$CC $CC_OPTIONS -o out/мавка $SourceFiles"
 echo "$Command"
 $Command
