@@ -5,49 +5,44 @@ set -x
 RunDir="$PWD"
 
 Version="$(cat Версія)"
+MavkaTarget="лінукс-ікс86_64"
 ReleaseFiles=$(cat ФайлиВипуску)
+BuildDir="будування/$Version/$MavkaTarget"
+BuildSourceDir="$BuildDir/напівготове"
+BuildOutDir="$BuildDir/готове"
+BuildPackageDir="$BuildDir/пакування"
 
-if [ -d "releases/$Version" ]; then
+if [ -d "випуски/$Version" ]; then
   echo "Випуск $Version вже існує"
   exit 1
 fi
 
-sh external/scripts/prepare.sh linux-x86_64
-cd build/linux-x86_64
-sh build.sh
-sh package.sh
-cd -
+sh external/scripts/build.sh release
+sh external/scripts/package.sh
 
-mkdir -p "releases/$Version"
+mkdir -p "випуски/$Version"
 
-cp "build/linux-x86_64/package/мавка-$Version-linux-x86_64.tar.xz" "releases/$Version"
-cp "build/linux-x86_64/package/мавка-$Version-linux-x86_64-prepared.tar.xz" "releases/$Version"
+cp "$BuildPackageDir/мавка-$Version-$MavkaTarget.tar.xz" "випуски/$Version"
 
-mkdir -p "releases/$Version/мавка-$Version"
+mkdir -p "випуски/$Version/мавка-$Version"
 
 while IFS='' read -r ReleaseFile
 do
-  cp -r "$ReleaseFile" "releases/$Version/мавка-$Version"
+  cp -r "$ReleaseFile" "випуски/$Version/мавка-$Version"
 done <<ReleaseFiles_HEREDOC_INPUT
 $ReleaseFiles
 ReleaseFiles_HEREDOC_INPUT
 
-cd "releases/$Version"
+cd "випуски/$Version"
 tar -cJvf "мавка-$Version.tar.xz" "мавка-$Version"
 cd -
 
-rm -rf "releases/$Version/мавка-$Version"
+rm -rf "випуски/$Version/мавка-$Version"
 
-cd "releases/$Version"
+cd "випуски/$Version"
 
 PRIVATE_KEY_FILE="$RunDir/.releasegpgkey"
 PRIVATE_KEY_FILE_PASSPHRASE="$RunDir/.releasegpgkeypassphrase"
-
-if [[ ! -f "$PRIVATE_KEY_FILE" || ! -f "$PRIVATE_KEY_FILE_PASSPHRASE" ]]; then
-    echo "Error: Required key files not found." >&2
-    exit 1
-fi
-
 TMP_GPG_HOME=$(mktemp -d)
 
 export GNUPGHOME="$TMP_GPG_HOME"
@@ -69,7 +64,7 @@ echo "Using fingerprint: $FINGERPRINT"
 # Read passphrase from file (trim spaces/newlines)
 PASSPHRASE=$(<"$PRIVATE_KEY_FILE_PASSPHRASE")
 
-for file in мавка-$Version-linux-x86_64.tar.xz мавка-$Version-linux-x86_64-prepared.tar.xz мавка-$Version.tar.xz; do
+for file in мавка-"$Version"-лінукс-ікс86_64.tar.xz мавка-"$Version".tar.xz; do
   if [ ! -f "$file" ]; then
     echo "File not found: $file"
     continue

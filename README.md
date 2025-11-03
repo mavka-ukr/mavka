@@ -4,43 +4,21 @@
 
 Для будування треба:
 
-- Ціль 0.45.0
+- Ціль 0.47.0
 - Clang
 - Linux 5.1+
 - lib `m`, `readline`, `uring`, `idn2`, `pthread`
 
-Компілюємо файли Цілі:
+Збудувати:
 
 ```shell
-TSIL="ціль" sh external/scripts/prepare.sh linux-x86_64
+sh external/scripts/build.sh
 ```
 
-Переходимо в підготовлену теку:
+Скомпільований бінарник буде в директорії `будування/{версія}/{платформа}/готове`.
+
+Випуск:
 
 ```shell
-cd build/linux-x86_64
-```
-
-Будуємо виконуваний файл:
-
-```shell
-sh build.sh
-```
-
-Пробуємо:
-
-```shell
-./out/мавка
-```
-
-За бажанням, Мавку можна встановити глобально:
-
-```shell
-sudo cp ./out/мавка /usr/local/bin
-```
-
-Зробити випуск Мавки (після `sh build.sh`):
-
-```shell
-sh package.sh
+sh external/scripts/release.sh
 ```
