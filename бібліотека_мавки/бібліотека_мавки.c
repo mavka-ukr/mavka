@@ -3,27 +3,27 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef uint8_t н8;
-typedef uint16_t н16;
-typedef uint32_t н32;
-typedef uint64_t н64;
+typedef uint8_t п8;
+typedef uint16_t п16;
+typedef uint32_t п32;
+typedef uint64_t п64;
 typedef int8_t ц8;
 typedef int16_t ц16;
 typedef int32_t ц32;
 typedef int64_t ц64;
-typedef float р32;
-typedef double р64;
+typedef float д32;
+typedef double д64;
 typedef uint8_t логічне;
-typedef н64 натуральне;
+typedef п64 природне;
 typedef ц64 ціле;
-typedef р64 дійсне;
+typedef д64 дійсне;
 typedef void ніщо;
 typedef void* невідома_адреса;
 typedef void* невідома_памʼять;
 
 typedef struct ю8 {
-  натуральне розмір;
-  н8* дані;
+  природне розмір;
+  п8* дані;
 } ю8;
 
 static char* ю8_в_cstr(ю8 value) {

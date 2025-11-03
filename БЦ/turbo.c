@@ -47,15 +47,15 @@ int make_nonblocking(int fd) {
 #define адреса_памʼять_п8 п8**
 #define памʼять_памʼять_п8 п8**
 #define адреса_природне природне*
-typedef struct т8 {
+typedef struct кд {
   природне розмір;
   памʼять_п8 дані;
-} т8;
+} кд;
 typedef struct ю8 {
   природне розмір;
   памʼять_п8 дані;
 } ю8;
-#define памʼять_т8 т8*
+#define памʼять_кд кд*
 #define памʼять_ю8 ю8*
 
 static char* перетворити_ю8_в_chars(ю8 value) {
