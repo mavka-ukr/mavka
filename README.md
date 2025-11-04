@@ -1,24 +1,11 @@
-<img src="./лого.svg" width="100" height="100" />
+# Мавка 1.0.0
 
-# Мавка
+Треба:
 
-Для будування треба:
-
-- Ціль 0.47.0
-- Clang
-- Linux 5.1+
-- lib `m`, `readline`, `uring`, `idn2`, `pthread`
-
-Збудувати:
+- Ціль _0.47.0_
 
 ```shell
-sh external/scripts/build.sh
-```
+sh build.sh
 
-Скомпільований бінарник буде в директорії `будування/{версія}/{платформа}/готове`.
-
-Випуск:
-
-```shell
-sh external/scripts/release.sh
+./будування/готове/мавка
 ```
