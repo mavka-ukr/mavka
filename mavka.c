@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef uint8_t п8;
 typedef uint16_t п16;
@@ -147,8 +148,15 @@ extern bool __перетворити_д64_в_ю8(double значення, ю8* �
   return true;
 }
 
-extern int старт();
+extern int старт(природне кількість_аргументів, ю8* аргументи);
 
-int main() {
-  return старт();
+int main(int argc, char** argv) {
+  ю8* аргументи = (ю8*)malloc(argc * sizeof(ю8));
+  for (int i = 0; i < argc; i++) {
+    аргументи[i].розмір = strlen(argv[i]);
+    аргументи[i].дані = (п8*)argv[i];
+  }
+  int r = старт(argc, аргументи);
+  free(аргументи);
+  return r;
 }
