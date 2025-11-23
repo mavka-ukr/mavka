@@ -9,6 +9,17 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#if defined(_WIN32) || defined(_WIN64)
+#include <direct.h>
+#include <io.h>
+#include <windows.h>
+#define getcwd _getcwd
+#define stat _stat
+#ifndef S_IFMT
+#define S_ISREG(m) (((m) & _S_IFMT) == _S_IFREG)
+#endif
+#endif
+
 #define ФОчистити 0
 #define ФКолірТекстуЧервоний 1
 #define ФКолірТекстуЗелений 2
@@ -45,7 +56,52 @@ extern логічне пристрій_мавки_перекодувати_кд_
     п8** вихід_даних,
     природне* вихід_позиції_помилки);
 
+// Helper function to write UTF-8 to console with proper Unicode support
+#if defined(_WIN32) || defined(_WIN64)
+void write_utf8_to_console(const п8* data, природне size) {
+  if (size == 0)
+    return;
+
+  // Check if stdout is a console
+  HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+  DWORD mode;
+  if (GetConsoleMode(hConsole, &mode)) {
+    // It's a console, convert UTF-8 to UTF-16 and use WriteConsoleW
+    int wchar_count =
+        MultiByteToWideChar(CP_UTF8, 0, (const char*)data, size, NULL, 0);
+    if (wchar_count > 0) {
+      wchar_t* wbuffer = (wchar_t*)malloc((wchar_count + 1) * sizeof(wchar_t));
+      if (wbuffer) {
+        MultiByteToWideChar(CP_UTF8, 0, (const char*)data, size, wbuffer,
+                            wchar_count);
+        DWORD written;
+        WriteConsoleW(hConsole, wbuffer, wchar_count, &written, NULL);
+        free(wbuffer);
+        return;
+      }
+    }
+  }
+
+  // Not a console or conversion failed, use regular write (for pipes/redirects)
+  fwrite(data, 1, size, stdout);
+}
+#else
+void write_utf8_to_console(const п8* data, природне size) {
+  fwrite(data, 1, size, stdout);
+}
+#endif
+
 extern void пристрій_мавки_вивести_формат(природне значення) {
+#if defined(_WIN32) || defined(_WIN64)
+  HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+  DWORD mode;
+
+  // Enable virtual terminal processing on Windows 10+
+  if (GetConsoleMode(hConsole, &mode)) {
+    SetConsoleMode(hConsole, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+  }
+#endif
+
   if (значення == ФОчистити) {
     printf("\033[0m");
   }
@@ -68,7 +124,7 @@ extern void пристрій_мавки_вивести_формат(природ
 }
 
 extern void пристрій_мавки_вивести_сирі_дані(природне розмір, п8* дані) {
-  fwrite(дані, 1, розмір, stdout);
+  write_utf8_to_console(дані, розмір);
 }
 
 extern void пристрій_мавки_вивести_кд(природне розмір, п8* дані) {
@@ -78,9 +134,7 @@ extern void пристрій_мавки_вивести_кд(природне р�
 
   if (пристрій_мавки_перекодувати_кд_в_ю8(розмір, дані, &розмір_ю8, &дані_ю8,
                                           &позиція_помилки)) {
-    for (size_t i = 0; i < розмір_ю8; i++) {
-      putchar(дані_ю8[i]);
-    }
+    write_utf8_to_console(дані_ю8, розмір_ю8);
     free(дані_ю8);
   } else {
     printf("помилка виводу кд\n");
@@ -94,9 +148,7 @@ extern void пристрій_мавки_надрукувати_кд(природ
 
   if (пристрій_мавки_перекодувати_кд_в_ю8(розмір, дані, &розмір_ю8, &дані_ю8,
                                           &позиція_помилки)) {
-    for (size_t i = 0; i < розмір_ю8; i++) {
-      putchar(дані_ю8[i]);
-    }
+    write_utf8_to_console(дані_ю8, розмір_ю8);
     putchar('\n');
     free(дані_ю8);
   } else {
@@ -105,20 +157,20 @@ extern void пристрій_мавки_надрукувати_кд(природ
 }
 
 extern void пристрій_мавки_вивести_шлях(природне розмір, п8* дані) {
-  fwrite(дані, 1, розмір, stdout);
+  write_utf8_to_console(дані, розмір);
 }
 
 extern void пристрій_мавки_надрукувати_шлях(природне розмір, п8* дані) {
-  fwrite(дані, 1, розмір, stdout);
+  write_utf8_to_console(дані, розмір);
   putchar('\n');
 }
 
 extern void пристрій_мавки_вивести_ю8(природне розмір, п8* дані) {
-  fwrite(дані, 1, розмір, stdout);
+  write_utf8_to_console(дані, розмір);
 }
 
 extern void пристрій_мавки_надрукувати_ю8(природне розмір, п8* дані) {
-  fwrite(дані, 1, розмір, stdout);
+  write_utf8_to_console(дані, розмір);
   putchar('\n');
 }
 
@@ -354,6 +406,14 @@ extern логічне пристрій_мавки_перевірити_чи_шл
 
   return true;
 }
+
+// define realpath if windows
+#if defined(_WIN32) || defined(_WIN64)
+char* realpath(const char* path, char* resolved_path) {
+  // Use _fullpath on Windows
+  return _fullpath(resolved_path, path, _MAX_PATH);
+}
+#endif
 
 extern логічне пристрій_мавки_отримати_абсолютний_шлях(природне розмір_шляху,
                                                        п8* дані_шляху,
