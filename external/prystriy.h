@@ -1,22 +1,10 @@
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "./tsil.h"
 
 #define ФОчистити 0
 #define ФКолірТекстуЧервоний 1
 #define ФКолірТекстуЗелений 2
 #define ФКолірТекстуСиній 3
 #define ФКолірТекстуЖовтий 4
-
-typedef bool логічне;
-typedef uint8_t п8;
-typedef uint16_t п16;
-typedef uint32_t п32;
-typedef uint64_t п64;
-typedef int32_t ц32;
-typedef int64_t ц64;
-typedef double д64;
-typedef size_t природне;
 
 typedef struct ЕлементШляхуПристроюМавки ЕлементШляхуПристроюМавки;
 

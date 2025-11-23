@@ -1,5 +1,3 @@
-#include <stdlib.h>
-#include <string.h>
 #include <windows.h>
 #include "../main.h"
 
@@ -16,7 +14,13 @@
     return NULL;
   }
 
-  п8* utf8_str = (п8*)malloc(size_needed);
+  HANDLE купа = GetProcessHeap();
+  п8* utf8_str = (п8*)HeapAlloc(купа, 0, size_needed);
+  if (!utf8_str) {
+    *out_size = 0;
+    return NULL;
+  }
+
   WideCharToMultiByte(CP_UTF8, 0, utf16_str, -1, (char*)utf8_str, size_needed,
                       NULL, NULL);
   *out_size = size_needed - 1; // Exclude null terminator
@@ -30,8 +34,20 @@ int main(void) {
     return 1;
   }
 
-  ю8* аргументи = (ю8*)malloc(argc * sizeof(ю8));
-  п8** allocated_buffers = (п8**)malloc(argc * sizeof(п8*));
+  HANDLE купа = GetProcessHeap();
+
+  ю8* аргументи = (ю8*)HeapAlloc(купа, 0, argc * sizeof(ю8));
+  if (!аргументи) {
+    LocalFree(argv);
+    return 1;
+  }
+
+  п8** allocated_buffers = (п8**)HeapAlloc(купа, 0, argc * sizeof(п8*));
+  if (!allocated_buffers) {
+    HeapFree(купа, 0, аргументи);
+    LocalFree(argv);
+    return 1;
+  }
 
   for (int i = 0; i < argc; i++) {
     природне size;
@@ -43,10 +59,12 @@ int main(void) {
   int r = старт(argc, аргументи);
 
   for (int i = 0; i < argc; i++) {
-    free(allocated_buffers[i]);
+    if (allocated_buffers[i]) {
+      HeapFree(купа, 0, allocated_buffers[i]);
+    }
   }
-  free(allocated_buffers);
-  free(аргументи);
+  HeapFree(купа, 0, allocated_buffers);
+  HeapFree(купа, 0, аргументи);
   LocalFree(argv);
 
   return r;
