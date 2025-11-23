@@ -3,6 +3,9 @@ set -x
 set -e
 
 BUILD_PLATFORM="$1"
+BUILD_ARCH=""
+BUILD_SYSTEM=""
+COMMON_SYSTEM=""
 TARGET_TRIPLE=""
 TSIL_ARCH=""
 TSIL_SYSTEM=""
@@ -16,35 +19,56 @@ if [ -z "$BUILD_PLATFORM" ]; then
 fi
 
 if [[ "$BUILD_PLATFORM" == "x86_64-linux" ]]; then
+  BUILD_ARCH="x86_64"
+  BUILD_SYSTEM="linux"
+  COMMON_SYSTEM="unix"
   TARGET_TRIPLE="x86_64-pc-linux-gnu"
   TSIL_ARCH="ікс86_64"
   TSIL_SYSTEM="лінукс"
 elif [[ "$BUILD_PLATFORM" == "aarch64-linux" ]]; then
+  BUILD_ARCH="aarch64"
+  BUILD_SYSTEM="linux"
+  COMMON_SYSTEM="unix"
   TARGET_TRIPLE="aarch64-linux-gnu"
   TSIL_ARCH="аарч64"
   TSIL_SYSTEM="лінукс"
   CLANG="zig cc"
 elif [[ "$BUILD_PLATFORM" == "x86_64-windows" ]]; then
+  BUILD_ARCH="x86_64"
+  BUILD_SYSTEM="windows"
+  COMMON_SYSTEM="windows"
   TARGET_TRIPLE="x86_64-windows-gnu"
   TSIL_ARCH="ікс86_64"
   TSIL_SYSTEM="віндовс"
   CLANG="zig cc"
 elif [[ "$BUILD_PLATFORM" == "aarch64-windows" ]]; then
+  BUILD_ARCH="aarch64"
+  BUILD_SYSTEM="windows"
+  COMMON_SYSTEM="windows"
   TARGET_TRIPLE="aarch64-windows-gnu"
   TSIL_ARCH="аарч64"
   TSIL_SYSTEM="віндовс"
   CLANG="zig cc"
 elif [[ "$BUILD_PLATFORM" == "x86-windows" ]]; then
+  BUILD_ARCH="x86"
+  BUILD_SYSTEM="windows"
+  COMMON_SYSTEM="windows"
   TARGET_TRIPLE="x86-windows-gnu"
   TSIL_ARCH="ікс86"
   TSIL_SYSTEM="віндовс"
   CLANG="zig cc"
 elif [[ "$BUILD_PLATFORM" == "x86_64-macos" ]]; then
+  BUILD_ARCH="x86_64"
+  BUILD_SYSTEM="macos"
+  COMMON_SYSTEM="unix"
   TARGET_TRIPLE="x86_64-macos"
   TSIL_ARCH="ікс86_64"
   TSIL_SYSTEM="макос"
   CLANG="zig cc"
 elif [[ "$BUILD_PLATFORM" == "aarch64-macos" ]]; then
+  BUILD_ARCH="aarch64"
+  BUILD_SYSTEM="macos"
+  COMMON_SYSTEM="unix"
   TARGET_TRIPLE="aarch64-macos"
   TSIL_ARCH="аарч64"
   TSIL_SYSTEM="макос"
@@ -178,7 +202,9 @@ mv "$SEMIRAW_DIR"/розбирач/розбирач.ц.ллвмір "$SEMIRAW_DI
 $TSIL "$SEMIRAW_DIR"/старт.ц.ллвмір --архітектура="$TSIL_ARCH" --система="$TSIL_SYSTEM" перетворити старт.ц
 mv "$SEMIRAW_DIR"/старт.ц.ллвмір "$SEMIRAW_DIR"/старт.ц.ll
 
-$CLANG -ggdb --target="$TARGET_TRIPLE" -lm -o "$READY_DIR"/мавка пристрій/prystriy.c start.c \
+$CLANG -ggdb --target="$TARGET_TRIPLE" -lm -o "$READY_DIR"/мавка \
+        external/"$COMMON_SYSTEM"/main_$COMMON_SYSTEM"".c \
+        external/"$COMMON_SYSTEM"/prystriy_$COMMON_SYSTEM"".c \
         "$SEMIRAW_DIR"/бібліотека/математика.ц.ll \
         "$SEMIRAW_DIR"/КД/КД.ц.ll \
         "$SEMIRAW_DIR"/машина/ВзятіЗначення.ц.ll \
