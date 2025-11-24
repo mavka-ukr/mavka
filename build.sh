@@ -9,6 +9,7 @@ COMMON_SYSTEM=""
 TARGET_TRIPLE=""
 TSIL_ARCH=""
 TSIL_SYSTEM=""
+OUTFILENAME=""
 
 TSIL="ціль0480"
 CLANG="clang"
@@ -25,6 +26,7 @@ if [[ "$BUILD_PLATFORM" == "x86_64-linux" ]]; then
   TARGET_TRIPLE="x86_64-pc-linux-gnu"
   TSIL_ARCH="ікс86_64"
   TSIL_SYSTEM="лінукс"
+  OUTFILENAME="мавка"
 elif [[ "$BUILD_PLATFORM" == "aarch64-linux" ]]; then
   BUILD_ARCH="aarch64"
   BUILD_SYSTEM="linux"
@@ -33,6 +35,7 @@ elif [[ "$BUILD_PLATFORM" == "aarch64-linux" ]]; then
   TSIL_ARCH="аарч64"
   TSIL_SYSTEM="лінукс"
   CLANG="zig cc"
+  OUTFILENAME="мавка"
 elif [[ "$BUILD_PLATFORM" == "x86_64-windows" ]]; then
   BUILD_ARCH="x86_64"
   BUILD_SYSTEM="windows"
@@ -41,6 +44,7 @@ elif [[ "$BUILD_PLATFORM" == "x86_64-windows" ]]; then
   TSIL_ARCH="ікс86_64"
   TSIL_SYSTEM="віндовс"
   CLANG="zig cc"
+  OUTFILENAME="mavka.exe"
 elif [[ "$BUILD_PLATFORM" == "aarch64-windows" ]]; then
   BUILD_ARCH="aarch64"
   BUILD_SYSTEM="windows"
@@ -49,6 +53,7 @@ elif [[ "$BUILD_PLATFORM" == "aarch64-windows" ]]; then
   TSIL_ARCH="аарч64"
   TSIL_SYSTEM="віндовс"
   CLANG="zig cc"
+  OUTFILENAME="mavka.exe"
 elif [[ "$BUILD_PLATFORM" == "x86-windows" ]]; then
   BUILD_ARCH="x86"
   BUILD_SYSTEM="windows"
@@ -57,6 +62,7 @@ elif [[ "$BUILD_PLATFORM" == "x86-windows" ]]; then
   TSIL_ARCH="ікс86"
   TSIL_SYSTEM="віндовс"
   CLANG="zig cc"
+  OUTFILENAME="mavka.exe"
 elif [[ "$BUILD_PLATFORM" == "x86_64-macos" ]]; then
   BUILD_ARCH="x86_64"
   BUILD_SYSTEM="macos"
@@ -65,6 +71,7 @@ elif [[ "$BUILD_PLATFORM" == "x86_64-macos" ]]; then
   TSIL_ARCH="ікс86_64"
   TSIL_SYSTEM="макос"
   CLANG="zig cc"
+  OUTFILENAME="мавка"
 elif [[ "$BUILD_PLATFORM" == "aarch64-macos" ]]; then
   BUILD_ARCH="aarch64"
   BUILD_SYSTEM="macos"
@@ -73,6 +80,7 @@ elif [[ "$BUILD_PLATFORM" == "aarch64-macos" ]]; then
   TSIL_ARCH="аарч64"
   TSIL_SYSTEM="макос"
   CLANG="zig cc"
+  OUTFILENAME="мавка"
 else
   echo "Unsupported build platform: $BUILD_PLATFORM"
   exit 1
@@ -202,7 +210,7 @@ mv "$SEMIRAW_DIR"/розбирач/розбирач.ц.ллвмір "$SEMIRAW_DI
 $TSIL "$SEMIRAW_DIR"/старт.ц.ллвмір --архітектура="$TSIL_ARCH" --система="$TSIL_SYSTEM" перетворити старт.ц
 mv "$SEMIRAW_DIR"/старт.ц.ллвмір "$SEMIRAW_DIR"/старт.ц.ll
 
-$CLANG -ggdb --target="$TARGET_TRIPLE" -lm -o "$READY_DIR"/мавка \
+$CLANG -ggdb --target="$TARGET_TRIPLE" -lm -o "$READY_DIR"/"$OUTFILENAME" \
         external/"$COMMON_SYSTEM"/main_$COMMON_SYSTEM"".c \
         external/"$COMMON_SYSTEM"/prystriy_$COMMON_SYSTEM"".c \
         "$SEMIRAW_DIR"/бібліотека/математика.ц.ll \
