@@ -174,7 +174,7 @@ compile_tsil "старт.ц"
 
 echo "створення $READY_DIR/$OUTFILENAME"
 
-$CLANG $CLANG_OPTIONS --target="$TARGET_TRIPLE" -o "$READY_DIR"/"$OUTFILENAME" \
+$CLANG --target="$TARGET_TRIPLE" $CLANG_OPTIONS -o "$READY_DIR"/"$OUTFILENAME" \
         external/"$COMMON_SYSTEM"/main_$COMMON_SYSTEM"".c \
         external/"$COMMON_SYSTEM"/prystriy_$COMMON_SYSTEM"".c \
         $LLIRFILES
