@@ -5,7 +5,7 @@
 - Ціль _0.47.0_
 
 ```shell
-sh build.sh x86_64-linux
+sh build.sh debug x86_64-linux
 
 ./будування/ікс86_64-лінукс/готове/мавка
 ```
