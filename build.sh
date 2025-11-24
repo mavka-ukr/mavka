@@ -44,7 +44,7 @@ elif [[ "$BUILD_PLATFORM" == "x86_64-windows" ]]; then
   TSIL_ARCH="ікс86_64"
   TSIL_SYSTEM="віндовс"
   CLANG="zig cc"
-  OUTFILENAME="mavka.exe"
+  OUTFILENAME="мавка.exe"
 elif [[ "$BUILD_PLATFORM" == "aarch64-windows" ]]; then
   BUILD_ARCH="aarch64"
   BUILD_SYSTEM="windows"
@@ -53,7 +53,7 @@ elif [[ "$BUILD_PLATFORM" == "aarch64-windows" ]]; then
   TSIL_ARCH="аарч64"
   TSIL_SYSTEM="віндовс"
   CLANG="zig cc"
-  OUTFILENAME="mavka.exe"
+  OUTFILENAME="мавка.exe"
 elif [[ "$BUILD_PLATFORM" == "x86-windows" ]]; then
   BUILD_ARCH="x86"
   BUILD_SYSTEM="windows"
@@ -62,7 +62,7 @@ elif [[ "$BUILD_PLATFORM" == "x86-windows" ]]; then
   TSIL_ARCH="ікс86"
   TSIL_SYSTEM="віндовс"
   CLANG="zig cc"
-  OUTFILENAME="mavka.exe"
+  OUTFILENAME="мавка.exe"
 elif [[ "$BUILD_PLATFORM" == "x86_64-macos" ]]; then
   BUILD_ARCH="x86_64"
   BUILD_SYSTEM="macos"
