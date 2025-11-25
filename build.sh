@@ -175,7 +175,7 @@ compile_tsil "пристрій/пристрій.ц"
 compile_tsil "розбирач/розбирач.ц"
 compile_tsil "старт.ц"
 
-echo "створення $READY_DIR/$OUTFILENAME"
+echo "створення виконуваного файлу"
 
 $CLANG --target="$TARGET_TRIPLE" \
        $CLANG_OPTIONS \
@@ -184,4 +184,5 @@ $CLANG --target="$TARGET_TRIPLE" \
        "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c" \
        $LLIRFILES
 
-echo "готово"
+echo "готово!"
+echo "виконуваний файл: $READY_DIR/$OUTFILENAME"
