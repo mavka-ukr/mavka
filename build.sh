@@ -112,25 +112,25 @@ else
   exit 1
 fi
 
-SEMIRAW_DIR="будування/$TSIL_ARCH-$TSIL_SYSTEM/напівготове"
+SEMIREADY_DIR="будування/$TSIL_ARCH-$TSIL_SYSTEM/напівготове"
 READY_DIR="будування/$TSIL_ARCH-$TSIL_SYSTEM/готове"
 
-mkdir -p "$SEMIRAW_DIR"/бібліотека
-mkdir -p "$SEMIRAW_DIR"/КД
-mkdir -p "$SEMIRAW_DIR"/машина
-mkdir -p "$SEMIRAW_DIR"/перекладач
-mkdir -p "$SEMIRAW_DIR"/пристрій
-mkdir -p "$SEMIRAW_DIR"/розбирач
+mkdir -p "$SEMIREADY_DIR"/бібліотека
+mkdir -p "$SEMIREADY_DIR"/КД
+mkdir -p "$SEMIREADY_DIR"/машина
+mkdir -p "$SEMIREADY_DIR"/перекладач
+mkdir -p "$SEMIREADY_DIR"/пристрій
+mkdir -p "$SEMIREADY_DIR"/розбирач
 mkdir -p "$READY_DIR"
 
 compile_tsil() {
   local input_file="$1"
 
   echo "перетворення $input_file"
-  $TSIL "$SEMIRAW_DIR/$input_file.ллвмір" --архітектура="$TSIL_ARCH" --система="$TSIL_SYSTEM" перетворити "$input_file"
-  mv "$SEMIRAW_DIR/$input_file.ллвмір" "$SEMIRAW_DIR/$input_file.ллвмір".ll
+  $TSIL "$SEMIREADY_DIR/$input_file.ллвмір" --архітектура="$TSIL_ARCH" --система="$TSIL_SYSTEM" перетворити "$input_file"
+  mv "$SEMIREADY_DIR/$input_file.ллвмір" "$SEMIREADY_DIR/$input_file.ллвмір".ll
 
-  LLIRFILES+=" $SEMIRAW_DIR/$input_file.ллвмір.ll"
+  LLIRFILES+=" $SEMIREADY_DIR/$input_file.ллвмір.ll"
 }
 
 compile_tsil "бібліотека/математика.ц"
