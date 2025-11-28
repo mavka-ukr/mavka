@@ -2,8 +2,6 @@ a = 0
 
 function x()
   function f(value)
-    local a = {}
-    table.insert(a, a)
     return value * 2
   end
 

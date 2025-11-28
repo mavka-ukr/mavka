@@ -2,7 +2,8 @@ let a = 0;
 
 function x() {
   function f(value) {
-    return value * 2;
+    const x = [2];
+    return x[0] + value * 2;
   }
 
   let l = a + a;
