@@ -1,15 +1,11 @@
 a = 0
 
 def x():
-  m = 1
   def f(value):
-    a = []
-    a.append(a)
-    return value * 2 + m
+    x = [2]
+    return x[0] + value * 2
 
   l = a + a
-
-  m += 1
 
   f(l)
 

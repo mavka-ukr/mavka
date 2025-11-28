@@ -20,7 +20,7 @@ echo "---------------------"
 echo ""
 
 echo "---------------------"
-echo "time ruby x.py"
+echo "time ruby x.rb"
 time ruby x.rb
 echo "---------------------"
 echo ""
