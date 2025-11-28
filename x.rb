@@ -1,5 +1,16 @@
-a = 0
+$a = 0
 
-while a <= 100000000
-  a += 1
+def x
+  def f(value)
+    value * 2
+  end
+
+  l = $a + $a
+
+  f(l)
+end
+
+while $a <= 10000000
+  x()
+  $a += 1
 end

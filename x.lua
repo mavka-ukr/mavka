@@ -1,7 +1,15 @@
 a = 0
 
 function x()
+  function f(value)
+    local a = {}
+    table.insert(a, a)
+    return value * 2
+  end
+
   l = a + a
+
+  f(l)
 end
 
 while a <= 10000000 do
