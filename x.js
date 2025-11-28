@@ -1,9 +1,15 @@
+const IT = 10000000;
+
 let a = 0;
+
+function pos() {
+  return a - a;
+}
 
 function x() {
   function f(value) {
     const x = [2];
-    return x[0] + value * 2;
+    return x[pos()] + value * 2;
   }
 
   let l = a + a;
@@ -11,7 +17,7 @@ function x() {
   f(l);
 }
 
-while (a <= 10000000) {
+while (a <= IT) {
     x();
     a = a + 1;
 }

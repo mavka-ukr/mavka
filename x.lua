@@ -1,8 +1,15 @@
+IT = 10000000
+
 a = 0
+
+function pos()
+  return (a - a) + 1
+end
 
 function x()
   function f(value)
-    return value * 2
+    local x = {2}
+    return x[pos()] + value * 2
   end
 
   l = a + a
@@ -10,7 +17,7 @@ function x()
   f(l)
 end
 
-while a <= 10000000 do
+while a <= IT do
   x()
   a = a + 1
 end
