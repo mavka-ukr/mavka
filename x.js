@@ -1,9 +1,16 @@
 let a = 0;
 
-const x = () => {
-    a = a + 1;
+function x() {
+  function f(value) {
+    return value * 2;
+  }
+
+  let l = a + a;
+
+  f(l);
 }
 
-while (a <= 100000000) {
+while (a <= 10000000) {
     x();
+    a = a + 1;
 }
