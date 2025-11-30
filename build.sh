@@ -118,7 +118,7 @@ READY_DIR="будування/$TSIL_ARCH-$TSIL_SYSTEM/готове"
 mkdir -p "$SEMIREADY_DIR"/бібліотека
 mkdir -p "$SEMIREADY_DIR"/КД
 mkdir -p "$SEMIREADY_DIR"/машина/предмети
-mkdir -p "$SEMIREADY_DIR"/перекладач
+mkdir -p "$SEMIREADY_DIR"/перетворювач
 mkdir -p "$SEMIREADY_DIR"/пристрій
 mkdir -p "$SEMIREADY_DIR"/розбирач
 mkdir -p "$READY_DIR"
@@ -170,7 +170,7 @@ compile_tsil "машина/предмети/ПредметСтруктури.ц"
 compile_tsil "машина/предмети/ПредметТексту.ц"
 compile_tsil "машина/предмети/ПредметЦілого.ц"
 compile_tsil "машина/предмети/СкладенийПредмет.ц"
-compile_tsil "перекладач/перекладач.ц"
+compile_tsil "перетворювач/перетворювач.ц"
 compile_tsil "пристрій/взяти_файл.ц"
 compile_tsil "пристрій/вивід.ц"
 compile_tsil "пристрій/глобальні.ц"
