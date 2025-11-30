@@ -186,6 +186,8 @@ $CLANG --target="$TARGET_TRIPLE" \
        -o "$READY_DIR"/"$OUTFILENAME" \
        "external/$COMMON_SYSTEM/main_$COMMON_SYSTEM.c" \
        "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c" \
+       "external/$COMMON_SYSTEM/biblioteka_$COMMON_SYSTEM.c" \
+       "external/$BUILD_SYSTEM/biblioteka_$BUILD_SYSTEM.c" \
        $LLIRFILES
 
 echo "готово!"
