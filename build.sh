@@ -133,6 +133,7 @@ compile_tsil() {
   LLIRFILES+=" $SEMIREADY_DIR/$input_file.ллвмір.ll"
 }
 
+compile_tsil "бібліотека/бібліотека.ц"
 compile_tsil "бібліотека/математика.ц"
 compile_tsil "КД/КД.ц"
 compile_tsil "машина/ВзятіЗначення.ц"
