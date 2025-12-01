@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-MAVKA_VERSION=$(cat ВЕРСІЯ)
+PROGRAM_NAME="мавка"
+BUILD_VERSION=$(cat ВЕРСІЯ)
 BUILD_MODE="$1"
 BUILD_PLATFORM="$2"
 
@@ -50,22 +51,22 @@ set_platform_vars() {
   case "$platform" in
     linux-x86_64)
       system="linux"; arch="x86_64"; common_sys="unix"; target="x86_64-pc-linux-gnu"
-      tsil_system="лінукс"; tsil_arch="ікс86_64"; outfile="мавка"; clang_bin="clang"; extra_opts="-lm" ;;
+      tsil_system="лінукс"; tsil_arch="ікс86_64"; outfile="$PROGRAM_NAME"; clang_bin="clang"; extra_opts="-lm" ;;
     linux-aarch64)
       system="linux"; arch="aarch64"; common_sys="unix"; target="aarch64-linux-gnu"
-      tsil_system="лінукс"; tsil_arch="аарч64"; outfile="мавка"; clang_bin="$ZIG cc"; extra_opts="-lm" ;;
+      tsil_system="лінукс"; tsil_arch="аарч64"; outfile="$PROGRAM_NAME"; clang_bin="$ZIG cc"; extra_opts="-lm" ;;
     macos-x86_64)
       system="macos"; arch="x86_64"; common_sys="unix"; target="x86_64-macos"
-      tsil_system="макос"; tsil_arch="ікс86_64"; outfile="мавка"; clang_bin="$ZIG cc"; extra_opts="-lm" ;;
+      tsil_system="макос"; tsil_arch="ікс86_64"; outfile="$PROGRAM_NAME"; clang_bin="$ZIG cc"; extra_opts="-lm" ;;
     macos-aarch64)
       system="macos"; arch="aarch64"; common_sys="unix"; target="aarch64-macos"
-      tsil_system="макос"; tsil_arch="аарч64"; outfile="мавка"; clang_bin="$ZIG cc"; extra_opts="-lm" ;;
+      tsil_system="макос"; tsil_arch="аарч64"; outfile="$PROGRAM_NAME"; clang_bin="$ZIG cc"; extra_opts="-lm" ;;
     windows-x86_64)
       system="windows"; arch="x86_64"; common_sys="windows"; target="x86_64-windows-gnu"
-      tsil_system="віндовс"; tsil_arch="ікс86_64"; outfile="мавка.exe"; clang_bin="$ZIG cc"; extra_opts="" ;;
+      tsil_system="віндовс"; tsil_arch="ікс86_64"; outfile="$PROGRAM_NAME.exe"; clang_bin="$ZIG cc"; extra_opts="" ;;
     windows-aarch64)
       system="windows"; arch="aarch64"; common_sys="windows"; target="aarch64-windows-gnu"
-      tsil_system="віндовс"; tsil_arch="аарч64"; outfile="мавка.exe"; clang_bin="$ZIG cc"; extra_opts="" ;;
+      tsil_system="віндовс"; tsil_arch="аарч64"; outfile="$PROGRAM_NAME.exe"; clang_bin="$ZIG cc"; extra_opts="" ;;
     *)
       echo "Unsupported build platform: $platform"
       exit 1 ;;
@@ -89,11 +90,16 @@ fi
 set_build_mode "$BUILD_MODE"
 set_platform_vars "$BUILD_PLATFORM"
 
-SEMIREADY_DIR="будування/$MAVKA_VERSION/$TSIL_PLATFORM/напівготове"
-READY_DIR="будування/$MAVKA_VERSION/$TSIL_PLATFORM/готове"
+SEMIREADY_DIR="будування/$BUILD_VERSION/$TSIL_PLATFORM/напівготове"
+READY_DIR="будування/$BUILD_VERSION/$TSIL_PLATFORM/готове"
 
 prepare_directories() {
-  mkdir -p "$SEMIREADY_DIR"/{бібліотека,КД,машина/предмети,перетворювач,пристрій,розбирач}
+  mkdir -p "$SEMIREADY_DIR"/бібліотека
+  mkdir -p "$SEMIREADY_DIR"/КД
+  mkdir -p "$SEMIREADY_DIR"/машина/предмети
+  mkdir -p "$SEMIREADY_DIR"/перетворювач
+  mkdir -p "$SEMIREADY_DIR"/пристрій
+  mkdir -p "$SEMIREADY_DIR"/розбирач
   mkdir -p "$READY_DIR"
 }
 
