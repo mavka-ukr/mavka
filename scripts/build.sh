@@ -5,8 +5,21 @@ MAVKA_VERSION=$(cat ВЕРСІЯ)
 BUILD_MODE="$1"
 BUILD_PLATFORM="$2"
 
-TSIL="ціль"
-CLANG="clang"
+if [ -z "$TSIL" ]
+then
+  TSIL="ціль"
+fi
+
+if [ -z "$CLANG" ]
+then
+  CLANG="clang"
+fi
+
+if [ -z "$ZIG" ]
+then
+  ZIG="zig"
+fi
+
 CLANG_OPTIONS=""
 LLIRFILES=""
 
@@ -40,19 +53,19 @@ set_platform_vars() {
       tsil_system="лінукс"; tsil_arch="ікс86_64"; outfile="мавка"; clang_bin="clang"; extra_opts="-lm" ;;
     linux-aarch64)
       system="linux"; arch="aarch64"; common_sys="unix"; target="aarch64-linux-gnu"
-      tsil_system="лінукс"; tsil_arch="аарч64"; outfile="мавка"; clang_bin="zig cc"; extra_opts="-lm" ;;
+      tsil_system="лінукс"; tsil_arch="аарч64"; outfile="мавка"; clang_bin="$ZIG cc"; extra_opts="-lm" ;;
     macos-x86_64)
       system="macos"; arch="x86_64"; common_sys="unix"; target="x86_64-macos"
-      tsil_system="макос"; tsil_arch="ікс86_64"; outfile="мавка"; clang_bin="zig cc"; extra_opts="-lm" ;;
+      tsil_system="макос"; tsil_arch="ікс86_64"; outfile="мавка"; clang_bin="$ZIG cc"; extra_opts="-lm" ;;
     macos-aarch64)
       system="macos"; arch="aarch64"; common_sys="unix"; target="aarch64-macos"
-      tsil_system="макос"; tsil_arch="аарч64"; outfile="мавка"; clang_bin="zig cc"; extra_opts="-lm" ;;
+      tsil_system="макос"; tsil_arch="аарч64"; outfile="мавка"; clang_bin="$ZIG cc"; extra_opts="-lm" ;;
     windows-x86_64)
       system="windows"; arch="x86_64"; common_sys="windows"; target="x86_64-windows-gnu"
-      tsil_system="віндовс"; tsil_arch="ікс86_64"; outfile="мавка.exe"; clang_bin="zig cc"; extra_opts="" ;;
+      tsil_system="віндовс"; tsil_arch="ікс86_64"; outfile="мавка.exe"; clang_bin="$ZIG cc"; extra_opts="" ;;
     windows-aarch64)
       system="windows"; arch="aarch64"; common_sys="windows"; target="aarch64-windows-gnu"
-      tsil_system="віндовс"; tsil_arch="аарч64"; outfile="мавка.exe"; clang_bin="zig cc"; extra_opts="" ;;
+      tsil_system="віндовс"; tsil_arch="аарч64"; outfile="мавка.exe"; clang_bin="$ZIG cc"; extra_opts="" ;;
     *)
       echo "Unsupported build platform: $platform"
       exit 1 ;;
@@ -62,8 +75,7 @@ set_platform_vars() {
   BUILD_ARCH="$arch"
   COMMON_SYSTEM="$common_sys"
   TARGET_TRIPLE="$target"
-  TSIL_SYSTEM="$tsil_system"
-  TSIL_ARCH="$tsil_arch"
+  TSIL_PLATFORM="$tsil_system-$tsil_arch"
   OUTFILENAME="$outfile"
   CLANG="$clang_bin"
   CLANG_OPTIONS+=" $extra_opts"
@@ -77,8 +89,8 @@ fi
 set_build_mode "$BUILD_MODE"
 set_platform_vars "$BUILD_PLATFORM"
 
-SEMIREADY_DIR="будування/$MAVKA_VERSION/$TSIL_SYSTEM-$TSIL_ARCH/напівготове"
-READY_DIR="будування/$MAVKA_VERSION/$TSIL_SYSTEM-$TSIL_ARCH/готове"
+SEMIREADY_DIR="будування/$MAVKA_VERSION/$TSIL_PLATFORM/напівготове"
+READY_DIR="будування/$MAVKA_VERSION/$TSIL_PLATFORM/готове"
 
 prepare_directories() {
   mkdir -p "$SEMIREADY_DIR"/{бібліотека,КД,машина/предмети,перетворювач,пристрій,розбирач}
@@ -89,7 +101,7 @@ compile_tsil() {
   local input_file="$1"
 
   echo "перетворення $input_file"
-  $TSIL "$SEMIREADY_DIR/$input_file.ллвмір" --архітектура="$TSIL_ARCH" --система="$TSIL_SYSTEM" перетворити "$input_file"
+  $TSIL "$SEMIREADY_DIR/$input_file.ллвмір" --платформа="$TSIL_PLATFORM" перетворити "$input_file"
   mv "$SEMIREADY_DIR/$input_file.ллвмір" "$SEMIREADY_DIR/$input_file.ллвмір".ll
 
   LLIRFILES+=" $SEMIREADY_DIR/$input_file.ллвмір.ll"
