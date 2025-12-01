@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+MAVKA_VERSION=$(cat ВЕРСІЯ)
+
 BUILD_MODE="$1"
 BUILD_PLATFORM="$2"
 BUILD_ARCH=""
@@ -18,7 +20,7 @@ LLIRFILES=""
 
 print_usage() {
   echo "Usage: $0 <debug|release> <platform>"
-  echo "Supported platforms: x86_64-linux, aarch64-linux, x86_64-windows, aarch64-windows, x86-windows, x86_64-macos, aarch64-macos"
+  echo "Supported platforms: x86_64-linux, aarch64-linux, x86_64-windows, aarch64-windows, x86_64-macos, aarch64-macos"
 }
 
 if [ -z "$BUILD_MODE" ]; then
@@ -78,15 +80,6 @@ elif [[ "$BUILD_PLATFORM" == "aarch64-windows" ]]; then
   TSIL_SYSTEM="віндовс"
   CLANG="zig cc"
   OUTFILENAME="мавка.exe"
-elif [[ "$BUILD_PLATFORM" == "x86-windows" ]]; then
-  BUILD_ARCH="x86"
-  BUILD_SYSTEM="windows"
-  COMMON_SYSTEM="windows"
-  TARGET_TRIPLE="x86-windows-gnu"
-  TSIL_ARCH="ікс86"
-  TSIL_SYSTEM="віндовс"
-  CLANG="zig cc"
-  OUTFILENAME="мавка.exe"
 elif [[ "$BUILD_PLATFORM" == "x86_64-macos" ]]; then
   BUILD_ARCH="x86_64"
   BUILD_SYSTEM="macos"
@@ -112,8 +105,8 @@ else
   exit 1
 fi
 
-SEMIREADY_DIR="будування/$TSIL_ARCH-$TSIL_SYSTEM/напівготове"
-READY_DIR="будування/$TSIL_ARCH-$TSIL_SYSTEM/готове"
+SEMIREADY_DIR="будування/$MAVKA_VERSION/$TSIL_SYSTEM-$TSIL_ARCH/напівготове"
+READY_DIR="будування/$MAVKA_VERSION/$TSIL_SYSTEM-$TSIL_ARCH/готове"
 
 mkdir -p "$SEMIREADY_DIR"/бібліотека
 mkdir -p "$SEMIREADY_DIR"/КД
