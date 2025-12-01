@@ -12,7 +12,7 @@
 - Zig (для "крос-компіляції" для AArch64/Windows/MacOS)
 
 ```shell
-sh build.sh debug linux-x86_64
+sh scripts/build.sh debug linux-x86_64
 
 ./будування/{ВЕРСІЯ}/лінукс-ікс86_64/готове/мавка
 ```
@@ -40,5 +40,5 @@ sh build.sh debug linux-x86_64
 Після будування, можна зробити файли для випуску.
 
 ```shell
-sh package.sh linux-x86_64
+sh scripts/package.sh linux-x86_64
 ```
