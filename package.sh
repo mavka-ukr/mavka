@@ -122,4 +122,6 @@ sign_release_files() {
   rm -rf "$tmp_gpg_home"
 }
 
-sign_release_files
+if [ -f ".releasegpgkey" ] && [ -f ".releasegpgkeypassphrase" ]; then
+  sign_release_files
+fi
