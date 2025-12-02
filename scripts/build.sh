@@ -83,10 +83,10 @@ build_ncurses() {
     CONFIGURE_OPTS="--with-shared=no --with-static=yes --without-progs --without-tests --without-cxx --without-cxx-binding --without-ada --without-curses-h"
 
     if [ -n "$target" ]; then
-      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="-static" \
+      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="" \
         ./configure --host="$target" --prefix="$(pwd)/build_ncurses" $CONFIGURE_OPTS
     else
-      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="-static" \
+      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="" \
         ./configure --prefix="$(pwd)/build_ncurses" $CONFIGURE_OPTS
     fi
     make
@@ -125,10 +125,10 @@ build_readline() {
     CONFIGURE_OPTS="--enable-static --disable-shared --with-curses --without-progs --without-tests --without-cxx --without-cxx-binding"
 
     if [ -n "$target" ]; then
-      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="-static $ncurses_lib" \
+      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="$ncurses_lib" \
         ./configure --host="$target" --prefix="$(pwd)/build_readline" $CONFIGURE_OPTS
     else
-      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="-static $ncurses_lib" \
+      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="$ncurses_lib" \
         ./configure --prefix="$(pwd)/build_readline" $CONFIGURE_OPTS
     fi
     make
@@ -162,10 +162,10 @@ build_idn2() {
     CONFIGURE_OPTS="--enable-static --disable-shared --without-tests --without-gcc-atomics"
 
     if [ -n "$target" ]; then
-      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="-static" \
+      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="" \
         ./configure --host="$target" --prefix="$(pwd)/build_idn2" $CONFIGURE_OPTS
     else
-      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="-static" \
+      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="" \
         ./configure --prefix="$(pwd)/build_idn2" $CONFIGURE_OPTS
     fi
     make
