@@ -5,7 +5,25 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#ifdef PROGRAM_USE_READLINE
+#include <readline/readline.h>
+#endif
 #include "../prystriy.h"
+
+extern логічне пристрій_мавки_отримати_версію(природне* вихід_розміру,
+                                              п8** вихід_даних) {
+  char* версія_ю8 = PROGRAM_VERSION;
+
+  природне позиція_помилки;
+
+  if (пристрій_мавки_перекодувати_ю8_в_кд(strlen(версія_ю8), (п8*)версія_ю8,
+                                          вихід_розміру, вихід_даних,
+                                          &позиція_помилки)) {
+    return true;
+  }
+
+  return false;
+}
 
 extern void пристрій_мавки_вивести_формат(природне значення) {
   if (значення == ФОчистити) {
@@ -712,6 +730,26 @@ extern логічне пристрій_мавки_читати_кд(природ
                                         п8** вихід_даних,
                                         природне дозволити_історію,
                                         природне* кінець_файлу) {
+#ifdef PROGRAM_USE_READLINE
+  природне prefix_size = 0;
+  п8* prefix = NULL;
+  природне позиція_помилки;
+
+  if (!пристрій_мавки_перекодувати_кд_в_ю8(
+          розмір_перед, дані_перед, &prefix_size, &prefix, &позиція_помилки)) {
+    return false;
+  }
+
+  char* data = readline((char*)prefix);
+  free(prefix);
+  if (!data) {
+    *кінець_файлу = true;
+
+    return true;
+  }
+
+  size_t len = strlen(data);
+#else
   пристрій_мавки_вивести_кд(розмір_перед, дані_перед);
 
   size_t len;
@@ -722,6 +760,7 @@ extern логічне пристрій_мавки_читати_кд(природ
 
     return true;
   }
+#endif
 
   *кінець_файлу = false;
 
