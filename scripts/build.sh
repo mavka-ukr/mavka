@@ -233,6 +233,18 @@ set_platform_vars() {
       clang_bin="$ZIG cc"
       extra_opts=""
       ;;
+    android-aarch64)
+      system="linux"
+      arch="aarch64"
+      common_sys="unix"
+      target="aarch64-linux-android21"
+      tsil_system="андроїд"
+      tsil_arch="аарч64"
+      outfile="$PROGRAM_NAME"
+      clang_bin="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang"
+      extra_opts="-lm -static-libgcc"
+
+      ;;
     *)
       echo "Unsupported build platform: $platform"
       exit 1
@@ -245,7 +257,7 @@ set_platform_vars() {
   TARGET_TRIPLE="$target"
   TSIL_PLATFORM="$tsil_system-$tsil_arch"
   OUTFILENAME="$outfile"
-  CLANG="$clang_bin"
+  CLANG="$clang_bin --target=$TARGET_TRIPLE"
   CLANG_OPTIONS+=" $extra_opts"
   STATIC_LIBS="$static_libs"
 }
@@ -334,8 +346,7 @@ compile_all_tsil_files() {
 link_executable() {
   echo "створення виконуваного файлу"
 
-  $CLANG --target="$TARGET_TRIPLE" \
-         $CLANG_OPTIONS \
+  $CLANG $CLANG_OPTIONS \
          -o "$READY_DIR/$OUTFILENAME" \
          "external/$COMMON_SYSTEM/main_$COMMON_SYSTEM.c" \
          "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c" \
