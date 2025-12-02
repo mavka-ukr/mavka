@@ -78,12 +78,16 @@ build_ncurses() {
 
   if [ ! -d "$build_dir" ]; then
     cd "$ncurses_dir"
+
+    CFLAGS="-O3"
+    CONFIGURE_OPTS="--with-shared=no --with-static=yes --without-progs --without-tests --without-cxx --without-cxx-binding --without-ada --without-curses-h"
+
     if [ -n "$target" ]; then
-      CC="$compiler" CFLAGS="-O3" LDFLAGS="-static" \
-        ./configure --host="$target" --prefix="$(pwd)/build_ncurses" --with-shared=no --with-static=yes --without-progs --without-tests --without-cxx --without-cxx-binding
+      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="-static" \
+        ./configure --host="$target" --prefix="$(pwd)/build_ncurses" $CONFIGURE_OPTS
     else
-      CC="$compiler" ./configure --prefix="$(pwd)/build_ncurses" --with-shared=no --with-static=yes --without-progs --without-tests --without-cxx --without-cxx-binding \
-        CFLAGS="-O3" LDFLAGS="-static"
+      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="-static" \
+        ./configure --prefix="$(pwd)/build_ncurses" $CONFIGURE_OPTS
     fi
     make
     make install
@@ -117,12 +121,52 @@ build_readline() {
       export ac_cv_func_endpwent=no
     fi
 
+    CFLAGS="-O3 $ncurses_include"
+    CONFIGURE_OPTS="--enable-static --disable-shared --with-curses --without-progs --without-tests --without-cxx --without-cxx-binding"
+
     if [ -n "$target" ]; then
-      CC="$compiler" CFLAGS="-O3 $ncurses_include" LDFLAGS="-static $ncurses_lib" \
-        ./configure --host="$target" --prefix="$(pwd)/build_readline" --enable-static --disable-shared --with-curses --without-progs --without-tests --without-cxx --without-cxx-binding
+      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="-static $ncurses_lib" \
+        ./configure --host="$target" --prefix="$(pwd)/build_readline" $CONFIGURE_OPTS
     else
-      CC="$compiler" CFLAGS="-O3 $ncurses_include" LDFLAGS="-static $ncurses_lib" \
-        ./configure --prefix="$(pwd)/build_readline" --enable-static --disable-shared --with-curses --without-progs --without-tests --without-cxx --without-cxx-binding
+      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="-static $ncurses_lib" \
+        ./configure --prefix="$(pwd)/build_readline" $CONFIGURE_OPTS
+    fi
+    make
+    make install
+    cd -
+  fi
+
+  echo "$build_dir"
+}
+
+build_idn2() {
+  local tsil_platform_folder="$1"
+  local compiler="$2"
+  local target="$3"
+
+  local idn2_dir="будування/$BUILD_VERSION/$tsil_platform_folder/libidn2-2.3.2"
+  local build_dir="$idn2_dir/build_idn2"
+
+  download_and_extract_if_needed "libidn2-2.3.2.tar.gz" \
+    "https://ftp.gnu.org/gnu/libidn/libidn2-2.3.2.tar.gz" \
+    "$idn2_dir"
+
+  if [ ! -d "$build_dir" ]; then
+    cd "$idn2_dir"
+
+    if [[ "$target" == *"android"* ]]; then
+      export ac_cv_func_strchrnul=no
+    fi
+
+    CFLAGS="-O3"
+    CONFIGURE_OPTS="--enable-static --disable-shared --without-tests --without-gcc-atomics"
+
+    if [ -n "$target" ]; then
+      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="-static" \
+        ./configure --host="$target" --prefix="$(pwd)/build_idn2" $CONFIGURE_OPTS
+    else
+      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="-static" \
+        ./configure --prefix="$(pwd)/build_idn2" $CONFIGURE_OPTS
     fi
     make
     make install
@@ -146,14 +190,28 @@ setup_linux_libraries() {
     build_readline "$tsil_platform_folder" "$compiler" "$target" "$ncurses_build" > /dev/tty
     local readline_build=$(build_readline "$tsil_platform_folder" "$compiler" "$target" "$ncurses_build" 2>&1 | tail -n 1)
 
+    build_idn2 "$tsil_platform_folder" "$compiler" "$target" > /dev/tty
+    local idn2_build=$(build_idn2 "$tsil_platform_folder" "$compiler" "$target" 2>&1 | tail -n 1)
+
     eval "$extra_opts_var+=\" -I$(pwd)/$ncurses_build/include\""
     eval "$extra_opts_var+=\" -DPROGRAM_USE_READLINE -I$(pwd)/$readline_build/include\""
+    eval "$extra_opts_var+=\" -I$(pwd)/$idn2_build/include\""
 
     eval "$static_libs_var+=\" $(pwd)/$readline_build/lib/libreadline.a\""
     eval "$static_libs_var+=\" $(pwd)/$readline_build/lib/libhistory.a\""
-    eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libncurses.a\""
-    eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libform.a\""
-    eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libpanel.a\""
+
+    # Use wide-character ncurses libraries for macOS, regular for others
+    if [[ "$target" == *"macos"* ]]; then
+      eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libncursesw.a\""
+      eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libformw.a\""
+      eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libpanelw.a\""
+    else
+      eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libncurses.a\""
+      eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libform.a\""
+      eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libpanel.a\""
+    fi
+
+    eval "$static_libs_var+=\" $(pwd)/$idn2_build/lib/libidn2.a\""
   fi
 }
 
