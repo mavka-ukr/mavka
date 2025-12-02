@@ -1038,9 +1038,14 @@ char* read_line_no_newline(size_t* out_len) {
   return buf;
 }
 
-extern логічне пристрій_мавки_читати_кд(природне* вихід_розміру,
+extern логічне пристрій_мавки_читати_кд(природне розмір_перед,
+                                        п8* дані_перед,
+                                        природне* вихід_розміру,
                                         п8** вихід_даних,
-                                        логічне* кінець_файлу) {
+                                        природне дозволити_історію,
+                                        природне* кінець_файлу) {
+  пристрій_мавки_вивести_кд(розмір_перед, дані_перед);
+
   size_t len;
   char* data = read_line_no_newline(&len);
 
@@ -1052,24 +1057,54 @@ extern логічне пристрій_мавки_читати_кд(природ
 
   *кінець_файлу = FALSE;
 
-  return пристрій_мавки_перекодувати_ю8_в_кд((природне)len, (п8*)data,
-                                             вихід_розміру, вихід_даних, NULL);
+  логічне успіх = пристрій_мавки_перекодувати_ю8_в_кд(
+      (природне)len, (п8*)data, вихід_розміру, вихід_даних, NULL);
+
+  return успіх;
 }
 
 extern логічне пристрій_мавки_отримати_поточний_шлях_процесу(
     природне* вихід_розміру,
     п8** вихід_даних) {
-  DWORD потрібно = GetModuleFileNameA(NULL, NULL, 0);
-  if (потрібно == 0) {
+  // Get required buffer size for current directory (in wide chars)
+  DWORD розмір = GetCurrentDirectoryW(0, NULL);
+  if (розмір == 0) {
     return FALSE;
   }
 
-  *вихід_розміру = потрібно;
+  // Allocate buffer for wide char path
+  WCHAR* широкий_шлях =
+      (WCHAR*)HeapAlloc(GetProcessHeap(), 0, розмір * sizeof(WCHAR));
+  if (!широкий_шлях) {
+    return FALSE;
+  }
+
+  // Get current directory as wide char
+  if (GetCurrentDirectoryW(розмір, широкий_шлях) == 0) {
+    HeapFree(GetProcessHeap(), 0, широкий_шлях);
+    return FALSE;
+  }
+
+  // Convert UTF-16 to UTF-8
+  int байтів_ю8 =
+      WideCharToMultiByte(CP_UTF8, 0, широкий_шлях, -1, NULL, 0, NULL, NULL);
+  if (байтів_ю8 == 0) {
+    HeapFree(GetProcessHeap(), 0, широкий_шлях);
+    return FALSE;
+  }
+
+  // Allocate buffer for UTF-8 (excluding null terminator)
+  *вихід_розміру = байтів_ю8 - 1;
   *вихід_даних = (п8*)HeapAlloc(GetProcessHeap(), 0, *вихід_розміру);
   if (!*вихід_даних) {
+    HeapFree(GetProcessHeap(), 0, широкий_шлях);
     return FALSE;
   }
 
-  GetModuleFileNameA(NULL, (char*)*вихід_даних, *вихід_розміру);
+  // Convert to UTF-8
+  WideCharToMultiByte(CP_UTF8, 0, широкий_шлях, -1, (char*)*вихід_даних,
+                      байтів_ю8, NULL, NULL);
+
+  HeapFree(GetProcessHeap(), 0, широкий_шлях);
   return TRUE;
 }
