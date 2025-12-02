@@ -44,22 +44,14 @@ set_build_mode() {
   esac
 }
 
-download_and_extract_if_needed() {
+extract_if_needed() {
   local tarball="$1"
-  local url="$2"
-  local extract_dir="$3"
-
-  if [ ! -f "будування/$tarball" ]; then
-    mkdir -p будування
-    cd будування
-    wget "$url"
-    cd -
-  fi
+  local extract_dir="$2"
 
   if [ ! -d "$extract_dir" ]; then
     mkdir -p "$(dirname "$extract_dir")"
     cd "$(dirname "$extract_dir")"
-    tar -xvf "../../$tarball"
+    tar -xvf "$tarball"
     cd -
   fi
 }
@@ -73,8 +65,7 @@ setup_linux_musl() {
   local musl_dir="$(pwd)/будування/musl/$target/musl-1.2.5"
   local build_dir="$musl_dir/build_musl-$target"
 
-  download_and_extract_if_needed "musl-1.2.5.tar.gz" \
-    "https://musl.libc.org/releases/musl-1.2.5.tar.gz" \
+  extract_if_needed "$(pwd)/scripts/musl-1.2.5.tar.gz" \
     "$musl_dir"
 
   if [ ! -d "$build_dir" ]; then
@@ -101,8 +92,7 @@ build_ncurses() {
   local ncurses_dir="будування/ncurses/$target/ncurses-6.4"
   local build_dir="$ncurses_dir/build_ncurses"
 
-  download_and_extract_if_needed "ncurses-6.4.tar.gz" \
-    "https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.4.tar.gz" \
+  extract_if_needed "$(pwd)/scripts/ncurses-6.4.tar.gz" \
     "$ncurses_dir"
 
   if [ ! -d "$build_dir" ]; then
@@ -132,8 +122,7 @@ build_readline() {
   local readline_dir="будування/readline/$target/readline-8.2"
   local build_dir="$readline_dir/build_readline"
 
-  download_and_extract_if_needed "readline-8.2.tar.gz" \
-    "https://ftp.gnu.org/gnu/readline/readline-8.2.tar.gz" \
+  extract_if_needed "$(pwd)/scripts/readline-8.2.tar.gz" \
     "$readline_dir"
 
   if [ ! -d "$build_dir" ]; then
@@ -167,8 +156,7 @@ build_idn2() {
   local idn2_dir="будування/libidn2/$target/libidn2-2.3.2"
   local build_dir="$idn2_dir/build_idn2"
 
-  download_and_extract_if_needed "libidn2-2.3.2.tar.gz" \
-    "https://ftp.gnu.org/gnu/libidn/libidn2-2.3.2.tar.gz" \
+  extract_if_needed "$(pwd)/scripts/libidn2-2.3.2.tar.gz" \
     "$idn2_dir"
 
   if [ ! -d "$build_dir" ]; then
