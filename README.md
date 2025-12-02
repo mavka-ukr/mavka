@@ -9,7 +9,7 @@
 - GNU/Linux
 - Ціль _0.49.0_
 - Clang
-- Zig (для "крос-компіляції" для AArch64/Windows/MacOS)
+- Zig (для "крос-компіляції" для AArch64/Windows/MacOS/Android)
 
 ```shell
 sh scripts/build.sh debug linux-x86_64
@@ -34,6 +34,13 @@ sh scripts/build.sh debug linux-x86_64
 - `macos-aarch64`
 - `windows-x86_64`
 - `windows-aarch64`
+- `android-aarch64`
+
+Для будування для Android треба вказати шлях до [NDK](https://developer.android.com/ndk/downloads):
+
+```
+ANDROID_NDK_HOME="/home/kohutd/Android/android-ndk-r27d" sh scripts/build.sh debug android-aarch64
+```
 
 ## Пакування
 
