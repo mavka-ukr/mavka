@@ -64,6 +64,33 @@ download_and_extract_if_needed() {
   fi
 }
 
+setup_linux_musl() {
+  local ar="$1"
+  local ranlib="$2"
+  local cc="$3"
+  local target="$4"
+
+  local musl_dir="$(pwd)/будування/musl/$target/musl-1.2.5"
+  local build_dir="$musl_dir/build_musl-$target"
+
+  download_and_extract_if_needed "musl-1.2.5.tar.gz" \
+    "https://musl.libc.org/releases/musl-1.2.5.tar.gz" \
+    "$musl_dir"
+
+  if [ ! -d "$build_dir" ]; then
+    cd "$musl_dir"
+
+    AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target -O3" \
+      ./configure --host="$target" --prefix="$build_dir" --disable-shared
+
+    make -j$(nproc)
+    make install
+    cd -
+  fi
+
+  echo "$build_dir"
+}
+
 build_ncurses() {
   local ar="$1"
   local ranlib="$2"
@@ -195,31 +222,20 @@ setup_linux_libraries() {
   eval "$static_libs_var+=\" $(pwd)/$idn2_build/lib/libidn2.a\""
 }
 
-setup_linux_musl() {
-  local ar="$1"
-  local ranlib="$2"
-  local cc="$3"
-  local target="$4"
+setup_linux_with_musl() {
+  local target="$1"
+  local clang_bin_var="$2"
+  local extra_opts_var="$3"
+  local static_libs_var="$4"
 
-  local musl_dir="$(pwd)/будування/musl/$target/musl-1.2.5"
-  local build_dir="$musl_dir/build_musl-$target"
+  setup_linux_musl "llvm-ar" "llvm-ranlib" "clang" "$target" > /dev/tty
+  local sysroot=$(setup_linux_musl "llvm-ar" "llvm-ranlib" "clang" "$target" 2>&1 | tail -n 1)
 
-  download_and_extract_if_needed "musl-1.2.5.tar.gz" \
-    "https://musl.libc.org/releases/musl-1.2.5.tar.gz" \
-    "$musl_dir"
+  local updated_clang="clang --sysroot=$sysroot -isystem $sysroot/include"
 
-  if [ ! -d "$build_dir" ]; then
-    cd "$musl_dir"
+  setup_linux_libraries "llvm-ar" "llvm-ranlib" "$updated_clang" "$target" "-L$sysroot/lib" "$extra_opts_var" "$static_libs_var"
 
-    AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target -O3" \
-      ./configure --host="$target" --prefix="$build_dir" --disable-shared
-
-    make -j$(nproc)
-    make install
-    cd -
-  fi
-
-  echo "$build_dir"
+  eval "$clang_bin_var=\"$updated_clang -L$sysroot/lib\""
 }
 
 set_platform_vars() {
@@ -235,18 +251,9 @@ set_platform_vars() {
       tsil_platform="лінукс-ікс86_64"
       tsil_platform_folder="лінукс-ікс86_64"
       outfile="$PROGRAM_NAME"
-      clang_bin="clang"
       extra_opts="-static -Wl,--export-dynamic"
 
-      setup_linux_musl "llvm-ar" "llvm-ranlib" "clang" "$target" > /dev/tty
-      local sysroot=$(setup_linux_musl "llvm-ar" "llvm-ranlib" "clang" "$target" 2>&1 | tail -n 1)
-
-      clang_bin="$clang_bin --sysroot=$sysroot -isystem $sysroot/include"
-
-      setup_linux_libraries "llvm-ar" "llvm-ranlib" "$clang_bin" "$target" "-L$sysroot/lib" extra_opts static_libs
-
-      clang_bin="$clang_bin -L$sysroot/lib"
-
+      setup_linux_with_musl "$target" clang_bin extra_opts static_libs
       ;;
     linux-aarch64)
       system="linux"
@@ -256,18 +263,9 @@ set_platform_vars() {
       tsil_platform="лінукс-аарч64"
       tsil_platform_folder="лінукс-аарч64"
       outfile="$PROGRAM_NAME"
-      clang_bin="clang"
       extra_opts="-static -Wl,--export-dynamic"
 
-      setup_linux_musl "llvm-ar" "llvm-ranlib" "clang" "$target" > /dev/tty
-      local sysroot=$(setup_linux_musl "llvm-ar" "llvm-ranlib" "clang" "$target" 2>&1 | tail -n 1)
-
-      clang_bin="$clang_bin --sysroot=$sysroot -isystem $sysroot/include"
-
-      setup_linux_libraries "llvm-ar" "llvm-ranlib" "$clang_bin" "$target" "-L$sysroot/lib" extra_opts static_libs
-
-      clang_bin="$clang_bin -L$sysroot/lib"
-
+      setup_linux_with_musl "$target" clang_bin extra_opts static_libs
       ;;
     macos-x86_64)
       system="macos"
@@ -330,9 +328,6 @@ set_platform_vars() {
       extra_opts="-ldl -lc -lm"
 
       setup_linux_libraries "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar" "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ranlib" "$clang_bin" "$target" "" extra_opts static_libs
-
-      clang_bin="$clang_bin"
-
       ;;
     *)
       echo "Unsupported build platform: $platform"
