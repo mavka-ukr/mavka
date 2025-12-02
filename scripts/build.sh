@@ -116,6 +116,7 @@ compile_tsil() {
 compile_all_tsil_files() {
   compile_tsil "бібліотека/бібліотека.ц"
   compile_tsil "бібліотека/математика.ц"
+  compile_tsil "бібліотека/читати.ц"
   compile_tsil "КД/КД.ц"
   compile_tsil "машина/ВзятіЗначення.ц"
   compile_tsil "машина/Властивості.ц"
