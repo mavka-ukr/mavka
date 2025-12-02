@@ -1,3 +1,6 @@
+#ifndef TSIL_H
+#define TSIL_H
+
 #ifdef _WIN32
 
 #include <windows.h>
@@ -36,3 +39,5 @@ struct ю8 {
   природне розмір;
   п8* дані;
 };
+
+#endif // TSIL_H
