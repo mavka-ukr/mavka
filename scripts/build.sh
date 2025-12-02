@@ -26,7 +26,7 @@ LLIRFILES=""
 
 print_usage() {
   echo "Usage: $0 <debug|release> <platform>"
-  echo "Supported platforms: linux-x86_64, linux-aarch64, macos-x86_64, macos-aarch64, windows-x86_64, windows-aarch64"
+  echo "Supported platforms: linux-x86_64, linux-aarch64, macos-x86_64, macos-aarch64, windows-x86_64, windows-aarch64, android-aarch64"
 }
 
 set_build_mode() {
@@ -65,12 +65,11 @@ download_and_extract_if_needed() {
 }
 
 build_ncurses() {
-  local tsil_system="$1"
-  local tsil_arch="$2"
-  local compiler="$3"
-  local target="$4"
+  local tsil_platform_folder="$1"
+  local compiler="$2"
+  local target="$3"
 
-  local ncurses_dir="будування/$BUILD_VERSION/$tsil_system-$tsil_arch/ncurses-6.4"
+  local ncurses_dir="будування/$BUILD_VERSION/$tsil_platform_folder/ncurses-6.4"
   local build_dir="$ncurses_dir/build_ncurses"
 
   download_and_extract_if_needed "ncurses-6.4.tar.gz" \
@@ -81,9 +80,9 @@ build_ncurses() {
     cd "$ncurses_dir"
     if [ -n "$target" ]; then
       CC="$compiler" CFLAGS="-O3" LDFLAGS="-static" \
-        ./configure --host="$target" --prefix="$(pwd)/build_ncurses" --with-shared=no --with-static=yes
+        ./configure --host="$target" --prefix="$(pwd)/build_ncurses" --with-shared=no --with-static=yes --without-progs --without-tests --without-cxx --without-cxx-binding
     else
-      CC="$compiler" ./configure --prefix="$(pwd)/build_ncurses" --with-shared=no --with-static=yes \
+      CC="$compiler" ./configure --prefix="$(pwd)/build_ncurses" --with-shared=no --with-static=yes --without-progs --without-tests --without-cxx --without-cxx-binding \
         CFLAGS="-O3" LDFLAGS="-static"
     fi
     make
@@ -95,13 +94,12 @@ build_ncurses() {
 }
 
 build_readline() {
-  local tsil_system="$1"
-  local tsil_arch="$2"
-  local compiler="$3"
-  local target="$4"
-  local ncurses_build_dir="$5"
+  local tsil_platform_folder="$1"
+  local compiler="$2"
+  local target="$3"
+  local ncurses_build_dir="$4"
 
-  local readline_dir="будування/$BUILD_VERSION/$tsil_system-$tsil_arch/readline-8.2"
+  local readline_dir="будування/$BUILD_VERSION/$tsil_platform_folder/readline-8.2"
   local build_dir="$readline_dir/build_readline"
 
   download_and_extract_if_needed "readline-8.2.tar.gz" \
@@ -113,12 +111,18 @@ build_readline() {
     local ncurses_include="-I$(pwd)/../ncurses-6.4/build_ncurses/include"
     local ncurses_lib="-L$(pwd)/../ncurses-6.4/build_ncurses/lib"
 
+    if [[ "$target" == *"android"* ]]; then
+      export ac_cv_func_getpwent=no
+      export ac_cv_func_setpwent=no
+      export ac_cv_func_endpwent=no
+    fi
+
     if [ -n "$target" ]; then
       CC="$compiler" CFLAGS="-O3 $ncurses_include" LDFLAGS="-static $ncurses_lib" \
-        ./configure --host="$target" --prefix="$(pwd)/build_readline" --enable-static --disable-shared --with-curses
+        ./configure --host="$target" --prefix="$(pwd)/build_readline" --enable-static --disable-shared --with-curses --without-progs --without-tests --without-cxx --without-cxx-binding
     else
       CC="$compiler" CFLAGS="-O3 $ncurses_include" LDFLAGS="-static $ncurses_lib" \
-        ./configure --prefix="$(pwd)/build_readline" --enable-static --disable-shared --with-curses
+        ./configure --prefix="$(pwd)/build_readline" --enable-static --disable-shared --with-curses --without-progs --without-tests --without-cxx --without-cxx-binding
     fi
     make
     make install
@@ -129,19 +133,18 @@ build_readline() {
 }
 
 setup_linux_libraries() {
-  local tsil_system="$1"
-  local tsil_arch="$2"
-  local compiler="$3"
-  local target="$4"
-  local extra_opts_var="$5"
-  local static_libs_var="$6"
+  local tsil_platform_folder="$1"
+  local compiler="$2"
+  local target="$3"
+  local extra_opts_var="$4"
+  local static_libs_var="$5"
 
   if [ "$BUILD_MODE" = "release" ]; then
-    build_ncurses "$tsil_system" "$tsil_arch" "$compiler" "$target" > /dev/tty
-    local ncurses_build=$(build_ncurses "$tsil_system" "$tsil_arch" "$compiler" "$target" 2>&1 | tail -n 1)
+    build_ncurses "$tsil_platform_folder" "$compiler" "$target" > /dev/tty
+    local ncurses_build=$(build_ncurses "$tsil_platform_folder" "$compiler" "$target" 2>&1 | tail -n 1)
 
-    build_readline "$tsil_system" "$tsil_arch" "$compiler" "$target" "$ncurses_build" > /dev/tty
-    local readline_build=$(build_readline "$tsil_system" "$tsil_arch" "$compiler" "$target" "$ncurses_build" 2>&1 | tail -n 1)
+    build_readline "$tsil_platform_folder" "$compiler" "$target" "$ncurses_build" > /dev/tty
+    local readline_build=$(build_readline "$tsil_platform_folder" "$compiler" "$target" "$ncurses_build" 2>&1 | tail -n 1)
 
     eval "$extra_opts_var+=\" -I$(pwd)/$ncurses_build/include\""
     eval "$extra_opts_var+=\" -DPROGRAM_USE_READLINE -I$(pwd)/$readline_build/include\""
@@ -151,10 +154,6 @@ setup_linux_libraries() {
     eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libncurses.a\""
     eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libform.a\""
     eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libpanel.a\""
-  fi
-
-  if [ "$BUILD_MODE" = "debug" ]; then
-    eval "$extra_opts_var+=\" -DPROGRAM_USE_READLINE -lreadline\""
   fi
 }
 
@@ -170,11 +169,12 @@ set_platform_vars() {
       target="x86_64-pc-linux-gnu"
       tsil_system="лінукс"
       tsil_arch="ікс86_64"
+      tsil_platform_folder="лінукс-ікс86_64"
       outfile="$PROGRAM_NAME"
       clang_bin="clang"
       extra_opts="-lm"
 
-      setup_linux_libraries "$tsil_system" "$tsil_arch" "$CLANG" "" extra_opts static_libs
+      setup_linux_libraries "$tsil_platform_folder" "$CLANG" "" extra_opts static_libs
       ;;
     linux-aarch64)
       system="linux"
@@ -183,11 +183,12 @@ set_platform_vars() {
       target="aarch64-linux-gnu"
       tsil_system="лінукс"
       tsil_arch="аарч64"
+      tsil_platform_folder="лінукс-аарч64"
       outfile="$PROGRAM_NAME"
       clang_bin="$ZIG cc"
       extra_opts="-lm"
 
-      setup_linux_libraries "$tsil_system" "$tsil_arch" "$ZIG cc --target=$target" "$target" extra_opts static_libs
+      setup_linux_libraries "$tsil_platform_folder" "$ZIG cc --target=$target" "$target" extra_opts static_libs
       ;;
     macos-x86_64)
       system="macos"
@@ -196,6 +197,7 @@ set_platform_vars() {
       target="x86_64-macos"
       tsil_system="макос"
       tsil_arch="ікс86_64"
+      tsil_platform_folder="макос-ікс86_64"
       outfile="$PROGRAM_NAME"
       clang_bin="$ZIG cc"
       extra_opts="-lm"
@@ -207,6 +209,7 @@ set_platform_vars() {
       target="aarch64-macos"
       tsil_system="макос"
       tsil_arch="аарч64"
+      tsil_platform_folder="макос-аарч64"
       outfile="$PROGRAM_NAME"
       clang_bin="$ZIG cc"
       extra_opts="-lm"
@@ -218,6 +221,7 @@ set_platform_vars() {
       target="x86_64-windows-gnu"
       tsil_system="віндовс"
       tsil_arch="ікс86_64"
+      tsil_platform_folder="віндовс-ікс86_64"
       outfile="$PROGRAM_NAME.exe"
       clang_bin="$ZIG cc"
       extra_opts=""
@@ -229,20 +233,29 @@ set_platform_vars() {
       target="aarch64-windows-gnu"
       tsil_system="віндовс"
       tsil_arch="аарч64"
+      tsil_platform_folder="віндовс-аарч64"
       outfile="$PROGRAM_NAME.exe"
       clang_bin="$ZIG cc"
       extra_opts=""
       ;;
     android-aarch64)
+      if [ -z "$ANDROID_NDK_HOME" ]; then
+        echo "ANDROID_NDK_HOME is not set. Please set it to the path of your Android NDK."
+        exit 1
+      fi
+
       system="linux"
       arch="aarch64"
       common_sys="unix"
       target="aarch64-linux-android21"
-      tsil_system="андроїд"
+      tsil_system="лінукс"
       tsil_arch="аарч64"
+      tsil_platform_folder="андроїд-аарч64"
       outfile="$PROGRAM_NAME"
       clang_bin="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang"
       extra_opts="-lm -static-libgcc"
+
+      setup_linux_libraries "$tsil_platform_folder" "$clang_bin" "$target" extra_opts static_libs
 
       ;;
     *)
@@ -256,6 +269,7 @@ set_platform_vars() {
   COMMON_SYSTEM="$common_sys"
   TARGET_TRIPLE="$target"
   TSIL_PLATFORM="$tsil_system-$tsil_arch"
+  TSIL_PLATFORM_FOLDER="$tsil_platform_folder"
   OUTFILENAME="$outfile"
   CLANG="$clang_bin --target=$TARGET_TRIPLE"
   CLANG_OPTIONS+=" $extra_opts"
@@ -270,8 +284,8 @@ fi
 set_build_mode "$BUILD_MODE"
 set_platform_vars "$BUILD_PLATFORM"
 
-SEMIREADY_DIR="будування/$BUILD_VERSION/$TSIL_PLATFORM/напівготове"
-READY_DIR="будування/$BUILD_VERSION/$TSIL_PLATFORM/готове"
+SEMIREADY_DIR="будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/напівготове"
+READY_DIR="будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/готове"
 
 prepare_directories() {
   mkdir -p "$SEMIREADY_DIR"/бібліотека
