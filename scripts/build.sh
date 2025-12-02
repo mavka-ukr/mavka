@@ -183,36 +183,26 @@ setup_linux_libraries() {
   local extra_opts_var="$4"
   local static_libs_var="$5"
 
-  if [ "$BUILD_MODE" = "release" ]; then
-    build_ncurses "$tsil_platform_folder" "$compiler" "$target" > /dev/tty
-    local ncurses_build=$(build_ncurses "$tsil_platform_folder" "$compiler" "$target" 2>&1 | tail -n 1)
+  build_ncurses "$tsil_platform_folder" "$compiler" "$target" > /dev/tty
+  local ncurses_build=$(build_ncurses "$tsil_platform_folder" "$compiler" "$target" 2>&1 | tail -n 1)
 
-    build_readline "$tsil_platform_folder" "$compiler" "$target" "$ncurses_build" > /dev/tty
-    local readline_build=$(build_readline "$tsil_platform_folder" "$compiler" "$target" "$ncurses_build" 2>&1 | tail -n 1)
+  build_readline "$tsil_platform_folder" "$compiler" "$target" "$ncurses_build" > /dev/tty
+  local readline_build=$(build_readline "$tsil_platform_folder" "$compiler" "$target" "$ncurses_build" 2>&1 | tail -n 1)
 
-    build_idn2 "$tsil_platform_folder" "$compiler" "$target" > /dev/tty
-    local idn2_build=$(build_idn2 "$tsil_platform_folder" "$compiler" "$target" 2>&1 | tail -n 1)
+  build_idn2 "$tsil_platform_folder" "$compiler" "$target" > /dev/tty
+  local idn2_build=$(build_idn2 "$tsil_platform_folder" "$compiler" "$target" 2>&1 | tail -n 1)
 
-    eval "$extra_opts_var+=\" -I$(pwd)/$ncurses_build/include\""
-    eval "$extra_opts_var+=\" -DPROGRAM_USE_READLINE -I$(pwd)/$readline_build/include\""
-    eval "$extra_opts_var+=\" -I$(pwd)/$idn2_build/include\""
+  eval "$extra_opts_var+=\" -I$(pwd)/$ncurses_build/include\""
+  eval "$extra_opts_var+=\" -DPROGRAM_USE_READLINE -I$(pwd)/$readline_build/include\""
+  eval "$extra_opts_var+=\" -I$(pwd)/$idn2_build/include\""
 
-    eval "$static_libs_var+=\" $(pwd)/$readline_build/lib/libreadline.a\""
-    eval "$static_libs_var+=\" $(pwd)/$readline_build/lib/libhistory.a\""
+  eval "$static_libs_var+=\" $(pwd)/$readline_build/lib/libreadline.a\""
+  eval "$static_libs_var+=\" $(pwd)/$readline_build/lib/libhistory.a\""
+  eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libncurses.a\""
+  eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libform.a\""
+  eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libpanel.a\""
 
-    # Use wide-character ncurses libraries for macOS, regular for others
-    if [[ "$target" == *"macos"* ]]; then
-      eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libncursesw.a\""
-      eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libformw.a\""
-      eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libpanelw.a\""
-    else
-      eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libncurses.a\""
-      eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libform.a\""
-      eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libpanel.a\""
-    fi
-
-    eval "$static_libs_var+=\" $(pwd)/$idn2_build/lib/libidn2.a\""
-  fi
+  eval "$static_libs_var+=\" $(pwd)/$idn2_build/lib/libidn2.a\""
 }
 
 set_platform_vars() {
