@@ -611,7 +611,7 @@ extern логічне пристрій_мавки_перевірити_чи_шл
   return true;
 }
 
-extern логічне пристрій_мавки_отримати_шлях_до_паку_з_шляху_модуля(
+extern логічне пристрій_мавки_отримати_шлях_до_паку_з_шляху_теки_модулів(
     природне розмір_шляху,
     п8* дані_шляху,
     природне розмір_шляху_до_паків,
@@ -649,6 +649,10 @@ extern логічне пристрій_мавки_отримати_шлях_до
     }
   }
 
+  if (!знайдено) {
+    позиція_наступного_слешу = розмір_шляху;
+  }
+
   // Return the path up to but not including the trailing slash
   *вихід_розміру = позиція_наступного_слешу;
   *вихід_даних = (п8*)malloc(*вихід_розміру);
@@ -660,5 +664,82 @@ extern логічне пристрій_мавки_отримати_шлях_до
     (*вихід_даних)[і] = дані_шляху[і];
   }
 
+  return true;
+}
+
+char* read_line_no_newline(size_t* out_len) {
+  size_t cap = 128;
+  size_t len = 0;
+  char* buf = malloc(cap);
+  if (!buf)
+    return NULL;
+
+  int c;
+  while ((c = getchar()) != EOF) {
+    if (c == '\n')
+      break; // stop, but DON'T store '\n'
+
+    if (len + 1 >= cap) {
+      cap *= 2;
+      char* tmp = realloc(buf, cap);
+      if (!tmp) {
+        free(buf);
+        return NULL;
+      }
+      buf = tmp;
+    }
+
+    buf[len++] = c;
+  }
+
+  // If nothing read and EOF, return NULL
+  if (len == 0 && c == EOF) {
+    free(buf);
+    return NULL;
+  }
+
+  buf[len] = '\0';
+
+  if (out_len)
+    *out_len = len;
+
+  return buf;
+}
+
+extern логічне пристрій_мавки_читати_кд(природне* вихід_розміру,
+                                        п8** вихід_даних,
+                                        логічне* кінець_файлу) {
+  size_t len;
+  char* data = read_line_no_newline(&len);
+
+  if (!data) {
+    *кінець_файлу = true;
+
+    return true;
+  }
+
+  *кінець_файлу = false;
+
+  return пристрій_мавки_перекодувати_ю8_в_кд((природне)len, (п8*)data,
+                                             вихід_розміру, вихід_даних, NULL);
+}
+
+extern логічне пристрій_мавки_отримати_поточний_шлях_процесу(
+    природне* вихід_розміру,
+    п8** вихід_даних) {
+  char* поточна_тека = getcwd(NULL, 0);
+  if (поточна_тека == NULL) {
+    return false;
+  }
+
+  *вихід_розміру = strlen(поточна_тека);
+  *вихід_даних = (п8*)malloc(*вихід_розміру);
+  if (!*вихід_даних) {
+    free(поточна_тека);
+    return false;
+  }
+
+  memcpy(*вихід_даних, поточна_тека, *вихід_розміру);
+  free(поточна_тека);
   return true;
 }
