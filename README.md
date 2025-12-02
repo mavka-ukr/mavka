@@ -9,7 +9,7 @@
 - GNU/Linux
 - Ціль _0.49.0_
 - Clang
-- Zig (для "крос-компіляції" для AArch64/Windows/MacOS/Android)
+- Zig (для "крос-компіляції" для AArch64/Windows/MacOS)
 
 ```shell
 sh scripts/build.sh debug linux-x86_64
