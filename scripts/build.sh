@@ -65,11 +65,13 @@ download_and_extract_if_needed() {
 }
 
 build_ncurses() {
-  local tsil_platform_folder="$1"
-  local compiler="$2"
-  local target="$3"
+  local ar="$1"
+  local ranlib="$2"
+  local cc="$3"
+  local target="$4"
+  local ldflags="$5"
 
-  local ncurses_dir="будування/$BUILD_VERSION/$tsil_platform_folder/ncurses-6.4"
+  local ncurses_dir="будування/ncurses/$target/ncurses-6.4"
   local build_dir="$ncurses_dir/build_ncurses"
 
   download_and_extract_if_needed "ncurses-6.4.tar.gz" \
@@ -79,17 +81,12 @@ build_ncurses() {
   if [ ! -d "$build_dir" ]; then
     cd "$ncurses_dir"
 
-    CFLAGS="-O3"
     CONFIGURE_OPTS="--with-shared=no --with-static=yes --without-progs --without-tests --without-cxx --without-cxx-binding --without-ada --without-curses-h"
 
-    if [ -n "$target" ]; then
-      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="" \
-        ./configure --host="$target" --prefix="$(pwd)/build_ncurses" $CONFIGURE_OPTS
-    else
-      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="" \
-        ./configure --prefix="$(pwd)/build_ncurses" $CONFIGURE_OPTS
-    fi
-    make
+    AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target -O3" LDFLAGS="$ldflags" \
+      ./configure --host="$target" --prefix="$(pwd)/build_ncurses" $CONFIGURE_OPTS
+
+    make -j$(nproc)
     make install
     cd -
   fi
@@ -98,12 +95,14 @@ build_ncurses() {
 }
 
 build_readline() {
-  local tsil_platform_folder="$1"
-  local compiler="$2"
-  local target="$3"
-  local ncurses_build_dir="$4"
+  local ar="$1"
+  local ranlib="$2"
+  local cc="$3"
+  local target="$4"
+  local ldflags="$5"
+  local ncurses_build_dir="$6"
 
-  local readline_dir="будування/$BUILD_VERSION/$tsil_platform_folder/readline-8.2"
+  local readline_dir="будування/readline/$target/readline-8.2"
   local build_dir="$readline_dir/build_readline"
 
   download_and_extract_if_needed "readline-8.2.tar.gz" \
@@ -112,26 +111,18 @@ build_readline() {
 
   if [ ! -d "$build_dir" ]; then
     cd "$readline_dir"
-    local ncurses_include="-I$(pwd)/../ncurses-6.4/build_ncurses/include"
-    local ncurses_lib="-L$(pwd)/../ncurses-6.4/build_ncurses/lib"
-
     if [[ "$target" == *"android"* ]]; then
       export ac_cv_func_getpwent=no
       export ac_cv_func_setpwent=no
       export ac_cv_func_endpwent=no
     fi
 
-    CFLAGS="-O3 $ncurses_include"
     CONFIGURE_OPTS="--enable-static --disable-shared --with-curses --without-progs --without-tests --without-cxx --without-cxx-binding"
 
-    if [ -n "$target" ]; then
-      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="$ncurses_lib" \
-        ./configure --host="$target" --prefix="$(pwd)/build_readline" $CONFIGURE_OPTS
-    else
-      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="$ncurses_lib" \
-        ./configure --prefix="$(pwd)/build_readline" $CONFIGURE_OPTS
-    fi
-    make
+    AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target -I$ncurses_build_dir/include -O3" LDFLAGS="$ldflags -L$ncurses_build_dir/lib" \
+      ./configure --host="$target" --prefix="$(pwd)/build_readline" $CONFIGURE_OPTS
+
+    make -j$(nproc)
     make install
     cd -
   fi
@@ -140,11 +131,13 @@ build_readline() {
 }
 
 build_idn2() {
-  local tsil_platform_folder="$1"
-  local compiler="$2"
-  local target="$3"
+  local ar="$1"
+  local ranlib="$2"
+  local cc="$3"
+  local target="$4"
+  local ldflags="$5"
 
-  local idn2_dir="будування/$BUILD_VERSION/$tsil_platform_folder/libidn2-2.3.2"
+  local idn2_dir="будування/libidn2/$target/libidn2-2.3.2"
   local build_dir="$idn2_dir/build_idn2"
 
   download_and_extract_if_needed "libidn2-2.3.2.tar.gz" \
@@ -158,17 +151,12 @@ build_idn2() {
       export ac_cv_func_strchrnul=no
     fi
 
-    CFLAGS="-O3"
     CONFIGURE_OPTS="--enable-static --disable-shared --without-tests --without-gcc-atomics"
 
-    if [ -n "$target" ]; then
-      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="" \
-        ./configure --host="$target" --prefix="$(pwd)/build_idn2" $CONFIGURE_OPTS
-    else
-      CC="$compiler" CFLAGS="$CFLAGS" LDFLAGS="" \
-        ./configure --prefix="$(pwd)/build_idn2" $CONFIGURE_OPTS
-    fi
-    make
+    AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target -O3" LDFLAGS="$ldflags" \
+      ./configure --host="$target" --prefix="$(pwd)/build_idn2" $CONFIGURE_OPTS
+
+    make -j$(nproc)
     make install
     cd -
   fi
@@ -177,20 +165,22 @@ build_idn2() {
 }
 
 setup_linux_libraries() {
-  local tsil_platform_folder="$1"
-  local compiler="$2"
-  local target="$3"
-  local extra_opts_var="$4"
-  local static_libs_var="$5"
+  local ar="$1"
+  local ranlib="$2"
+  local cc="$3"
+  local target="$4"
+  local ldflags="$5"
+  local extra_opts_var="$6"
+  local static_libs_var="$7"
 
-  build_ncurses "$tsil_platform_folder" "$compiler" "$target" > /dev/tty
-  local ncurses_build=$(build_ncurses "$tsil_platform_folder" "$compiler" "$target" 2>&1 | tail -n 1)
+  build_ncurses "$ar" "$ranlib" "$cc" "$target" "$ldflags" > /dev/tty
+  local ncurses_build=$(build_ncurses "$ar" "$ranlib" "$cc" "$target" "$ldflags" 2>&1 | tail -n 1)
 
-  build_readline "$tsil_platform_folder" "$compiler" "$target" "$ncurses_build" > /dev/tty
-  local readline_build=$(build_readline "$tsil_platform_folder" "$compiler" "$target" "$ncurses_build" 2>&1 | tail -n 1)
+  build_readline "$ar" "$ranlib" "$cc" "$target" "$ldflags" "$ncurses_build" > /dev/tty
+  local readline_build=$(build_readline "$ar" "$ranlib" "$cc" "$target" "$ldflags" "$ncurses_build" 2>&1 | tail -n 1)
 
-  build_idn2 "$tsil_platform_folder" "$compiler" "$target" > /dev/tty
-  local idn2_build=$(build_idn2 "$tsil_platform_folder" "$compiler" "$target" 2>&1 | tail -n 1)
+  build_idn2 "$ar" "$ranlib" "$cc" "$target" "$ldflags" > /dev/tty
+  local idn2_build=$(build_idn2 "$ar" "$ranlib" "$cc" "$target" "$ldflags" 2>&1 | tail -n 1)
 
   eval "$extra_opts_var+=\" -I$(pwd)/$ncurses_build/include\""
   eval "$extra_opts_var+=\" -DPROGRAM_USE_READLINE -I$(pwd)/$readline_build/include\""
@@ -205,9 +195,36 @@ setup_linux_libraries() {
   eval "$static_libs_var+=\" $(pwd)/$idn2_build/lib/libidn2.a\""
 }
 
+setup_linux_musl() {
+  local ar="$1"
+  local ranlib="$2"
+  local cc="$3"
+  local target="$4"
+
+  local musl_dir="$(pwd)/будування/musl/$target/musl-1.2.5"
+  local build_dir="$musl_dir/build_musl-$target"
+
+  download_and_extract_if_needed "musl-1.2.5.tar.gz" \
+    "https://musl.libc.org/releases/musl-1.2.5.tar.gz" \
+    "$musl_dir"
+
+  if [ ! -d "$build_dir" ]; then
+    cd "$musl_dir"
+
+    AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target -O3" \
+      ./configure --host="$target" --prefix="$build_dir" --disable-shared
+
+    make -j$(nproc)
+    make install
+    cd -
+  fi
+
+  echo "$build_dir"
+}
+
 set_platform_vars() {
   local platform="$1"
-  local system arch common_sys target tsil_system tsil_arch outfile clang_bin extra_opts static_libs
+  local system arch common_sys target outfile clang_bin extra_opts static_libs
 
   case "$platform" in
     linux-x86_64)
@@ -215,60 +232,71 @@ set_platform_vars() {
       arch="x86_64"
       common_sys="unix"
       target="x86_64-pc-linux-gnu"
-      tsil_system="лінукс"
-      tsil_arch="ікс86_64"
+      tsil_platform="лінукс-ікс86_64"
       tsil_platform_folder="лінукс-ікс86_64"
       outfile="$PROGRAM_NAME"
       clang_bin="clang"
-      extra_opts="-lm"
+      extra_opts="-static -Wl,--export-dynamic"
 
-      setup_linux_libraries "$tsil_platform_folder" "$CLANG" "" extra_opts static_libs
+      setup_linux_musl "llvm-ar" "llvm-ranlib" "clang" "$target" > /dev/tty
+      local sysroot=$(setup_linux_musl "llvm-ar" "llvm-ranlib" "clang" "$target" 2>&1 | tail -n 1)
+
+      clang_bin="$clang_bin --sysroot=$sysroot -isystem $sysroot/include"
+
+      setup_linux_libraries "llvm-ar" "llvm-ranlib" "$clang_bin" "$target" "-L$sysroot/lib" extra_opts static_libs
+
+      clang_bin="$clang_bin -L$sysroot/lib"
+
       ;;
     linux-aarch64)
       system="linux"
       arch="aarch64"
       common_sys="unix"
       target="aarch64-linux-gnu"
-      tsil_system="лінукс"
-      tsil_arch="аарч64"
+      tsil_platform="лінукс-аарч64"
       tsil_platform_folder="лінукс-аарч64"
       outfile="$PROGRAM_NAME"
-      clang_bin="$ZIG cc"
-      extra_opts="-lm"
+      clang_bin="clang"
+      extra_opts="-static -Wl,--export-dynamic"
 
-      setup_linux_libraries "$tsil_platform_folder" "$ZIG cc --target=$target" "$target" extra_opts static_libs
+      setup_linux_musl "llvm-ar" "llvm-ranlib" "clang" "$target" > /dev/tty
+      local sysroot=$(setup_linux_musl "llvm-ar" "llvm-ranlib" "clang" "$target" 2>&1 | tail -n 1)
+
+      clang_bin="$clang_bin --sysroot=$sysroot -isystem $sysroot/include"
+
+      setup_linux_libraries "llvm-ar" "llvm-ranlib" "$clang_bin" "$target" "-L$sysroot/lib" extra_opts static_libs
+
+      clang_bin="$clang_bin -L$sysroot/lib"
+
       ;;
     macos-x86_64)
       system="macos"
       arch="x86_64"
       common_sys="unix"
       target="x86_64-macos"
-      tsil_system="макос"
-      tsil_arch="ікс86_64"
+      tsil_platform="макос-ікс86_64"
       tsil_platform_folder="макос-ікс86_64"
       outfile="$PROGRAM_NAME"
       clang_bin="$ZIG cc"
-      extra_opts="-lm"
+      extra_opts="-Wl,--export-dynamic"
       ;;
     macos-aarch64)
       system="macos"
       arch="aarch64"
       common_sys="unix"
       target="aarch64-macos"
-      tsil_system="макос"
-      tsil_arch="аарч64"
+      tsil_platform="макос-аарч64"
       tsil_platform_folder="макос-аарч64"
       outfile="$PROGRAM_NAME"
       clang_bin="$ZIG cc"
-      extra_opts="-lm"
+      extra_opts="-Wl,--export-dynamic"
       ;;
     windows-x86_64)
       system="windows"
       arch="x86_64"
       common_sys="windows"
       target="x86_64-windows-gnu"
-      tsil_system="віндовс"
-      tsil_arch="ікс86_64"
+      tsil_platform="віндовс-ікс86_64"
       tsil_platform_folder="віндовс-ікс86_64"
       outfile="$PROGRAM_NAME.exe"
       clang_bin="$ZIG cc"
@@ -279,8 +307,7 @@ set_platform_vars() {
       arch="aarch64"
       common_sys="windows"
       target="aarch64-windows-gnu"
-      tsil_system="віндовс"
-      tsil_arch="аарч64"
+      tsil_platform="віндовс-аарч64"
       tsil_platform_folder="віндовс-аарч64"
       outfile="$PROGRAM_NAME.exe"
       clang_bin="$ZIG cc"
@@ -296,14 +323,15 @@ set_platform_vars() {
       arch="aarch64"
       common_sys="unix"
       target="aarch64-linux-android21"
-      tsil_system="лінукс"
-      tsil_arch="аарч64"
+      tsil_platform="лінукс-аарч64"
       tsil_platform_folder="андроїд-аарч64"
       outfile="$PROGRAM_NAME"
       clang_bin="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang"
-      extra_opts="-lm -static-libgcc"
+      extra_opts="-ldl -lc -lm"
 
-      setup_linux_libraries "$tsil_platform_folder" "$clang_bin" "$target" extra_opts static_libs
+      setup_linux_libraries "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar" "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ranlib" "$clang_bin" "$target" "" extra_opts static_libs
+
+      clang_bin="$clang_bin"
 
       ;;
     *)
@@ -316,7 +344,7 @@ set_platform_vars() {
   BUILD_ARCH="$arch"
   COMMON_SYSTEM="$common_sys"
   TARGET_TRIPLE="$target"
-  TSIL_PLATFORM="$tsil_system-$tsil_arch"
+  TSIL_PLATFORM="$tsil_platform"
   TSIL_PLATFORM_FOLDER="$tsil_platform_folder"
   OUTFILENAME="$outfile"
   CLANG="$clang_bin --target=$TARGET_TRIPLE"
