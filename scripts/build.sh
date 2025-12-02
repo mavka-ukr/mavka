@@ -44,147 +44,199 @@ set_build_mode() {
   esac
 }
 
+download_and_extract_if_needed() {
+  local tarball="$1"
+  local url="$2"
+  local extract_dir="$3"
+
+  if [ ! -f "будування/$tarball" ]; then
+    mkdir -p будування
+    cd будування
+    wget "$url"
+    cd -
+  fi
+
+  if [ ! -d "$extract_dir" ]; then
+    mkdir -p "$(dirname "$extract_dir")"
+    cd "$(dirname "$extract_dir")"
+    tar -xvf "../../$tarball"
+    cd -
+  fi
+}
+
+build_ncurses() {
+  local tsil_system="$1"
+  local tsil_arch="$2"
+  local compiler="$3"
+  local target="$4"
+
+  local ncurses_dir="будування/$BUILD_VERSION/$tsil_system-$tsil_arch/ncurses-6.4"
+  local build_dir="$ncurses_dir/build_ncurses"
+
+  download_and_extract_if_needed "ncurses-6.4.tar.gz" \
+    "https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.4.tar.gz" \
+    "$ncurses_dir"
+
+  if [ ! -d "$build_dir" ]; then
+    cd "$ncurses_dir"
+    if [ -n "$target" ]; then
+      CC="$compiler" CFLAGS="-O3" LDFLAGS="-static" \
+        ./configure --host="$target" --prefix="$(pwd)/build_ncurses" --with-shared=no --with-static=yes
+    else
+      CC="$compiler" ./configure --prefix="$(pwd)/build_ncurses" --with-shared=no --with-static=yes \
+        CFLAGS="-O3" LDFLAGS="-static"
+    fi
+    make
+    make install
+    cd -
+  fi
+
+  echo "$build_dir"
+}
+
+build_readline() {
+  local tsil_system="$1"
+  local tsil_arch="$2"
+  local compiler="$3"
+  local target="$4"
+  local ncurses_build_dir="$5"
+
+  local readline_dir="будування/$BUILD_VERSION/$tsil_system-$tsil_arch/readline-8.2"
+  local build_dir="$readline_dir/build_readline"
+
+  download_and_extract_if_needed "readline-8.2.tar.gz" \
+    "https://ftp.gnu.org/gnu/readline/readline-8.2.tar.gz" \
+    "$readline_dir"
+
+  if [ ! -d "$build_dir" ]; then
+    cd "$readline_dir"
+    local ncurses_include="-I$(pwd)/../ncurses-6.4/build_ncurses/include"
+    local ncurses_lib="-L$(pwd)/../ncurses-6.4/build_ncurses/lib"
+
+    if [ -n "$target" ]; then
+      CC="$compiler" CFLAGS="-O3 $ncurses_include" LDFLAGS="-static $ncurses_lib" \
+        ./configure --host="$target" --prefix="$(pwd)/build_readline" --enable-static --disable-shared --with-curses
+    else
+      CC="$compiler" CFLAGS="-O3 $ncurses_include" LDFLAGS="-static $ncurses_lib" \
+        ./configure --prefix="$(pwd)/build_readline" --enable-static --disable-shared --with-curses
+    fi
+    make
+    make install
+    cd -
+  fi
+
+  echo "$build_dir"
+}
+
+setup_linux_libraries() {
+  local tsil_system="$1"
+  local tsil_arch="$2"
+  local compiler="$3"
+  local target="$4"
+  local extra_opts_var="$5"
+  local static_libs_var="$6"
+
+  if [ "$BUILD_MODE" = "release" ]; then
+    build_ncurses "$tsil_system" "$tsil_arch" "$compiler" "$target" > /dev/tty
+    local ncurses_build=$(build_ncurses "$tsil_system" "$tsil_arch" "$compiler" "$target" 2>&1 | tail -n 1)
+
+    build_readline "$tsil_system" "$tsil_arch" "$compiler" "$target" "$ncurses_build" > /dev/tty
+    local readline_build=$(build_readline "$tsil_system" "$tsil_arch" "$compiler" "$target" "$ncurses_build" 2>&1 | tail -n 1)
+
+    eval "$extra_opts_var+=\" -I$(pwd)/$ncurses_build/include\""
+    eval "$extra_opts_var+=\" -DPROGRAM_USE_READLINE -I$(pwd)/$readline_build/include\""
+
+    eval "$static_libs_var+=\" $(pwd)/$readline_build/lib/libreadline.a\""
+    eval "$static_libs_var+=\" $(pwd)/$readline_build/lib/libhistory.a\""
+    eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libncurses.a\""
+    eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libform.a\""
+    eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libpanel.a\""
+  fi
+
+  if [ "$BUILD_MODE" = "debug" ]; then
+    eval "$extra_opts_var+=\" -DPROGRAM_USE_READLINE -lreadline\""
+  fi
+}
+
 set_platform_vars() {
   local platform="$1"
   local system arch common_sys target tsil_system tsil_arch outfile clang_bin extra_opts static_libs
 
   case "$platform" in
     linux-x86_64)
-      system="linux"; arch="x86_64"; common_sys="unix"; target="x86_64-pc-linux-gnu"
-      tsil_system="лінукс"; tsil_arch="ікс86_64"; outfile="$PROGRAM_NAME"; clang_bin="clang"; extra_opts="-lm"
+      system="linux"
+      arch="x86_64"
+      common_sys="unix"
+      target="x86_64-pc-linux-gnu"
+      tsil_system="лінукс"
+      tsil_arch="ікс86_64"
+      outfile="$PROGRAM_NAME"
+      clang_bin="clang"
+      extra_opts="-lm"
 
-      if [ "$BUILD_MODE" = "release" ]; then
-        # ncurses
-        if [ ! -f будування/ncurses-6.4.tar.gz ]; then
-          mkdir -p будування
-          cd будування
-          wget https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.4.tar.gz
-          cd -
-        fi
-        if [ ! -d "будування/$BUILD_VERSION/$tsil_system-$tsil_arch/ncurses-6.4" ]; then
-          mkdir -p "будування/$BUILD_VERSION/$tsil_system-$tsil_arch"
-          cd "будування/$BUILD_VERSION/$tsil_system-$tsil_arch"
-          tar -xvf ../../ncurses-6.4.tar.gz
-          cd -
-        fi
-        if [ ! -d "будування/$BUILD_VERSION/$tsil_system-$tsil_arch/ncurses-6.4/build_ncurses" ]; then
-          cd "будування/$BUILD_VERSION/$tsil_system-$tsil_arch/ncurses-6.4"
-          CC="$CLANG" ./configure --prefix=$(pwd)/build_ncurses --with-shared=no --with-static=yes CFLAGS="-O3" LDFLAGS="-static"
-          make
-          make install
-          cd -
-        fi
-        extra_opts+=" -I$(pwd)/будування/$BUILD_VERSION/$tsil_system-$tsil_arch/ncurses-6.4/build_ncurses/include"
-
-        # readline
-        if [ ! -f будування/readline-8.2.tar.gz ]; then
-          mkdir -p будування
-          cd будування
-          wget https://ftp.gnu.org/gnu/readline/readline-8.2.tar.gz
-          cd -
-        fi
-        if [ ! -d "будування/$BUILD_VERSION/$tsil_system-$tsil_arch/readline-8.2" ]; then
-          mkdir -p "будування/$BUILD_VERSION/$tsil_system-$tsil_arch"
-          cd "будування/$BUILD_VERSION/$tsil_system-$tsil_arch"
-          tar -xvf ../../readline-8.2.tar.gz
-          cd -
-        fi
-        if [ ! -d "будування/$BUILD_VERSION/$tsil_system-$tsil_arch/readline-8.2/build_readline" ]; then
-          cd "будування/$BUILD_VERSION/$tsil_system-$tsil_arch/readline-8.2"
-          CC="$CLANG" CFLAGS="-O3 -I$(pwd)/../$tsil_system-$tsil_arch/ncurses-6.4/build_ncurses/include" LDFLAGS="-static -L$(pwd)/../$tsil_system-$tsil_arch/ncurses-6.4/build_ncurses/lib" ./configure --prefix=$(pwd)/build_readline --enable-static --disable-shared --with-curses
-          make
-          make install
-          cd -
-        fi
-        extra_opts+=" -DPROGRAM_USE_READLINE -I$(pwd)/будування/$BUILD_VERSION/$tsil_system-$tsil_arch/readline-8.2/build_readline/include"
-
-        static_libs+=" $(pwd)/будування/$BUILD_VERSION/$tsil_system-$tsil_arch/readline-8.2/build_readline/lib/libreadline.a"
-        static_libs+=" $(pwd)/будування/$BUILD_VERSION/$tsil_system-$tsil_arch/readline-8.2/build_readline/lib/libhistory.a"
-        static_libs+=" $(pwd)/будування/$BUILD_VERSION/$tsil_system-$tsil_arch/ncurses-6.4/build_ncurses/lib/libncurses.a"
-        static_libs+=" $(pwd)/будування/$BUILD_VERSION/$tsil_system-$tsil_arch/ncurses-6.4/build_ncurses/lib/libform.a"
-        static_libs+=" $(pwd)/будування/$BUILD_VERSION/$tsil_system-$tsil_arch/ncurses-6.4/build_ncurses/lib/libpanel.a"
-      fi
-
-      if [ "$BUILD_MODE" = "debug" ]; then
-        extra_opts+=" -lreadline"
-      fi
+      setup_linux_libraries "$tsil_system" "$tsil_arch" "$CLANG" "" extra_opts static_libs
       ;;
     linux-aarch64)
-      system="linux"; arch="aarch64"; common_sys="unix"; target="aarch64-linux-gnu"
-      tsil_system="лінукс"; tsil_arch="аарч64"; outfile="$PROGRAM_NAME"; clang_bin="$ZIG cc"; extra_opts="-lm"
+      system="linux"
+      arch="aarch64"
+      common_sys="unix"
+      target="aarch64-linux-gnu"
+      tsil_system="лінукс"
+      tsil_arch="аарч64"
+      outfile="$PROGRAM_NAME"
+      clang_bin="$ZIG cc"
+      extra_opts="-lm"
 
-      if [ "$BUILD_MODE" = "release" ]; then
-        # ncurses
-        if [ ! -f будування/ncurses-6.4.tar.gz ]; then
-          mkdir -p будування
-          cd будування
-          wget https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.4.tar.gz
-          cd -
-        fi
-        if [ ! -d "будування/$BUILD_VERSION/$tsil_system-$tsil_arch/ncurses-6.4" ]; then
-          mkdir -p "будування/$BUILD_VERSION/$tsil_system-$tsil_arch"
-          cd "будування/$BUILD_VERSION/$tsil_system-$tsil_arch"
-          tar -xvf ../../ncurses-6.4.tar.gz
-          cd -
-        fi
-        if [ ! -d "будування/$BUILD_VERSION/$tsil_system-$tsil_arch/ncurses-6.4/build_ncurses" ]; then
-          cd "будування/$BUILD_VERSION/$tsil_system-$tsil_arch/ncurses-6.4"
-          CC="$ZIG cc --target=$target" CFLAGS="-O3" LDFLAGS="-static" ./configure --host=$target --prefix=$(pwd)/build_ncurses --with-shared=no --with-static=yes
-          make
-          make install
-          cd -
-        fi
-        extra_opts+=" -I$(pwd)/будування/$BUILD_VERSION/$tsil_system-$tsil_arch/ncurses-6.4/build_ncurses/include"
-
-        # readline
-        if [ ! -f будування/readline-8.2.tar.gz ]; then
-          mkdir -p будування
-          cd будування
-          wget https://ftp.gnu.org/gnu/readline/readline-8.2.tar.gz
-          cd -
-        fi
-        if [ ! -d "будування/$BUILD_VERSION/$tsil_system-$tsil_arch/readline-8.2" ]; then
-          mkdir -p "будування/$BUILD_VERSION/$tsil_system-$tsil_arch"
-          cd "будування/$BUILD_VERSION/$tsil_system-$tsil_arch"
-          tar -xvf ../../readline-8.2.tar.gz
-          cd -
-        fi
-        if [ ! -d "будування/$BUILD_VERSION/$tsil_system-$tsil_arch/readline-8.2/build_readline" ]; then
-          cd "будування/$BUILD_VERSION/$tsil_system-$tsil_arch/readline-8.2"
-          CC="$ZIG cc --target=$target" CFLAGS="-O3 -I$(pwd)/../$tsil_system-$tsil_arch/ncurses-6.4/build_ncurses/include" LDFLAGS="-static -L$(pwd)/../$tsil_system-$tsil_arch/ncurses-6.4/build_ncurses/lib" ./configure --host=$target --prefix=$(pwd)/build_readline --enable-static --disable-shared --with-curses
-          make
-          make install
-          cd -
-        fi
-        extra_opts+=" -DPROGRAM_USE_READLINE -I$(pwd)/будування/$BUILD_VERSION/$tsil_system-$tsil_arch/readline-8.2/build_readline/include"
-
-        static_libs+=" $(pwd)/будування/$BUILD_VERSION/$tsil_system-$tsil_arch/readline-8.2/build_readline/lib/libreadline.a"
-        static_libs+=" $(pwd)/будування/$BUILD_VERSION/$tsil_system-$tsil_arch/readline-8.2/build_readline/lib/libhistory.a"
-        static_libs+=" $(pwd)/будування/$BUILD_VERSION/$tsil_system-$tsil_arch/ncurses-6.4/build_ncurses/lib/libncurses.a"
-        static_libs+=" $(pwd)/будування/$BUILD_VERSION/$tsil_system-$tsil_arch/ncurses-6.4/build_ncurses/lib/libform.a"
-        static_libs+=" $(pwd)/будування/$BUILD_VERSION/$tsil_system-$tsil_arch/ncurses-6.4/build_ncurses/lib/libpanel.a"
-      fi
-
-      if [ "$BUILD_MODE" = "debug" ]; then
-        extra_opts+=" -lreadline"
-      fi
-
+      setup_linux_libraries "$tsil_system" "$tsil_arch" "$ZIG cc --target=$target" "$target" extra_opts static_libs
       ;;
     macos-x86_64)
-      system="macos"; arch="x86_64"; common_sys="unix"; target="x86_64-macos"
-      tsil_system="макос"; tsil_arch="ікс86_64"; outfile="$PROGRAM_NAME"; clang_bin="$ZIG cc"; extra_opts="-lm" ;;
+      system="macos"
+      arch="x86_64"
+      common_sys="unix"
+      target="x86_64-macos"
+      tsil_system="макос"
+      tsil_arch="ікс86_64"
+      outfile="$PROGRAM_NAME"
+      clang_bin="$ZIG cc"
+      extra_opts="-lm"
+      ;;
     macos-aarch64)
-      system="macos"; arch="aarch64"; common_sys="unix"; target="aarch64-macos"
-      tsil_system="макос"; tsil_arch="аарч64"; outfile="$PROGRAM_NAME"; clang_bin="$ZIG cc"; extra_opts="-lm" ;;
+      system="macos"
+      arch="aarch64"
+      common_sys="unix"
+      target="aarch64-macos"
+      tsil_system="макос"
+      tsil_arch="аарч64"
+      outfile="$PROGRAM_NAME"
+      clang_bin="$ZIG cc"
+      extra_opts="-lm"
+      ;;
     windows-x86_64)
-      system="windows"; arch="x86_64"; common_sys="windows"; target="x86_64-windows-gnu"
-      tsil_system="віндовс"; tsil_arch="ікс86_64"; outfile="$PROGRAM_NAME.exe"; clang_bin="$ZIG cc"; extra_opts="" ;;
+      system="windows"
+      arch="x86_64"
+      common_sys="windows"
+      target="x86_64-windows-gnu"
+      tsil_system="віндовс"
+      tsil_arch="ікс86_64"
+      outfile="$PROGRAM_NAME.exe"
+      clang_bin="$ZIG cc"
+      extra_opts=""
+      ;;
     windows-aarch64)
-      system="windows"; arch="aarch64"; common_sys="windows"; target="aarch64-windows-gnu"
-      tsil_system="віндовс"; tsil_arch="аарч64"; outfile="$PROGRAM_NAME.exe"; clang_bin="$ZIG cc"; extra_opts="" ;;
+      system="windows"
+      arch="aarch64"
+      common_sys="windows"
+      target="aarch64-windows-gnu"
+      tsil_system="віндовс"
+      tsil_arch="аарч64"
+      outfile="$PROGRAM_NAME.exe"
+      clang_bin="$ZIG cc"
+      extra_opts=""
+      ;;
     *)
       echo "Unsupported build platform: $platform"
-      exit 1 ;;
+      exit 1
+      ;;
   esac
 
   BUILD_SYSTEM="$system"
