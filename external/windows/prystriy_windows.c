@@ -912,7 +912,7 @@ extern логічне пристрій_мавки_перевірити_чи_шл
   return TRUE;
 }
 
-extern логічне пристрій_мавки_отримати_шлях_до_паку_з_шляху_модуля(
+extern логічне пристрій_мавки_отримати_шлях_до_паку_з_шляху_теки_модулів(
     природне розмір_шляху,
     п8* дані_шляху,
     природне розмір_шляху_до_паків,
@@ -950,6 +950,10 @@ extern логічне пристрій_мавки_отримати_шлях_до
     }
   }
 
+  if (!знайдено) {
+    позиція_наступного_слешу = розмір_шляху;
+  }
+
   // Return the path up to but not including the trailing slash
   *вихід_розміру = позиція_наступного_слешу;
   *вихід_даних = (п8*)HeapAlloc(GetProcessHeap(), 0, *вихід_розміру);
@@ -961,5 +965,111 @@ extern логічне пристрій_мавки_отримати_шлях_до
     (*вихід_даних)[і] = дані_шляху[і];
   }
 
+  return TRUE;
+}
+
+char* read_line_no_newline(size_t* out_len) {
+  HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+  if (hStdin == INVALID_HANDLE_VALUE) {
+    return NULL;
+  }
+
+  // Read wide characters (UTF-16) for proper Unicode support
+  size_t wide_cap = 128;
+  size_t wide_len = 0;
+  WCHAR* wide_buf =
+      (WCHAR*)HeapAlloc(GetProcessHeap(), 0, wide_cap * sizeof(WCHAR));
+  if (!wide_buf)
+    return NULL;
+
+  WCHAR wc;
+  DWORD charsRead;
+
+  while (ReadConsoleW(hStdin, &wc, 1, &charsRead, NULL) && charsRead == 1) {
+    if (wc == L'\n')
+      break; // stop, but DON'T store '\n'
+
+    if (wc == L'\r')
+      continue; // skip '\r' in Windows line endings
+
+    if (wide_len + 1 >= wide_cap) {
+      wide_cap *= 2;
+      WCHAR* tmp = (WCHAR*)HeapReAlloc(GetProcessHeap(), 0, wide_buf,
+                                       wide_cap * sizeof(WCHAR));
+      if (!tmp) {
+        HeapFree(GetProcessHeap(), 0, wide_buf);
+        return NULL;
+      }
+      wide_buf = tmp;
+    }
+
+    wide_buf[wide_len++] = wc;
+  }
+
+  // If nothing read, return NULL
+  if (wide_len == 0) {
+    HeapFree(GetProcessHeap(), 0, wide_buf);
+    return NULL;
+  }
+
+  // Convert UTF-16 to UTF-8
+  int utf8_size =
+      WideCharToMultiByte(CP_UTF8, 0, wide_buf, wide_len, NULL, 0, NULL, NULL);
+  if (utf8_size == 0) {
+    HeapFree(GetProcessHeap(), 0, wide_buf);
+    return NULL;
+  }
+
+  char* buf = (char*)HeapAlloc(GetProcessHeap(), 0, utf8_size + 1);
+  if (!buf) {
+    HeapFree(GetProcessHeap(), 0, wide_buf);
+    return NULL;
+  }
+
+  WideCharToMultiByte(CP_UTF8, 0, wide_buf, wide_len, buf, utf8_size, NULL,
+                      NULL);
+  buf[utf8_size] = '\0';
+
+  HeapFree(GetProcessHeap(), 0, wide_buf);
+
+  if (out_len)
+    *out_len = utf8_size;
+
+  return buf;
+}
+
+extern логічне пристрій_мавки_читати_кд(природне* вихід_розміру,
+                                        п8** вихід_даних,
+                                        логічне* кінець_файлу) {
+  size_t len;
+  char* data = read_line_no_newline(&len);
+
+  if (!data) {
+    *кінець_файлу = TRUE;
+
+    return TRUE;
+  }
+
+  *кінець_файлу = FALSE;
+
+  return пристрій_мавки_перекодувати_ю8_в_кд((природне)len, (п8*)data,
+                                             вихід_розміру, вихід_даних, NULL);
+}
+
+extern логічне пристрій_мавки_отримати_поточний_шлях_процесу(
+    природне* вихід_розміру,
+    п8** вихід_даних) {
+  DWORD потрібно = GetModuleFileNameA(NULL, NULL, 0);
+  if (потрібно == 0) {
+    return FALSE;
+  }
+
+  *вихід_розміру = потрібно;
+  *вихід_даних = (п8*)HeapAlloc(GetProcessHeap(), 0, *вихід_розміру);
+  if (!*вихід_даних) {
+    return FALSE;
+  }
+
+  GetModuleFileNameA(NULL, (char*)*вихід_даних, *вихід_розміру);
   return TRUE;
 }
