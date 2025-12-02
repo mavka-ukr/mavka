@@ -42,7 +42,7 @@ sh scripts/build.sh debug linux-x86_64
 ANDROID_NDK_HOME="/home/kohutd/Android/android-ndk-r27d" sh scripts/build.sh debug android-aarch64
 ```
 
-> До уваги: в режимі `release` на платформах `linux` та `android` буде завантажено і збудовано з нуля `readline` та `ncurses`.
+**До уваги**: в режимі `release` на платформах `linux` та `android` буде завантажено і збудовано з нуля `ncurses` та `readline`.
 
 ## Пакування
 
