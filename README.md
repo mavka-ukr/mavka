@@ -8,8 +8,7 @@
 
 - GNU/Linux
 - Ціль _0.49.0_
-- Clang/LLVM/LLD
-- Zig (для "крос-компіляції" для Windows/MacOS)
+- Zig 15
 
 ```shell
 bash scripts/build.sh debug linux-x86_64
@@ -42,11 +41,7 @@ bash scripts/build.sh debug linux-x86_64
 ANDROID_NDK_HOME="/home/kohutd/Android/android-ndk-r27d" bash scripts/build.sh debug android-aarch64
 ```
 
-**До уваги**: для платформи `linux` буде збудовано з нуля `musl`.
-
 **До уваги**: для платформ `linux` та `android` буде збудовано з нуля `ncurses`, `readline` та `idn2`.
-
-**До уваги**: для платформ `macos` та `windows` використовується компіляція через `zig cc`.
 
 ## Розробка
 

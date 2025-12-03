@@ -56,32 +56,6 @@ extract_if_needed() {
   fi
 }
 
-setup_linux_musl() {
-  local ar="$1"
-  local ranlib="$2"
-  local cc="$3"
-  local target="$4"
-
-  local musl_dir="$(pwd)/будування/musl/$target/musl-1.2.5"
-  local build_dir="$musl_dir/build_musl-$target"
-
-  extract_if_needed "$(pwd)/scripts/musl-1.2.5.tar.gz" \
-    "$musl_dir"
-
-  if [ ! -d "$build_dir" ]; then
-    cd "$musl_dir"
-
-    AR="$ar" RANLIB="$ranlib" CC="$cc" CFLAGS="--target=$target -O3" \
-      ./configure --host="$target" --prefix="$build_dir" --disable-shared
-
-    make -j$(nproc)
-    make install
-    cd -
-  fi
-
-  echo "$build_dir"
-}
-
 build_ncurses() {
   local ar="$1"
   local ranlib="$2"
@@ -100,7 +74,7 @@ build_ncurses() {
 
     CONFIGURE_OPTS="--with-shared=no --with-static=yes --without-progs --without-tests --without-cxx --without-cxx-binding --without-ada --without-curses-h"
 
-    AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target -O3" LDFLAGS="$ldflags" \
+    AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target" CFLAGS="-O3" LDFLAGS="$ldflags" \
       ./configure --host="$target" --prefix="$(pwd)/build_ncurses" $CONFIGURE_OPTS
 
     make -j$(nproc)
@@ -135,7 +109,7 @@ build_readline() {
 
     CONFIGURE_OPTS="--enable-static --disable-shared --with-curses --without-progs --without-tests --without-cxx --without-cxx-binding"
 
-    AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target -I$ncurses_build_dir/include -O3" LDFLAGS="$ldflags -L$ncurses_build_dir/lib" \
+    AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target" CFLAGS="-I$ncurses_build_dir/include -O3" LDFLAGS="$ldflags -L$ncurses_build_dir/lib" \
       ./configure --host="$target" --prefix="$(pwd)/build_readline" $CONFIGURE_OPTS
 
     make -j$(nproc)
@@ -168,7 +142,7 @@ build_idn2() {
 
     CONFIGURE_OPTS="--enable-static --disable-shared --without-tests --without-gcc-atomics"
 
-    AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target -O3" LDFLAGS="$ldflags" \
+    AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target" CFLAGS="-O3" LDFLAGS="$ldflags" \
       ./configure --host="$target" --prefix="$(pwd)/build_idn2" $CONFIGURE_OPTS
 
     make -j$(nproc)
@@ -210,22 +184,6 @@ setup_linux_libraries() {
   eval "$static_libs_var+=\" $(pwd)/$idn2_build/lib/libidn2.a\""
 }
 
-setup_linux_with_musl() {
-  local target="$1"
-  local clang_bin_var="$2"
-  local extra_opts_var="$3"
-  local static_libs_var="$4"
-
-  setup_linux_musl "llvm-ar" "llvm-ranlib" "clang" "$target" > /dev/tty
-  local sysroot=$(setup_linux_musl "llvm-ar" "llvm-ranlib" "clang" "$target" 2>&1 | tail -n 1)
-
-  local updated_clang="$sysroot/bin/musl-clang"
-
-  setup_linux_libraries "llvm-ar" "llvm-ranlib" "$updated_clang" "$target" "" "$extra_opts_var" "$static_libs_var"
-
-  eval "$clang_bin_var=\"$updated_clang\""
-}
-
 set_platform_vars() {
   local platform="$1"
   local system arch common_sys target outfile clang_bin extra_opts static_libs
@@ -235,25 +193,27 @@ set_platform_vars() {
       system="linux"
       arch="x86_64"
       common_sys="unix"
-      target="x86_64-pc-linux-gnu"
+      target="x86_64-linux-musl"
       tsil_platform="лінукс-ікс86_64"
       tsil_platform_folder="лінукс-ікс86_64"
       outfile="$PROGRAM_NAME"
+      clang_bin="$ZIG cc"
       extra_opts="-static -Wl,--export-dynamic"
 
-      setup_linux_with_musl "$target" clang_bin extra_opts static_libs
+      setup_linux_libraries "zig ar" "zig ranlib" "$clang_bin" "$target" "" extra_opts static_libs
       ;;
     linux-aarch64)
       system="linux"
       arch="aarch64"
       common_sys="unix"
-      target="aarch64-linux-gnu"
+      target="aarch64-linux-musl"
       tsil_platform="лінукс-аарч64"
       tsil_platform_folder="лінукс-аарч64"
       outfile="$PROGRAM_NAME"
+      clang_bin="$ZIG cc"
       extra_opts="-static -Wl,--export-dynamic"
 
-      setup_linux_with_musl "$target" clang_bin extra_opts static_libs
+      setup_linux_libraries "zig ar" "zig ranlib" "$clang_bin" "$target" "" extra_opts static_libs
       ;;
     macos-x86_64)
       system="macos"
