@@ -9,7 +9,7 @@ BUILD_PLATFORM="$1"
 
 print_usage() {
   echo "Usage: $0 <platform>"
-  echo "Supported platforms: linux-x86_64, linux-aarch64, macos-x86_64, macos-aarch64, windows-x86_64, windows-aarch64"
+  echo "Supported platforms: linux-x86_64, linux-aarch64, macos-x86_64, macos-aarch64, windows-x86_64, windows-aarch64, android-aarch64"
 }
 
 set_platform_vars() {
@@ -29,6 +29,8 @@ set_platform_vars() {
       system="windows"; arch="x86_64"; tsil_system="віндовс"; tsil_arch="ікс86_64"; outfile="$PROGRAM_NAME.exe" ;;
     windows-aarch64)
       system="windows"; arch="aarch64"; tsil_system="віндовс"; tsil_arch="аарч64"; outfile="$PROGRAM_NAME.exe" ;;
+    android-aarch64)
+      system="android"; arch="aarch64"; tsil_system="андроїд"; tsil_arch="аарч64"; outfile="$PROGRAM_NAME" ;;
     *)
       echo "Unsupported build platform: $platform"
       exit 1 ;;
@@ -48,26 +50,14 @@ fi
 
 set_platform_vars "$BUILD_PLATFORM"
 
-VERSIONDIR="випуски/$BUILD_VERSION/$TSIL_SYSTEM-$TSIL_ARCH"
+VERSIONDIR="випуски/$BUILD_VERSION"
 PLATFORMDIRNAME="$PROGRAM_NAME-$BUILD_VERSION-$TSIL_SYSTEM-$TSIL_ARCH"
 PLATFORMDIR="$VERSIONDIR/$PLATFORMDIRNAME"
 BINDIR="$PLATFORMDIR"
 
-if [ -d "$VERSIONDIR" ]; then
-  echo "Version directory \"$VERSIONDIR\" already exists. Aborting to prevent overwriting."
-  exit 1
-fi
-
-[[ "$BUILD_SYSTEM" == "linux" || "$BUILD_SYSTEM" == "macos" ]] && BINDIR="$PLATFORMDIR/bin"
+[[ "$BUILD_SYSTEM" == "linux" || "$BUILD_SYSTEM" == "macos" || "$BUILD_SYSTEM" == "android" ]] && BINDIR="$PLATFORMDIR/bin"
 
 mkdir -p "$BINDIR"
-
-create_source_tarball() {
-  local tarball="$VERSIONDIR/$PROGRAM_NAME-$BUILD_VERSION.tar"
-  tar -cf "$tarball" --exclude=.git --exclude-vcs --exclude-from=.gitignore --transform="s|^\.|$PROGRAM_NAME-$BUILD_VERSION|" .
-  tar -rf "$tarball" --transform="s|^\.gitignore|$PROGRAM_NAME-$BUILD_VERSION/.gitignore|" .gitignore
-  xz -z "$tarball"
-}
 
 prepare_platform_dir() {
   cp "будування/$BUILD_VERSION/$TSIL_SYSTEM-$TSIL_ARCH/готове/$OUTFILENAME" "$BINDIR"
@@ -82,7 +72,6 @@ create_platform_tarball() {
   cd - > /dev/null
 }
 
-create_source_tarball
 prepare_platform_dir
 create_platform_tarball
 
@@ -112,7 +101,7 @@ sign_release_files() {
 
   cd "$VERSIONDIR"
 
-  for file in $PROGRAM_NAME-"$BUILD_VERSION"-$TSIL_SYSTEM-$TSIL_ARCH.tar.xz $PROGRAM_NAME-"$BUILD_VERSION".tar.xz; do
+  for file in $PROGRAM_NAME-"$BUILD_VERSION"-$TSIL_SYSTEM-$TSIL_ARCH.tar.xz; do
     [ ! -f "$file" ] && { echo "File not found: $file"; continue; }
 
     sha256sum "$file" > "$file.sha256"

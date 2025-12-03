@@ -48,14 +48,6 @@ ANDROID_NDK_HOME="/home/kohutd/Android/android-ndk-r27d" sh scripts/build.sh deb
 
 **До уваги**: для платформ `macos` та `windows` використовується компіляція через `zig cc`.
 
-## Пакування
-
-Після будування можна зробити файли для випуску:
-
-```shell
-sh scripts/package.sh linux-x86_64
-```
-
 ## Розробка
 
 Мавку написано мовою Ціль. Але.
