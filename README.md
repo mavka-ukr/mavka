@@ -8,11 +8,11 @@
 
 - GNU/Linux
 - Ціль _0.49.0_
-- Clang
+- Clang/LLVM/LLD
 - Zig (для "крос-компіляції" для Windows/MacOS)
 
 ```shell
-sh scripts/build.sh debug linux-x86_64
+bash scripts/build.sh debug linux-x86_64
 
 ./будування/{ВЕРСІЯ}/лінукс-ікс86_64/готове/мавка
 ```
@@ -39,7 +39,7 @@ sh scripts/build.sh debug linux-x86_64
 Для будування для Android треба вказати шлях до [NDK](https://developer.android.com/ndk/downloads):
 
 ```
-ANDROID_NDK_HOME="/home/kohutd/Android/android-ndk-r27d" sh scripts/build.sh debug android-aarch64
+ANDROID_NDK_HOME="/home/kohutd/Android/android-ndk-r27d" bash scripts/build.sh debug android-aarch64
 ```
 
 **До уваги**: для платформи `linux` буде збудовано з нуля `musl`.

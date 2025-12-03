@@ -71,7 +71,7 @@ setup_linux_musl() {
   if [ ! -d "$build_dir" ]; then
     cd "$musl_dir"
 
-    AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target -O3" \
+    AR="$ar" RANLIB="$ranlib" CC="$cc" CFLAGS="--target=$target -O3" \
       ./configure --host="$target" --prefix="$build_dir" --disable-shared
 
     make -j$(nproc)
@@ -219,11 +219,11 @@ setup_linux_with_musl() {
   setup_linux_musl "llvm-ar" "llvm-ranlib" "clang" "$target" > /dev/tty
   local sysroot=$(setup_linux_musl "llvm-ar" "llvm-ranlib" "clang" "$target" 2>&1 | tail -n 1)
 
-  local updated_clang="clang --sysroot=$sysroot -isystem $sysroot/include"
+  local updated_clang="$sysroot/bin/musl-clang"
 
-  setup_linux_libraries "llvm-ar" "llvm-ranlib" "$updated_clang" "$target" "-L$sysroot/lib" "$extra_opts_var" "$static_libs_var"
+  setup_linux_libraries "llvm-ar" "llvm-ranlib" "$updated_clang" "$target" "" "$extra_opts_var" "$static_libs_var"
 
-  eval "$clang_bin_var=\"$updated_clang -L$sysroot/lib\""
+  eval "$clang_bin_var=\"$updated_clang\""
 }
 
 set_platform_vars() {
