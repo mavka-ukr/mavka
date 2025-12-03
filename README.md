@@ -8,7 +8,7 @@
 
 - GNU/Linux
 - Ціль _0.49.0_
-- Zig 15
+- Zig _0.15.2_
 
 ```shell
 bash scripts/build.sh debug linux-x86_64
