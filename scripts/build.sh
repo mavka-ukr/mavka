@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+CURRENT_DIR=$(pwd)
+
 PROGRAM_NAME="мавка"
 BUILD_VERSION=$(cat ВЕРСІЯ)
 BUILD_MODE="$1"
@@ -303,16 +305,16 @@ fi
 set_build_mode "$BUILD_MODE"
 set_platform_vars "$BUILD_PLATFORM"
 
-SEMIREADY_DIR="будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/напівготове"
-READY_DIR="будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/готове"
+SEMIREADY_DIR="$CURRENT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/напівготове"
+READY_DIR="$CURRENT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/готове"
 
 prepare_directories() {
   mkdir -p "$SEMIREADY_DIR"/бібліотека
   mkdir -p "$SEMIREADY_DIR"/КД
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети
-  mkdir -p "$SEMIREADY_DIR"/перетворювач
-  mkdir -p "$SEMIREADY_DIR"/пристрій
-  mkdir -p "$SEMIREADY_DIR"/розбирач
+  mkdir -p "$SEMIREADY_DIR"/мавка/машина/предмети
+  mkdir -p "$SEMIREADY_DIR"/мавка/перетворювач
+  mkdir -p "$SEMIREADY_DIR"/мавка/пристрій
+  mkdir -p "$SEMIREADY_DIR"/мавка/розбирач
   mkdir -p "$READY_DIR"
 }
 
@@ -320,7 +322,7 @@ compile_tsil() {
   local input_file="$1"
 
   echo "перетворення $input_file"
-  $TSIL "$SEMIREADY_DIR/$input_file.ллвмір" --платформа="$TSIL_PLATFORM" перетворити "$input_file"
+  $TSIL "$(realpath --relative-to="$(pwd)" "$SEMIREADY_DIR/$input_file.ллвмір")" --платформа="$TSIL_PLATFORM" перетворити "$(realpath --relative-to="$(pwd)" "$input_file")"
   mv "$SEMIREADY_DIR/$input_file.ллвмір" "$SEMIREADY_DIR/$input_file.ллвмір".ll
 
   LLIRFILES+=" $SEMIREADY_DIR/$input_file.ллвмір.ll"
@@ -330,49 +332,51 @@ compile_all_tsil_files() {
   compile_tsil "бібліотека/бібліотека.ц"
   compile_tsil "бібліотека/математика.ц"
   compile_tsil "бібліотека/читати.ц"
+
   compile_tsil "КД/КД.ц"
-  compile_tsil "машина/ВзятіЗначення.ц"
-  compile_tsil "машина/Властивості.ц"
-  compile_tsil "машина/Дійсність.ц"
-  compile_tsil "машина/Допоміжне.ц"
-  compile_tsil "машина/Задіяні.ц"
-  compile_tsil "машина/Значення.ц"
-  compile_tsil "машина/ІменованоЗадіяні.ц"
-  compile_tsil "машина/ІнформаціяПадіння.ц"
-  compile_tsil "машина/КористувацькіДані.ц"
-  compile_tsil "машина/Машина.ц"
-  compile_tsil "машина/МісцезнаходженняВказівок.ц"
-  compile_tsil "машина/НакопичувачТексту.ц"
-  compile_tsil "машина/Очищувач.ц"
-  compile_tsil "машина/Притримувач.ц"
-  compile_tsil "машина/Спроби.ц"
-  compile_tsil "машина/предмети/ПредметДаних.ц"
-  compile_tsil "машина/предмети/ПредметДіапазонуДробових.ц"
-  compile_tsil "машина/предмети/ПредметДіапазонуЦілих.ц"
-  compile_tsil "машина/предмети/ПредметДії.ц"
-  compile_tsil "машина/предмети/ПредметДробового.ц"
-  compile_tsil "машина/предмети/ПредметЗміннихДаних.ц"
-  compile_tsil "машина/предмети/ПредметКоду.ц"
-  compile_tsil "машина/предмети/ПредметМодуля.ц"
-  compile_tsil "машина/предмети/ПредметПараметра.ц"
-  compile_tsil "машина/предмети/ПредметПереборуДіапазонуДробових.ц"
-  compile_tsil "машина/предмети/ПредметПереборуДіапазонуЦілих.ц"
-  compile_tsil "машина/предмети/ПредметПереборуСписку.ц"
-  compile_tsil "машина/предмети/ПредметПослідовності.ц"
-  compile_tsil "машина/предмети/ПредметСловника.ц"
-  compile_tsil "машина/предмети/ПредметСписку.ц"
-  compile_tsil "машина/предмети/ПредметСтруктури.ц"
-  compile_tsil "машина/предмети/ПредметТексту.ц"
-  compile_tsil "машина/предмети/ПредметЦілого.ц"
-  compile_tsil "машина/предмети/СкладенийПредмет.ц"
-  compile_tsil "перетворювач/перетворювач.ц"
+  compile_tsil "мавка/машина/ВзятіЗначення.ц"
+  compile_tsil "мавка/машина/Властивості.ц"
+  compile_tsil "мавка/машина/Дійсність.ц"
+  compile_tsil "мавка/машина/Допоміжне.ц"
+  compile_tsil "мавка/машина/Задіяні.ц"
+  compile_tsil "мавка/машина/Значення.ц"
+  compile_tsil "мавка/машина/ІменованоЗадіяні.ц"
+  compile_tsil "мавка/машина/ІнформаціяПадіння.ц"
+  compile_tsil "мавка/машина/КористувацькіДані.ц"
+  compile_tsil "мавка/машина/Машина.ц"
+  compile_tsil "мавка/машина/МісцезнаходженняВказівок.ц"
+  compile_tsil "мавка/машина/НакопичувачТексту.ц"
+  compile_tsil "мавка/машина/Очищувач.ц"
+  compile_tsil "мавка/машина/Притримувач.ц"
+  compile_tsil "мавка/машина/Спроби.ц"
+  compile_tsil "мавка/машина/предмети/ПредметДаних.ц"
+  compile_tsil "мавка/машина/предмети/ПредметДіапазонуДробових.ц"
+  compile_tsil "мавка/машина/предмети/ПредметДіапазонуЦілих.ц"
+  compile_tsil "мавка/машина/предмети/ПредметДії.ц"
+  compile_tsil "мавка/машина/предмети/ПредметДробового.ц"
+  compile_tsil "мавка/машина/предмети/ПредметЗміннихДаних.ц"
+  compile_tsil "мавка/машина/предмети/ПредметКоду.ц"
+  compile_tsil "мавка/машина/предмети/ПредметМодуля.ц"
+  compile_tsil "мавка/машина/предмети/ПредметПараметра.ц"
+  compile_tsil "мавка/машина/предмети/ПредметПереборуДіапазонуДробових.ц"
+  compile_tsil "мавка/машина/предмети/ПредметПереборуДіапазонуЦілих.ц"
+  compile_tsil "мавка/машина/предмети/ПредметПереборуСписку.ц"
+  compile_tsil "мавка/машина/предмети/ПредметПослідовності.ц"
+  compile_tsil "мавка/машина/предмети/ПредметСловника.ц"
+  compile_tsil "мавка/машина/предмети/ПредметСписку.ц"
+  compile_tsil "мавка/машина/предмети/ПредметСтруктури.ц"
+  compile_tsil "мавка/машина/предмети/ПредметТексту.ц"
+  compile_tsil "мавка/машина/предмети/ПредметЦілого.ц"
+  compile_tsil "мавка/машина/предмети/СкладенийПредмет.ц"
+  compile_tsil "мавка/перетворювач/перетворювач.ц"
+  compile_tsil "мавка/розбирач/розбирач.ц"
+
   compile_tsil "пристрій/взяти_файл.ц"
   compile_tsil "пристрій/вивід.ц"
   compile_tsil "пристрій/глобальні.ц"
   compile_tsil "пристрій/діалог.ц"
   compile_tsil "пристрій/машина.ц"
   compile_tsil "пристрій/пристрій.ц"
-  compile_tsil "розбирач/розбирач.ц"
   compile_tsil "старт.ц"
 }
 
