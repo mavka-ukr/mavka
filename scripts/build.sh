@@ -316,6 +316,7 @@ prepare_directories() {
   mkdir -p "$SEMIREADY_DIR"/машина/предмети/ДіапазонДробових/методи
   mkdir -p "$SEMIREADY_DIR"/машина/предмети/ДіапазонЦілих/методи
   mkdir -p "$SEMIREADY_DIR"/машина/предмети/Дія/методи
+  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Дробове/дії
   mkdir -p "$SEMIREADY_DIR"/машина/предмети/Дробове/методи
   mkdir -p "$SEMIREADY_DIR"/машина/предмети/Код/методи
   mkdir -p "$SEMIREADY_DIR"/машина/предмети/Модуль/методи
@@ -330,7 +331,9 @@ prepare_directories() {
   mkdir -p "$SEMIREADY_DIR"/машина/предмети/Словник/методи
   mkdir -p "$SEMIREADY_DIR"/машина/предмети/Список/методи
   mkdir -p "$SEMIREADY_DIR"/машина/предмети/Структура/методи
+  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Текст/дії
   mkdir -p "$SEMIREADY_DIR"/машина/предмети/Текст/методи
+  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Ціле/дії
   mkdir -p "$SEMIREADY_DIR"/машина/предмети/Ціле/методи
   mkdir -p "$SEMIREADY_DIR"/перетворювач
   mkdir -p "$SEMIREADY_DIR"/пристрій
@@ -452,12 +455,14 @@ compile_all_tsil_files() {
 
   compile_tsil "машина/предмети/Структура/ПредметСтруктури.ц"
 
+  compile_tsil "машина/предмети/Текст/дії/з.ц"
   compile_tsil "машина/предмети/Текст/методи/чародія_ціле.ц"
   compile_tsil "машина/предмети/Текст/методи/чародія_дробове.ц"
   compile_tsil "машина/предмети/Текст/методи/чародія_текст.ц"
   compile_tsil "машина/предмети/Текст/методи/чародія_перебір.ц"
   compile_tsil "машина/предмети/Текст/ПредметТексту.ц"
 
+  compile_tsil "машина/предмети/Ціле/дії/з.ц"
   compile_tsil "машина/предмети/Ціле/методи/чародія_ціле.ц"
   compile_tsil "машина/предмети/Ціле/методи/чародія_дробове.ц"
   compile_tsil "машина/предмети/Ціле/методи/чародія_текст.ц"
