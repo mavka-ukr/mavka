@@ -309,7 +309,8 @@ SEMIREADY_DIR="$CURRENT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOL
 READY_DIR="$CURRENT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/готове"
 
 prepare_directories() {
-  mkdir -p "$SEMIREADY_DIR"/бібліотека
+  mkdir -p "$SEMIREADY_DIR"/бібліотека/математика
+  mkdir -p "$SEMIREADY_DIR"/бібліотека/читати
   mkdir -p "$SEMIREADY_DIR"/КД
   mkdir -p "$SEMIREADY_DIR"/машина/предмети
   mkdir -p "$SEMIREADY_DIR"/перетворювач
@@ -332,9 +333,9 @@ compile_tsil() {
 }
 
 compile_all_tsil_files() {
+  compile_tsil "бібліотека/математика/математика.ц"
+  compile_tsil "бібліотека/читати/читати.ц"
   compile_tsil "бібліотека/бібліотека.ц"
-  compile_tsil "бібліотека/математика.ц"
-  compile_tsil "бібліотека/читати.ц"
 
   compile_tsil "КД/КД.ц"
 
