@@ -1,8 +1,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../biblioteka.h"
-#include "../prystriy.h"
+#include "mavka/biblioteka.h"
+#include "mavka/prystriy.h"
 
 д64 бібліотека_мавки_синус_д64(д64 значення) {
   return sin(значення);
