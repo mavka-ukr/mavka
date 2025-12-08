@@ -1,5 +1,5 @@
 #include <windows.h>
-#include "../main.h"
+#include "mavka/main.h"
 
 п8* utf16_to_utf8(const wchar_t* utf16_str, природне* out_size) {
   if (!utf16_str) {

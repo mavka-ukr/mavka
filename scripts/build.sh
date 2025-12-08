@@ -4,7 +4,7 @@ set -e
 CURRENT_DIR=$(pwd)
 
 PROGRAM_NAME="мавка"
-BUILD_VERSION=$(cat ВЕРСІЯ)
+BUILD_VERSION=$(cat машина/ВЕРСІЯ)
 BUILD_MODE="$1"
 BUILD_PLATFORM="$2"
 
@@ -311,34 +311,6 @@ READY_DIR="$CURRENT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/
 prepare_directories() {
   mkdir -p "$SEMIREADY_DIR"/бібліотека/математика
   mkdir -p "$SEMIREADY_DIR"/бібліотека/читати
-  mkdir -p "$SEMIREADY_DIR"/КД
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Дані/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/ДіапазонДробових/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/ДіапазонЦілих/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Дія/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Дробове/дії
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Дробове/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Код/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Модуль/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Параметр/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/ПеребірДаних/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/ПеребірДіапазонуДробових/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/ПеребірДіапазонуЦілих/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/ПеребірПослідовності/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/ПеребірСловника/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/ПеребірСписку/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/ПеребірТексту/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Послідовність/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Словник/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Список/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Структура/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Текст/дії
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Текст/методи
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Ціле/дії
-  mkdir -p "$SEMIREADY_DIR"/машина/предмети/Ціле/методи
-  mkdir -p "$SEMIREADY_DIR"/перетворювач
-  mkdir -p "$SEMIREADY_DIR"/пристрій
-  mkdir -p "$SEMIREADY_DIR"/розбирач
   mkdir -p "$READY_DIR"
 }
 
@@ -349,7 +321,7 @@ compile_tsil() {
   $TSIL \
     "$(realpath --relative-to="$(pwd)" "$SEMIREADY_DIR/$input_file.ллвмір")" -П="$TSIL_PLATFORM" \
     перетворити \
-    "$(realpath --relative-to="$(pwd)" "$input_file")" -О=./бібліотека/означення -О=./означення
+    "$(realpath --relative-to="$(pwd)" "$input_file")" -О=./бібліотека/означення -О=./машина/означення
   mv "$SEMIREADY_DIR/$input_file.ллвмір" "$SEMIREADY_DIR/$input_file.ллвмір".ll
 
   LLIRFILES+=" $SEMIREADY_DIR/$input_file.ллвмір.ll"
@@ -372,120 +344,6 @@ compile_all_tsil_files() {
   compile_tsil "бібліотека/читати/_.ц"
   compile_tsil "бібліотека/бібліотека.ц"
 
-
-  compile_tsil "КД/КД.ц"
-
-
-  compile_tsil "машина/ВзятіЗначення.ц"
-  compile_tsil "машина/Властивості.ц"
-  compile_tsil "машина/Дійсність.ц"
-  compile_tsil "машина/Допоміжне.ц"
-  compile_tsil "машина/Задіяні.ц"
-  compile_tsil "машина/Значення.ц"
-  compile_tsil "машина/ІменованоЗадіяні.ц"
-  compile_tsil "машина/ІнформаціяПадіння.ц"
-  compile_tsil "машина/КористувацькіДані.ц"
-  compile_tsil "машина/Машина.ц"
-  compile_tsil "машина/МісцезнаходженняВказівок.ц"
-  compile_tsil "машина/НакопичувачТексту.ц"
-  compile_tsil "машина/Очищувач.ц"
-  compile_tsil "машина/Притримувач.ц"
-  compile_tsil "машина/Спроби.ц"
-
-  compile_tsil "машина/предмети/Дані/методи/чародія_перебір.ц"
-  compile_tsil "машина/предмети/Дані/ПредметДаних.ц"
-
-  compile_tsil "машина/предмети/ДіапазонДробових/методи/чародія_перебір.ц"
-  compile_tsil "машина/предмети/ДіапазонДробових/ПредметДіапазонуДробових.ц"
-
-  compile_tsil "машина/предмети/ДіапазонЦілих/методи/чародія_перебір.ц"
-  compile_tsil "машина/предмети/ДіапазонЦілих/ПредметДіапазонуЦілих.ц"
-
-  compile_tsil "машина/предмети/Дія/ПредметДії.ц"
-
-  compile_tsil "машина/предмети/Дробове/методи/чародія_дробове.ц"
-  compile_tsil "машина/предмети/Дробове/методи/чародія_текст.ц"
-  compile_tsil "машина/предмети/Дробове/методи/чародія_ціле.ц"
-  compile_tsil "машина/предмети/Дробове/ПредметДробового.ц"
-
-  compile_tsil "машина/предмети/Код/ПредметКоду.ц"
-
-  compile_tsil "машина/предмети/Модуль/ПредметМодуля.ц"
-
-  compile_tsil "машина/предмети/Параметр/ПредметПараметра.ц"
-
-  compile_tsil "машина/предмети/ПеребірДаних/методи/далі.ц"
-  compile_tsil "машина/предмети/ПеребірДаних/ПредметПереборуДаних.ц"
-
-  compile_tsil "машина/предмети/ПеребірДіапазонуДробових/методи/далі.ц"
-  compile_tsil "машина/предмети/ПеребірДіапазонуДробових/ПредметПереборуДіапазонуДробових.ц"
-
-  compile_tsil "машина/предмети/ПеребірДіапазонуЦілих/методи/далі.ц"
-  compile_tsil "машина/предмети/ПеребірДіапазонуЦілих/ПредметПереборуДіапазонуЦілих.ц"
-
-  compile_tsil "машина/предмети/ПеребірПослідовності/методи/далі.ц"
-  compile_tsil "машина/предмети/ПеребірПослідовності/ПредметПереборуПослідовності.ц"
-
-  compile_tsil "машина/предмети/ПеребірСловника/методи/далі.ц"
-  compile_tsil "машина/предмети/ПеребірСловника/ПредметПереборуСловника.ц"
-
-  compile_tsil "машина/предмети/ПеребірСписку/методи/далі.ц"
-  compile_tsil "машина/предмети/ПеребірСписку/ПредметПереборуСписку.ц"
-
-  compile_tsil "машина/предмети/ПеребірТексту/методи/далі.ц"
-  compile_tsil "машина/предмети/ПеребірТексту/ПредметПереборуТексту.ц"
-
-  compile_tsil "машина/предмети/Послідовність/методи/чародія_перебір.ц"
-  compile_tsil "машина/предмети/Послідовність/ПредметПослідовності.ц"
-
-  compile_tsil "машина/предмети/Словник/методи/значення.ц"
-  compile_tsil "машина/предмети/Словник/методи/ключі.ц"
-  compile_tsil "машина/предмети/Словник/методи/містить.ц"
-  compile_tsil "машина/предмети/Словник/методи/чародія_перебір.ц"
-  compile_tsil "машина/предмети/Словник/методи/чародія_текст.ц"
-  compile_tsil "машина/предмети/Словник/ПредметСловника.ц"
-
-  compile_tsil "машина/предмети/Список/методи/чародія_текст.ц"
-  compile_tsil "машина/предмети/Список/методи/чародія_перебір.ц"
-  compile_tsil "машина/предмети/Список/методи/додати.ц"
-  compile_tsil "машина/предмети/Список/методи/забрати.ц"
-  compile_tsil "машина/предмети/Список/методи/знайти.ц"
-  compile_tsil "машина/предмети/Список/методи/знайти_позицію.ц"
-  compile_tsil "машина/предмети/Список/методи/фільтрований.ц"
-  compile_tsil "машина/предмети/Список/методи/перетворений.ц"
-  compile_tsil "машина/предмети/Список/методи/обернений.ц"
-  compile_tsil "машина/предмети/Список/методи/містить.ц"
-  compile_tsil "машина/предмети/Список/ПредметСписку.ц"
-
-  compile_tsil "машина/предмети/Структура/ПредметСтруктури.ц"
-
-  compile_tsil "машина/предмети/Текст/дії/з.ц"
-  compile_tsil "машина/предмети/Текст/методи/чародія_ціле.ц"
-  compile_tsil "машина/предмети/Текст/методи/чародія_дробове.ц"
-  compile_tsil "машина/предмети/Текст/методи/чародія_текст.ц"
-  compile_tsil "машина/предмети/Текст/методи/чародія_перебір.ц"
-  compile_tsil "машина/предмети/Текст/ПредметТексту.ц"
-
-  compile_tsil "машина/предмети/Ціле/дії/з.ц"
-  compile_tsil "машина/предмети/Ціле/методи/чародія_ціле.ц"
-  compile_tsil "машина/предмети/Ціле/методи/чародія_дробове.ц"
-  compile_tsil "машина/предмети/Ціле/методи/чародія_текст.ц"
-  compile_tsil "машина/предмети/Ціле/ПредметЦілого.ц"
-
-  compile_tsil "машина/предмети/СкладенийПредмет.ц"
-
-
-  compile_tsil "перетворювач/перетворювач.ц"
-  compile_tsil "розбирач/розбирач.ц"
-
-
-  compile_tsil "пристрій/взяти_файл.ц"
-  compile_tsil "пристрій/вивід.ц"
-  compile_tsil "пристрій/глобальні.ц"
-  compile_tsil "пристрій/діалог.ц"
-  compile_tsil "пристрій/машина.ц"
-  compile_tsil "пристрій/пристрій.ц"
-
   compile_tsil "старт.ц"
 }
 
@@ -494,16 +352,22 @@ link_executable() {
 
   $CLANG $CLANG_OPTIONS \
          -o "$READY_DIR/$OUTFILENAME" \
+         -Iмашина/external/include \
+         -Iexternal/include \
          "external/$COMMON_SYSTEM/main_$COMMON_SYSTEM.c" \
-         "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c" \
          "external/$COMMON_SYSTEM/biblioteka_$COMMON_SYSTEM.c" \
          "external/$BUILD_SYSTEM/biblioteka_$BUILD_SYSTEM.c" \
+         "машина/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/готове/машина.a" \
          $LLIRFILES \
          $STATIC_LIBS
 
   echo "готово!"
   echo "виконуваний файл: $READY_DIR/$OUTFILENAME"
 }
+
+cd машина
+bash scripts/build.sh "$BUILD_MODE" "$BUILD_PLATFORM"
+cd -
 
 prepare_directories
 compile_all_tsil_files

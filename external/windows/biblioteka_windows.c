@@ -1,7 +1,7 @@
 #include <math.h>
 #include <windows.h>
-#include "../biblioteka.h"
-#include "../prystriy.h"
+#include "mavka/biblioteka.h"
+#include "mavka/prystriy.h"
 
 д64 бібліотека_мавки_синус_д64(д64 значення) {
   return sin(значення);
