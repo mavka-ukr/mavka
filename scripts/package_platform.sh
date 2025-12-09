@@ -4,7 +4,7 @@ set -e
 RUNDIR="$PWD"
 
 PROGRAM_NAME="мавка"
-BUILD_VERSION=$(cat ВЕРСІЯ)
+BUILD_VERSION=$(cat машина/ВЕРСІЯ)
 BUILD_PLATFORM="$1"
 
 print_usage() {
@@ -60,9 +60,11 @@ BINDIR="$PLATFORMDIR"
 mkdir -p "$BINDIR"
 
 prepare_platform_dir() {
+  echo "$PWD"
   cp "будування/$BUILD_VERSION/$TSIL_SYSTEM-$TSIL_ARCH/готове/$OUTFILENAME" "$BINDIR"
-  cp -a "означення" "$PLATFORMDIR/означення"
-  cp "КД/КД.о.ц" "$PLATFORMDIR/означення"
+  mkdir -p "$PLATFORMDIR/означення"
+  cp -a "бібліотека/означення" "$PLATFORMDIR"
+  cp -a "машина/означення" "$PLATFORMDIR"
 }
 
 create_platform_tarball() {

@@ -5,8 +5,9 @@ CURRENT_DIR=$(pwd)
 
 PROGRAM_NAME="машина"
 BUILD_VERSION=$(cat ВЕРСІЯ)
-BUILD_MODE="$1"
-BUILD_PLATFORM="$2"
+BUILD_LINKAGE="$1"
+BUILD_MODE="$2"
+BUILD_PLATFORM="$3"
 
 if [ -z "$TSIL" ]
 then
@@ -67,10 +68,14 @@ set_platform_vars() {
       system="linux"
       arch="x86_64"
       common_sys="unix"
-      target="x86_64-linux-musl"
+      target="x86_64-linux-gnu"
       tsil_platform="лінукс-ікс86_64"
       tsil_platform_folder="лінукс-ікс86_64"
-      outfile="$PROGRAM_NAME.a"
+      if [ "$BUILD_LINKAGE" == "static" ]; then
+        outfile="$PROGRAM_NAME.a"
+      else
+        outfile="$PROGRAM_NAME.so"
+      fi
       clang_bin="$ZIG cc"
       extra_opts=""
       clangar_bin="$ZIG ar"
@@ -79,10 +84,14 @@ set_platform_vars() {
       system="linux"
       arch="aarch64"
       common_sys="unix"
-      target="aarch64-linux-musl"
+      target="aarch64-linux-gnu"
       tsil_platform="лінукс-аарч64"
       tsil_platform_folder="лінукс-аарч64"
-      outfile="$PROGRAM_NAME.a"
+      if [ "$BUILD_LINKAGE" == "static" ]; then
+        outfile="$PROGRAM_NAME.a"
+      else
+        outfile="$PROGRAM_NAME.so"
+      fi
       clang_bin="$ZIG cc"
       extra_opts=""
       clangar_bin="$ZIG ar"
@@ -94,7 +103,11 @@ set_platform_vars() {
       target="x86_64-macos"
       tsil_platform="макос-ікс86_64"
       tsil_platform_folder="макос-ікс86_64"
-      outfile="$PROGRAM_NAME.a"
+      if [ "$BUILD_LINKAGE" == "static" ]; then
+        outfile="$PROGRAM_NAME.a"
+      else
+        outfile="$PROGRAM_NAME.dylib"
+      fi
       clang_bin="$ZIG cc"
       extra_opts=""
       clangar_bin="$ZIG ar"
@@ -106,7 +119,11 @@ set_platform_vars() {
       target="aarch64-macos"
       tsil_platform="макос-аарч64"
       tsil_platform_folder="макос-аарч64"
-      outfile="$PROGRAM_NAME.a"
+      if [ "$BUILD_LINKAGE" == "static" ]; then
+        outfile="$PROGRAM_NAME.a"
+      else
+        outfile="$PROGRAM_NAME.dylib"
+      fi
       clang_bin="$ZIG cc"
       extra_opts=""
       clangar_bin="$ZIG ar"
@@ -118,7 +135,11 @@ set_platform_vars() {
       target="x86_64-windows-gnu"
       tsil_platform="віндовс-ікс86_64"
       tsil_platform_folder="віндовс-ікс86_64"
-      outfile="$PROGRAM_NAME.a"
+      if [ "$BUILD_LINKAGE" == "static" ]; then
+        outfile="$PROGRAM_NAME.a"
+      else
+        outfile="$PROGRAM_NAME.dll"
+      fi
       clang_bin="$ZIG cc"
       extra_opts=""
       clangar_bin="$ZIG ar"
@@ -130,7 +151,11 @@ set_platform_vars() {
       target="aarch64-windows-gnu"
       tsil_platform="віндовс-аарч64"
       tsil_platform_folder="віндовс-аарч64"
-      outfile="$PROGRAM_NAME.a"
+      if [ "$BUILD_LINKAGE" == "static" ]; then
+        outfile="$PROGRAM_NAME.a"
+      else
+        outfile="$PROGRAM_NAME.dll"
+      fi
       clang_bin="$ZIG cc"
       extra_opts=""
       clangar_bin="$ZIG ar"
@@ -147,7 +172,11 @@ set_platform_vars() {
       target="aarch64-linux-android21"
       tsil_platform="лінукс-аарч64"
       tsil_platform_folder="андроїд-аарч64"
-      outfile="$PROGRAM_NAME"
+      if [ "$BUILD_LINKAGE" == "static" ]; then
+        outfile="$PROGRAM_NAME.a"
+      else
+        outfile="$PROGRAM_NAME.so"
+      fi
       clang_bin="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang"
       extra_opts=""
       clangar_bin="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
@@ -350,21 +379,45 @@ compile_all_tsil_files() {
 }
 
 link_executable() {
-  echo "створення архіву"
+  case "$BUILD_LINKAGE" in
+    static)
+      echo "створення архіву"
 
-  $CLANG $CLANG_OPTIONS \
-         -o "$SEMIREADY_DIR/prystriy.o" \
-         -Iexternal/include \
-         -c \
-         "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c" \
-         $STATIC_LIBS
+      $CLANG $CLANG_OPTIONS \
+             -o "$SEMIREADY_DIR/prystriy.o" \
+             -Iexternal/include \
+             -c \
+             "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c" \
+             $STATIC_LIBS
 
-  mv "$READY_DIR/$OUTFILENAME" "$READY_DIR/$OUTFILENAME.old" 2>/dev/null || true
+      mv "$READY_DIR/$OUTFILENAME" "$READY_DIR/$OUTFILENAME.old" 2>/dev/null || true
 
-  $CLANGAR rcs "$READY_DIR/$OUTFILENAME" $OBJECTFILES "$SEMIREADY_DIR/prystriy.o"
+      $CLANGAR rcs "$READY_DIR/$OUTFILENAME" $OBJECTFILES "$SEMIREADY_DIR/prystriy.o"
 
-  echo "готово!"
-  echo "файл архіву: $READY_DIR/$OUTFILENAME"
+      echo "готово!"
+      echo "файл архіву: $READY_DIR/$OUTFILENAME"
+      ;;
+    dynamic)
+      echo "створення динамічної бібліотеки"
+
+      mv "$READY_DIR/$OUTFILENAME" "$READY_DIR/$OUTFILENAME.old" 2>/dev/null || true
+
+      $CLANG $CLANG_OPTIONS \
+             -o "$READY_DIR/$OUTFILENAME" \
+             -Iexternal/include \
+             -shared -fPIC \
+             "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c" \
+             $OBJECTFILES \
+             $STATIC_LIBS
+
+      echo "готово!"
+      echo "файл динамічної бібліотеки: $READY_DIR/$OUTFILENAME"
+      ;;
+    *)
+      echo "Unsupported linkage type: $BUILD_LINKAGE"
+      print_usage
+      exit 1 ;;
+  esac
 }
 
 prepare_directories

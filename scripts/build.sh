@@ -195,12 +195,12 @@ set_platform_vars() {
       system="linux"
       arch="x86_64"
       common_sys="unix"
-      target="x86_64-linux-musl"
+      target="x86_64-linux-gnu"
       tsil_platform="лінукс-ікс86_64"
       tsil_platform_folder="лінукс-ікс86_64"
       outfile="$PROGRAM_NAME"
       clang_bin="$ZIG cc"
-      extra_opts="-static -Wl,--export-dynamic"
+      extra_opts=""
 
       setup_linux_libraries "zig ar" "zig ranlib" "$clang_bin" "$target" "" extra_opts static_libs
       ;;
@@ -208,12 +208,12 @@ set_platform_vars() {
       system="linux"
       arch="aarch64"
       common_sys="unix"
-      target="aarch64-linux-musl"
+      target="aarch64-linux-gnu"
       tsil_platform="лінукс-аарч64"
       tsil_platform_folder="лінукс-аарч64"
       outfile="$PROGRAM_NAME"
       clang_bin="$ZIG cc"
-      extra_opts="-static -Wl,--export-dynamic"
+      extra_opts=""
 
       setup_linux_libraries "zig ar" "zig ranlib" "$clang_bin" "$target" "" extra_opts static_libs
       ;;
@@ -366,7 +366,7 @@ link_executable() {
 }
 
 cd машина
-bash scripts/build.sh "$BUILD_MODE" "$BUILD_PLATFORM"
+bash scripts/build.sh static "$BUILD_MODE" "$BUILD_PLATFORM"
 cd -
 
 prepare_directories
