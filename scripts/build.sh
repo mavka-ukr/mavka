@@ -28,7 +28,7 @@ LLIRFILES=""
 
 print_usage() {
   echo "Usage: $0 <debug|release> <platform>"
-  echo "Supported platforms: linux-x86_64, linux-aarch64, macos-x86_64, macos-aarch64, windows-x86_64, windows-aarch64, android-aarch64"
+  echo "Supported platforms: linux-x86_64, linux-aarch64, macos-x86_64, macos-aarch64, windows-x86_64, windows-aarch64, android-aarch64, wasm64"
 }
 
 set_build_mode() {
@@ -278,6 +278,17 @@ set_platform_vars() {
       extra_opts="-ldl -lc -lm"
 
       setup_linux_libraries "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar" "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ranlib" "$clang_bin" "$target" "" extra_opts static_libs
+      ;;
+    wasm64)
+      system="wasm64"
+      arch="wasm64"
+      common_sys="wasm64"
+      target="wasm64-unknown-unknown"
+      tsil_platform="васм64"
+      tsil_platform_folder="васм64"
+      outfile="$PROGRAM_NAME.wasm"
+      clang_bin="clang"
+      extra_opts="-nostdlib -Wl,--no-entry -Wl,--export-all -Wl,--allow-undefined -Wl,--export-memory -Wl,--initial-memory=16777216 -Wl,--max-memory=1073741824"
       ;;
     *)
       echo "Unsupported build platform: $platform"

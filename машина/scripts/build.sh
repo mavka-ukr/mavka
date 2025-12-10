@@ -29,7 +29,7 @@ OBJECTFILES=""
 
 print_usage() {
   echo "Usage: $0 <debug|release> <platform>"
-  echo "Supported platforms: linux-x86_64, linux-aarch64, macos-x86_64, macos-aarch64, windows-x86_64, windows-aarch64, android-aarch64"
+  echo "Supported platforms: linux-x86_64, linux-aarch64, macos-x86_64, macos-aarch64, windows-x86_64, windows-aarch64, android-aarch64, wasm64"
 }
 
 set_build_mode() {
@@ -180,6 +180,22 @@ set_platform_vars() {
       clang_bin="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang"
       extra_opts=""
       clangar_bin="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
+      ;;
+    wasm64)
+      system="wasm64"
+      arch="wasm64"
+      common_sys="wasm"
+      target="wasm64-unknown-unknown"
+      tsil_platform="васм64"
+      tsil_platform_folder="васм64"
+      if [ "$BUILD_LINKAGE" == "static" ]; then
+        outfile="$PROGRAM_NAME.a"
+      else
+        outfile="$PROGRAM_NAME.wasm"
+      fi
+      clang_bin="clang"
+      extra_opts="-nostdlib -Wl,--no-entry -Wl,--export-all -Wl,--allow-undefined"
+      clangar_bin="llvm-ar"
       ;;
     *)
       echo "Unsupported build platform: $platform"
@@ -384,15 +400,20 @@ link_executable() {
       echo "створення архіву"
 
       $CLANG $CLANG_OPTIONS \
-             -o "$SEMIREADY_DIR/prystriy.o" \
+             -o "$SEMIREADY_DIR/prystriy_$COMMON_SYSTEM.o" \
              -Iexternal/include \
              -c \
-             "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c" \
-             $STATIC_LIBS
+             "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c"
+
+      $CLANG $CLANG_OPTIONS \
+             -o "$SEMIREADY_DIR/prystriy_$BUILD_SYSTEM.o" \
+             -Iexternal/include \
+             -c \
+             "external/$BUILD_SYSTEM/prystriy_$BUILD_SYSTEM.c"
 
       mv "$READY_DIR/$OUTFILENAME" "$READY_DIR/$OUTFILENAME.old" 2>/dev/null || true
 
-      $CLANGAR rcs "$READY_DIR/$OUTFILENAME" $OBJECTFILES "$SEMIREADY_DIR/prystriy.o"
+      $CLANGAR rcs "$READY_DIR/$OUTFILENAME" $OBJECTFILES "$SEMIREADY_DIR/prystriy_$COMMON_SYSTEM.o" "$SEMIREADY_DIR/prystriy_$BUILD_SYSTEM.o"
 
       echo "готово!"
       echo "файл архіву: $READY_DIR/$OUTFILENAME"
@@ -407,8 +428,8 @@ link_executable() {
              -Iexternal/include \
              -shared -fPIC \
              "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c" \
-             $OBJECTFILES \
-             $STATIC_LIBS
+             "external/$BUILD_SYSTEM/prystriy_$BUILD_SYSTEM.c" \
+             $OBJECTFILES
 
       echo "готово!"
       echo "файл динамічної бібліотеки: $READY_DIR/$OUTFILENAME"

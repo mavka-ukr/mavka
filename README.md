@@ -7,7 +7,7 @@
 Треба:
 
 - GNU/Linux
-- Ціль _0.50.0_
+- Ціль _0.51.0_
 - Zig _0.15.2_
 
 ```shell
@@ -34,11 +34,12 @@ bash scripts/build.sh debug linux-x86_64
 - `windows-x86_64`
 - `windows-aarch64`
 - `android-aarch64`
+- `wasm64`
 
 Для будування для Android треба вказати шлях до [NDK](https://developer.android.com/ndk/downloads):
 
 ```
-ANDROID_NDK_HOME="/home/kohutd/Android/android-ndk-r27d" bash scripts/build.sh debug android-aarch64
+ANDROID_NDK_HOME="~/Android/android-ndk-r27d" bash scripts/build.sh debug android-aarch64
 ```
 
 **До уваги**: для платформ `linux` та `android` буде збудовано з нуля `ncurses`, `readline` та `idn2`.
