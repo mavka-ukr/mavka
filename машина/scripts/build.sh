@@ -184,7 +184,7 @@ set_platform_vars() {
     wasm64)
       system="wasm64"
       arch="wasm64"
-      common_sys="wasm"
+      common_sys="wasm64"
       target="wasm64-unknown-unknown"
       tsil_platform="васм64"
       tsil_platform_folder="васм64"
@@ -405,15 +405,9 @@ link_executable() {
              -c \
              "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c"
 
-      $CLANG $CLANG_OPTIONS \
-             -o "$SEMIREADY_DIR/prystriy_$BUILD_SYSTEM.o" \
-             -Iexternal/include \
-             -c \
-             "external/$BUILD_SYSTEM/prystriy_$BUILD_SYSTEM.c"
-
       mv "$READY_DIR/$OUTFILENAME" "$READY_DIR/$OUTFILENAME.old" 2>/dev/null || true
 
-      $CLANGAR rcs "$READY_DIR/$OUTFILENAME" $OBJECTFILES "$SEMIREADY_DIR/prystriy_$COMMON_SYSTEM.o" "$SEMIREADY_DIR/prystriy_$BUILD_SYSTEM.o"
+      $CLANGAR rcs "$READY_DIR/$OUTFILENAME" $OBJECTFILES "$SEMIREADY_DIR/prystriy_$COMMON_SYSTEM.o"
 
       echo "готово!"
       echo "файл архіву: $READY_DIR/$OUTFILENAME"
@@ -428,7 +422,6 @@ link_executable() {
              -Iexternal/include \
              -shared -fPIC \
              "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c" \
-             "external/$BUILD_SYSTEM/prystriy_$BUILD_SYSTEM.c" \
              $OBJECTFILES
 
       echo "готово!"
