@@ -22,6 +22,7 @@ bash scripts/build.sh release macos-aarch64
 bash scripts/build.sh release windows-x86_64
 bash scripts/build.sh release windows-aarch64
 bash scripts/build.sh release android-aarch64
+bash scripts/build.sh release wasm64
 
 bash scripts/package_source.sh
 bash scripts/package_platform.sh linux-x86_64
@@ -31,3 +32,5 @@ bash scripts/package_platform.sh macos-aarch64
 bash scripts/package_platform.sh windows-x86_64
 bash scripts/package_platform.sh windows-aarch64
 bash scripts/package_platform.sh android-aarch64
+
+cp -r "будування/$BUILD_VERSION/васм64/готове/мавка.wasm" "$VERSIONDIR/мавка-$BUILD_VERSION.wasm"
