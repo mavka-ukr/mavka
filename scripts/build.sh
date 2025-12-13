@@ -249,6 +249,7 @@ set_platform_vars() {
       outfile="$PROGRAM_NAME.exe"
       clang_bin="$ZIG cc"
       extra_opts=""
+      static_libs+=" scripts/icon.res"
       ;;
     windows-aarch64)
       system="windows"
@@ -260,6 +261,7 @@ set_platform_vars() {
       outfile="$PROGRAM_NAME.exe"
       clang_bin="$ZIG cc"
       extra_opts=""
+      static_libs+=" scripts/icon.res"
       ;;
     android-aarch64)
       if [ -z "$ANDROID_NDK_HOME" ]; then
