@@ -65,6 +65,8 @@ prepare_platform_dir() {
   mkdir -p "$PLATFORMDIR/означення"
   cp -a "бібліотека/означення" "$PLATFORMDIR"
   cp -a "машина/означення" "$PLATFORMDIR"
+  cp ДОЗВІЛ "$PLATFORMDIR/ДОЗВІЛ"
+  cp LICENSE "$PLATFORMDIR/LICENSE"
 }
 
 create_platform_tarball() {
