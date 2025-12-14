@@ -62,9 +62,9 @@ mkdir -p "$BINDIR"
 prepare_platform_dir() {
   echo "$PWD"
   cp "будування/$BUILD_VERSION/$TSIL_SYSTEM-$TSIL_ARCH/готове/$OUTFILENAME" "$BINDIR"
-  mkdir -p "$PLATFORMDIR/означення"
-  cp -a "бібліотека/означення" "$PLATFORMDIR"
-  cp -a "машина/означення" "$PLATFORMDIR"
+  # mkdir -p "$PLATFORMDIR/означення"
+  # cp -a "бібліотека/означення" "$PLATFORMDIR"
+  # cp -a "машина/означення" "$PLATFORMDIR"
   cp ДОЗВІЛ "$PLATFORMDIR/ДОЗВІЛ"
   cp LICENSE "$PLATFORMDIR/LICENSE"
 }
