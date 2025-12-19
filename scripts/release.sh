@@ -13,7 +13,8 @@ if [ -d "$VERSIONDIR" ]; then
   exit 1
 fi
 
-rm -rf "будування/$BUILD_VERSION"
+rm -rf "будування"
+rm -rf "машина/будування"
 
 bash scripts/build.sh release linux-x86_64
 bash scripts/build.sh release linux-aarch64
