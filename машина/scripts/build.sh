@@ -227,6 +227,7 @@ SEMIREADY_DIR="$CURRENT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOL
 READY_DIR="$CURRENT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/готове"
 
 prepare_directories() {
+  mkdir -p "$SEMIREADY_DIR"/ДЧ
   mkdir -p "$SEMIREADY_DIR"/КД
   mkdir -p "$SEMIREADY_DIR"/предмети/Дані/методи
   mkdir -p "$SEMIREADY_DIR"/предмети/ДіапазонДробових/методи
@@ -278,6 +279,9 @@ compile_tsil() {
 }
 
 compile_all_tsil_files() {
+  compile_tsil "ДЧ/ДЧ.ц"
+
+
   compile_tsil "КД/КД.ц"
 
 
