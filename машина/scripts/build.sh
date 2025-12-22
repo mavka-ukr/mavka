@@ -279,7 +279,9 @@ compile_tsil() {
 }
 
 compile_all_tsil_files() {
-  compile_tsil "ДЧ/ДЧ.ц"
+  compile_tsil "ДЧ/Дробове.ц"
+  compile_tsil "ДЧ/Ціле.ц"
+  compile_tsil "ДЧ/ЦілеІДробове.ц"
 
 
   compile_tsil "КД/КД.ц"
