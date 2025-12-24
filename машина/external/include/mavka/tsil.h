@@ -21,7 +21,15 @@ typedef SSIZE_T ціле;
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+
+// Include unistd.h on POSIX systems
+#if defined(__unix__) || defined(__unix) || \
+    (defined(__APPLE__) && defined(__MACH__))
 #include <unistd.h>
+#else
+// Define ssize_t for non-POSIX, non-Windows systems
+typedef intptr_t ssize_t;
+#endif
 
 typedef bool логічне;
 typedef uint8_t п8;
