@@ -14,12 +14,14 @@ typedef INT32 ц32;
 typedef INT64 ц64;
 typedef double д64;
 typedef SIZE_T природне;
+typedef SSIZE_T ціле;
 
 #else
 
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <unistd.h>
 
 typedef bool логічне;
 typedef uint8_t п8;
@@ -30,6 +32,7 @@ typedef int32_t ц32;
 typedef int64_t ц64;
 typedef double д64;
 typedef size_t природне;
+typedef ssize_t ціле;
 
 #endif
 
