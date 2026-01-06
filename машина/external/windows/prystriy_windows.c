@@ -316,7 +316,26 @@ extern логічне пристрій_мавки_прочитати_файл(п
     return TRUE;
   }
 
-  довжина = sprintf(буфер, "%.16g", значення);
+  довжина = sprintf(буфер, "%.17g", значення);
+  if (довжина < 0 || довжина >= (int)sizeof(буфер)) {
+    return FALSE;
+  }
+
+  // Знаходимо найкоротше представлення, яке round-trips
+  // Пробуємо від 15 до 17 цифр точності
+  for (int precision = 15; precision <= 17; precision++) {
+    довжина = sprintf(буфер, "%.*g", precision, значення);
+    if (довжина < 0 || довжина >= (int)sizeof(буфер)) {
+      continue;
+    }
+
+    // Перевіряємо чи round-trip працює
+    д64 parsed = strtod(буфер, NULL);
+    if (parsed == значення) {
+      break;
+    }
+  }
+
   if (довжина < 0 || довжина >= (int)sizeof(буфер)) {
     return FALSE;
   }
@@ -359,26 +378,6 @@ extern логічне пристрій_мавки_прочитати_файл(п
     }
   } else {
     *вихід_розміру_експоненти = 0;
-
-    // Find decimal point
-    char* dot_pos = NULL;
-    for (int і = 0; і < довжина; і++) {
-      if (буфер[і] == '.') {
-        dot_pos = &буфер[і];
-        break;
-      }
-    }
-
-    if (dot_pos != NULL) {
-      int end = довжина - 1;
-      while (end > (dot_pos - буфер) && буфер[end] == '0') {
-        end--;
-      }
-      if (буфер[end] == '.') {
-        end--;
-      }
-      довжина = end + 1;
-    }
 
     *вихід_розміру = (природне)довжина;
     *вихід_даних = (п8*)HeapAlloc(GetProcessHeap(), 0, *вихід_розміру);
