@@ -262,7 +262,7 @@ compile_tsil() {
   $TSIL \
     "$(realpath --relative-to="$(pwd)" "$SEMIREADY_DIR/$input_file.ллвмір")" -П="$TSIL_PLATFORM" \
     перетворити \
-    "$(realpath --relative-to="$(pwd)" "$input_file")" -О=./бібліотека/означення -О=./означення
+    "$(realpath --relative-to="$(pwd)" "$input_file")" -О=./КД/означення -О=./означення
   mv "$SEMIREADY_DIR/$input_file.ллвмір" "$SEMIREADY_DIR/$input_file.ллвмір".ll
 
   $CLANG $CLANG_OPTIONS \
