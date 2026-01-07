@@ -249,7 +249,7 @@ prepare_directories() {
   mkdir -p "$SEMIREADY_DIR"/предмети/Текст/методи
   mkdir -p "$SEMIREADY_DIR"/предмети/Число/дії
   mkdir -p "$SEMIREADY_DIR"/предмети/Число/методи
-  mkdir -p "$SEMIREADY_DIR"/перетворювач
+  mkdir -p "$SEMIREADY_DIR"/перекладач
   mkdir -p "$SEMIREADY_DIR"/пристрій
   mkdir -p "$SEMIREADY_DIR"/розбирач
   mkdir -p "$READY_DIR"
@@ -284,7 +284,6 @@ compile_all_tsil_files() {
   compile_tsil "Допоміжне.ц"
   compile_tsil "Задіяні.ц"
   compile_tsil "Значення.ц"
-  compile_tsil "ІменованоЗадіяні.ц"
   compile_tsil "ІнформаціяПадіння.ц"
   compile_tsil "КористувацькіДані.ц"
   compile_tsil "Машина.ц"
@@ -364,7 +363,7 @@ compile_all_tsil_files() {
   compile_tsil "предмети/СкладенийПредмет.ц"
 
 
-  compile_tsil "перетворювач/перетворювач.ц"
+  compile_tsil "перекладач/перекладач.ц"
 
 
   compile_tsil "розбирач/розбирач.ц"
