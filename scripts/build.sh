@@ -155,6 +155,36 @@ build_idn2() {
   echo "$build_dir"
 }
 
+build_uv() {
+  local ar="$1"
+  local ranlib="$2"
+  local cc="$3"
+  local target="$4"
+  local ldflags="$5"
+
+  local uv_dir="будування/libuv/$target/libuv-v1.51.0"
+  local build_dir="$uv_dir/build_uv"
+
+  extract_if_needed "$(pwd)/scripts/libuv-v1.51.0.tar.gz" \
+    "$uv_dir"
+
+  if [ ! -d "$build_dir" ]; then
+    cd "$uv_dir"
+
+    sh autogen.sh
+
+    AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target" CFLAGS="-O3" LDFLAGS="$ldflags" \
+      ./configure --host="$target" --prefix="$(pwd)/build_uv"
+
+    make -j$(nproc)
+    make check
+    make install
+    cd -
+  fi
+
+  echo "$build_dir"
+}
+
 setup_linux_libraries() {
   local ar="$1"
   local ranlib="$2"
@@ -173,6 +203,9 @@ setup_linux_libraries() {
   build_idn2 "$ar" "$ranlib" "$cc" "$target" "$ldflags" > /dev/tty
   local idn2_build=$(build_idn2 "$ar" "$ranlib" "$cc" "$target" "$ldflags" 2>&1 | tail -n 1)
 
+  build_uv "$ar" "$ranlib" "$cc" "$target" "$ldflags" > /dev/tty
+  local uv_build=$(build_uv "$ar" "$ranlib" "$cc" "$target" "$ldflags" 2>&1 | tail -n 1)
+
   eval "$extra_opts_var+=\" -I$(pwd)/$ncurses_build/include\""
   eval "$extra_opts_var+=\" -DPROGRAM_USE_READLINE -I$(pwd)/$readline_build/include\""
   eval "$extra_opts_var+=\" -I$(pwd)/$idn2_build/include\""
@@ -184,6 +217,8 @@ setup_linux_libraries() {
   eval "$static_libs_var+=\" $(pwd)/$ncurses_build/lib/libpanel.a\""
 
   eval "$static_libs_var+=\" $(pwd)/$idn2_build/lib/libidn2.a\""
+
+  eval "$static_libs_var+=\" $(pwd)/$uv_build/lib/libuv.a\""
 }
 
 set_platform_vars() {
