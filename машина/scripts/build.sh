@@ -169,7 +169,7 @@ set_platform_vars() {
       system="linux"
       arch="aarch64"
       common_sys="unix"
-      target="aarch64-linux-android21"
+      target="aarch64-linux-android24"
       tsil_platform="лінукс-аарч64"
       tsil_platform_folder="андроїд-аарч64"
       if [ "$BUILD_LINKAGE" == "static" ]; then
@@ -177,7 +177,7 @@ set_platform_vars() {
       else
         outfile="$PROGRAM_NAME.so"
       fi
-      clang_bin="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang"
+      clang_bin="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang"
       extra_opts=""
       clangar_bin="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
       ;;
