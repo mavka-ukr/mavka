@@ -2,6 +2,11 @@
 
 MAVKA="$1"
 
+if [ -z "$MAVKA" ]; then
+  echo "Usage: $0 <path_to_mavka_executable>"
+  exit 1
+fi
+
 run_test() {
   test_file="$1"
   echo "$test_file"
