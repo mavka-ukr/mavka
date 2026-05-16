@@ -279,7 +279,7 @@ compile_all_tsil_files() {
 
   compile_tsil "ВзятіЗначення.ц"
   compile_tsil "Дійсність.ц"
-  compile_tsil "Діячі.ц"
+  compile_tsil "Призначення.ц"
   compile_tsil "Допоміжне.ц"
   compile_tsil "Задіяні.ц"
   compile_tsil "Значення.ц"
