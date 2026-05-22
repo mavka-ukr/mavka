@@ -164,10 +164,10 @@ cd машина
 bash scripts/build.sh static "$BUILD_MODE" "$BUILD_PLATFORM"
 cd "$ROOT_DIR"
 
-compile_tsil "бібліотека/математика/_.ц"
-compile_tsil "бібліотека/читати/_.ц"
-compile_tsil "бібліотека/бібліотека.ц"
-compile_tsil "старт.ц"
+compile_tsil "бібліотека/математика/_.к"
+compile_tsil "бібліотека/читати/_.к"
+compile_tsil "бібліотека/бібліотека.к"
+compile_tsil "старт.к"
 
 echo "створення виконуваного файлу"
 $CLANG $CLANG_OPTIONS \
