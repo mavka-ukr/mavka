@@ -42,13 +42,13 @@ bash scripts/build.sh debug linux-x86_64
 ANDROID_NDK_HOME="/home/kohutd/Android/android-ndk-r27d" bash scripts/build.sh debug android-aarch64
 ```
 
-Перед будуванням можна завантажити третіх-сторонні бібліотеки за допомогою:
+Перед будуванням можна завантажити додаткові бібліотеки за допомогою:
 
 ```
 bash scripts/download_libs.sh
 ```
 
-Для платформ `linux` та `android` буде збудовано з нуля `ncurses`, `readline` та `idn2`, але якщо архіви не завантажені, вони не будуть збиратись і не будуть лінкуватись.
+Для платформ `linux` та `android` буде збудовано з нуля `ncurses`, `readline` та `idn2`, але якщо архіви не завантажені, вони не будуть збиратись і не будуть включені в Мавку.
 
 ## Розробка
 
