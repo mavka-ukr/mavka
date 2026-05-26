@@ -15,6 +15,11 @@ BUILD_PLATFORM="$2"
 TSIL="${TSIL:-ціль}"
 ZIG="${ZIG:-zig}"
 
+ZIG_AVAILABLE=false
+if command -v "$ZIG" &> /dev/null; then
+  ZIG_AVAILABLE=true
+fi
+
 CLANG_OPTIONS="-DPROGRAM_VERSION=\"$BUILD_VERSION\""
 LLIRFILES=""
 
@@ -48,8 +53,13 @@ set_platform_vars() {
       TSIL_PLATFORM="лінукс-ікс86_64"
       TSIL_PLATFORM_FOLDER="лінукс-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME"
-      CLANG_BIN="$ZIG cc"
-      setup_linux_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
+      if [ "$ZIG_AVAILABLE" = true ]; then
+        CLANG_BIN="$ZIG cc"
+        setup_linux_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
+      else
+        CLANG_BIN="clang"
+        setup_linux_libraries "ar" "ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
+      fi
       ;;
     linux-aarch64)
       BUILD_SYSTEM="linux"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="unix"
@@ -57,8 +67,13 @@ set_platform_vars() {
       TSIL_PLATFORM="лінукс-аарч64"
       TSIL_PLATFORM_FOLDER="лінукс-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
-      CLANG_BIN="$ZIG cc"
-      setup_linux_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
+      if [ "$ZIG_AVAILABLE" = true ]; then
+        CLANG_BIN="$ZIG cc"
+        setup_linux_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
+      else
+        CLANG_BIN="clang"
+        setup_linux_libraries "ar" "ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
+      fi
       ;;
     macos-x86_64)
       BUILD_SYSTEM="macos"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="unix"
@@ -66,7 +81,11 @@ set_platform_vars() {
       TSIL_PLATFORM="макос-ікс86_64"
       TSIL_PLATFORM_FOLDER="макос-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME"
-      CLANG_BIN="$ZIG cc"
+      if [ "$ZIG_AVAILABLE" = true ]; then
+        CLANG_BIN="$ZIG cc"
+      else
+        CLANG_BIN="clang"
+      fi
       extra_opts="-Wl,--export-dynamic"
       ;;
     macos-aarch64)
@@ -75,7 +94,11 @@ set_platform_vars() {
       TSIL_PLATFORM="макос-аарч64"
       TSIL_PLATFORM_FOLDER="макос-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
-      CLANG_BIN="$ZIG cc"
+      if [ "$ZIG_AVAILABLE" = true ]; then
+        CLANG_BIN="$ZIG cc"
+      else
+        CLANG_BIN="clang"
+      fi
       extra_opts="-Wl,--export-dynamic"
       ;;
     windows-x86_64)
@@ -84,7 +107,11 @@ set_platform_vars() {
       TSIL_PLATFORM="віндовс-ікс86_64"
       TSIL_PLATFORM_FOLDER="віндовс-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME.exe"
-      CLANG_BIN="$ZIG cc"
+      if [ "$ZIG_AVAILABLE" = true ]; then
+        CLANG_BIN="$ZIG cc"
+      else
+        CLANG_BIN="clang"
+      fi
       static_libs="scripts/icon.res"
       ;;
     windows-aarch64)
@@ -93,7 +120,11 @@ set_platform_vars() {
       TSIL_PLATFORM="віндовс-аарч64"
       TSIL_PLATFORM_FOLDER="віндовс-аарч64"
       OUTFILENAME="$PROGRAM_NAME.exe"
-      CLANG_BIN="$ZIG cc"
+      if [ "$ZIG_AVAILABLE" = true ]; then
+        CLANG_BIN="$ZIG cc"
+      else
+        CLANG_BIN="clang"
+      fi
       static_libs="scripts/icon.res"
       ;;
     android-aarch64)
@@ -153,6 +184,8 @@ fi
 set_build_mode "$BUILD_MODE"
 set_platform_vars "$BUILD_PLATFORM"
 
+LINK_SYSTEM_LIBS="-lm"
+
 SEMIREADY_DIR="$ROOT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/напівготове"
 READY_DIR="$ROOT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/готове"
 
@@ -170,15 +203,37 @@ compile_tsil "бібліотека/бібліотека.к"
 compile_tsil "старт.к"
 
 echo "створення виконуваного файлу"
+set -x
 $CLANG $CLANG_OPTIONS \
-  -o "$READY_DIR/$OUTFILENAME" \
+  -c -o "$READY_DIR/main.o" \
   -Iмашина/external/include \
   -Iexternal/include \
-  "external/$COMMON_SYSTEM/main_$COMMON_SYSTEM.c" \
-  "external/$COMMON_SYSTEM/biblioteka_$COMMON_SYSTEM.c" \
-  "external/$BUILD_SYSTEM/biblioteka_$BUILD_SYSTEM.c" \
-  "машина/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/готове/машина.a" \
+  "external/$COMMON_SYSTEM/main_$COMMON_SYSTEM.c"
+$CLANG $CLANG_OPTIONS \
+  -c -o "$READY_DIR/biblioteka_$COMMON_SYSTEM.o" \
+  -Iмашина/external/include \
+  -Iexternal/include \
+  "external/$COMMON_SYSTEM/biblioteka_$COMMON_SYSTEM.c"
+
+if [ "$BUILD_SYSTEM" != "$COMMON_SYSTEM" ]; then
+  $CLANG $CLANG_OPTIONS \
+    -c -o "$READY_DIR/biblioteka_$BUILD_SYSTEM.o" \
+    -Iмашина/external/include \
+    -Iexternal/include \
+    "external/$BUILD_SYSTEM/biblioteka_$BUILD_SYSTEM.c"
+  BIBLIOTEKA_SYSTEM_OBJ="$READY_DIR/biblioteka_$BUILD_SYSTEM.o"
+else
+  BIBLIOTEKA_SYSTEM_OBJ=""
+fi
+
+$CLANG $CLANG_OPTIONS \
+  -o "$READY_DIR/$OUTFILENAME" \
+  "$READY_DIR/main.o" \
+  "$READY_DIR/biblioteka_$COMMON_SYSTEM.o" \
+  $BIBLIOTEKA_SYSTEM_OBJ \
   $LLIRFILES \
-  $STATIC_LIBS
+  "машина/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/готове/машина.a" \
+  $STATIC_LIBS \
+  $LINK_SYSTEM_LIBS
 
 echo "готово: $READY_DIR/$OUTFILENAME"

@@ -8,7 +8,7 @@
 
 - GNU/Linux
 - Ціль _0.61.0_
-- Zig _0.15.2_
+- Zig _0.15.2_ (необовʼязково на і для `linux-x86_64`, необхідно для "кроскомпіляції")
 
 ```shell
 bash scripts/build.sh debug linux-x86_64

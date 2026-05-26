@@ -24,6 +24,11 @@ then
   ZIG="zig"
 fi
 
+ZIG_AVAILABLE=false
+if command -v "$ZIG" &> /dev/null; then
+  ZIG_AVAILABLE=true
+fi
+
 CLANG_OPTIONS="-DPROGRAM_VERSION=\"$BUILD_VERSION\""
 OBJECTFILES=""
 
@@ -76,9 +81,14 @@ set_platform_vars() {
       else
         outfile="$PROGRAM_NAME.so"
       fi
-      clang_bin="$ZIG cc"
       extra_opts=""
-      clangar_bin="$ZIG ar"
+      if [ "$ZIG_AVAILABLE" = true ]; then
+        clang_bin="$ZIG cc"
+        clangar_bin="$ZIG ar"
+      else
+        clang_bin="clang"
+        clangar_bin="ar"
+      fi
       ;;
     linux-aarch64)
       system="linux"
@@ -92,9 +102,14 @@ set_platform_vars() {
       else
         outfile="$PROGRAM_NAME.so"
       fi
-      clang_bin="$ZIG cc"
       extra_opts=""
-      clangar_bin="$ZIG ar"
+      if [ "$ZIG_AVAILABLE" = true ]; then
+        clang_bin="$ZIG cc"
+        clangar_bin="$ZIG ar"
+      else
+        clang_bin="clang"
+        clangar_bin="ar"
+      fi
       ;;
     macos-x86_64)
       system="macos"
@@ -108,9 +123,14 @@ set_platform_vars() {
       else
         outfile="$PROGRAM_NAME.dylib"
       fi
-      clang_bin="$ZIG cc"
       extra_opts=""
-      clangar_bin="$ZIG ar"
+      if [ "$ZIG_AVAILABLE" = true ]; then
+        clang_bin="$ZIG cc"
+        clangar_bin="$ZIG ar"
+      else
+        clang_bin="clang"
+        clangar_bin="ar"
+      fi
       ;;
     macos-aarch64)
       system="macos"
@@ -124,9 +144,14 @@ set_platform_vars() {
       else
         outfile="$PROGRAM_NAME.dylib"
       fi
-      clang_bin="$ZIG cc"
       extra_opts=""
-      clangar_bin="$ZIG ar"
+      if [ "$ZIG_AVAILABLE" = true ]; then
+        clang_bin="$ZIG cc"
+        clangar_bin="$ZIG ar"
+      else
+        clang_bin="clang"
+        clangar_bin="ar"
+      fi
       ;;
     windows-x86_64)
       system="windows"
@@ -140,9 +165,14 @@ set_platform_vars() {
       else
         outfile="$PROGRAM_NAME.dll"
       fi
-      clang_bin="$ZIG cc"
       extra_opts=""
-      clangar_bin="$ZIG ar"
+      if [ "$ZIG_AVAILABLE" = true ]; then
+        clang_bin="$ZIG cc"
+        clangar_bin="$ZIG ar"
+      else
+        clang_bin="clang"
+        clangar_bin="ar"
+      fi
       ;;
     windows-aarch64)
       system="windows"
@@ -156,9 +186,14 @@ set_platform_vars() {
       else
         outfile="$PROGRAM_NAME.dll"
       fi
-      clang_bin="$ZIG cc"
       extra_opts=""
-      clangar_bin="$ZIG ar"
+      if [ "$ZIG_AVAILABLE" = true ]; then
+        clang_bin="$ZIG cc"
+        clangar_bin="$ZIG ar"
+      else
+        clang_bin="clang"
+        clangar_bin="ar"
+      fi
       ;;
     android-aarch64)
       if [ -z "$ANDROID_NDK_HOME" ]; then
@@ -177,8 +212,8 @@ set_platform_vars() {
       else
         outfile="$PROGRAM_NAME.so"
       fi
-      clang_bin="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang"
       extra_opts=""
+      clang_bin="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang"
       clangar_bin="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
       ;;
     wasm64)
@@ -193,8 +228,8 @@ set_platform_vars() {
       else
         outfile="$PROGRAM_NAME.wasm"
       fi
-      clang_bin="clang"
       extra_opts="-nostdlib -Wl,--no-entry -Wl,--export-all -Wl,--allow-undefined"
+      clang_bin="clang"
       clangar_bin="llvm-ar"
       ;;
     *)
