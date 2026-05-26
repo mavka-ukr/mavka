@@ -53,6 +53,7 @@ set_platform_vars() {
       TSIL_PLATFORM="лінукс-ікс86_64"
       TSIL_PLATFORM_FOLDER="лінукс-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME"
+      extra_opts="-lm"
       if [ "$ZIG_AVAILABLE" = true ]; then
         CLANG_BIN="$ZIG cc"
         setup_linux_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
@@ -67,6 +68,7 @@ set_platform_vars() {
       TSIL_PLATFORM="лінукс-аарч64"
       TSIL_PLATFORM_FOLDER="лінукс-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
+      extra_opts="-lm"
       if [ "$ZIG_AVAILABLE" = true ]; then
         CLANG_BIN="$ZIG cc"
         setup_linux_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
@@ -86,7 +88,7 @@ set_platform_vars() {
       else
         CLANG_BIN="clang"
       fi
-      extra_opts="-Wl,--export-dynamic"
+      extra_opts="-Wl,--export-dynamic -lm"
       ;;
     macos-aarch64)
       BUILD_SYSTEM="macos"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="unix"
@@ -99,7 +101,7 @@ set_platform_vars() {
       else
         CLANG_BIN="clang"
       fi
-      extra_opts="-Wl,--export-dynamic"
+      extra_opts="-Wl,--export-dynamic -lm"
       ;;
     windows-x86_64)
       BUILD_SYSTEM="windows"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="windows"
@@ -184,8 +186,6 @@ fi
 set_build_mode "$BUILD_MODE"
 set_platform_vars "$BUILD_PLATFORM"
 
-LINK_SYSTEM_LIBS="-lm"
-
 SEMIREADY_DIR="$ROOT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/напівготове"
 READY_DIR="$ROOT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/готове"
 
@@ -233,7 +233,6 @@ $CLANG $CLANG_OPTIONS \
   $BIBLIOTEKA_SYSTEM_OBJ \
   $LLIRFILES \
   "машина/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/готове/машина.a" \
-  $STATIC_LIBS \
-  $LINK_SYSTEM_LIBS
+  $STATIC_LIBS
 
 echo "готово: $READY_DIR/$OUTFILENAME"
