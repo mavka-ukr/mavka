@@ -190,6 +190,7 @@ SEMIREADY_DIR="$ROOT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER
 READY_DIR="$ROOT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/готове"
 
 mkdir -p "$SEMIREADY_DIR"/бібліотека/математика
+mkdir -p "$SEMIREADY_DIR"/бібліотека/система
 mkdir -p "$SEMIREADY_DIR"/бібліотека/читати
 mkdir -p "$READY_DIR"
 
@@ -198,6 +199,9 @@ bash scripts/build.sh static "$BUILD_MODE" "$BUILD_PLATFORM"
 cd "$ROOT_DIR"
 
 compile_tsil "бібліотека/математика/_.ц"
+compile_tsil "бібліотека/система/_.ц"
+compile_tsil "бібліотека/система/записати.ц"
+compile_tsil "бібліотека/система/прочитати.ц"
 compile_tsil "бібліотека/читати/_.ц"
 compile_tsil "бібліотека/бібліотека.ц"
 compile_tsil "старт.ц"
