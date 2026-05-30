@@ -362,7 +362,8 @@
     }
     // ERROR_ALREADY_EXISTS occurred - verify it's actually a directory, not a file
     DWORD атрибути_фіналь = GetFileAttributesW(широкий_шлях);
-    if (атрибути_фіналь == INVALID_FILE_ATTRIBUTES || !(атрибути_фіналь & FILE_ATTRIBUTE_DIRECTORY)) {
+    if (атрибути_фіналь == INVALID_FILE_ATTRIBUTES ||
+        !(атрибути_фіналь & FILE_ATTRIBUTE_DIRECTORY)) {
       free(копія_шляху);
       free(широкий_шлях);
       return FALSE;
