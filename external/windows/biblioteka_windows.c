@@ -1,4 +1,7 @@
 #include <math.h>
+#include <memory.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <windows.h>
 #include "mavka/biblioteka.h"
 #include "mavka/prystriy.h"
@@ -57,4 +60,17 @@
 
 р64 бібліотека_мавки_остача_від_ділення_р64(р64 а, р64 б) {
   return fmod(а, б);
+}
+
+логічне бібліотека_мавки_записати_файл(природне розмір_шляху,
+                                       п8* дані_шляху,
+                                       природне розмір_даних,
+                                       п8* дані_даних) {
+  return FALSE;
+}
+
+логічне бібліотека_мавки_прочитати_файл(природне розмір_шляху,
+                                        п8* дані_шляху,
+                                        Дані* вихід) {
+  return FALSE;
 }
