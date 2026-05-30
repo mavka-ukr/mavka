@@ -12,7 +12,7 @@ typedef UINT32 п32;
 typedef UINT64 п64;
 typedef INT32 ц32;
 typedef INT64 ц64;
-typedef double д64;
+typedef double р64;
 typedef SIZE_T природне;
 typedef SSIZE_T ціле;
 
@@ -38,7 +38,7 @@ typedef uint32_t п32;
 typedef uint64_t п64;
 typedef int32_t ц32;
 typedef int64_t ц64;
-typedef double д64;
+typedef double р64;
 typedef size_t природне;
 typedef ssize_t ціле;
 
