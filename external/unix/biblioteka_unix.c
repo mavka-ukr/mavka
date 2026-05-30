@@ -1,4 +1,5 @@
 #include <dirent.h>
+#include <errno.h>
 #include <math.h>
 #include <memory.h>
 #include <stdio.h>
@@ -210,5 +211,66 @@
 
   free(шлях);
 
+  return true;
+}
+
+логічне бібліотека_мавки_створити_папку(природне розмір_шляху, п8* дані_шляху) {
+  char* шлях = (char*)malloc(розмір_шляху + 1);
+  if (!шлях) {
+    return false;
+  }
+  memcpy(шлях, дані_шляху, розмір_шляху);
+  шлях[розмір_шляху] = '\0';
+
+  // Check if directory already exists
+  struct stat статус;
+  if (stat(шлях, &статус) == 0 && S_ISDIR(статус.st_mode)) {
+    free(шлях);
+    return true;
+  }
+
+  // Create a copy to parse
+  char* копія_шляху = (char*)malloc(розмір_шляху + 1);
+  if (!копія_шляху) {
+    free(шлях);
+    return false;
+  }
+  memcpy(копія_шляху, дані_шляху, розмір_шляху);
+  копія_шляху[розмір_шляху] = '\0';
+
+  // Create directories recursively
+  for (size_t я = 0; я < розмір_шляху; я++) {
+    if (копія_шляху[я] == '/') {
+      копія_шляху[я] = '\0';
+      if (я > 0) { // Skip if it's the root /
+        if (mkdir((const char*)копія_шляху, 0755) == -1) {
+          if (errno != EEXIST) {
+            free(копія_шляху);
+            free(шлях);
+            return false;
+          }
+        }
+      }
+      копія_шляху[я] = '/';
+    }
+  }
+
+  // Create the final directory
+  if (mkdir((const char*)шлях, 0755) == -1) {
+    if (errno != EEXIST) {
+      free(копія_шляху);
+      free(шлях);
+      return false;
+    }
+    // EEXIST occurred - verify it's actually a directory, not a file
+    if (stat(шлях, &статус) == 0 && !S_ISDIR(статус.st_mode)) {
+      free(копія_шляху);
+      free(шлях);
+      return false;
+    }
+  }
+
+  free(копія_шляху);
+  free(шлях);
   return true;
 }

@@ -299,3 +299,77 @@
 
   return прочитано == вихід->розмір;
 }
+
+логічне бібліотека_мавки_створити_папку(природне розмір_шляху, п8* дані_шляху) {
+  // Convert UTF-8 path to wide char
+  int широких_символів =
+      MultiByteToWideChar(CP_UTF8, 0, (char*)дані_шляху, розмір_шляху, NULL, 0);
+  if (широких_символів == 0) {
+    return FALSE;
+  }
+
+  WCHAR* широкий_шлях = (WCHAR*)malloc((широких_символів + 1) * sizeof(WCHAR));
+  if (!широкий_шлях) {
+    return FALSE;
+  }
+
+  MultiByteToWideChar(CP_UTF8, 0, (char*)дані_шляху, розмір_шляху, широкий_шлях,
+                      широких_символів);
+  широкий_шлях[широких_символів] = L'\0';
+
+  // Check if directory already exists
+  DWORD атрибути = GetFileAttributesW(широкий_шлях);
+  if (атрибути != INVALID_FILE_ATTRIBUTES &&
+      атрибути & FILE_ATTRIBUTE_DIRECTORY) {
+    free(широкий_шлях);
+    return TRUE;
+  }
+
+  // Create a copy to parse
+  size_t копія_розмір = (широких_символів + 1) * sizeof(WCHAR);
+  WCHAR* копія_шляху = (WCHAR*)malloc(копія_розмір);
+  if (!копія_шляху) {
+    free(широкий_шлях);
+    return FALSE;
+  }
+  memcpy(копія_шляху, широкий_шлях, копія_розмір);
+
+  // Create directories recursively
+  for (int я = 0; я < широких_символів; я++) {
+    if (копія_шляху[я] == L'\\' || копія_шляху[я] == L'/') {
+      копія_шляху[я] = L'\0';
+      if (я > 0 && я > 2) { // Skip drive letter (C: is 2 chars)
+        if (!CreateDirectoryW(копія_шляху, NULL)) {
+          DWORD помилка = GetLastError();
+          if (помилка != ERROR_ALREADY_EXISTS) {
+            free(копія_шляху);
+            free(широкий_шлях);
+            return FALSE;
+          }
+        }
+      }
+      копія_шляху[я] = L'\\';
+    }
+  }
+
+  // Create the final directory
+  if (!CreateDirectoryW(широкий_шлях, NULL)) {
+    DWORD помилка = GetLastError();
+    if (помилка != ERROR_ALREADY_EXISTS) {
+      free(копія_шляху);
+      free(широкий_шлях);
+      return FALSE;
+    }
+    // ERROR_ALREADY_EXISTS occurred - verify it's actually a directory, not a file
+    DWORD атрибути_фіналь = GetFileAttributesW(широкий_шлях);
+    if (атрибути_фіналь == INVALID_FILE_ATTRIBUTES || !(атрибути_фіналь & FILE_ATTRIBUTE_DIRECTORY)) {
+      free(копія_шляху);
+      free(широкий_шлях);
+      return FALSE;
+    }
+  }
+
+  free(копія_шляху);
+  free(широкий_шлях);
+  return TRUE;
+}
