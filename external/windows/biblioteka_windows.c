@@ -2,6 +2,7 @@
 #include <memory.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <windows.h>
 #include "mavka/biblioteka.h"
 #include "mavka/prystriy.h"
@@ -60,6 +61,103 @@
 
 р64 бібліотека_мавки_остача_від_ділення_р64(р64 а, р64 б) {
   return fmod(а, б);
+}
+
+логічне бібліотека_мавки_видалити(природне розмір_шляху, п8* дані_шляху) {
+  // Convert UTF-8 path to wide char
+  int широких_символів =
+      MultiByteToWideChar(CP_UTF8, 0, (char*)дані_шляху, розмір_шляху, NULL, 0);
+  if (широких_символів == 0) {
+    return FALSE;
+  }
+
+  WCHAR* широкий_шлях = (WCHAR*)malloc((широких_символів + 1) * sizeof(WCHAR));
+  if (!широкий_шлях) {
+    return FALSE;
+  }
+
+  MultiByteToWideChar(CP_UTF8, 0, (char*)дані_шляху, розмір_шляху, широкий_шлях,
+                      широких_символів);
+  широкий_шлях[широких_символів] = L'\0';
+
+  // Get file attributes
+  DWORD атрибути = GetFileAttributesW(широкий_шлях);
+  if (атрибути == INVALID_FILE_ATTRIBUTES) {
+    free(широкий_шлях);
+    return FALSE;
+  }
+
+  if (атрибути & FILE_ATTRIBUTE_DIRECTORY) {
+    // Delete directory recursively
+    WIN32_FIND_DATAW знайдені_дані;
+    HANDLE знайти_файл;
+
+    size_t довжина_шаблону = wcslen(широкий_шлях) + 3;
+    WCHAR* шаблон = (WCHAR*)malloc(довжина_шаблону * sizeof(WCHAR));
+    if (!шаблон) {
+      free(широкий_шлях);
+      return FALSE;
+    }
+    swprintf(шаблон, довжина_шаблону, L"%s\\*", широкий_шлях);
+
+    знайти_файл = FindFirstFileW(шаблон, &знайдені_дані);
+    if (знайти_файл == INVALID_HANDLE_VALUE) {
+      free(шаблон);
+      free(широкий_шлях);
+      return RemoveDirectoryW(широкий_шлях) ? TRUE : FALSE;
+    }
+
+    логічне успіх = TRUE;
+    do {
+      if (wcscmp(знайдені_дані.cFileName, L".") == 0 ||
+          wcscmp(знайдені_дані.cFileName, L"..") == 0) {
+        continue;
+      }
+
+      size_t довжина_повного_шляху =
+          wcslen(широкий_шлях) + wcslen(знайдені_дані.cFileName) + 2;
+      WCHAR* повний_шлях =
+          (WCHAR*)malloc(довжина_повного_шляху * sizeof(WCHAR));
+      if (!повний_шлях) {
+        успіх = FALSE;
+        break;
+      }
+
+      swprintf(повний_шлях, довжина_повного_шляху, L"%s\\%s", широкий_шлях,
+               знайдені_дані.cFileName);
+
+      // Convert back to UTF-8
+      int утф8_довжина =
+          WideCharToMultiByte(CP_UTF8, 0, повний_шлях, -1, NULL, 0, NULL, NULL);
+      if (утф8_довжина > 0) {
+        char* утф8_шлях = (char*)malloc(утф8_довжина);
+        if (утф8_шлях) {
+          WideCharToMultiByte(CP_UTF8, 0, повний_шлях, -1, утф8_шлях,
+                              утф8_довжина, NULL, NULL);
+          if (!бібліотека_мавки_видалити(strlen(утф8_шлях), (п8*)утф8_шлях)) {
+            успіх = FALSE;
+          }
+          free(утф8_шлях);
+        }
+      }
+      free(повний_шлях);
+    } while (FindNextFileW(знайти_файл, &знайдені_дані));
+
+    FindClose(знайти_файл);
+    free(шаблон);
+    free(широкий_шлях);
+
+    if (!успіх) {
+      return FALSE;
+    }
+
+    return RemoveDirectoryW(широкий_шлях);
+  } else {
+    // Delete file
+    BOOL результат = DeleteFileW(широкий_шлях);
+    free(широкий_шлях);
+    return результат;
+  }
 }
 
 логічне бібліотека_мавки_дописати_файл(природне розмір_шляху,

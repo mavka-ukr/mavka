@@ -1,7 +1,11 @@
+#include <dirent.h>
 #include <math.h>
 #include <memory.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include "mavka/biblioteka.h"
 #include "mavka/prystriy.h"
 
@@ -59,6 +63,66 @@
 
 р64 бібліотека_мавки_остача_від_ділення_р64(р64 а, р64 б) {
   return fmod(а, б);
+}
+
+// видалити файл або папку за шляхом force recursively
+логічне бібліотека_мавки_видалити(природне розмір_шляху, п8* дані_шляху) {
+  char* шлях = (char*)malloc(розмір_шляху + 1);
+  if (!шлях) {
+    return false;
+  }
+  memcpy(шлях, дані_шляху, розмір_шляху);
+  шлях[розмір_шляху] = '\0';
+
+  struct stat статус;
+  if (stat(шлях, &статус) == -1) {
+    free(шлях);
+    return false;
+  }
+
+  if (S_ISDIR(статус.st_mode)) {
+    // Delete directory recursively
+    DIR* папка = opendir(шлях);
+    if (!папка) {
+      free(шлях);
+      return false;
+    }
+
+    struct dirent* запис;
+    логічне успіх = true;
+    while ((запис = readdir(папка)) != NULL) {
+      if (strcmp(запис->d_name, ".") == 0 || strcmp(запис->d_name, "..") == 0) {
+        continue;
+      }
+
+      size_t довжина_шляху = strlen(шлях) + strlen(запис->d_name) + 2;
+      char* повний_шлях = (char*)malloc(довжина_шляху);
+      if (!повний_шлях) {
+        успіх = false;
+        break;
+      }
+      snprintf(повний_шлях, довжина_шляху, "%s/%s", шлях, запис->d_name);
+
+      if (!бібліотека_мавки_видалити(strlen(повний_шлях), (п8*)повний_шлях)) {
+        успіх = false;
+      }
+      free(повний_шлях);
+    }
+
+    closedir(папка);
+    free(шлях);
+
+    if (!успіх) {
+      return false;
+    }
+
+    return rmdir(шлях) == 0 ? true : false;
+  } else {
+    // Delete file
+    логічне результат = unlink(шлях) == 0 ? true : false;
+    free(шлях);
+    return результат;
+  }
 }
 
 логічне бібліотека_мавки_дописати_файл(природне розмір_шляху,
