@@ -66,11 +66,97 @@
                                        п8* дані_шляху,
                                        природне розмір_даних,
                                        п8* дані_даних) {
-  return FALSE;
+  // Convert UTF-8 path to wide char
+  int широких_символів =
+      MultiByteToWideChar(CP_UTF8, 0, (char*)дані_шляху, розмір_шляху, NULL, 0);
+  if (широких_символів == 0) {
+    return FALSE;
+  }
+
+  WCHAR* широкий_шлях = (WCHAR*)malloc((широких_символів + 1) * sizeof(WCHAR));
+  if (!широкий_шлях) {
+    return FALSE;
+  }
+
+  MultiByteToWideChar(CP_UTF8, 0, (char*)дані_шляху, розмір_шляху, широкий_шлях,
+                      широких_символів);
+  широкий_шлях[широких_символів] = L'\0';
+
+  // Create file using Windows API
+  HANDLE файл = CreateFileW(широкий_шлях, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
+                            FILE_ATTRIBUTE_NORMAL, NULL);
+
+  free(широкий_шлях);
+
+  if (файл == INVALID_HANDLE_VALUE) {
+    return FALSE;
+  }
+
+  // Write file
+  DWORD записано;
+  if (!WriteFile(файл, дані_даних, розмір_даних, &записано, NULL)) {
+    CloseHandle(файл);
+    return FALSE;
+  }
+
+  CloseHandle(файл);
+  return записано == розмір_даних;
 }
 
 логічне бібліотека_мавки_прочитати_файл(природне розмір_шляху,
                                         п8* дані_шляху,
                                         Дані* вихід) {
-  return FALSE;
+  // Convert UTF-8 path to wide char
+  int широких_символів =
+      MultiByteToWideChar(CP_UTF8, 0, (char*)дані_шляху, розмір_шляху, NULL, 0);
+  if (широких_символів == 0) {
+    return FALSE;
+  }
+
+  WCHAR* широкий_шлях = (WCHAR*)malloc((широких_символів + 1) * sizeof(WCHAR));
+  if (!широкий_шлях) {
+    return FALSE;
+  }
+
+  MultiByteToWideChar(CP_UTF8, 0, (char*)дані_шляху, розмір_шляху, широкий_шлях,
+                      широких_символів);
+  широкий_шлях[широких_символів] = L'\0';
+
+  // Open file using Windows API
+  HANDLE файл = CreateFileW(широкий_шлях, GENERIC_READ, FILE_SHARE_READ, NULL,
+                            OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+  free(широкий_шлях);
+
+  if (файл == INVALID_HANDLE_VALUE) {
+    return FALSE;
+  }
+
+  // Get file size
+  LARGE_INTEGER розмір_файлу;
+  if (!GetFileSizeEx(файл, &розмір_файлу)) {
+    CloseHandle(файл);
+    return FALSE;
+  }
+
+  вихід->розмір = (природне)розмір_файлу.QuadPart;
+
+  // Allocate buffer
+  вихід->дані = (п8*)malloc(вихід->розмір);
+  if (!вихід->дані) {
+    CloseHandle(файл);
+    return FALSE;
+  }
+
+  // Read file
+  DWORD прочитано;
+  if (!ReadFile(файл, вихід->дані, вихід->розмір, &прочитано, NULL)) {
+    free(вихід->дані);
+    CloseHandle(файл);
+    return FALSE;
+  }
+
+  CloseHandle(файл);
+
+  return прочитано == вихід->розмір;
 }
