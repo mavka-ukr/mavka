@@ -62,6 +62,47 @@
   return fmod(а, б);
 }
 
+логічне бібліотека_мавки_доповнити_файл(природне розмір_шляху,
+                                        п8* дані_шляху,
+                                        природне розмір_даних,
+                                        п8* дані_даних) {
+  // Convert UTF-8 path to wide char
+  int широких_символів =
+      MultiByteToWideChar(CP_UTF8, 0, (char*)дані_шляху, розмір_шляху, NULL, 0);
+  if (широких_символів == 0) {
+    return FALSE;
+  }
+
+  WCHAR* широкий_шлях = (WCHAR*)malloc((широких_символів + 1) * sizeof(WCHAR));
+  if (!широкий_шлях) {
+    return FALSE;
+  }
+
+  MultiByteToWideChar(CP_UTF8, 0, (char*)дані_шляху, розмір_шляху, широкий_шлях,
+                      широких_символів);
+  широкий_шлях[широких_символів] = L'\0';
+
+  // Open file using Windows API in append mode
+  HANDLE файл = CreateFileW(широкий_шлях, FILE_APPEND_DATA, 0, NULL,
+                            OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+  free(широкий_шлях);
+
+  if (файл == INVALID_HANDLE_VALUE) {
+    return FALSE;
+  }
+
+  // Write file
+  DWORD записано;
+  if (!WriteFile(файл, дані_даних, розмір_даних, &записано, NULL)) {
+    CloseHandle(файл);
+    return FALSE;
+  }
+
+  CloseHandle(файл);
+  return записано == розмір_даних;
+}
+
 логічне бібліотека_мавки_записати_файл(природне розмір_шляху,
                                        п8* дані_шляху,
                                        природне розмір_даних,
