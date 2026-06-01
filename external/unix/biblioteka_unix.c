@@ -341,9 +341,119 @@ static логічне прочитати_потік_в_дані(int дескри
   return true;
 }
 
-void бібліотека_мавки_виконати(природне кількість_аргументів,
-                               ю8* аргументи,
+void бібліотека_мавки_виконати(природне розмір,
+                               п8* дані,
                                РезультатВиконання* результат_виконання) {
+  if (!результат_виконання) {
+    return;
+  }
+
+  результат_виконання->стдвив.розмір = 0;
+  результат_виконання->стдвив.дані = NULL;
+  результат_виконання->стдпом.розмір = 0;
+  результат_виконання->стдпом.дані = NULL;
+  результат_виконання->код = -1;
+
+  if (розмір == 0 || !дані) {
+    return;
+  }
+
+  char* команда = (char*)malloc(розмір + 1);
+  if (!команда) {
+    return;
+  }
+  memcpy(команда, дані, розмір);
+  команда[розмір] = '\0';
+
+  char* argv[4];
+  argv[0] = "/bin/sh";
+  argv[1] = "-c";
+  argv[2] = команда;
+  argv[3] = NULL;
+
+  int stdout_pipe[2] = {-1, -1};
+  int stderr_pipe[2] = {-1, -1};
+  pid_t pid = -1;
+
+  if (pipe(stdout_pipe) == -1 || pipe(stderr_pipe) == -1) {
+    free(команда);
+    return;
+  }
+
+  встановити_закриття_при_виконанні(stdout_pipe[0]);
+  встановити_закриття_при_виконанні(stdout_pipe[1]);
+  встановити_закриття_при_виконанні(stderr_pipe[0]);
+  встановити_закриття_при_виконанні(stderr_pipe[1]);
+
+  pid = fork();
+  if (pid == -1) {
+    free(команда);
+    goto cleanup;
+  }
+
+  if (pid == 0) {
+    close(stdout_pipe[0]);
+    close(stderr_pipe[0]);
+
+    if (dup2(stdout_pipe[1], STDOUT_FILENO) == -1 ||
+        dup2(stderr_pipe[1], STDERR_FILENO) == -1) {
+      _exit(127);
+    }
+
+    close(stdout_pipe[1]);
+    close(stderr_pipe[1]);
+
+    execvp(argv[0], argv);
+    _exit(127);
+  }
+
+  close(stdout_pipe[1]);
+  close(stderr_pipe[1]);
+  stdout_pipe[1] = -1;
+  stderr_pipe[1] = -1;
+
+  прочитати_потік_в_дані(stdout_pipe[0], &результат_виконання->стдвив);
+  прочитати_потік_в_дані(stderr_pipe[0], &результат_виконання->стдпом);
+
+  {
+    int стати;
+    логічне дочекався = false;
+
+    while (true) {
+      if (waitpid(pid, &стати, 0) == -1) {
+        if (errno == EINTR) {
+          continue;
+        }
+        break;
+      }
+
+      дочекався = true;
+      break;
+    }
+
+    if (дочекався) {
+      if (WIFEXITED(стати)) {
+        результат_виконання->код = WEXITSTATUS(стати);
+      } else if (WIFSIGNALED(стати)) {
+        результат_виконання->код = 128 + WTERMSIG(стати);
+      }
+    }
+  }
+
+cleanup:
+  if (stdout_pipe[0] != -1) {
+    close(stdout_pipe[0]);
+  }
+  if (stderr_pipe[0] != -1) {
+    close(stderr_pipe[0]);
+  }
+  free(команда);
+}
+
+void бібліотека_мавки_виконати_аргументи(
+    природне кількість_аргументів,
+    ю8* аргументи,
+    РезультатВиконання* результат_виконання) {
   if (!результат_виконання) {
     return;
   }
