@@ -374,3 +374,233 @@
   free(широкий_шлях);
   return TRUE;
 }
+
+static WCHAR* utf8_to_wide(const п8* utf8) {
+  if (!utf8) {
+    return NULL;
+  }
+
+  int count = MultiByteToWideChar(CP_UTF8, 0, (const char*)utf8, -1, NULL, 0);
+  if (count == 0) {
+    return NULL;
+  }
+
+  WCHAR* wide = (WCHAR*)malloc(count * sizeof(WCHAR));
+  if (!wide) {
+    return NULL;
+  }
+
+  if (MultiByteToWideChar(CP_UTF8, 0, (const char*)utf8, -1, wide, count) ==
+      0) {
+    free(wide);
+    return NULL;
+  }
+
+  return wide;
+}
+
+static WCHAR* utf8_to_wide_sized(const п8* utf8, природне size) {
+  if (!utf8 || size == 0) {
+    return NULL;
+  }
+
+  int count =
+      MultiByteToWideChar(CP_UTF8, 0, (const char*)utf8, (int)size, NULL, 0);
+  if (count == 0) {
+    return NULL;
+  }
+
+  WCHAR* wide = (WCHAR*)malloc((count + 1) * sizeof(WCHAR));
+  if (!wide) {
+    return NULL;
+  }
+
+  if (MultiByteToWideChar(CP_UTF8, 0, (const char*)utf8, (int)size, wide,
+                          count + 1) == 0) {
+    free(wide);
+    return NULL;
+  }
+
+  wide[count] = L'\0';
+  return wide;
+}
+
+static логічне append_to_data(Дані* output, const void* data, size_t size) {
+  if (size == 0) {
+    return TRUE;
+  }
+
+  п8* next = (п8*)realloc(output->дані, output->розмір + size);
+  if (!next) {
+    return FALSE;
+  }
+
+  memcpy(next + output->розмір, data, size);
+  output->дані = next;
+  output->розмір += size;
+  return TRUE;
+}
+
+static BOOL read_pipe(HANDLE handle, Дані* output) {
+  BYTE buffer[4096];
+
+  while (TRUE) {
+    DWORD bytes_read = 0;
+    if (!ReadFile(handle, buffer, sizeof(buffer), &bytes_read, NULL)) {
+      DWORD error = GetLastError();
+      if (error == ERROR_BROKEN_PIPE) {
+        return TRUE;
+      }
+      return FALSE;
+    }
+    if (bytes_read == 0) {
+      return TRUE;
+    }
+    if (!append_to_data(output, buffer, (size_t)bytes_read)) {
+      return FALSE;
+    }
+  }
+}
+
+void бібліотека_мавки_виконати(природне кількість_аргументів,
+                               ю8* аргументи,
+                               РезультатВиконання* результат_виконання) {
+  if (!результат_виконання) {
+    return;
+  }
+
+  результат_виконання->стдвив.розмір = 0;
+  результат_виконання->стдвив.дані = NULL;
+  результат_виконання->стдпом.розмір = 0;
+  результат_виконання->стдпом.дані = NULL;
+  результат_виконання->код = -1;
+
+  if (кількість_аргументів == 0 || !аргументи) {
+    return;
+  }
+
+  // Convert all args to wide
+  WCHAR** wide_args = (WCHAR**)malloc(кількість_аргументів * sizeof(WCHAR*));
+  if (!wide_args) {
+    return;
+  }
+
+  for (природне i = 0; i < кількість_аргументів; ++i) {
+    wide_args[i] = utf8_to_wide_sized(аргументи[i].дані, аргументи[i].розмір);
+    if (!wide_args[i]) {
+      for (природне j = 0; j < i; ++j) {
+        free(wide_args[j]);
+      }
+      free(wide_args);
+      return;
+    }
+  }
+
+  // Always use cmd.exe /c for maximum compatibility
+  size_t cmd_prefix_len = wcslen(L"cmd.exe /c ");
+  size_t total_len = cmd_prefix_len;
+
+  for (природне i = 0; i < кількість_аргументів; ++i) {
+    total_len += wcslen(wide_args[i]);
+    if (i > 0) {
+      total_len += 1; // space
+    }
+  }
+  total_len += 1; // null terminator
+
+  WCHAR* command_line = (WCHAR*)malloc(total_len * sizeof(WCHAR));
+  if (!command_line) {
+    for (природне i = 0; i < кількість_аргументів; ++i) {
+      free(wide_args[i]);
+    }
+    free(wide_args);
+    return;
+  }
+
+  wcscpy_s(command_line, total_len, L"cmd.exe /c ");
+  for (природне i = 0; i < кількість_аргументів; ++i) {
+    if (i > 0) {
+      wcscat_s(command_line, total_len, L" ");
+    }
+    wcscat_s(command_line, total_len, wide_args[i]);
+  }
+
+  // Create pipes with security attributes for inheritance
+  SECURITY_ATTRIBUTES sa = {sizeof(sa), NULL, TRUE};
+  HANDLE stdout_read = NULL;
+  HANDLE stdout_write = NULL;
+  HANDLE stderr_read = NULL;
+  HANDLE stderr_write = NULL;
+
+  if (!CreatePipe(&stdout_read, &stdout_write, &sa, 0) ||
+      !CreatePipe(&stderr_read, &stderr_write, &sa, 0)) {
+    goto cleanup_command;
+  }
+
+  // Make read ends non-inheritable
+  SetHandleInformation(stdout_read, HANDLE_FLAG_INHERIT, 0);
+  SetHandleInformation(stderr_read, HANDLE_FLAG_INHERIT, 0);
+
+  // Setup process
+  STARTUPINFOW si = {0};
+  si.cb = sizeof(si);
+  si.dwFlags = STARTF_USESTDHANDLES;
+  si.hStdOutput = stdout_write;
+  si.hStdError = stderr_write;
+  si.hStdInput = CreateFileW(L"NUL", GENERIC_READ, FILE_SHARE_READ, &sa,
+                             OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+  PROCESS_INFORMATION pi = {0};
+
+  if (!CreateProcessW(NULL, command_line, NULL, NULL, TRUE, CREATE_NO_WINDOW,
+                      NULL, NULL, &si, &pi)) {
+    if (si.hStdInput != INVALID_HANDLE_VALUE) {
+      CloseHandle(si.hStdInput);
+    }
+    goto cleanup_pipes;
+  }
+
+  // Close write ends in parent
+  CloseHandle(stdout_write);
+  stdout_write = NULL;
+  CloseHandle(stderr_write);
+  stderr_write = NULL;
+  if (si.hStdInput != INVALID_HANDLE_VALUE) {
+    CloseHandle(si.hStdInput);
+  }
+
+  // Read from child's output
+  read_pipe(stdout_read, &результат_виконання->стдвив);
+  read_pipe(stderr_read, &результат_виконання->стдпом);
+
+  // Wait and get exit code
+  WaitForSingleObject(pi.hProcess, INFINITE);
+  DWORD exit_code = 0;
+  if (GetExitCodeProcess(pi.hProcess, &exit_code)) {
+    результат_виконання->код = (ц32)exit_code;
+  }
+
+  CloseHandle(pi.hProcess);
+  CloseHandle(pi.hThread);
+
+cleanup_pipes:
+  if (stdout_read) {
+    CloseHandle(stdout_read);
+  }
+  if (stdout_write) {
+    CloseHandle(stdout_write);
+  }
+  if (stderr_read) {
+    CloseHandle(stderr_read);
+  }
+  if (stderr_write) {
+    CloseHandle(stderr_write);
+  }
+
+cleanup_command:
+  free(command_line);
+  for (природне i = 0; i < кількість_аргументів; ++i) {
+    free(wide_args[i]);
+  }
+  free(wide_args);
+}

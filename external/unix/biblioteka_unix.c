@@ -1,11 +1,14 @@
 #include <dirent.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <math.h>
 #include <memory.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include "mavka/biblioteka.h"
 #include "mavka/prystriy.h"
@@ -111,13 +114,15 @@
     }
 
     closedir(папка);
-    free(шлях);
 
     if (!успіх) {
+      free(шлях);
       return false;
     }
 
-    return rmdir(шлях) == 0 ? true : false;
+    int ok = (rmdir(шлях) == 0) ? true : false;
+    free(шлях);
+    return ok;
   } else {
     // Delete file
     логічне результат = unlink(шлях) == 0 ? true : false;
@@ -273,4 +278,176 @@
   free(копія_шляху);
   free(шлях);
   return true;
+}
+
+static логічне встановити_закриття_при_виконанні(int дескриптор) {
+  int прапори = fcntl(дескриптор, F_GETFD);
+  if (прапори == -1) {
+    return false;
+  }
+  return fcntl(дескриптор, F_SETFD, прапори | FD_CLOEXEC) != -1;
+}
+
+static логічне прочитати_потік_в_дані(int дескриптор, Дані* вихід) {
+  const size_t крок = 4096;
+  size_t ємність = 0;
+  size_t використано = 0;
+  п8* буфер = NULL;
+
+  while (true) {
+    if (використано + крок > ємність) {
+      size_t наступна_ємність = ємність == 0 ? крок : ємність * 2;
+      if (наступна_ємність < використано + крок) {
+        наступна_ємність = використано + крок;
+      }
+      п8* новий_буфер = (п8*)realloc(буфер, наступна_ємність);
+      if (!новий_буфер) {
+        free(буфер);
+        return false;
+      }
+      буфер = новий_буфер;
+      ємність = наступна_ємність;
+    }
+
+    ssize_t прочитано = read(дескриптор, буфер + використано, крок);
+    if (прочитано < 0) {
+      if (errno == EINTR) {
+        continue;
+      }
+      free(буфер);
+      return false;
+    }
+    if (прочитано == 0) {
+      break;
+    }
+
+    використано += (size_t)прочитано;
+  }
+
+  if (використано == 0) {
+    free(буфер);
+    вихід->розмір = 0;
+    вихід->дані = NULL;
+    return true;
+  }
+
+  п8* обрізаний_буфер = (п8*)realloc(буфер, використано);
+  if (обрізаний_буфер) {
+    буфер = обрізаний_буфер;
+  }
+
+  вихід->розмір = використано;
+  вихід->дані = буфер;
+  return true;
+}
+
+void бібліотека_мавки_виконати(природне кількість_аргументів,
+                               ю8* аргументи,
+                               РезультатВиконання* результат_виконання) {
+  if (!результат_виконання) {
+    return;
+  }
+
+  результат_виконання->стдвив.розмір = 0;
+  результат_виконання->стдвив.дані = NULL;
+  результат_виконання->стдпом.розмір = 0;
+  результат_виконання->стдпом.дані = NULL;
+  результат_виконання->код = -1;
+
+  if (кількість_аргументів == 0 || !аргументи) {
+    return;
+  }
+
+  char** argv = (char**)malloc((кількість_аргументів + 1) * sizeof(char*));
+  if (!argv) {
+    return;
+  }
+
+  for (природне i = 0; i < кількість_аргументів; ++i) {
+    argv[i] = (char*)аргументи[i].дані;
+  }
+  argv[кількість_аргументів] = NULL;
+
+  int stdout_pipe[2] = {-1, -1};
+  int stderr_pipe[2] = {-1, -1};
+  pid_t pid = -1;
+
+  if (pipe(stdout_pipe) == -1 || pipe(stderr_pipe) == -1) {
+    goto cleanup;
+  }
+
+  встановити_закриття_при_виконанні(stdout_pipe[0]);
+  встановити_закриття_при_виконанні(stdout_pipe[1]);
+  встановити_закриття_при_виконанні(stderr_pipe[0]);
+  встановити_закриття_при_виконанні(stderr_pipe[1]);
+
+  pid = fork();
+  if (pid == -1) {
+    goto cleanup;
+  }
+
+  if (pid == 0) {
+    close(stdout_pipe[0]);
+    close(stderr_pipe[0]);
+
+    if (dup2(stdout_pipe[1], STDOUT_FILENO) == -1 ||
+        dup2(stderr_pipe[1], STDERR_FILENO) == -1) {
+      _exit(127);
+    }
+
+    close(stdout_pipe[1]);
+    close(stderr_pipe[1]);
+
+    execvp(argv[0], argv);
+    _exit(127);
+  }
+
+  close(stdout_pipe[1]);
+  close(stderr_pipe[1]);
+  stdout_pipe[1] = -1;
+  stderr_pipe[1] = -1;
+
+  прочитати_потік_в_дані(stdout_pipe[0], &результат_виконання->стдвив);
+  прочитати_потік_в_дані(stderr_pipe[0], &результат_виконання->стдпом);
+
+  {
+    int стати;
+    логічне дочекався = false;
+
+    while (true) {
+      if (waitpid(pid, &стати, 0) == -1) {
+        if (errno == EINTR) {
+          continue;
+        }
+        break;
+      }
+      дочекався = true;
+      break;
+    }
+
+    if (дочекався) {
+      if (WIFEXITED(стати)) {
+        результат_виконання->код = (ц32)WEXITSTATUS(стати);
+      } else if (WIFSIGNALED(стати)) {
+        результат_виконання->код = (ц32)(128 + WTERMSIG(стати));
+      } else {
+        результат_виконання->код = -1;
+      }
+    }
+  }
+
+cleanup:
+  if (stdout_pipe[0] != -1) {
+    close(stdout_pipe[0]);
+  }
+  if (stdout_pipe[1] != -1) {
+    close(stdout_pipe[1]);
+  }
+  if (stderr_pipe[0] != -1) {
+    close(stderr_pipe[0]);
+  }
+  if (stderr_pipe[1] != -1) {
+    close(stderr_pipe[1]);
+  }
+  free(argv);
 }

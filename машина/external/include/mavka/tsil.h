@@ -45,11 +45,17 @@ typedef ssize_t ціле;
 #endif
 
 typedef struct ю8 ю8;
+typedef struct кд кд;
 typedef struct Дані Дані;
 
 struct ю8 {
   природне розмір;
-  п8* дані;
+  п8* дані; // null-terminated
+};
+
+struct кд {
+  природне розмір;
+  п8* дані; // null-terminated
 };
 
 struct Дані {
