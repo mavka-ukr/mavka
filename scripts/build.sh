@@ -173,7 +173,7 @@ compile_tsil() {
   $TSIL \
     "$(realpath --relative-to="$(pwd)" "$SEMIREADY_DIR/$input_file.ллвмір")" -П="$TSIL_PLATFORM" \
     перетворити \
-    "$(realpath --relative-to="$(pwd)" "$input_file")" -О=./бібліотека/означення -О=./машина/КД/означення -О=./машина/означення
+    "$(realpath --relative-to="$(pwd)" "$input_file")" -В=./бібліотека/визначення -В=./машина/КД/визначення -В=./машина/визначення
   mv "$SEMIREADY_DIR/$input_file.ллвмір" "$SEMIREADY_DIR/$input_file.ллвмір.ll"
   LLIRFILES+=" $SEMIREADY_DIR/$input_file.ллвмір.ll"
 }
