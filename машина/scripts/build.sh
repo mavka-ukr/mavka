@@ -278,7 +278,7 @@ prepare_directories() {
   mkdir -p "$SEMIREADY_DIR"/предмети/Послідовність/методи
   mkdir -p "$SEMIREADY_DIR"/предмети/Словник/методи
   mkdir -p "$SEMIREADY_DIR"/предмети/Список/методи
-  mkdir -p "$SEMIREADY_DIR"/предмети/Структура/методи
+  mkdir -p "$SEMIREADY_DIR"/предмети/Клас/методи
   mkdir -p "$SEMIREADY_DIR"/предмети/Текст/дії
   mkdir -p "$SEMIREADY_DIR"/предмети/Текст/методи
   mkdir -p "$SEMIREADY_DIR"/предмети/Число/дії
@@ -381,7 +381,7 @@ compile_all_tsil_files() {
   compile_tsil "предмети/Список/методи/містить.ц"
   compile_tsil "предмети/Список/ПредметСписку.ц"
 
-  compile_tsil "предмети/Структура/ПредметСтруктури.ц"
+  compile_tsil "предмети/Клас/ПредметКласу.ц"
 
   compile_tsil "предмети/Текст/дії/з.ц"
   compile_tsil "предмети/Текст/методи/чародія_перебір.ц"
