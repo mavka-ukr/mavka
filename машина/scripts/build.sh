@@ -263,6 +263,7 @@ READY_DIR="$CURRENT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/
 
 prepare_directories() {
   mkdir -p "$SEMIREADY_DIR"/КД
+  mkdir -p "$SEMIREADY_DIR"/предмети/Дані/дії
   mkdir -p "$SEMIREADY_DIR"/предмети/Дані/методи
   mkdir -p "$SEMIREADY_DIR"/предмети/ДіапазонЧисел/методи
   mkdir -p "$SEMIREADY_DIR"/предмети/Дія/методи
@@ -327,6 +328,8 @@ compile_all_tsil_files() {
   compile_tsil "Притримувач.ц"
   compile_tsil "Спроби.ц"
 
+  compile_tsil "предмети/Дані/дії/виділити.ц"
+  compile_tsil "предмети/Дані/дії/обнулено.ц"
   compile_tsil "предмети/Дані/методи/чародія_перебір.ц"
   compile_tsil "предмети/Дані/ПредметДаних.ц"
 
