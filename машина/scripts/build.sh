@@ -413,7 +413,7 @@ compile_all_tsil_files() {
   compile_tsil "пристрій/взяти_файл.ц"
   compile_tsil "пристрій/вивід.ц"
   compile_tsil "пристрій/глобальні.ц"
-  compile_tsil "пристрій/діалог.ц"
+  compile_tsil "пристрій/розмова.ц"
   compile_tsil "пристрій/машина.ц"
   compile_tsil "пристрій/пристрій.ц"
 }
