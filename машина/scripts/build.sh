@@ -270,6 +270,7 @@ prepare_directories() {
   mkdir -p "$SEMIREADY_DIR"/предмети/Код/методи
   mkdir -p "$SEMIREADY_DIR"/предмети/Модуль/методи
   mkdir -p "$SEMIREADY_DIR"/предмети/Параметр/методи
+  mkdir -p "$SEMIREADY_DIR"/предмети/Ознака/методи
   mkdir -p "$SEMIREADY_DIR"/предмети/ПеребірДаних/методи
   mkdir -p "$SEMIREADY_DIR"/предмети/ПеребірПроміжкаЧисел/методи
   mkdir -p "$SEMIREADY_DIR"/предмети/ПеребірПослідовності/методи
@@ -343,6 +344,8 @@ compile_all_tsil_files() {
   compile_tsil "предмети/Модуль/ПредметМодуля.ц"
 
   compile_tsil "предмети/Параметр/ПредметПараметра.ц"
+
+  compile_tsil "предмети/Ознака/ПредметОзнаки.ц"
 
   compile_tsil "предмети/ПеребірДаних/методи/далі.ц"
   compile_tsil "предмети/ПеребірДаних/ПредметПереборуДаних.ц"
