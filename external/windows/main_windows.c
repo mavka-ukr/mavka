@@ -56,7 +56,7 @@ int main(void) {
     аргументи[i].дані = allocated_buffers[i];
   }
 
-  int r = старт(argc, аргументи);
+  int r = почати(argc, аргументи);
 
   for (int i = 0; i < argc; i++) {
     if (allocated_buffers[i]) {

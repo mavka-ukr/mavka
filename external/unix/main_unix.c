@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     аргументи[i].дані = (п8*)argv[i];
   }
 
-  int r = старт(argc, аргументи);
+  int r = почати(argc, аргументи);
 
   free(аргументи);
 

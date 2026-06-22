@@ -29,7 +29,7 @@ if command -v "$ZIG" &> /dev/null; then
   ZIG_AVAILABLE=true
 fi
 
-CLANG_OPTIONS="-DPROGRAM_VERSION=\"$BUILD_VERSION\""
+CLANG_OPTIONS="-DMAVKA_VERSION=\"$BUILD_VERSION\""
 OBJECTFILES=""
 
 print_usage() {
@@ -287,7 +287,6 @@ prepare_directories() {
   mkdir -p "$SEMIREADY_DIR"/предмети/Число/дії
   mkdir -p "$SEMIREADY_DIR"/предмети/Число/методи
   mkdir -p "$SEMIREADY_DIR"/перекладач
-  mkdir -p "$SEMIREADY_DIR"/пристрій
   mkdir -p "$SEMIREADY_DIR"/розбирач
   mkdir -p "$READY_DIR"
 }
@@ -304,7 +303,6 @@ compile_tsil() {
 
   $CLANG $CLANG_OPTIONS \
          -o "$SEMIREADY_DIR/$input_file.ллвмір.ll.o" \
-         -Iexternal/include \
          -c \
          "$SEMIREADY_DIR/$input_file.ллвмір.ll"
 
@@ -408,14 +406,6 @@ compile_all_tsil_files() {
 
 
   compile_tsil "розбирач/розбирач.ц"
-
-
-  compile_tsil "пристрій/взяти_файл.ц"
-  compile_tsil "пристрій/вивід.ц"
-  compile_tsil "пристрій/глобальні.ц"
-  compile_tsil "пристрій/розмова.ц"
-  compile_tsil "пристрій/машина.ц"
-  compile_tsil "пристрій/пристрій.ц"
 }
 
 link_executable() {
@@ -423,15 +413,9 @@ link_executable() {
     static)
       echo "створення архіву"
 
-      $CLANG $CLANG_OPTIONS \
-             -o "$SEMIREADY_DIR/prystriy_$COMMON_SYSTEM.o" \
-             -Iexternal/include \
-             -c \
-             "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c"
-
       mv "$READY_DIR/$OUTFILENAME" "$READY_DIR/$OUTFILENAME.old" 2>/dev/null || true
 
-      $CLANGAR rcs "$READY_DIR/$OUTFILENAME" $OBJECTFILES "$SEMIREADY_DIR/prystriy_$COMMON_SYSTEM.o"
+      $CLANGAR rcs "$READY_DIR/$OUTFILENAME" $OBJECTFILES
 
       echo "готово!"
       echo "файл архіву: $READY_DIR/$OUTFILENAME"
@@ -443,9 +427,7 @@ link_executable() {
 
       $CLANG $CLANG_OPTIONS \
              -o "$READY_DIR/$OUTFILENAME" \
-             -Iexternal/include \
              -shared -fPIC \
-             "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c" \
              $OBJECTFILES
 
       echo "готово!"
