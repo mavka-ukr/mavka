@@ -7,29 +7,30 @@ if [ -z "$MAVKA" ]; then
   exit 1
 fi
 
-# Визначення кольорів
 GREEN='\033[0;32m'
 RED='\033[0;31m'
-NC='\033[0m' # No Color
+NC='\033[0m'
+
+passed=0
+failed=0
 
 run_test() {
   test_file="$1"
 
-  # Виводимо назву тесту без переносу рядка
   echo -n "$test_file: "
 
-  # Запускаємо тест і захоплюємо як стандартний вивід (stdout), так і помилки (stderr)
   output=$($MAVKA "$test_file" 2>&1)
   status=$?
 
   if [ $status -eq 0 ]; then
     echo -e "${GREEN}УСПІХ${NC}"
+    ((passed++))
   else
     echo -e "${RED}НЕВДАЧА${NC}"
-    # Виводимо збережений текст помилки з невеликим відступом
     echo -e "-------------------------"
     echo "$output"
     echo -e "-------------------------\n"
+    ((failed++))
   fi
 }
 
@@ -170,3 +171,12 @@ run_test тестування/ПеребірТексту/створити_вру
 
 echo ""
 run_test тестування/біб/система/записати_прочитати.м
+
+echo -e "\n---"
+echo -e "Успішних: ${GREEN}$passed${NC}"
+echo -e "Невдалих: ${RED}$failed${NC}"
+echo -e "---"
+
+if [ $failed -ne 0 ]; then
+  exit 1
+fi
