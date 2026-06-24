@@ -313,6 +313,7 @@ compile_all_tsil_files() {
   compile_tsil "КД/КД.ц"
 
 
+  compile_tsil "Взяти.ц"
   compile_tsil "ВзятіЗначення.ц"
   compile_tsil "Дійсність.ц"
   compile_tsil "Призначення.ц"

@@ -199,7 +199,6 @@ cd машина
 bash scripts/build.sh static "$BUILD_MODE" "$BUILD_PLATFORM"
 cd "$ROOT_DIR"
 
-compile_tsil "пристрій/взяти_файл.ц"
 compile_tsil "пристрій/вивід.ц"
 compile_tsil "пристрій/глобальні.ц"
 compile_tsil "пристрій/розмова.ц"

@@ -41,6 +41,7 @@ typedef int64_t ц64;
 typedef double р64;
 typedef size_t природне;
 typedef ssize_t ціле;
+typedef void* адреса;
 
 #endif
 
