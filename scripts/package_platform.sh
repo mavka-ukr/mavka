@@ -4,7 +4,7 @@ set -e
 RUNDIR="$PWD"
 
 PROGRAM_NAME="мавка"
-BUILD_VERSION=$(cat машина/ВЕРСІЯ)
+BUILD_VERSION=$(cat ВЕРСІЯ)
 BUILD_PLATFORM="$1"
 
 print_usage() {
