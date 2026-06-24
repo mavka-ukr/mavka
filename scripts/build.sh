@@ -225,6 +225,7 @@ compile_tsil "КД/КД.ц"
 
 compile_tsil "машина/Взяти.ц"
 compile_tsil "машина/ВзятіЗначення.ц"
+compile_tsil "машина/Вивід.ц"
 compile_tsil "машина/Дійсність.ц"
 compile_tsil "машина/Призначення.ц"
 compile_tsil "машина/Допоміжне.ц"
@@ -317,7 +318,6 @@ compile_tsil "машина/перекладач/перекладач.ц"
 
 compile_tsil "машина/розбирач/розбирач.ц"
 
-compile_tsil "пристрій/вивід.ц"
 compile_tsil "пристрій/глобальні.ц"
 compile_tsil "пристрій/машина.ц"
 compile_tsil "пристрій/пристрій.ц"
