@@ -327,6 +327,7 @@ compile_all_tsil_files() {
   compile_tsil "НакопичувачТексту.ц"
   compile_tsil "Очищувач.ц"
   compile_tsil "Притримувач.ц"
+  compile_tsil "Розмова.ц"
   compile_tsil "Спроби.ц"
 
   compile_tsil "предмети/Дані/дії/виділити.ц"

@@ -201,7 +201,6 @@ cd "$ROOT_DIR"
 
 compile_tsil "пристрій/вивід.ц"
 compile_tsil "пристрій/глобальні.ц"
-compile_tsil "пристрій/розмова.ц"
 compile_tsil "пристрій/машина.ц"
 compile_tsil "пристрій/пристрій.ц"
 
