@@ -154,7 +154,7 @@ set_platform_vars() {
       TSIL_PLATFORM_FOLDER="васм64"
       OUTFILENAME="$PROGRAM_NAME.wasm"
       CLANG_BIN="clang"
-      extra_opts="-nostdlib -Wl,--no-entry -Wl,--export-all -Wl,--allow-undefined -Wl,--export-memory -Wl,--initial-memory=16777216 -Wl,--max-memory=1073741824"
+      extra_opts="-nostdlib -Wl,--no-entry -Wl,--export-all -Wl,--allow-undefined -Wl,--export-dynamic -Wl,--export-memory -Wl,--initial-memory=16777216 -Wl,--max-memory=1073741824"
       ;;
     *)
       echo "Unsupported platform: $platform"
