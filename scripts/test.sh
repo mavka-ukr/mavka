@@ -14,13 +14,27 @@ NC='\033[0m'
 passed=0
 failed=0
 
+# Create a safe temporary file for capturing logs without pipe hangs
+TEMP_OUT=$(mktemp)
+
+# Clean up the temp file automatically if the script is interrupted or exits
+trap 'rm -f "$TEMP_OUT"' EXIT
+
 run_test() {
   test_file="$1"
 
   echo -n "$test_file: "
 
-  output=$($MAVKA "$test_file" 2>&1)
+  # Direct file redirection avoids the slow Bash $(...) pipe bottleneck
+  if [[ "$MAVKA" =~ \.[eE][xX][eE]$ ]]; then
+    wine "$MAVKA" "$test_file" > "$TEMP_OUT" 2>&1
+  else
+    "$MAVKA" "$test_file" > "$TEMP_OUT" 2>&1
+  fi
   status=$?
+
+  # Read the output out of the file into the variable natively
+  output=$(cat "$TEMP_OUT")
 
   if [ $status -eq 0 ]; then
     echo -e "${GREEN}УСПІХ${NC}"
