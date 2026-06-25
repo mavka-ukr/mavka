@@ -1,4 +1,4 @@
-#include "./walloc.c"
+#include "./galloc.c"
 #include "mavka/prystriy.h"
 
 size_t strlen(const char* str);
