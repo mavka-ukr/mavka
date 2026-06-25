@@ -3,8 +3,8 @@
 
 size_t strlen(const char* str);
 
-extern ц32 xmain(int argc, char** argv) {
-  ю8* аргументи = (ю8*)пристрій_мавки_виділити_сиру_памʼять(argc * sizeof(ю8));
+extern ц32 wasmMain(int argc, char** argv) {
+  ю8* аргументи = (ю8*)пристрій_мавки_виділити(argc * sizeof(ю8));
 
   for (int i = 0; i < argc; i++) {
     аргументи[i].розмір = strlen(argv[i]);
@@ -13,7 +13,7 @@ extern ц32 xmain(int argc, char** argv) {
 
   int r = почати(argc, аргументи);
 
-  пристрій_мавки_звільнити_сиру_памʼять(аргументи);
+  пристрій_мавки_звільнити(аргументи);
 
   return r;
 }
