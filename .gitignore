@@ -12,3 +12,5 @@ test.py
 *.tar.gz
 тест.текст
 якийсь.текст
+node_modules
+dist
