@@ -3,9 +3,7 @@
 .releasegpgkey
 .releasegpgkeypassphrase
 будування
-машина/будування
 випуски
-розширення
 тест.м
 test.py
 *.tar.gz
