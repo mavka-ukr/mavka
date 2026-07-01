@@ -34,4 +34,4 @@ bash scripts/package_platform.sh windows-x86_64
 bash scripts/package_platform.sh windows-aarch64
 bash scripts/package_platform.sh android-aarch64
 
-cp -r "будування/$BUILD_VERSION/васм64/готове/мавка.wasm" "$VERSIONDIR/мавка-$BUILD_VERSION.wasm"
+cp -r "будування/$BUILD_VERSION/васм64/випуск/готове/мавка.wasm" "$VERSIONDIR/мавка-$BUILD_VERSION.wasm"

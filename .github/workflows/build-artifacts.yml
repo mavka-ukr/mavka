@@ -1,0 +1,105 @@
+name: Build and Push Artifacts
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build:
+    name: Build object files
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [linux-x86_64, linux-aarch64, windows-x86_64, windows-aarch64]
+        mode: [debug, release]
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Install system build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang llvm make xz-utils curl
+
+      - name: Download and install tsil compiler tool
+        run: |
+          TSIL_VERSION=$(cat ЦІЛЬ | xargs)
+          URL="https://github.com/tsil-ukr/files/raw/main/випуски-цілі/${TSIL_VERSION}/ціль-${TSIL_VERSION}-лінукс-ікс86_64.tar.xz"
+          curl -L "$URL" -o tsil.tar.xz
+          tar -xf tsil.tar.xz
+          sudo cp програми/ціль /usr/local/bin/ціль
+          sudo chmod +x /usr/local/bin/ціль
+          rm -rf tsil.tar.xz програми
+
+      - name: Run compilation
+        run: |
+          chmod +x scripts/build_tsil.sh
+
+          case "${{ matrix.platform }}" in
+            linux-x86_64)   TARGET_TRIPLE="x86_64-linux-gnu" ;;
+            linux-aarch64)  TARGET_TRIPLE="aarch64-linux-gnu" ;;
+            windows-x86_64) TARGET_TRIPLE="x86_64-windows-gnu" ;;
+            windows-aarch64) TARGET_TRIPLE="aarch64-windows-gnu" ;;
+          esac
+
+          /bin/bash scripts/build_tsil.sh \
+            "${{ matrix.mode }}" \
+            "${{ matrix.platform }}" \
+            "o" \
+            "/usr/local/bin/ціль" \
+            "clang --target=$TARGET_TRIPLE"
+
+      - name: Upload matrix workspace artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-${{ matrix.platform }}-${{ matrix.mode }}
+          path: будування/
+
+  deploy:
+    name: Aggregate and push to storage repo
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target storage repository
+        uses: actions/checkout@v4
+        with:
+          repository: "diysnist-static/mavka-artifacts"
+          path: ".будування_репозиторій"
+          ssh-key: ${{ secrets.SSH_ARTIFACTS_DEPLOY_KEY }}
+          persist-credentials: true
+
+      - name: Remove previous build paths if they exist
+        run: |
+          cd .будування_репозиторій
+          VERSION=$(cat ../ВЕРСІЯ | xargs)
+
+          if [ -d "будування/${VERSION}" ]; then
+            git rm -rf "будування/${VERSION}" || rm -rf "будування/${VERSION}"
+          fi
+
+      - name: Download all matrix build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: .будування_репозиторій/будування
+          merge-multiple: true
+
+      - name: Commit and push changes
+        run: |
+          cd .будування_репозиторій
+          git config --local user.name "КДБ"
+          git config --local user.email "prykhozhdenko@gmail.com"
+          git add .
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "🧬 Автоматична збірка об'єктних файлів для усіх платформ і режимів"
+          fi
+
+      - name: Push to target repository
+        uses: ad-m/github-push-action@master
+        with:
+          branch: main
+          directory: ".будування_репозиторій"
+          repository: "diysnist-static/mavka-artifacts"
+          ssh: true
+          github_token: ${{ secrets.SSH_ARTIFACTS_DEPLOY_KEY }}
