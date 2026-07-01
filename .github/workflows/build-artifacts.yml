@@ -29,9 +29,9 @@ jobs:
           URL="https://github.com/tsil-ukr/files/raw/main/випуски-цілі/${TSIL_VERSION}/ціль-${TSIL_VERSION}-лінукс-ікс86_64.tar.xz"
           curl -L "$URL" -o tsil.tar.xz
           tar -xf tsil.tar.xz
-          sudo cp програми/ціль /usr/local/bin/ціль
+          sudo cp "ціль-${TSIL_VERSION}-лінукс-ікс86_64/програми/ціль" /usr/local/bin/ціль
           sudo chmod +x /usr/local/bin/ціль
-          rm -rf tsil.tar.xz програми
+          rm -rf tsil.tar.xz "ціль-${TSIL_VERSION}-лінукс-ікс86_64"
 
       - name: Run compilation
         run: |
