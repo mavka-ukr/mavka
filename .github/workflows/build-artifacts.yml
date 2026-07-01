@@ -65,6 +65,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
       - name: Checkout target storage repository
         uses: actions/checkout@v4
         with:
@@ -112,12 +115,15 @@ jobs:
 
       - name: Commit and push changes
         run: |
+          VERSION=$(cat ВЕРСІЯ | xargs)
+
           cd .будування_репозиторій
           git config --local user.name "КДБ"
           git config --local user.email "prykhozhdenko@gmail.com"
           git add .
+
           if ! git diff-index --quiet HEAD; then
-            git commit -m "🧬 Автоматична збірка об'єктних файлів для усіх платформ і режимів"
+            git commit -m "Мавка $VERSION. c:${GITHUB_REF_NAME} h:${GITHUB_SHA} r:${GITHUB_RUN_NUMBER}"
           fi
 
       - name: Push to target repository
