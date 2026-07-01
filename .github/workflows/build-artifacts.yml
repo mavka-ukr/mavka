@@ -40,19 +40,12 @@ jobs:
         run: |
           chmod +x scripts/build_tsil.sh
 
-          case "${{ matrix.platform }}" in
-            linux-x86_64)   TARGET_TRIPLE="x86_64-linux-gnu" ;;
-            linux-aarch64)  TARGET_TRIPLE="aarch64-linux-gnu" ;;
-            windows-x86_64) TARGET_TRIPLE="x86_64-windows-gnu" ;;
-            windows-aarch64) TARGET_TRIPLE="aarch64-windows-gnu" ;;
-          esac
-
           /bin/bash scripts/build_tsil.sh \
             "${{ matrix.mode }}" \
             "${{ matrix.platform }}" \
             "${{ matrix.format }}" \
             "/usr/local/bin/ціль" \
-            "clang --target=$TARGET_TRIPLE"
+            "clang"
 
       - name: Upload matrix workspace artifacts
         uses: actions/upload-artifact@v4

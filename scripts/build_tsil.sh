@@ -27,14 +27,38 @@ case "$BUILD_MODE" in
 esac
 
 case "$BUILD_PLATFORM" in
-  linux-x86_64)    TSIL_PLATFORM="лінукс-ікс86_64"; TSIL_PLATFORM_FOLDER="лінукс-ікс86_64" ;;
-  linux-aarch64)   TSIL_PLATFORM="лінукс-аарч64";  TSIL_PLATFORM_FOLDER="лінукс-аарч64" ;;
-  macos-x86_64)    TSIL_PLATFORM="макос-ікс86_64";  TSIL_PLATFORM_FOLDER="макос-ікс86_64" ;;
-  macos-aarch64)   TSIL_PLATFORM="макос-аарч64";   TSIL_PLATFORM_FOLDER="макос-аарч64" ;;
-  windows-x86_64)  TSIL_PLATFORM="віндовс-ікс86_64"; TSIL_PLATFORM_FOLDER="віндовс-ікс86_64" ;;
-  windows-aarch64) TSIL_PLATFORM="віндовс-аарч64"; TSIL_PLATFORM_FOLDER="віндовс-аарч64" ;;
-  android-aarch64) TSIL_PLATFORM="лінукс-аарч64";  TSIL_PLATFORM_FOLDER="андроїд-аарч64" ;;
-  wasm64)          TSIL_PLATFORM="васм64";         TSIL_PLATFORM_FOLDER="васм64" ;;
+  linux-x86_64)
+    TSIL_PLATFORM="лінукс-ікс86_64"; TSIL_PLATFORM_FOLDER="лінукс-ікс86_64"
+    TARGET_TRIPLE="x86_64-linux-gnu"
+    ;;
+  linux-aarch64)
+    TSIL_PLATFORM="лінукс-аарч64";  TSIL_PLATFORM_FOLDER="лінукс-аарч64"
+    TARGET_TRIPLE="aarch64-linux-gnu"
+    ;;
+  macos-x86_64)
+    TSIL_PLATFORM="макос-ікс86_64";  TSIL_PLATFORM_FOLDER="макос-ікс86_64"
+    TARGET_TRIPLE="x86_64-macos"
+    ;;
+  macos-aarch64)
+    TSIL_PLATFORM="макос-аарч64";   TSIL_PLATFORM_FOLDER="макос-аарч64"
+    TARGET_TRIPLE="aarch64-macos"
+    ;;
+  windows-x86_64)
+    TSIL_PLATFORM="віндовс-ікс86_64"; TSIL_PLATFORM_FOLDER="віндовс-ікс86_64"
+    TARGET_TRIPLE="x86_64-windows-gnu"
+    ;;
+  windows-aarch64)
+    TSIL_PLATFORM="віндовс-аарч64"; TSIL_PLATFORM_FOLDER="віндовс-аарч64"
+    TARGET_TRIPLE="aarch64-windows-gnu"
+    ;;
+  android-aarch64)
+    TSIL_PLATFORM="лінукс-аарч64";  TSIL_PLATFORM_FOLDER="андроїд-аарч64"
+    TARGET_TRIPLE="aarch64-linux-android24"
+    ;;
+  wasm64)
+    TSIL_PLATFORM="васм64";         TSIL_PLATFORM_FOLDER="васм64"
+    TARGET_TRIPLE="wasm64-unknown-unknown"
+    ;;
   *)
     echo "Unsupported platform: $BUILD_PLATFORM" >&2
     exit 1 ;;
@@ -69,7 +93,7 @@ while IFS= read -r line || [ -n "$line" ]; do
     "$(realpath --relative-to="$(pwd)" "$line")" -В=./бібліотека/визначення -В=./КД/визначення -В=./визначення
 
   if [ "$OUTPUT_FORMAT" = "o" ]; then
-    $CLANG_CMD $CLANG_FLAGS -c -o "$SEMIREADY_DIR/$line.ллвмо" -x ir "$SEMIREADY_DIR/$line.ллвмір"
+    $CLANG_CMD --target=$TARGET_TRIPLE $CLANG_FLAGS -c -o "$SEMIREADY_DIR/$line.ллвмо" -x ir "$SEMIREADY_DIR/$line.ллвмір"
     LLIRFILES+=" $SEMIREADY_DIR/$line.ллвмо"
     rm -f "$SEMIREADY_DIR/$line.ллвмір"
   else
