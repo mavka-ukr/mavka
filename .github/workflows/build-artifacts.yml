@@ -14,6 +14,8 @@ jobs:
       matrix:
         platform: [linux-x86_64, linux-aarch64, windows-x86_64, windows-aarch64]
         mode: [debug, release]
+        exclude:
+          - mode: ${{ github.ref_name == 'main' && 'debug' || 'release' }}
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -75,9 +77,31 @@ jobs:
           cd .будування_репозиторій
           VERSION=$(cat ../ВЕРСІЯ | xargs)
 
-          if [ -d "будування/${VERSION}" ]; then
-            git rm -rf "будування/${VERSION}" || rm -rf "будування/${VERSION}"
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            TSIL_MODE="випуск"
+          else
+            TSIL_MODE="відлагодження"
           fi
+
+          while IFS= read -r matrix_platform; do
+            case "$matrix_platform" in
+              linux-x86_64)    TSIL_FOLDER="лінукс-ікс86_64" ;;
+              linux-aarch64)   TSIL_FOLDER="лінукс-аарч64" ;;
+              windows-x86_64)  TSIL_FOLDER="віндовс-ікс86_64" ;;
+              windows-aarch64) TSIL_FOLDER="віндовс-аарч64" ;;
+            esac
+
+            TARGET_PATH="будування/${VERSION}/${TSIL_FOLDER}/${TSIL_MODE}"
+
+            if [ -d "$TARGET_PATH" ]; then
+              git rm -rf "$TARGET_PATH" || rm -rf "$TARGET_PATH"
+            fi
+          done << 'EOF'
+          linux-x86_64
+          linux-aarch64
+          windows-x86_64
+          windows-aarch64
+          EOF
 
       - name: Download all matrix build artifacts
         uses: actions/download-artifact@v4
