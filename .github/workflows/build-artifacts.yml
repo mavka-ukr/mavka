@@ -59,6 +59,7 @@ jobs:
         with:
           name: artifacts-${{ matrix.platform }}-${{ matrix.mode }}-${{ matrix.format }}
           path: будування/
+          retention-days: 3
 
   deploy:
     name: Aggregate and push to storage repo
