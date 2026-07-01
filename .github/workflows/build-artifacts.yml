@@ -8,12 +8,13 @@ on:
 
 jobs:
   build:
-    name: Build object files
+    name: Build object and LLVM files
     runs-on: ubuntu-latest
     strategy:
       matrix:
         platform: [linux-x86_64, linux-aarch64, windows-x86_64, windows-aarch64]
         mode: [debug, release]
+        format: [ll, o]
         exclude:
           - mode: ${{ github.ref_name == 'main' && 'debug' || 'release' }}
     steps:
@@ -49,14 +50,14 @@ jobs:
           /bin/bash scripts/build_tsil.sh \
             "${{ matrix.mode }}" \
             "${{ matrix.platform }}" \
-            "o" \
+            "${{ matrix.format }}" \
             "/usr/local/bin/ціль" \
             "clang --target=$TARGET_TRIPLE"
 
       - name: Upload matrix workspace artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: artifacts-${{ matrix.platform }}-${{ matrix.mode }}
+          name: artifacts-${{ matrix.platform }}-${{ matrix.mode }}-${{ matrix.format }}
           path: будування/
 
   deploy:
