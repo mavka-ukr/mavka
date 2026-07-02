@@ -117,7 +117,7 @@ jobs:
           git add .
 
           if ! git diff-index --quiet HEAD; then
-            git commit -m "Мавка $VERSION. c:${GITHUB_REF_NAME} h:${GITHUB_SHA} r:${GITHUB_RUN_NUMBER}"
+            git commit -m "Мавка $VERSION. b:${GITHUB_REF_NAME} c:${GITHUB_SHA} r:${GITHUB_RUN_NUMBER}"
           fi
 
       - name: Push to target repository
