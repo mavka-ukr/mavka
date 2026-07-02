@@ -51,13 +51,13 @@ typedef struct кд кд;
 typedef struct Дані Дані;
 
 struct ю8 {
+  п8* дані;
   природне розмір;
-  п8* дані; // null-terminated
 };
 
 struct кд {
+  п8* дані;
   природне розмір;
-  п8* дані; // null-terminated
 };
 
 struct Дані {

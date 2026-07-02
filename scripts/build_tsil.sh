@@ -90,7 +90,7 @@ while IFS= read -r line || [ -n "$line" ]; do
   $TSIL_CMD \
     "$(realpath --relative-to="$(pwd)" "$SEMIREADY_DIR/$line.ллвмір")" -П="$TSIL_PLATFORM" \
     перетворити \
-    "$(realpath --relative-to="$(pwd)" "$line")" -В=./бібліотека/визначення -В=./КД/визначення -В=./визначення
+    "$(realpath --relative-to="$(pwd)" "$line")" -В=./бібліотека/визначення -В=./КД/визначення -В=./визначення >&2
 
   if [ "$OUTPUT_FORMAT" = "o" ]; then
     $CLANG_CMD --target=$TARGET_TRIPLE $CLANG_FLAGS -c -o "$SEMIREADY_DIR/$line.ллвмо" -x ir "$SEMIREADY_DIR/$line.ллвмір"
