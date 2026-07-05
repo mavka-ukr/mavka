@@ -86,7 +86,7 @@ while IFS= read -r line || [ -n "$line" ]; do
   line=$(echo "$line" | xargs)
   [[ -z "$line" || "$line" =~ ^# ]] && continue
 
-  echo "компіляція $line" >&2
+  echo "компілювання $line" >&2
   $TSIL_CMD \
     "$(realpath --relative-to="$(pwd)" "$SEMIREADY_DIR/$line.ллвмір")" -П="$TSIL_PLATFORM" \
     перетворити \
