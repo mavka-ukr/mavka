@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <libgen.h>
 #include <math.h>
 #include <stdio.h>
@@ -208,6 +209,52 @@ extern логічне пристрій_мавки_прочитати_файл(п
     }
   }
 
+  return true;
+}
+
+логічне пристрій_мавки_отримати_р64_з_ю8(п8* дані,
+                                         природне розмір,
+                                         р64* вихід) {
+  char* str = (char*)пристрій_мавки_виділити(розмір + 1);
+  природне len = 0;
+  for (природне і = 0; і < розмір; і++) {
+    unsigned char c = (unsigned char)дані[і];
+    if (c == 0xD0 || c == 0xD1) {
+      if (і + 1 < розмір) {
+        unsigned char c2 = (unsigned char)дані[і + 1];
+        if (c == 0xD0 && c2 == 0xB5) {
+          str[len++] = 'e';
+          і++;
+          continue;
+        }
+        if (c == 0xD0 && c2 == 0x95) {
+          str[len++] = 'E';
+          і++;
+          continue;
+        }
+      }
+    }
+
+    str[len++] = (char)c;
+  }
+  str[len] = '\0';
+
+  char* endptr;
+
+  *вихід = strtod(str, &endptr);
+
+  if (str == endptr) {
+    пристрій_мавки_звільнити(str);
+    return false;
+  } else if (errno == ERANGE) {
+    пристрій_мавки_звільнити(str);
+    return false;
+  } else if (*endptr != '\0') {
+    пристрій_мавки_звільнити(str);
+    return false;
+  }
+
+  пристрій_мавки_звільнити(str);
   return true;
 }
 
