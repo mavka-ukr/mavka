@@ -28,31 +28,31 @@ esac
 
 case "$BUILD_PLATFORM" in
   linux-x86_64)
-    TSIL_PLATFORM="лінукс-ікс86_64"; TSIL_PLATFORM_FOLDER="лінукс-ікс86_64"
+    TSIL_PLATFORM="ікс86_64-пк-лінукс-гну"; TSIL_PLATFORM_FOLDER="лінукс-ікс86_64"
     TARGET_TRIPLE="x86_64-linux-gnu"
     ;;
   linux-aarch64)
-    TSIL_PLATFORM="лінукс-аарч64";  TSIL_PLATFORM_FOLDER="лінукс-аарч64"
+    TSIL_PLATFORM="аарч64-пк-лінукс-гну";  TSIL_PLATFORM_FOLDER="лінукс-аарч64"
     TARGET_TRIPLE="aarch64-linux-gnu"
     ;;
   macos-x86_64)
-    TSIL_PLATFORM="макос-ікс86_64";  TSIL_PLATFORM_FOLDER="макос-ікс86_64"
+    TSIL_PLATFORM="ікс86_64-епл-дарвін";  TSIL_PLATFORM_FOLDER="макос-ікс86_64"
     TARGET_TRIPLE="x86_64-macos"
     ;;
   macos-aarch64)
-    TSIL_PLATFORM="макос-аарч64";   TSIL_PLATFORM_FOLDER="макос-аарч64"
+    TSIL_PLATFORM="аарч64-епл-дарвін";   TSIL_PLATFORM_FOLDER="макос-аарч64"
     TARGET_TRIPLE="aarch64-macos"
     ;;
   windows-x86_64)
-    TSIL_PLATFORM="віндовс-ікс86_64"; TSIL_PLATFORM_FOLDER="віндовс-ікс86_64"
+    TSIL_PLATFORM="ікс86_64-пк-віндовс-гну"; TSIL_PLATFORM_FOLDER="віндовс-ікс86_64"
     TARGET_TRIPLE="x86_64-windows-gnu"
     ;;
   windows-aarch64)
-    TSIL_PLATFORM="віндовс-аарч64"; TSIL_PLATFORM_FOLDER="віндовс-аарч64"
+    TSIL_PLATFORM="аарч64-пк-віндовс-гну"; TSIL_PLATFORM_FOLDER="віндовс-аарч64"
     TARGET_TRIPLE="aarch64-windows-gnu"
     ;;
   android-aarch64)
-    TSIL_PLATFORM="лінукс-аарч64";  TSIL_PLATFORM_FOLDER="андроїд-аарч64"
+    TSIL_PLATFORM="аарч64-пк-лінукс-гну";  TSIL_PLATFORM_FOLDER="андроїд-аарч64"
     TARGET_TRIPLE="aarch64-linux-android24"
     ;;
   wasm64)
@@ -89,7 +89,7 @@ while IFS= read -r line || [ -n "$line" ]; do
   echo "компілювання $line" >&2
   $TSIL_CMD \
     "$(realpath --relative-to="$(pwd)" "$SEMIREADY_DIR/$line.ллвмір")" -П="$TSIL_PLATFORM" \
-    перетворити \
+    скомпілювати \
     "$(realpath --relative-to="$(pwd)" "$line")" -В=./КД/визначення -В=./визначення >&2
 
   if [ "$OUTPUT_FORMAT" = "o" ]; then
