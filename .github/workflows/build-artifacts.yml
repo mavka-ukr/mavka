@@ -12,7 +12,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        platform: [linux-x86_64, linux-aarch64, windows-x86_64, windows-aarch64]
+        platform:
+          [
+            linux-x86_64,
+            linux-aarch64,
+            windows-x86_64,
+            windows-aarch64,
+            msvc-x86_64,
+            msvc-aarch64,
+          ]
         mode: [debug, release]
         format: [ll, o]
         exclude:
@@ -87,6 +95,8 @@ jobs:
               linux-aarch64)   TSIL_FOLDER="лінукс-аарч64" ;;
               windows-x86_64)  TSIL_FOLDER="віндовс-ікс86_64" ;;
               windows-aarch64) TSIL_FOLDER="віндовс-аарч64" ;;
+              msvc-x86_64)  TSIL_FOLDER="мсвс-ікс86_64" ;;
+              msvc-aarch64) TSIL_FOLDER="мсвс-аарч64" ;;
             esac
 
             TARGET_PATH="будування/${VERSION}/${TSIL_FOLDER}/${TSIL_MODE}"
@@ -99,6 +109,8 @@ jobs:
           linux-aarch64
           windows-x86_64
           windows-aarch64
+          msvc-x86_64
+          msvc-aarch64
           EOF
 
       - name: Download all matrix build artifacts

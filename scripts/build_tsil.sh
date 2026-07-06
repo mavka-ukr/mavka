@@ -51,6 +51,14 @@ case "$BUILD_PLATFORM" in
     TSIL_PLATFORM="аарч64-пк-віндовс-гну"; TSIL_PLATFORM_FOLDER="віндовс-аарч64"
     TARGET_TRIPLE="aarch64-windows-gnu"
     ;;
+  msvc-x86_64)
+    TSIL_PLATFORM="ікс86_64-пк-віндовс-мсвс"; TSIL_PLATFORM_FOLDER="мсвс-ікс86_64"
+    TARGET_TRIPLE="x86_64-windows-msvc"
+    ;;
+  msvc-aarch64)
+    TSIL_PLATFORM="аарч64-пк-віндовс-мсвс"; TSIL_PLATFORM_FOLDER="мсвс-аарч64"
+    TARGET_TRIPLE="aarch64-windows-msvc"
+    ;;
   android-aarch64)
     TSIL_PLATFORM="аарч64-пк-лінукс-гну";  TSIL_PLATFORM_FOLDER="андроїд-аарч64"
     TARGET_TRIPLE="aarch64-linux-android24"
