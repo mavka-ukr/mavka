@@ -20,7 +20,7 @@ if command -v "$ZIG" &> /dev/null; then
   ZIG_AVAILABLE=true
 fi
 
-CLANG_OPTIONS="-DMAVKA_VERSION=\"$BUILD_VERSION\" -ffp-contract=off -fno-fast-math"
+CLANG_OPTIONS="-DMAVKA_VERSION=\"$BUILD_VERSION\""
 
 print_usage() {
   echo "Usage: $0 <debug|release> <platform> [ll|o]"
