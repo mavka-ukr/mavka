@@ -15,11 +15,11 @@ BUILD_VERSION=$(cat "$ROOT_DIR/ВЕРСІЯ" | xargs)
 case "$BUILD_MODE" in
   debug)
     TSIL_MODE="відлагодження"
-    CLANG_FLAGS="-O0 -g"
+    CLANG_FLAGS="-O0 -g -ffp-contract=off -fno-fast-math"
     ;;
   release)
     TSIL_MODE="випуск"
-    CLANG_FLAGS="-O3"
+    CLANG_FLAGS="-O3 -ffp-contract=off -fno-fast-math"
     ;;
   *)
     echo "Unsupported build mode: $BUILD_MODE" >&2
