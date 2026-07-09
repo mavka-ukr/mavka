@@ -48,7 +48,8 @@ ANDROID_NDK_HOME="/home/kohutd/Android/android-ndk-r27d" bash scripts/build.sh d
 bash scripts/download_libs.sh
 ```
 
-Для платформ `linux` та `android` буде збудовано з нуля `ncurses`, `readline` та `idn2`, але якщо архіви не завантажені, вони не будуть збиратись і не будуть включені в Мавку.
+Для платформ `linux` та `android` буде збудовано з нуля `ncurses`, `readline`, `idn2` та `libuv`, але якщо архіви не завантажені, вони не будуть збиратись і не будуть включені в Мавку.
+Для платформи `windows` буде збудовано з нуля `libuv` (також якщо завантажено).
 
 ## Розробка
 

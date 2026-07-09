@@ -127,8 +127,16 @@ build_uv() {
   if [ ! -d "$build_dir" ]; then
     pushd "$uv_dir" > /dev/null
     sh autogen.sh
+
+    local configure_host="$target"
+    if [ "$target" = "x86_64-windows-gnu" ]; then
+      configure_host="x86_64-w64-mingw32"
+    elif [ "$target" = "aarch64-windows-gnu" ]; then
+      configure_host="aarch64-w64-mingw32"
+    fi
+
     AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target" CFLAGS="-O3" LDFLAGS="$ldflags" \
-      ./configure --host="$target" --prefix="$(pwd)/build_uv"
+      ./configure --host="$configure_host" --prefix="$(pwd)/build_uv"
     make -j"$(nproc)"
     make install
     popd > /dev/null
@@ -199,6 +207,27 @@ setup_linux_libraries() {
 
   if [ -n "$idn2_build" ]; then
     DEPS_LIBS+=" $root/$idn2_build/lib/libidn2.a"
+  fi
+
+  if [ -n "$uv_build" ]; then
+    DEPS_LIBS+=" $root/$uv_build/lib/libuv.a"
+  fi
+}
+
+setup_windows_libraries() {
+  local ar="$1" ranlib="$2" cc="$3" target="$4" ldflags="$5"
+  local root
+  root="$(pwd)"
+
+  DEPS_CFLAGS=""
+  DEPS_LIBS=""
+
+  local uv_build=""
+
+  if build_uv "$ar" "$ranlib" "$cc" "$target" "$ldflags"; then
+    uv_build="$RESULT_DIR"
+  else
+    echo "libuv support disabled"
   fi
 
   if [ -n "$uv_build" ]; then

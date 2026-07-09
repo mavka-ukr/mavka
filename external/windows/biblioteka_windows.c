@@ -476,3 +476,4 @@ static WCHAR* utf8_to_wide(const п8* utf8) {
 }
 
 #include "../common/biblioteka_common.c"
+#include "../unix_windows/biblioteka_unix_windows.c"

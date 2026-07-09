@@ -113,7 +113,15 @@ set_platform_vars() {
       else
         CLANG_BIN="clang"
       fi
+      extra_opts="-lws2_32 -liphlpapi -luserenv -ldbghelp -lole32"
       static_libs="scripts/icon.res"
+      if [ "$ZIG_AVAILABLE" = true ]; then
+        CLANG_BIN="$ZIG cc"
+        setup_windows_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
+      else
+        CLANG_BIN="clang"
+        setup_windows_libraries "ar" "ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
+      fi
       ;;
     windows-aarch64)
       BUILD_SYSTEM="windows"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="windows"
@@ -126,7 +134,15 @@ set_platform_vars() {
       else
         CLANG_BIN="clang"
       fi
+      extra_opts="-lws2_32 -liphlpapi -luserenv -ldbghelp -lole32"
       static_libs="scripts/icon.res"
+      if [ "$ZIG_AVAILABLE" = true ]; then
+        CLANG_BIN="$ZIG cc"
+        setup_windows_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
+      else
+        CLANG_BIN="clang"
+        setup_windows_libraries "ar" "ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
+      fi
       ;;
     android-aarch64)
       if [ -z "$ANDROID_NDK_HOME" ]; then
@@ -196,6 +212,7 @@ set -x
 $CLANG $CLANG_OPTIONS \
   -c -o "$READY_DIR/main.o" \
   -Iexternal/include \
+  -Iбудування/libuv/$TARGET_TRIPLE/libuv-v1.51.0/include \
   "external/$COMMON_SYSTEM/main_$COMMON_SYSTEM.c"
 $CLANG $CLANG_OPTIONS \
   -c -o "$READY_DIR/prystriy_$COMMON_SYSTEM.o" \
@@ -204,12 +221,14 @@ $CLANG $CLANG_OPTIONS \
 $CLANG $CLANG_OPTIONS \
   -c -o "$READY_DIR/biblioteka_$COMMON_SYSTEM.o" \
   -Iexternal/include \
+  -Iбудування/libuv/$TARGET_TRIPLE/libuv-v1.51.0/include \
   "external/$COMMON_SYSTEM/biblioteka_$COMMON_SYSTEM.c"
 
 if [ "$BUILD_SYSTEM" != "$COMMON_SYSTEM" ]; then
   $CLANG $CLANG_OPTIONS \
     -c -o "$READY_DIR/biblioteka_$BUILD_SYSTEM.o" \
     -Iexternal/include \
+    -Iбудування/libuv/$TARGET_TRIPLE/libuv-v1.51.0/include \
     "external/$BUILD_SYSTEM/biblioteka_$BUILD_SYSTEM.c"
   BIBLIOTEKA_SYSTEM_OBJ="$READY_DIR/biblioteka_$BUILD_SYSTEM.o"
 else
