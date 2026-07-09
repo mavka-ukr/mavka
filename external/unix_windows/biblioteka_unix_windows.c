@@ -326,6 +326,8 @@ static void close_client_walk_cb(uv_handle_t* handle, void* arg) {
     ClientContext* client = (ClientContext*)handle->data;
     if (client && client->listener == target_listener &&
         (uv_handle_t*)&client->handle == handle) {
+      if (client->listener->обробник_відключення)
+        client->listener->обробник_відключення((адреса)client, 0);
       uv_close(handle, on_client_close);
     }
   }
