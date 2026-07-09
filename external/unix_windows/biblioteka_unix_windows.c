@@ -18,6 +18,7 @@ typedef struct ClientContext {
   ListenerContext* listener;
   адреса аргумент;
   ІнтернетСлухачРозеткаОбробникЗнищення обробник_знищення;
+  int буфер_переповнений;
 } ClientContext;
 
 typedef struct WriteReq {
@@ -83,6 +84,7 @@ static void on_new_connection(uv_stream_t* server_handle, int status) {
   client->handle.data = client;
   client->аргумент = NULL;
   client->обробник_знищення = NULL;
+  client->буфер_переповнений = 0;
 
   if (uv_tcp_init(uv_default_loop(), &client->handle) != 0) {
     if (client->обробник_знищення)
@@ -117,7 +119,10 @@ static void on_write_complete(uv_write_t* req, int status) {
 
   if (client && client->listener && client->listener->обробник_стікання) {
     if (uv_stream_get_write_queue_size((uv_stream_t*)&client->handle) == 0) {
-      client->listener->обробник_стікання((адреса)client);
+      if (client->буфер_переповнений) {
+        client->буфер_переповнений = 0;
+        client->listener->обробник_стікання((адреса)client);
+      }
     }
   }
 }
@@ -219,12 +224,12 @@ int бібліотека_інтернет_надіслати(адреса роз
   return (адреса)listener;
 }
 
-адреса бібліотека_мавки_інет_отримати_аргумент_слухача_з_розетки(
+адреса бібліотека_мавки_інет_отримати_аргумент_слухача_з_клієнта(
     адреса розетка) {
   return ((ClientContext*)розетка)->listener->аргумент;
 }
 
-адреса бібліотека_мавки_інет_записати_аргумент_клієнта_слухача(
+void бібліотека_мавки_інет_записати_аргумент_клієнта_слухача(
     адреса розетка,
     адреса аргумент,
     ІнтернетСлухачРозеткаОбробникЗнищення обробник_знищення) {
@@ -232,7 +237,7 @@ int бібліотека_інтернет_надіслати(адреса роз
   ((ClientContext*)розетка)->обробник_знищення = обробник_знищення;
 }
 
-адреса бібліотека_мавки_інет_отримати_аргумент_розетки(адреса розетка) {
+адреса бібліотека_мавки_інет_отримати_аргумент_клієнта_слухача(адреса розетка) {
   return ((ClientContext*)розетка)->аргумент;
 }
 
@@ -282,6 +287,12 @@ int бібліотека_інтернет_надіслати(адреса роз
   int res = uv_write(&wr->req, (uv_stream_t*)&client->handle, &wr->buf, 1,
                      on_write_complete);
 
+  if (res == 0) {
+    if (uv_stream_get_write_queue_size((uv_stream_t*)&client->handle) > 0) {
+      client->буфер_переповнений = 1;
+    }
+  }
+
   if (res != 0) {
     пристрій_мавки_звільнити(wr->buf.base);
     пристрій_мавки_звільнити(wr);
@@ -295,6 +306,52 @@ int бібліотека_інтернет_надіслати(адреса роз
     }
     return res;
   }
+
+  return 0;
+}
+
+static void on_listener_close(uv_handle_t* handle) {
+  ListenerContext* listener = (ListenerContext*)handle->data;
+  if (listener) {
+    if (listener->обробник_знищення) {
+      listener->обробник_знищення(listener->аргумент);
+    }
+    пристрій_мавки_звільнити(listener);
+  }
+}
+
+static void close_client_walk_cb(uv_handle_t* handle, void* arg) {
+  ListenerContext* target_listener = (ListenerContext*)arg;
+
+  if (!uv_is_closing(handle) && handle->type == UV_TCP) {
+    ClientContext* client = (ClientContext*)handle->data;
+    if (client && client->listener == target_listener &&
+        (uv_handle_t*)&client->handle == handle) {
+      uv_close(handle, on_client_close);
+    }
+  }
+}
+
+ціле бібліотека_мавки_інет_зупинити_слухача(адреса слухач,
+                                            природне закрити_підключення) {
+  ListenerContext* listener = (ListenerContext*)слухач;
+
+  if (!listener) {
+    return -1;
+  }
+
+  if (uv_is_closing((uv_handle_t*)&listener->server)) {
+    return 0;
+  }
+
+  if (закрити_підключення) {
+    uv_loop_t* loop = listener->server.loop;
+    if (loop) {
+      uv_walk(loop, close_client_walk_cb, listener);
+    }
+  }
+
+  uv_close((uv_handle_t*)&listener->server, on_listener_close);
 
   return 0;
 }
