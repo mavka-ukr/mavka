@@ -84,34 +84,6 @@ build_readline() {
   RESULT_DIR="$build_dir"
 }
 
-build_idn2() {
-  local ar="$1" ranlib="$2" cc="$3" target="$4" ldflags="$5"
-  local idn2_dir="будування/libidn2/$target/libidn2-2.3.2"
-  local build_dir="$idn2_dir/build_idn2"
-  local tarball="$(pwd)/scripts/libidn2-2.3.2.tar.gz"
-
-  if ! ensure_tarball "$tarball"; then
-    return 1
-  fi
-
-  extract_if_needed "$tarball" "$idn2_dir"
-
-  if [ ! -d "$build_dir" ]; then
-    pushd "$idn2_dir" > /dev/null
-    if [[ "$target" == *"android"* ]]; then
-      export ac_cv_func_strchrnul=no
-    fi
-    AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target" CFLAGS="-O3" LDFLAGS="$ldflags" \
-      ./configure --host="$target" --prefix="$(pwd)/build_idn2" \
-        --enable-static --disable-shared --without-tests --without-gcc-atomics
-    make -j"$(nproc)"
-    make install
-    popd > /dev/null
-  fi
-
-  RESULT_DIR="$build_dir"
-}
-
 build_uv() {
   local ar="$1" ranlib="$2" cc="$3" target="$4" ldflags="$5"
   local uv_dir="будування/libuv/$target/libuv-v1.51.0"

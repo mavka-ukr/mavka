@@ -34,13 +34,11 @@ download_file() {
 
 cat <<'EOF'
 This script downloads the third-party source archives required by
-scripts/build_deps.sh: readline, libidn2, and libuv.
+scripts/build_deps.sh: readline, libuv.
 EOF
 
-# Official upstream sources
 download_file "https://invisible-mirror.net/archives/ncurses/ncurses-6.4.tar.gz" "scripts/ncurses-6.4.tar.gz"
 download_file "https://ftp.gnu.org/gnu/readline/readline-8.2.tar.gz" "scripts/readline-8.2.tar.gz"
-download_file "https://ftp.gnu.org/gnu/libidn/libidn2-2.3.2.tar.gz" "scripts/libidn2-2.3.2.tar.gz"
 download_file "https://dist.libuv.org/dist/v1.51.0/libuv-v1.51.0.tar.gz" "scripts/libuv-v1.51.0.tar.gz"
 
 echo "Download complete. Run 'bash scripts/build.sh <mode> <platform>' after the archives are available."
