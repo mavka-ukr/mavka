@@ -2,6 +2,57 @@
 #include "mavka/biblioteka.h"
 #include "mavka/prystriy.h"
 
+static природне перетворити_помилку_uv(int uv_err) {
+  if (uv_err >= 0) {
+    return МАВКА_ІНЕТ_УСПІХ;
+  }
+
+  switch (uv_err) {
+    case UV_ENOMEM:
+      return МАВКА_ІНЕТ_ПОМИЛКА_ВИДІЛЕННЯ_ПАМʼЯТІ;
+    case UV_EINVAL:
+      return МАВКА_ІНЕТ_ПОМИЛКА_АРГУМЕНТУ;
+    case UV_EADDRINUSE:
+      return МАВКА_ІНЕТ_ПОМИЛКА_АДРЕСА_ВИКОРИСТОВУЄТЬСЯ;
+    case UV_EADDRNOTAVAIL:
+      return МАВКА_ІНЕТ_ПОМИЛКА_АДРЕСА_НЕДОСТУПНА;
+    case UV_ECONNREFUSED:
+      return МАВКА_ІНЕТ_ПОМИЛКА_ЗʼЄДНАННЯ_ВІДХИЛЕНО;
+    case UV_ECONNRESET:
+      return МАВКА_ІНЕТ_ПОМИЛКА_ЗʼЄДНАННЯ_СКИНОТО;
+    case UV_ECONNABORTED:
+      return МАВКА_ІНЕТ_ПОМИЛКА_ЗʼЄДНАННЯ_ПЕРЕРВАНО;
+    case UV_ENETUNREACH:
+      return МАВКА_ІНЕТ_ПОМИЛКА_МЕРЕЖА_НЕДОСТУПНА;
+    case UV_ENETDOWN:
+      return МАВКА_ІНЕТ_ПОМИЛКА_МЕРЕЖА_ВІДМОВИЛА;
+    case UV_EHOSTUNREACH:
+      return МАВКА_ІНЕТ_ПОМИЛКА_ХОСТ_НЕДОСТУПНИЙ;
+    case UV_ETIMEDOUT:
+      return МАВКА_ІНЕТ_ПОМИЛКА_ТАЙМАУТ;
+    case UV_EPIPE:
+      return МАВКА_ІНЕТ_ПОМИЛКА_КАНАЛ_ЗЛАМАНО;
+    case UV_EACCES:
+    case UV_EPERM:
+      return МАВКА_ІНЕТ_ПОМИЛКА_ДОСТУПУ;
+    case UV_EMFILE:
+    case UV_ENFILE:
+      return МАВКА_ІНЕТ_ПОМИЛКА_ЗАБАГАТО_ФАЙЛІВ;
+    case UV_ENOBUFS:
+      return МАВКА_ІНЕТ_ПОМИЛКА_ПЕРЕПОВНЕННЯ_БУФЕРА;
+    case UV_EALREADY:
+      return МАВКА_ІНЕТ_ПОМИЛКА_ВЖЕ_ПІДДОСЛІДЖЕНО;
+    case UV_ENOTCONN:
+      return МАВКА_ІНЕТ_ПОМИЛКА_НЕ_ПІДʼЄДНАНО;
+    case UV_EIO:
+      return МАВКА_ІНЕТ_ПОМИЛКА_ВХІД_ВИХІД;
+    case UV_EBADF:
+      return МАВКА_ІНЕТ_ПОМИЛКА_НЕПРАВИЛЬНИЙ_ФАЙЛ;
+    default:
+      return МАВКА_ІНЕТ_ПОМИЛКА_НЕВІДОМА;
+  }
+}
+
 typedef struct ListenerContext ListenerContext;
 
 typedef struct ConnectionContext {
@@ -29,6 +80,7 @@ typedef struct ConnectionContext {
   int закривається;
   int timer_closed;
   int handle_closed;
+  природне error_emitted;
 } ConnectionContext;
 
 struct ListenerContext {
@@ -63,12 +115,13 @@ static void try_free_connection_context(ConnectionContext* ctx) {
     return;
   if (ctx->handle_closed && ctx->timer_closed) {
     if (ctx->listener) {
-      if (ctx->listener->обробник_закінчення) {
-        ctx->listener->обробник_закінчення((адреса)ctx->listener, (адреса)ctx);
+      if (ctx->listener->обробник_закриття) {
+        ctx->listener->обробник_закриття((адреса)ctx->listener, (адреса)ctx,
+                                         ctx->error_emitted);
       }
     } else {
-      if (ctx->обробник_закінчення) {
-        ctx->обробник_закінчення((адреса)ctx);
+      if (ctx->обробник_закриття) {
+        ctx->обробник_закриття((адреса)ctx, ctx->error_emitted);
       }
     }
 
@@ -121,52 +174,59 @@ static void on_connect_read(uv_stream_t* stream,
                             ssize_t nread,
                             const uv_buf_t* buf) {
   ConnectionContext* ctx = (ConnectionContext*)stream->data;
+  if (!ctx)
+    return;
 
-  if (ctx->listener) {
-    ListenerContext* listener = ctx->listener;
-    if (nread > 0) {
-      if (listener->обробник_даних) {
-        listener->обробник_даних((адреса)listener, (адреса)ctx, (п8*)buf->base,
-                                 (природне)nread);
+  if (nread > 0) {
+    if (ctx->listener) {
+      if (ctx->listener->обробник_даних) {
+        ctx->listener->обробник_даних((адреса)ctx->listener, (адреса)ctx,
+                                      (п8*)buf->base, (природне)nread);
       }
-    } else if (nread < 0) {
-      if (buf->base) {
-        пристрій_мавки_звільнити(buf->base);
-      }
-      if (listener->обробник_закриття) {
-        природне err = (nread == UV_EOF) ? 0 : (природне)(-nread);
-        listener->обробник_закриття((адреса)listener, (адреса)ctx, err);
-      }
-      close_connect_context(ctx);
     } else {
-      if (buf->base) {
-        пристрій_мавки_звільнити(buf->base);
-      }
-    }
-  } else {
-    if (nread > 0) {
       if (ctx->обробник_даних) {
         ctx->обробник_даних((адреса)ctx, (п8*)buf->base, (природне)nread);
       }
-    } else if (nread < 0) {
-      if (buf->base) {
-        пристрій_мавки_звільнити(buf->base);
+    }
+  } else if (nread < 0) {
+    if (buf->base) {
+      пристрій_мавки_звільнити(buf->base);
+    }
+
+    if (nread == UV_EOF) {
+      if (ctx->listener) {
+        if (ctx->listener->обробник_закінчення) {
+          ctx->listener->обробник_закінчення((адреса)ctx->listener,
+                                             (адреса)ctx);
+        }
+      } else {
+        if (ctx->обробник_закінчення) {
+          ctx->обробник_закінчення((адреса)ctx);
+        }
       }
-      if (ctx->обробник_закриття) {
-        природне err = (nread == UV_EOF) ? 0 : (природне)(-nread);
-        ctx->обробник_закриття((адреса)ctx, err);
-      }
-      close_connect_context(ctx);
     } else {
-      if (buf->base) {
-        пристрій_мавки_звільнити(buf->base);
+      природне err = перетворити_помилку_uv((int)nread);
+      ctx->error_emitted = err;
+      if (ctx->listener) {
+        if (ctx->listener->обробник_помилки) {
+          ctx->listener->обробник_помилки(err, ctx->listener->аргумент);
+        }
+      } else {
+        if (ctx->обробник_помилки) {
+          ctx->обробник_помилки(err, ctx->аргумент);
+        }
       }
     }
+
+    close_connect_context(ctx);
+    return;
   }
 }
 
 static void on_connect_timeout(uv_timer_t* handle) {
   ConnectionContext* ctx = (ConnectionContext*)handle->data;
+  if (!ctx || ctx->закривається)
+    return;
 
   if (ctx->listener) {
     if (ctx->listener->обробник_засидження) {
@@ -177,16 +237,18 @@ static void on_connect_timeout(uv_timer_t* handle) {
       ctx->обробник_засидження((адреса)ctx);
     }
   }
-
-  close_connect_context(ctx);
 }
 
 static void on_connect_complete(uv_connect_t* req, int status) {
   ConnectionContext* ctx = (ConnectionContext*)req->handle->data;
+  if (!ctx || ctx->закривається)
+    return;
 
   if (status < 0) {
+    природне err = перетворити_помилку_uv(status);
+    ctx->error_emitted = err;
     if (ctx->обробник_помилки_підключення) {
-      ctx->обробник_помилки_підключення((адреса)ctx, (природне)(-status));
+      ctx->обробник_помилки_підключення((адреса)ctx, err);
     }
     close_connect_context(ctx);
     return;
@@ -201,8 +263,10 @@ static void on_connect_complete(uv_connect_t* req, int status) {
   int res = uv_read_start((uv_stream_t*)&ctx->handle, conn_alloc_buffer,
                           on_connect_read);
   if (res != 0) {
+    природне err = перетворити_помилку_uv(res);
+    ctx->error_emitted = err;
     if (ctx->обробник_помилки) {
-      ctx->обробник_помилки((природне)(-res), ctx->аргумент);
+      ctx->обробник_помилки(err, ctx->аргумент);
     }
     close_connect_context(ctx);
   }
@@ -212,28 +276,33 @@ static void on_connect_write_complete(uv_write_t* req, int status) {
   ConnWriteReq* wr = (ConnWriteReq*)req;
   ConnectionContext* ctx = (ConnectionContext*)req->handle->data;
 
+  if (status < 0 && ctx && !ctx->закривається) {
+    природне err = перетворити_помилку_uv(status);
+    ctx->error_emitted = err;
+    if (ctx->listener && ctx->listener->обробник_помилки) {
+      ctx->listener->обробник_помилки(err, ctx->listener->аргумент);
+    } else if (ctx->обробник_помилки) {
+      ctx->обробник_помилки(err, ctx->аргумент);
+    }
+  }
+
   if (wr->обробник) {
-    природне err = (status < 0) ? (природне)(-status) : 0;
+    природне err =
+        (status < 0) ? перетворити_помилку_uv(status) : МАВКА_ІНЕТ_УСПІХ;
     wr->обробник(err, wr->аргумент);
   }
 
   пристрій_мавки_звільнити(wr);
 
-  if (ctx) {
-    if (ctx->listener) {
-      if (ctx->listener->обробник_стікання &&
-          uv_stream_get_write_queue_size((uv_stream_t*)&ctx->handle) == 0) {
-        if (ctx->буфер_переповнений) {
-          ctx->буфер_переповнений = 0;
-          ctx->listener->обробник_стікання((адреса)ctx->listener, (адреса)ctx);
-        }
-      }
-    } else if (ctx->обробник_стікання) {
-      if (uv_stream_get_write_queue_size((uv_stream_t*)&ctx->handle) == 0) {
-        if (ctx->буфер_переповнений) {
-          ctx->буфер_переповнений = 0;
-          ctx->обробник_стікання((адреса)ctx);
-        }
+  if (ctx && !ctx->закривається) {
+    size_t write_queue_size =
+        uv_stream_get_write_queue_size((uv_stream_t*)&ctx->handle);
+    if (write_queue_size == 0 && ctx->буфер_переповнений) {
+      ctx->буфер_переповнений = 0;
+      if (ctx->listener && ctx->listener->обробник_стікання) {
+        ctx->listener->обробник_стікання((адреса)ctx->listener, (адреса)ctx);
+      } else if (ctx->обробник_стікання) {
+        ctx->обробник_стікання((адреса)ctx);
       }
     }
   }
@@ -257,7 +326,7 @@ static void on_connect_write_complete(uv_write_t* req, int status) {
       (ConnectionContext*)пристрій_мавки_виділити(sizeof(ConnectionContext));
   if (!ctx) {
     if (обробник_помилки) {
-      обробник_помилки(UV_ENOMEM, NULL);
+      обробник_помилки(МАВКА_ІНЕТ_ПОМИЛКА_ВИДІЛЕННЯ_ПАМʼЯТІ, NULL);
     }
     return NULL;
   }
@@ -277,17 +346,19 @@ static void on_connect_write_complete(uv_write_t* req, int status) {
 
   uv_loop_t* loop = uv_default_loop();
 
-  if (uv_tcp_init(loop, &ctx->handle) != 0) {
+  int init_res = uv_tcp_init(loop, &ctx->handle);
+  if (init_res != 0) {
     if (обробник_помилки) {
-      обробник_помилки(UV_UNKNOWN, NULL);
+      обробник_помилки(перетворити_помилку_uv(init_res), NULL);
     }
     пристрій_мавки_звільнити(ctx);
     return NULL;
   }
 
-  if (uv_timer_init(loop, &ctx->timer) != 0) {
+  int timer_res = uv_timer_init(loop, &ctx->timer);
+  if (timer_res != 0) {
     if (обробник_помилки) {
-      обробник_помилки(UV_UNKNOWN, NULL);
+      обробник_помилки(перетворити_помилку_uv(timer_res), NULL);
     }
     uv_close((uv_handle_t*)&ctx->handle, NULL);
     пристрій_мавки_звільнити(ctx);
@@ -307,7 +378,7 @@ static void on_connect_write_complete(uv_write_t* req, int status) {
                            (const struct sockaddr*)&dest, on_connect_complete);
   if (res != 0) {
     if (обробник_помилки_підключення) {
-      обробник_помилки_підключення((адреса)ctx, (природне)(-res));
+      обробник_помилки_підключення((адреса)ctx, перетворити_помилку_uv(res));
     }
     uv_close((uv_handle_t*)&ctx->timer, NULL);
     uv_close((uv_handle_t*)&ctx->handle, NULL);
@@ -326,9 +397,9 @@ static void on_connect_write_complete(uv_write_t* req, int status) {
     БібліотекаМавкиІнетЗвʼязокОбробникНадіслання обробник) {
   ConnectionContext* ctx = (ConnectionContext*)адр_звʼязок;
 
-  if (!ctx || !дані || розмір == 0) {
+  if (!ctx || !дані || розмір == 0 || ctx->закривається) {
     if (обробник) {
-      обробник(UV_EINVAL, аргумент);
+      обробник(МАВКА_ІНЕТ_ПОМИЛКА_АРГУМЕНТУ, аргумент);
     }
     return -1;
   }
@@ -337,12 +408,14 @@ static void on_connect_write_complete(uv_write_t* req, int status) {
       (ConnWriteReq*)пристрій_мавки_виділити(sizeof(ConnWriteReq));
   if (!wr) {
     if (ctx->listener && ctx->listener->обробник_помилки) {
-      ctx->listener->обробник_помилки(UV_ENOMEM, ctx->listener->аргумент);
+      ctx->listener->обробник_помилки(МАВКА_ІНЕТ_ПОМИЛКА_ВИДІЛЕННЯ_ПАМʼЯТІ,
+                                      ctx->listener->аргумент);
     } else if (ctx->обробник_помилки) {
-      ctx->обробник_помилки(UV_ENOMEM, ctx->аргумент);
+      ctx->обробник_помилки(МАВКА_ІНЕТ_ПОМИЛКА_ВИДІЛЕННЯ_ПАМʼЯТІ,
+                            ctx->аргумент);
     }
     if (обробник) {
-      обробник(UV_ENOMEM, аргумент);
+      обробник(МАВКА_ІНЕТ_ПОМИЛКА_ВИДІЛЕННЯ_ПАМʼЯТІ, аргумент);
     }
     return -1;
   }
@@ -362,14 +435,15 @@ static void on_connect_write_complete(uv_write_t* req, int status) {
   } else {
     пристрій_мавки_звільнити(wr);
 
+    природне err = перетворити_помилку_uv(res);
+    ctx->error_emitted = err;
     if (ctx->listener && ctx->listener->обробник_помилки) {
-      ctx->listener->обробник_помилки((природне)(-res),
-                                      ctx->listener->аргумент);
+      ctx->listener->обробник_помилки(err, ctx->listener->аргумент);
     } else if (ctx->обробник_помилки) {
-      ctx->обробник_помилки((природне)(-res), ctx->аргумент);
+      ctx->обробник_помилки(err, ctx->аргумент);
     }
     if (обробник) {
-      обробник((природне)(-res), аргумент);
+      обробник(err, аргумент);
     }
     return res;
   }
@@ -380,12 +454,11 @@ static void on_connect_write_complete(uv_write_t* req, int status) {
 ціле бібліотека_мавки_інет_звʼязок_встановити_засидження(адреса адр_звʼязок,
                                                          природне таймаут_мс) {
   ConnectionContext* ctx = (ConnectionContext*)адр_звʼязок;
-  if (!ctx)
+  if (!ctx || ctx->закривається)
     return -1;
 
   if (таймаут_мс == 0) {
-    uv_timer_stop(&ctx->timer);
-    return 0;
+    return uv_timer_stop(&ctx->timer);
   }
 
   return uv_timer_start(&ctx->timer, on_connect_timeout, таймаут_мс, 0);
@@ -410,9 +483,8 @@ void бібліотека_мавки_інет_записати_аргумент_
 ціле бібліотека_мавки_інет_отримати_іа4_звʼязку(адреса адр_звʼязок,
                                                 природне* вихід) {
   ConnectionContext* client = (ConnectionContext*)адр_звʼязок;
-  if (!client) {
+  if (!client)
     return -1;
-  }
 
   struct sockaddr_storage addr;
   int addr_len = sizeof(addr);
@@ -424,9 +496,7 @@ void бібліотека_мавки_інет_записати_аргумент_
 
   if (addr.ss_family == AF_INET) {
     struct sockaddr_in* addr_in = (struct sockaddr_in*)&addr;
-
     *вихід = (природне)ntohl(addr_in->sin_addr.s_addr);
-
     return 0;
   }
 
@@ -436,9 +506,8 @@ void бібліотека_мавки_інет_записати_аргумент_
 ціле бібліотека_мавки_інет_отримати_іа6_звʼязку(адреса адр_звʼязок,
                                                 п8* вихідний_буфер_16_байт) {
   ConnectionContext* client = (ConnectionContext*)адр_звʼязок;
-  if (!client || !вихідний_буфер_16_байт) {
+  if (!client || !вихідний_буфер_16_байт)
     return -1;
-  }
 
   struct sockaddr_storage addr;
   int addr_len = sizeof(addr);
@@ -462,7 +531,8 @@ static void on_new_connection(uv_stream_t* server_handle, int status) {
 
   if (status < 0) {
     if (listener->обробник_помилки) {
-      listener->обробник_помилки((природне)(-status), listener->аргумент);
+      listener->обробник_помилки(перетворити_помилку_uv(status),
+                                 listener->аргумент);
     }
     return;
   }
@@ -471,7 +541,8 @@ static void on_new_connection(uv_stream_t* server_handle, int status) {
       (ConnectionContext*)пристрій_мавки_виділити(sizeof(ConnectionContext));
   if (!conn) {
     if (listener->обробник_помилки) {
-      listener->обробник_помилки(UV_ENOMEM, listener->аргумент);
+      listener->обробник_помилки(МАВКА_ІНЕТ_ПОМИЛКА_ВИДІЛЕННЯ_ПАМʼЯТІ,
+                                 listener->аргумент);
     }
     return;
   }
@@ -500,8 +571,10 @@ static void on_new_connection(uv_stream_t* server_handle, int status) {
     int res = uv_read_start((uv_stream_t*)&conn->handle, conn_alloc_buffer,
                             on_connect_read);
     if (res != 0) {
+      природне err = перетворити_помилку_uv(res);
+      conn->error_emitted = err;
       if (listener->обробник_помилки) {
-        listener->обробник_помилки((природне)(-res), listener->аргумент);
+        listener->обробник_помилки(err, listener->аргумент);
       }
       close_connect_context(conn);
     }
@@ -536,7 +609,7 @@ static void on_listener_close(uv_handle_t* handle) {
       (ListenerContext*)пристрій_мавки_виділити(sizeof(ListenerContext));
   if (!listener) {
     if (обробник_помилки)
-      обробник_помилки(UV_ENOMEM, аргумент);
+      обробник_помилки(МАВКА_ІНЕТ_ПОМИЛКА_ВИДІЛЕННЯ_ПАМʼЯТІ, аргумент);
     if (обробник_знищення)
       обробник_знищення(аргумент);
     return NULL;
@@ -555,9 +628,10 @@ static void on_listener_close(uv_handle_t* handle) {
 
   uv_loop_t* loop = uv_default_loop();
 
-  if (uv_tcp_init(loop, &listener->server) != 0) {
+  int init_res = uv_tcp_init(loop, &listener->server);
+  if (init_res != 0) {
     if (обробник_помилки)
-      обробник_помилки(UV_UNKNOWN, listener->аргумент);
+      обробник_помилки(перетворити_помилку_uv(init_res), listener->аргумент);
     if (listener->обробник_знищення)
       listener->обробник_знищення(listener->аргумент);
     пристрій_мавки_звільнити(listener);
@@ -572,16 +646,19 @@ static void on_listener_close(uv_handle_t* handle) {
            (unsigned int)((іа >> 24) & 0xFF), (unsigned int)((іа >> 16) & 0xFF),
            (unsigned int)((іа >> 8) & 0xFF), (unsigned int)(іа & 0xFF));
 
-  if (uv_ip4_addr(ip_str, (int)порт, &addr) != 0) {
+  int ip_res = uv_ip4_addr(ip_str, (int)порт, &addr);
+  if (ip_res != 0) {
     if (обробник_помилки)
-      обробник_помилки(UV_EINVAL, listener->аргумент);
+      обробник_помилки(перетворити_помилку_uv(ip_res), listener->аргумент);
     uv_close((uv_handle_t*)&listener->server, on_listener_close);
     return NULL;
   }
 
-  if (uv_tcp_bind(&listener->server, (const struct sockaddr*)&addr, 0) != 0) {
+  int bind_res =
+      uv_tcp_bind(&listener->server, (const struct sockaddr*)&addr, 0);
+  if (bind_res != 0) {
     if (обробник_помилки)
-      обробник_помилки(UV_EADDRINUSE, listener->аргумент);
+      обробник_помилки(перетворити_помилку_uv(bind_res), listener->аргумент);
     uv_close((uv_handle_t*)&listener->server, on_listener_close);
     return NULL;
   }
@@ -590,12 +667,17 @@ static void on_listener_close(uv_handle_t* handle) {
       uv_listen((uv_stream_t*)&listener->server, SOMAXCONN, on_new_connection);
   if (res != 0) {
     if (обробник_помилки)
-      обробник_помилки((природне)(-res), listener->аргумент);
+      обробник_помилки(перетворити_помилку_uv(res), listener->аргумент);
     uv_close((uv_handle_t*)&listener->server, on_listener_close);
     return NULL;
   }
 
   return (адреса)listener;
+}
+
+адреса бібліотека_мавки_інет_отримати_аргумент_слуги(адреса адр_слуга) {
+  ListenerContext* listener = (ListenerContext*)адр_слуга;
+  return listener->аргумент;
 }
 
 адреса бібліотека_мавки_інет_отримати_аргумент_слуги_зі_звʼязку(
@@ -611,9 +693,6 @@ static void close_client_walk_cb(uv_handle_t* handle, void* arg) {
     ConnectionContext* conn = (ConnectionContext*)handle->data;
     if (conn && conn->listener == target_listener &&
         (uv_handle_t*)&conn->handle == handle) {
-      if (conn->listener->обробник_закриття)
-        conn->listener->обробник_закриття((адреса)target_listener, (адреса)conn,
-                                          0);
       close_connect_context(conn);
     }
   }
