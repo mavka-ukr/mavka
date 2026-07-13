@@ -133,6 +133,10 @@ build_uv() {
       configure_host="x86_64-w64-mingw32"
     elif [ "$target" = "aarch64-windows-gnu" ]; then
       configure_host="aarch64-w64-mingw32"
+    elif [ "$target" = "x86_64-macos" ]; then
+      configure_host="x86_64-apple-darwin"
+    elif [ "$target" = "aarch64-macos" ]; then
+      configure_host="aarch64-apple-darwin"
     fi
 
     AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target" CFLAGS="-O3" LDFLAGS="$ldflags" \
@@ -155,7 +159,6 @@ setup_linux_libraries() {
 
   local ncurses_build=""
   local readline_build=""
-  local idn2_build=""
   local uv_build=""
 
   if build_ncurses "$ar" "$ranlib" "$cc" "$target" "$ldflags"; then
@@ -168,12 +171,6 @@ setup_linux_libraries() {
     readline_build="$RESULT_DIR"
   else
     echo "readline support disabled"
-  fi
-
-  if build_idn2 "$ar" "$ranlib" "$cc" "$target" "$ldflags"; then
-    idn2_build="$RESULT_DIR"
-  else
-    echo "libidn2 support disabled"
   fi
 
   if build_uv "$ar" "$ranlib" "$cc" "$target" "$ldflags"; then
@@ -190,10 +187,6 @@ setup_linux_libraries() {
     DEPS_CFLAGS+=" -DPROGRAM_USE_READLINE -I$root/$readline_build/include"
   fi
 
-  if [ -n "$idn2_build" ]; then
-    DEPS_CFLAGS+=" -I$root/$idn2_build/include"
-  fi
-
   if [ -n "$readline_build" ]; then
     DEPS_LIBS="$root/$readline_build/lib/libreadline.a"
     DEPS_LIBS+=" $root/$readline_build/lib/libhistory.a"
@@ -205,8 +198,25 @@ setup_linux_libraries() {
     DEPS_LIBS+=" $root/$ncurses_build/lib/libpanel.a"
   fi
 
-  if [ -n "$idn2_build" ]; then
-    DEPS_LIBS+=" $root/$idn2_build/lib/libidn2.a"
+  if [ -n "$uv_build" ]; then
+    DEPS_LIBS+=" $root/$uv_build/lib/libuv.a"
+  fi
+}
+
+setup_windows_libraries() {
+  local ar="$1" ranlib="$2" cc="$3" target="$4" ldflags="$5"
+  local root
+  root="$(pwd)"
+
+  DEPS_CFLAGS=""
+  DEPS_LIBS=""
+
+  local uv_build=""
+
+  if build_uv "$ar" "$ranlib" "$cc" "$target" "$ldflags"; then
+    uv_build="$RESULT_DIR"
+  else
+    echo "libuv support disabled"
   fi
 
   if [ -n "$uv_build" ]; then
@@ -214,7 +224,7 @@ setup_linux_libraries() {
   fi
 }
 
-setup_windows_libraries() {
+setup_macos_libraries() {
   local ar="$1" ranlib="$2" cc="$3" target="$4" ldflags="$5"
   local root
   root="$(pwd)"

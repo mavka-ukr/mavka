@@ -16,7 +16,9 @@ bash scripts/download_libs.sh
 
 ```shell
 bash scripts/build.sh debug linux-x86_64
+```
 
+```shell
 ./будування/{ВЕРСІЯ}/лінукс-ікс86_64/відлагодження/готове/мавка
 ```
 
@@ -46,8 +48,9 @@ bash scripts/build.sh debug linux-x86_64
 ANDROID_NDK_HOME="/home/kohutd/Android/android-ndk-r27d" bash scripts/build.sh debug android-aarch64
 ```
 
-Для всіх платформ, окрім **васм**, буде збудовано з нуля **idn2** та **libuv**.
-Для платформ **linux** та **android** буде збудовано з нуля **ncurses**, **readline**.
+Для всіх платформ, окрім **wasm**, буде збудовано з нуля **libuv**.
+
+Для платформ **linux** та **android** будуть збудовані з нуля **ncurses**, **readline**.
 
 ## Розробка
 

@@ -84,8 +84,10 @@ set_platform_vars() {
       OUTFILENAME="$PROGRAM_NAME"
       if [ "$ZIG_AVAILABLE" = true ]; then
         CLANG_BIN="$ZIG cc"
+        setup_macos_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
       else
         CLANG_BIN="clang"
+        setup_macos_libraries "ar" "ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
       fi
       extra_opts="-Wl,--export-dynamic -lm"
       ;;
@@ -97,8 +99,10 @@ set_platform_vars() {
       OUTFILENAME="$PROGRAM_NAME"
       if [ "$ZIG_AVAILABLE" = true ]; then
         CLANG_BIN="$ZIG cc"
+        setup_macos_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
       else
         CLANG_BIN="clang"
+        setup_macos_libraries "ar" "ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
       fi
       extra_opts="-Wl,--export-dynamic -lm"
       ;;
