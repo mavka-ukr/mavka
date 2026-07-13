@@ -293,3 +293,53 @@ static void on_connect_write_complete(uv_write_t* req, int status) {
 адреса бібліотека_мавки_інет_отримати_аргумент_клієнта(адреса адр_клієнт) {
   return ((ConnectContext*)адр_клієнт)->аргумент;
 }
+
+ціле бібліотека_мавки_інет_отримати_іа4_клієнта(адреса адр_клієнт,
+                                                природне* вихід) {
+  ConnectContext* client = (ConnectContext*)адр_клієнт;
+  if (!client) {
+    return -1;
+  }
+
+  struct sockaddr_storage addr;
+  int addr_len = sizeof(addr);
+
+  if (uv_tcp_getpeername(&client->handle, (struct sockaddr*)&addr, &addr_len) !=
+      0) {
+    return -1;
+  }
+
+  if (addr.ss_family == AF_INET) {
+    struct sockaddr_in* addr_in = (struct sockaddr_in*)&addr;
+
+    *вихід = (природне)ntohl(addr_in->sin_addr.s_addr);
+
+    return 0;
+  }
+
+  return -1;
+}
+
+ціле бібліотека_мавки_інет_отримати_іа6_клієнта(адреса адр_клієнт,
+                                                п8* вихідний_буфер_16_байт) {
+  ConnectContext* client = (ConnectContext*)адр_клієнт;
+  if (!client || !вихідний_буфер_16_байт) {
+    return -1;
+  }
+
+  struct sockaddr_storage addr;
+  int addr_len = sizeof(addr);
+
+  if (uv_tcp_getpeername(&client->handle, (struct sockaddr*)&addr, &addr_len) !=
+      0) {
+    return -1;
+  }
+
+  if (addr.ss_family == AF_INET6) {
+    struct sockaddr_in6* addr_in6 = (struct sockaddr_in6*)&addr;
+    memcpy(вихідний_буфер_16_байт, &addr_in6->sin6_addr, 16);
+    return 0;
+  }
+
+  return -1;
+}

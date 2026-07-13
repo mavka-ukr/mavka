@@ -374,3 +374,54 @@ static void close_client_walk_cb(uv_handle_t* handle, void* arg) {
 
   return 0;
 }
+
+ціле бібліотека_мавки_інет_отримати_іа4_клієнта_слуги(адреса адр_клієнт_слуги,
+                                                      природне* вихід) {
+  ClientContext* client = (ClientContext*)адр_клієнт_слуги;
+  if (!client) {
+    return -1;
+  }
+
+  struct sockaddr_storage addr;
+  int addr_len = sizeof(addr);
+
+  if (uv_tcp_getpeername(&client->handle, (struct sockaddr*)&addr, &addr_len) !=
+      0) {
+    return -1;
+  }
+
+  if (addr.ss_family == AF_INET) {
+    struct sockaddr_in* addr_in = (struct sockaddr_in*)&addr;
+
+    *вихід = (природне)ntohl(addr_in->sin_addr.s_addr);
+
+    return 0;
+  }
+
+  return -1;
+}
+
+ціле бібліотека_мавки_інет_отримати_іа6_клієнта_слуги(
+    адреса адр_клієнт_слуги,
+    п8* вихідний_буфер_16_байт) {
+  ClientContext* client = (ClientContext*)адр_клієнт_слуги;
+  if (!client || !вихідний_буфер_16_байт) {
+    return -1;
+  }
+
+  struct sockaddr_storage addr;
+  int addr_len = sizeof(addr);
+
+  if (uv_tcp_getpeername(&client->handle, (struct sockaddr*)&addr, &addr_len) !=
+      0) {
+    return -1;
+  }
+
+  if (addr.ss_family == AF_INET6) {
+    struct sockaddr_in6* addr_in6 = (struct sockaddr_in6*)&addr;
+    memcpy(вихідний_буфер_16_байт, &addr_in6->sin6_addr, 16);
+    return 0;
+  }
+
+  return -1;
+}
