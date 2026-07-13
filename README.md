@@ -11,6 +11,10 @@
 - Zig _0.16.0_ (необовʼязково на і для `linux-x86_64`, необхідно для "кроскомпіляції")
 
 ```shell
+bash scripts/download_libs.sh
+```
+
+```shell
 bash scripts/build.sh debug linux-x86_64
 
 ./будування/{ВЕРСІЯ}/лінукс-ікс86_64/відлагодження/готове/мавка
@@ -42,14 +46,8 @@ bash scripts/build.sh debug linux-x86_64
 ANDROID_NDK_HOME="/home/kohutd/Android/android-ndk-r27d" bash scripts/build.sh debug android-aarch64
 ```
 
-Перед будуванням можна завантажити додаткові бібліотеки за допомогою:
-
-```
-bash scripts/download_libs.sh
-```
-
-Для платформ `linux` та `android` буде збудовано з нуля `ncurses`, `readline`, `idn2` та `libuv`, але якщо архіви не завантажені, вони не будуть збиратись і не будуть включені в Мавку.
-Для платформи `windows` буде збудовано з нуля `libuv` (також якщо завантажено).
+Для всіх платформ, окрім **васм**, буде збудовано з нуля **idn2** та **libuv**.
+Для платформ **linux** та **android** буде збудовано з нуля **ncurses**, **readline**.
 
 ## Розробка
 
