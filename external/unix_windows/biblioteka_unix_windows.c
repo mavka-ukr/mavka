@@ -57,7 +57,6 @@ typedef struct ListenerContext ListenerContext;
 
 typedef struct ConnectionContext {
   uv_tcp_t handle;
-  uv_timer_t timer;
   uv_connect_t connect_req;
 
   ListenerContext* listener;
@@ -65,7 +64,6 @@ typedef struct ConnectionContext {
   БібліотекаМавкиІнетКлієнтОбробникПідключення обробник_підключення;
   БібліотекаМавкиІнетКлієнтОбробникДаних обробник_даних;
   БібліотекаМавкиІнетКлієнтОбробникСтікання обробник_стікання;
-  БібліотекаМавкиІнетКлієнтОбробникЗасидження обробник_засидження;
   БібліотекаМавкиІнетКлієнтОбробникЗакінчення обробник_закінчення;
   БібліотекаМавкиІнетКлієнтОбробникПомилки обробник_помилки;
   БібліотекаМавкиІнетКлієнтОбробникВідключення обробник_відключення;
@@ -76,7 +74,6 @@ typedef struct ConnectionContext {
   int буфер_переповнений;
   int підключено;
   int закривається;
-  int timer_closed;
   int handle_closed;
   природне error_emitted;
 } ConnectionContext;
@@ -89,7 +86,6 @@ struct ListenerContext {
   БібліотекаМавкиІнетСлугаОбробникПідключення обробник_підключення;
   БібліотекаМавкиІнетСлугаОбробникДаних обробник_даних;
   БібліотекаМавкиІнетСлугаОбробникСтікання обробник_стікання;
-  БібліотекаМавкиІнетСлугаОбробникЗасидження обробник_засидження;
   БібліотекаМавкиІнетСлугаОбробникЗакінчення обробник_закінчення;
   БібліотекаМавкиІнетСлугаОбробникПомилки обробник_помилки;
   БібліотекаМавкиІнетСлугаОбробникВідключення обробник_відключення;
@@ -124,7 +120,7 @@ static void try_free_connection_context(ConnectionContext* ctx) {
   if (!ctx)
     return;
 
-  if (ctx->handle_closed && ctx->timer_closed) {
+  if (ctx->handle_closed) {
     if (ctx->listener) {
       if (ctx->listener->обробник_відключення) {
         ctx->listener->обробник_відключення((адреса)ctx->listener, (адреса)ctx,
@@ -152,33 +148,17 @@ static void on_connect_client_close(uv_handle_t* handle) {
   try_free_connection_context(ctx);
 }
 
-static void on_timer_close(uv_handle_t* handle) {
-  ConnectionContext* ctx = (ConnectionContext*)handle->data;
-  if (!ctx)
-    return;
-  ctx->timer_closed = 1;
-  try_free_connection_context(ctx);
-}
-
 static void close_connect_context(ConnectionContext* ctx) {
   if (!ctx || ctx->закривається)
     return;
   ctx->закривається = 1;
 
-  if (!uv_is_closing((uv_handle_t*)&ctx->timer)) {
-    uv_timer_stop(&ctx->timer);
-    uv_close((uv_handle_t*)&ctx->timer, on_timer_close);
-  } else {
-    ctx->timer_closed = 1;
-  }
-
   if (!uv_is_closing((uv_handle_t*)&ctx->handle)) {
     uv_close((uv_handle_t*)&ctx->handle, on_connect_client_close);
   } else {
     ctx->handle_closed = 1;
+    try_free_connection_context(ctx);
   }
-
-  try_free_connection_context(ctx);
 }
 
 static void on_connect_read(uv_stream_t* stream,
@@ -231,18 +211,6 @@ static void on_connect_read(uv_stream_t* stream,
 
       close_connect_context(ctx);
     }
-  }
-}
-
-static void on_connect_timeout(uv_timer_t* handle) {
-  ConnectionContext* ctx = (ConnectionContext*)handle->data;
-  if (!ctx || ctx->закривається)
-    return;
-
-  if (ctx->listener && ctx->listener->обробник_засидження) {
-    ctx->listener->обробник_засидження((адреса)ctx->listener, (адреса)ctx);
-  } else if (!ctx->listener && ctx->обробник_засидження) {
-    ctx->обробник_засидження((адреса)ctx);
   }
 }
 
@@ -325,7 +293,6 @@ void бібліотека_мавки_інет_підключитись(
     БібліотекаМавкиІнетКлієнтОбробникПідключення обробник_підключення,
     БібліотекаМавкиІнетКлієнтОбробникДаних обробник_даних,
     БібліотекаМавкиІнетКлієнтОбробникСтікання обробник_стікання,
-    БібліотекаМавкиІнетКлієнтОбробникЗасидження обробник_засидження,
     БібліотекаМавкиІнетКлієнтОбробникЗакінчення обробник_закінчення,
     БібліотекаМавкиІнетКлієнтОбробникПомилки обробник_помилки,
     БібліотекаМавкиІнетКлієнтОбробникВідключення обробник_відключення,
@@ -350,7 +317,6 @@ void бібліотека_мавки_інет_підключитись(
   ctx->обробник_стікання = обробник_стікання;
   ctx->обробник_помилки = обробник_помилки;
   ctx->обробник_закінчення = обробник_закінчення;
-  ctx->обробник_засидження = обробник_засидження;
   ctx->обробник_відключення = обробник_відключення;
   ctx->аргумент = аргумент;
   ctx->обробник_знищення = обробник_знищення;
@@ -363,24 +329,11 @@ void бібліотека_мавки_інет_підключитись(
       обробник_підключення((адреса)ctx, перетворити_помилку_uv(init_res));
     }
     ctx->handle_closed = 1;
-    ctx->timer_closed = 1;
     try_free_connection_context(ctx);
     return;
   }
 
   ctx->handle.data = ctx;
-
-  int timer_res = uv_timer_init(loop, &ctx->timer);
-  if (timer_res != 0) {
-    if (обробник_підключення) {
-      обробник_підключення((адреса)ctx, перетворити_помилку_uv(timer_res));
-    }
-    ctx->timer_closed = 1;
-    close_connect_context(ctx);
-    return;
-  }
-
-  ctx->timer.data = ctx;
 
   struct sockaddr_in dest;
   memset(&dest, 0, sizeof(dest));
@@ -399,19 +352,20 @@ void бібліотека_мавки_інет_підключитись(
   }
 }
 
-ціле бібліотека_мавки_інет_звʼязок_надіслати(
+логічне бібліотека_мавки_інет_звʼязок_надіслати(
     адреса адр_звʼязок,
     п8* дані,
     природне розмір,
     адреса аргумент,
-    БібліотекаМавкиІнетЗвʼязокОбробникНадіслання обробник) {
+    БібліотекаМавкиІнетЗвʼязокОбробникНадіслання обробник,
+    природне має_власний_обробник_помилки) {
   ConnectionContext* ctx = (ConnectionContext*)адр_звʼязок;
 
   if (!ctx || !ctx->підключено || !дані || розмір == 0 || ctx->закривається) {
     if (обробник) {
       обробник(аргумент, МАВКА_ІНЕТ_ПОМИЛКА_АРГУМЕНТУ);
     }
-    return -1;
+    return false;
   }
 
   ConnWriteReq* wr =
@@ -420,7 +374,7 @@ void бібліотека_мавки_інет_підключитись(
     if (обробник) {
       обробник(аргумент, МАВКА_ІНЕТ_ПОМИЛКА_НЕДОСТАТНЬО_ПАМʼЯТІ);
     }
-    return -1;
+    return false;
   }
 
   wr->buf.base = (char*)дані;
@@ -448,10 +402,10 @@ void бібліотека_мавки_інет_підключитись(
     if (обробник) {
       обробник(аргумент, err);
     }
-    return res;
+    return false;
   }
 
-  return 0;
+  return true;
 }
 
 static void on_shutdown_complete(uv_shutdown_t* req, int status) {
@@ -556,19 +510,6 @@ void бібліотека_мавки_інет_звʼязок_закінчити(
   }
 }
 
-ціле бібліотека_мавки_інет_звʼязок_встановити_засидження(адреса адр_звʼязок,
-                                                         природне таймаут_мс) {
-  ConnectionContext* ctx = (ConnectionContext*)адр_звʼязок;
-  if (!ctx || ctx->закривається)
-    return -1;
-
-  if (таймаут_мс == 0) {
-    return uv_timer_stop(&ctx->timer);
-  }
-
-  return uv_timer_start(&ctx->timer, on_connect_timeout, таймаут_мс, 0);
-}
-
 void бібліотека_мавки_інет_закрити_звʼязок(адреса адр_звʼязок) {
   close_connect_context((ConnectionContext*)адр_звʼязок);
 }
@@ -663,15 +604,7 @@ static void on_new_connection(uv_stream_t* server_handle, int status) {
     return;
   }
 
-  if (uv_timer_init(loop, &conn->timer) != 0) {
-    conn->timer_closed = 1;
-    conn->handle.data = conn;
-    uv_close((uv_handle_t*)&conn->handle, on_connect_client_close);
-    return;
-  }
-
   conn->handle.data = conn;
-  conn->timer.data = conn;
 
   if (uv_accept(server_handle, (uv_stream_t*)&conn->handle) == 0) {
     conn->підключено = 1;
@@ -724,7 +657,6 @@ void бібліотека_мавки_інет_служити(
     БібліотекаМавкиІнетСлугаОбробникПідключення обробник_підключення,
     БібліотекаМавкиІнетСлугаОбробникДаних обробник_даних,
     БібліотекаМавкиІнетСлугаОбробникСтікання обробник_стікання,
-    БібліотекаМавкиІнетСлугаОбробникЗасидження обробник_засидження,
     БібліотекаМавкиІнетСлугаОбробникЗакінчення обробник_закінчення,
     БібліотекаМавкиІнетСлугаОбробникПомилки обробник_помилки,
     БібліотекаМавкиІнетСлугаОбробникВідключення обробник_відключення,
@@ -748,7 +680,6 @@ void бібліотека_мавки_інет_служити(
   listener->обробник_підключення = обробник_підключення;
   listener->обробник_даних = обробник_даних;
   listener->обробник_стікання = обробник_стікання;
-  listener->обробник_засидження = обробник_засидження;
   listener->обробник_закінчення = обробник_закінчення;
   listener->обробник_помилки = обробник_помилки;
   listener->обробник_відключення = обробник_відключення;
