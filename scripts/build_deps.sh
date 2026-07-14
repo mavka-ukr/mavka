@@ -84,10 +84,10 @@ build_readline() {
   RESULT_DIR="$build_dir"
 }
 
-build_uv() {
+build_libuv() {
   local ar="$1" ranlib="$2" cc="$3" target="$4" ldflags="$5"
   local uv_dir="будування/libuv/$target/libuv-v1.51.0"
-  local build_dir="$uv_dir/build_uv"
+  local build_dir="$uv_dir/build_libuv"
   local tarball="$(pwd)/scripts/libuv-v1.51.0.tar.gz"
 
   if ! ensure_tarball "$tarball"; then
@@ -112,7 +112,7 @@ build_uv() {
     fi
 
     AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target" CFLAGS="-O3" LDFLAGS="$ldflags" \
-      ./configure --host="$configure_host" --prefix="$(pwd)/build_uv"
+      ./configure --host="$configure_host" --prefix="$(pwd)/build_libuv"
     make -j"$(nproc)"
     make install
     popd > /dev/null
@@ -145,7 +145,7 @@ setup_linux_libraries() {
     echo "readline support disabled"
   fi
 
-  if build_uv "$ar" "$ranlib" "$cc" "$target" "$ldflags"; then
+  if build_libuv "$ar" "$ranlib" "$cc" "$target" "$ldflags"; then
     uv_build="$RESULT_DIR"
   else
     echo "libuv support disabled"
@@ -185,7 +185,7 @@ setup_windows_libraries() {
 
   local uv_build=""
 
-  if build_uv "$ar" "$ranlib" "$cc" "$target" "$ldflags"; then
+  if build_libuv "$ar" "$ranlib" "$cc" "$target" "$ldflags"; then
     uv_build="$RESULT_DIR"
   else
     echo "libuv support disabled"
@@ -206,7 +206,7 @@ setup_macos_libraries() {
 
   local uv_build=""
 
-  if build_uv "$ar" "$ranlib" "$cc" "$target" "$ldflags"; then
+  if build_libuv "$ar" "$ranlib" "$cc" "$target" "$ldflags"; then
     uv_build="$RESULT_DIR"
   else
     echo "libuv support disabled"
