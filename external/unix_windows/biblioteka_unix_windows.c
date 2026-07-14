@@ -174,52 +174,51 @@ static void on_connect_read(uv_stream_t* stream,
                             ssize_t nread,
                             const uv_buf_t* buf) {
   ConnectionContext* ctx = (ConnectionContext*)stream->data;
-  if (!ctx)
+  if (!ctx) {
+    if (buf->base)
+      пристрій_мавки_звільнити(buf->base);
     return;
+  }
 
   if (nread > 0) {
-    if (ctx->listener) {
-      if (ctx->listener->обробник_даних) {
-        ctx->listener->обробник_даних((адреса)ctx->listener, (адреса)ctx,
-                                      (п8*)buf->base, (природне)nread);
-      }
-    } else {
-      if (ctx->обробник_даних) {
-        ctx->обробник_даних((адреса)ctx, (п8*)buf->base, (природне)nread);
-      }
+    int handled = 0;
+    if (ctx->listener && ctx->listener->обробник_даних) {
+      ctx->listener->обробник_даних((адреса)ctx->listener, (адреса)ctx,
+                                    (п8*)buf->base, (природне)nread);
+      handled = 1;
+    } else if (!ctx->listener && ctx->обробник_даних) {
+      ctx->обробник_даних((адреса)ctx, (п8*)buf->base, (природне)nread);
+      handled = 1;
     }
-  } else if (nread < 0) {
+
+    if (!handled && buf->base) {
+      пристрій_мавки_звільнити(buf->base);
+    }
+  } else {
     if (buf->base) {
       пристрій_мавки_звільнити(buf->base);
     }
 
-    if (nread == UV_EOF) {
-      if (ctx->listener) {
-        if (ctx->listener->обробник_закінчення) {
+    if (nread < 0) {
+      if (nread == UV_EOF) {
+        if (ctx->listener && ctx->listener->обробник_закінчення) {
           ctx->listener->обробник_закінчення((адреса)ctx->listener,
                                              (адреса)ctx);
-        }
-      } else {
-        if (ctx->обробник_закінчення) {
+        } else if (ctx->обробник_закінчення) {
           ctx->обробник_закінчення((адреса)ctx);
         }
-      }
-    } else {
-      природне err = перетворити_помилку_uv((int)nread);
-      ctx->error_emitted = err;
-      if (ctx->listener) {
-        if (ctx->listener->обробник_помилки) {
-          ctx->listener->обробник_помилки(err, ctx->listener->аргумент);
-        }
       } else {
-        if (ctx->обробник_помилки) {
+        природне err = перетворити_помилку_uv((int)nread);
+        ctx->error_emitted = err;
+        if (ctx->listener && ctx->listener->обробник_помилки) {
+          ctx->listener->обробник_помилки(err, ctx->listener->аргумент);
+        } else if (ctx->обробник_помилки) {
           ctx->обробник_помилки(err, ctx->аргумент);
         }
       }
-    }
 
-    close_connect_context(ctx);
-    return;
+      close_connect_context(ctx);
+    }
   }
 }
 
@@ -304,6 +303,10 @@ static void on_connect_write_complete(uv_write_t* req, int status) {
       } else if (ctx->обробник_стікання) {
         ctx->обробник_стікання((адреса)ctx);
       }
+    }
+
+    if (status < 0 && status != UV_ECANCELED) {
+      close_connect_context(ctx);
     }
   }
 }
@@ -397,7 +400,7 @@ static void on_connect_write_complete(uv_write_t* req, int status) {
     БібліотекаМавкиІнетЗвʼязокОбробникНадіслання обробник) {
   ConnectionContext* ctx = (ConnectionContext*)адр_звʼязок;
 
-  if (!ctx || !дані || розмір == 0 || ctx->закривається) {
+  if (!ctx || !ctx->підключено || !дані || розмір == 0 || ctx->закривається) {
     if (обробник) {
       обробник(МАВКА_ІНЕТ_ПОМИЛКА_АРГУМЕНТУ, аргумент);
     }
@@ -565,6 +568,7 @@ static void on_new_connection(uv_stream_t* server_handle, int status) {
   conn->timer.data = conn;
 
   if (uv_accept(server_handle, (uv_stream_t*)&conn->handle) == 0) {
+    conn->підключено = 1;
     if (listener->обробник_підключення) {
       listener->обробник_підключення((адреса)listener, (адреса)conn);
     }
@@ -604,7 +608,7 @@ static void on_listener_close(uv_handle_t* handle) {
     БібліотекаМавкиІнетСлугаОбробникПомилки обробник_помилки,
     БібліотекаМавкиІнетСлугаОбробникВідключення обробник_закриття,
     адреса аргумент,
-    БібліотекаМавкиІнетСлугаОбробникЗнищення обробник_знищення) {
+    БібліотекаМавкиІнетЗвʼязокОбробникЗнищення обробник_знищення) {
   ListenerContext* listener =
       (ListenerContext*)пристрій_мавки_виділити(sizeof(ListenerContext));
   if (!listener) {
