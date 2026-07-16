@@ -52,7 +52,7 @@ set_platform_vars() {
       TSIL_PLATFORM="лінукс-ікс86_64"
       TSIL_PLATFORM_FOLDER="лінукс-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME"
-      extra_opts="-lm"
+      extra_opts="-lm -ldl -lpthread"
       if [ "$ZIG_AVAILABLE" = true ]; then
         CLANG_BIN="$ZIG cc"
         setup_linux_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
@@ -67,7 +67,7 @@ set_platform_vars() {
       TSIL_PLATFORM="лінукс-аарч64"
       TSIL_PLATFORM_FOLDER="лінукс-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
-      extra_opts="-lm"
+      extra_opts="-lm -ldl -lpthread"
       if [ "$ZIG_AVAILABLE" = true ]; then
         CLANG_BIN="$ZIG cc"
         setup_linux_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
@@ -89,7 +89,7 @@ set_platform_vars() {
         CLANG_BIN="clang"
         setup_macos_libraries "ar" "ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
       fi
-      extra_opts="-Wl,--export-dynamic -lm"
+      extra_opts="-Wl,--export-dynamic -lm -lpthread"
       ;;
     macos-aarch64)
       BUILD_SYSTEM="macos"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="unix"
@@ -104,7 +104,7 @@ set_platform_vars() {
         CLANG_BIN="clang"
         setup_macos_libraries "ar" "ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
       fi
-      extra_opts="-Wl,--export-dynamic -lm"
+      extra_opts="-Wl,--export-dynamic -lm -lpthread"
       ;;
     windows-x86_64)
       BUILD_SYSTEM="windows"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="windows"
@@ -112,12 +112,7 @@ set_platform_vars() {
       TSIL_PLATFORM="віндовс-ікс86_64"
       TSIL_PLATFORM_FOLDER="віндовс-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME.exe"
-      if [ "$ZIG_AVAILABLE" = true ]; then
-        CLANG_BIN="$ZIG cc"
-      else
-        CLANG_BIN="clang"
-      fi
-      extra_opts="-lws2_32 -liphlpapi -luserenv -ldbghelp -lole32"
+      extra_opts="-lws2_32 -liphlpapi -luserenv -ldbghelp -lole32 -lgdi32 -lcrypt32 -luser32"
       static_libs="scripts/icon.res"
       if [ "$ZIG_AVAILABLE" = true ]; then
         CLANG_BIN="$ZIG cc"
@@ -133,12 +128,7 @@ set_platform_vars() {
       TSIL_PLATFORM="віндовс-аарч64"
       TSIL_PLATFORM_FOLDER="віндовс-аарч64"
       OUTFILENAME="$PROGRAM_NAME.exe"
-      if [ "$ZIG_AVAILABLE" = true ]; then
-        CLANG_BIN="$ZIG cc"
-      else
-        CLANG_BIN="clang"
-      fi
-      extra_opts="-lws2_32 -liphlpapi -luserenv -ldbghelp -lole32"
+      extra_opts="-lws2_32 -liphlpapi -luserenv -ldbghelp -lole32 -lgdi32 -lcrypt32 -luser32"
       static_libs="scripts/icon.res"
       if [ "$ZIG_AVAILABLE" = true ]; then
         CLANG_BIN="$ZIG cc"
@@ -160,7 +150,7 @@ set_platform_vars() {
       TSIL_PLATFORM_FOLDER="андроїд-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
       CLANG_BIN="$ndk_toolchain/bin/aarch64-linux-android24-clang"
-      extra_opts="-ldl -lc -lm"
+      extra_opts="-ldl -lc -lm -lpthread"
       setup_linux_libraries \
         "$ndk_toolchain/bin/llvm-ar" \
         "$ndk_toolchain/bin/llvm-ranlib" \
@@ -213,26 +203,29 @@ LLIRFILES=$(/bin/bash "$SCRIPT_DIR/build_tsil.sh" \
 
 echo "створення виконуваного файлу"
 set -x
+
+# Include headers for all dependencies (libuv, openssl, curl)
+INC_OPTS="-Iexternal/include -Iбудування/libuv/$TARGET_TRIPLE/libuv-v1.51.0/include -Iбудування/openssl/$TARGET_TRIPLE/openssl-3.2.1/build_openssl/include -Iбудування/curl/$TARGET_TRIPLE/curl-8.6.0/build_curl/include"
+
 $CLANG $CLANG_OPTIONS \
   -c -o "$READY_DIR/main.o" \
-  -Iexternal/include \
-  -Iбудування/libuv/$TARGET_TRIPLE/libuv-v1.51.0/include \
+  $INC_OPTS \
   "external/$COMMON_SYSTEM/main_$COMMON_SYSTEM.c"
+
 $CLANG $CLANG_OPTIONS \
   -c -o "$READY_DIR/prystriy_$COMMON_SYSTEM.o" \
-  -Iexternal/include \
+  $INC_OPTS \
   "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c"
+
 $CLANG $CLANG_OPTIONS \
   -c -o "$READY_DIR/biblioteka_$COMMON_SYSTEM.o" \
-  -Iexternal/include \
-  -Iбудування/libuv/$TARGET_TRIPLE/libuv-v1.51.0/include \
+  $INC_OPTS \
   "external/$COMMON_SYSTEM/biblioteka_$COMMON_SYSTEM.c"
 
 if [ "$BUILD_SYSTEM" != "$COMMON_SYSTEM" ]; then
   $CLANG $CLANG_OPTIONS \
     -c -o "$READY_DIR/biblioteka_$BUILD_SYSTEM.o" \
-    -Iexternal/include \
-    -Iбудування/libuv/$TARGET_TRIPLE/libuv-v1.51.0/include \
+    $INC_OPTS \
     "external/$BUILD_SYSTEM/biblioteka_$BUILD_SYSTEM.c"
   BIBLIOTEKA_SYSTEM_OBJ="$READY_DIR/biblioteka_$BUILD_SYSTEM.o"
 else

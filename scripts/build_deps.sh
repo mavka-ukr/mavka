@@ -121,6 +121,108 @@ build_libuv() {
   RESULT_DIR="$build_dir"
 }
 
+build_openssl() {
+  local ar="$1" ranlib="$2" cc="$3" target="$4" ldflags="$5"
+  local openssl_dir="будування/openssl/$target/openssl-3.2.1"
+  local build_dir="$openssl_dir/build_openssl"
+  local tarball="$(pwd)/scripts/openssl-3.2.1.tar.gz"
+
+  if ! ensure_tarball "$tarball"; then
+    return 1
+  fi
+
+  extract_if_needed "$tarball" "$openssl_dir"
+
+  if [ ! -d "$build_dir" ]; then
+    pushd "$openssl_dir" > /dev/null
+
+    mkdir -p build_openssl
+    local abs_prefix
+    abs_prefix="$(cd build_openssl && pwd)"
+
+    local os_target="gcc"
+    if [[ "$target" == *"linux"* ]]; then
+      [[ "$target" == *"x86_64"* ]] && os_target="linux-x86_64"
+      [[ "$target" == *"aarch64"* ]] && os_target="linux-aarch64"
+    elif [[ "$target" == *"windows"* ]]; then
+      [[ "$target" == *"x86_64"* ]] && os_target="mingw64"
+      [[ "$target" == *"aarch64"* ]] && os_target="mingw64"
+    elif [[ "$target" == *"macos"* ]]; then
+      [[ "$target" == *"x86_64"* ]] && os_target="darwin64-x86_64-cc"
+      [[ "$target" == *"aarch64"* ]] && os_target="darwin64-arm64-cc"
+    fi
+
+    AR="$ar" RANLIB="$ranlib" CC="$cc" \
+      CFLAGS="--target=$target -O3" LDFLAGS="$ldflags" \
+      ./Configure "$os_target" --prefix="$abs_prefix" --libdir=lib \
+        no-shared no-module no-dso no-tests no-docs
+
+    make -j"$(nproc)"
+    make install_sw
+    popd > /dev/null
+  fi
+
+  RESULT_DIR="$build_dir"
+}
+
+build_curl() {
+  local ar="$1" ranlib="$2" cc="$3" target="$4" ldflags="$5" openssl_build_dir="$6"
+  local curl_dir="будування/curl/$target/curl-8.6.0"
+  local build_dir="$curl_dir/build_curl"
+  local tarball="$(pwd)/scripts/curl-8.6.0.tar.gz"
+
+  if [ ! -d "$openssl_build_dir" ]; then
+    echo "Skipping curl: missing openssl build dir $openssl_build_dir"
+    return 1
+  fi
+
+  local abs_openssl_dir
+  abs_openssl_dir="$(cd "$openssl_build_dir" && pwd)"
+
+  if ! ensure_tarball "$tarball"; then
+    return 1
+  fi
+
+  extract_if_needed "$tarball" "$curl_dir"
+
+  if [ ! -d "$build_dir" ]; then
+    pushd "$curl_dir" > /dev/null
+
+    mkdir -p build_curl
+    local abs_prefix
+    abs_prefix="$(cd build_curl && pwd)"
+
+    local configure_host="$target"
+    local extra_libs="-lpthread"
+    if [[ "$target" == *"windows"* ]]; then
+      extra_libs="-lws2_32 -lgdi32 -lcrypt32 -luser32"
+      [ "$target" = "x86_64-windows-gnu" ] && configure_host="x86_64-w64-mingw32"
+      [ "$target" = "aarch64-windows-gnu" ] && configure_host="aarch64-w64-mingw32"
+    elif [[ "$target" == *"linux"* ]]; then
+      extra_libs="-ldl -lpthread"
+    elif [[ "$target" == *"macos"* ]]; then
+      extra_libs="-lpthread"
+      [ "$target" = "x86_64-macos" ] && configure_host="x86_64-apple-darwin"
+      [ "$target" = "aarch64-macos" ] && configure_host="aarch64-apple-darwin"
+    fi
+
+    AR="$ar" RANLIB="$ranlib" CC="$cc --target=$target" \
+      CFLAGS="-O3" LDFLAGS="$ldflags -L$abs_openssl_dir/lib" \
+      CPPFLAGS="-I$abs_openssl_dir/include" \
+      LIBS="$extra_libs" \
+      ./configure --host="$configure_host" --prefix="$abs_prefix" \
+        --enable-static --disable-shared \
+        --with-openssl="$abs_openssl_dir" \
+        --disable-docs --disable-manual --without-libpsl
+
+    make -j"$(nproc)"
+    make install
+    popd > /dev/null
+  fi
+
+  RESULT_DIR="$build_dir"
+}
+
 setup_linux_libraries() {
   local ar="$1" ranlib="$2" cc="$3" target="$4" ldflags="$5"
   local root
@@ -132,6 +234,8 @@ setup_linux_libraries() {
   local ncurses_build=""
   local readline_build=""
   local uv_build=""
+  local openssl_build=""
+  local curl_build=""
 
   if build_ncurses "$ar" "$ranlib" "$cc" "$target" "$ldflags"; then
     ncurses_build="$RESULT_DIR"
@@ -151,12 +255,32 @@ setup_linux_libraries() {
     echo "libuv support disabled"
   fi
 
+  if build_openssl "$ar" "$ranlib" "$cc" "$target" "$ldflags"; then
+    openssl_build="$RESULT_DIR"
+  else
+    echo "openssl support disabled"
+  fi
+
+  if [ -n "$openssl_build" ] && build_curl "$ar" "$ranlib" "$cc" "$target" "$ldflags" "$openssl_build"; then
+    curl_build="$RESULT_DIR"
+  else
+    echo "curl support disabled"
+  fi
+
   if [ -n "$ncurses_build" ]; then
     DEPS_CFLAGS="-I$root/$ncurses_build/include"
   fi
 
   if [ -n "$readline_build" ]; then
     DEPS_CFLAGS+=" -DPROGRAM_USE_READLINE -I$root/$readline_build/include"
+  fi
+
+  if [ -n "$openssl_build" ]; then
+    DEPS_CFLAGS+=" -I$root/$openssl_build/include"
+  fi
+
+  if [ -n "$curl_build" ]; then
+    DEPS_CFLAGS+=" -I$root/$curl_build/include"
   fi
 
   if [ -n "$readline_build" ]; then
@@ -173,6 +297,16 @@ setup_linux_libraries() {
   if [ -n "$uv_build" ]; then
     DEPS_LIBS+=" $root/$uv_build/lib/libuv.a"
   fi
+
+  if [ -n "$curl_build" ]; then
+    DEPS_LIBS+=" $root/$curl_build/lib/libcurl.a"
+  fi
+
+  if [ -n "$openssl_build" ]; then
+    DEPS_LIBS+=" $root/$openssl_build/lib/libssl.a"
+    DEPS_LIBS+=" $root/$openssl_build/lib/libcrypto.a"
+    DEPS_LIBS+=" -ldl -lpthread"
+  fi
 }
 
 setup_windows_libraries() {
@@ -184,6 +318,8 @@ setup_windows_libraries() {
   DEPS_LIBS=""
 
   local uv_build=""
+  local openssl_build=""
+  local curl_build=""
 
   if build_libuv "$ar" "$ranlib" "$cc" "$target" "$ldflags"; then
     uv_build="$RESULT_DIR"
@@ -191,8 +327,38 @@ setup_windows_libraries() {
     echo "libuv support disabled"
   fi
 
+  if build_openssl "$ar" "$ranlib" "$cc" "$target" "$ldflags"; then
+    openssl_build="$RESULT_DIR"
+  else
+    echo "openssl support disabled"
+  fi
+
+  if [ -n "$openssl_build" ] && build_curl "$ar" "$ranlib" "$cc" "$target" "$ldflags" "$openssl_build"; then
+    curl_build="$RESULT_DIR"
+  else
+    echo "curl support disabled"
+  fi
+
+  if [ -n "$openssl_build" ]; then
+    DEPS_CFLAGS+=" -I$root/$openssl_build/include"
+  fi
+
+  if [ -n "$curl_build" ]; then
+    DEPS_CFLAGS+=" -I$root/$curl_build/include"
+  fi
+
   if [ -n "$uv_build" ]; then
     DEPS_LIBS+=" $root/$uv_build/lib/libuv.a"
+  fi
+
+  if [ -n "$curl_build" ]; then
+    DEPS_LIBS+=" $root/$curl_build/lib/libcurl.a"
+  fi
+
+  if [ -n "$openssl_build" ]; then
+    DEPS_LIBS+=" $root/$openssl_build/lib/libssl.a"
+    DEPS_LIBS+=" $root/$openssl_build/lib/libcrypto.a"
+    DEPS_LIBS+=" -lws2_32 -lgdi32 -lcrypt32 -luser32"
   fi
 }
 
@@ -205,6 +371,8 @@ setup_macos_libraries() {
   DEPS_LIBS=""
 
   local uv_build=""
+  local openssl_build=""
+  local curl_build=""
 
   if build_libuv "$ar" "$ranlib" "$cc" "$target" "$ldflags"; then
     uv_build="$RESULT_DIR"
@@ -212,7 +380,37 @@ setup_macos_libraries() {
     echo "libuv support disabled"
   fi
 
+  if build_openssl "$ar" "$ranlib" "$cc" "$target" "$ldflags"; then
+    openssl_build="$RESULT_DIR"
+  else
+    echo "openssl support disabled"
+  fi
+
+  if [ -n "$openssl_build" ] && build_curl "$ar" "$ranlib" "$cc" "$target" "$ldflags" "$openssl_build"; then
+    curl_build="$RESULT_DIR"
+  else
+    echo "curl support disabled"
+  fi
+
+  if [ -n "$openssl_build" ]; then
+    DEPS_CFLAGS+=" -I$root/$openssl_build/include"
+  fi
+
+  if [ -n "$curl_build" ]; then
+    DEPS_CFLAGS+=" -I$root/$curl_build/include"
+  fi
+
   if [ -n "$uv_build" ]; then
     DEPS_LIBS+=" $root/$uv_build/lib/libuv.a"
+  fi
+
+  if [ -n "$curl_build" ]; then
+    DEPS_LIBS+=" $root/$curl_build/lib/libcurl.a"
+  fi
+
+  if [ -n "$openssl_build" ]; then
+    DEPS_LIBS+=" $root/$openssl_build/lib/libssl.a"
+    DEPS_LIBS+=" $root/$openssl_build/lib/libcrypto.a"
+    DEPS_LIBS+=" -lpthread"
   fi
 }
