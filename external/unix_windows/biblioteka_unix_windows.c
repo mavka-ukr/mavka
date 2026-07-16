@@ -31,6 +31,17 @@ static void* каллок(size_t num, size_t size) {
   return ptr;
 }
 
+static void* мемсет(void* s, int c, size_t n) {
+  unsigned char* p = (unsigned char*)s;
+  unsigned char val = (unsigned char)c;
+
+  while (n--) {
+    *p++ = val;
+  }
+
+  return s;
+}
+
 typedef struct {
   uv_tcp_t server;
   адреса argument;
@@ -315,7 +326,7 @@ void бібліотека_мавки_інет_служити(
   server->server.data = server;
 
   struct sockaddr_storage addr;
-  memset(&addr, 0, sizeof(addr));
+  мемсет(&addr, 0, sizeof(addr));
 
   int res = 0;
 
@@ -482,7 +493,7 @@ void бібліотека_мавки_інет_підключитись(
   conn->connect_req.data = conn;
 
   struct sockaddr_storage addr;
-  memset(&addr, 0, sizeof(addr));
+  мемсет(&addr, 0, sizeof(addr));
 
   int res = 0;
 
