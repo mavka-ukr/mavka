@@ -273,7 +273,9 @@ static void on_new_connection(uv_stream_t* server_handle, int status) {
 }
 
 void бібліотека_мавки_інет_служити(
-    природне іа,
+    природне іа_вид,
+    п8* іа_дані,
+    природне іа_розмір,
     природне порт,
     БібліотекаМавкиІнетСлугаОбробникЗапуску обробник_запуску,
     БібліотекаМавкиІнетСлугаОбробникПомилки обробник_помилки,
@@ -312,13 +314,47 @@ void бібліотека_мавки_інет_служити(
 
   server->server.data = server;
 
-  struct sockaddr_in addr;
+  struct sockaddr_storage addr;
   memset(&addr, 0, sizeof(addr));
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons((uint16_t)порт);
-  addr.sin_addr.s_addr = htonl(іа);
 
-  int res = uv_tcp_bind(&server->server, (const struct sockaddr*)&addr, 0);
+  int res = 0;
+
+  if (іа_вид == 4) {
+    char ip_str[64];
+    if (іа_розмір >= sizeof(ip_str)) {
+      if (server->on_start) {
+        server->on_start((адреса)server, МАВКА_ІНЕТ_ПОМИЛКА_АРГУМЕНТУ);
+      }
+      uv_close((uv_handle_t*)&server->server, server_close_cb);
+      return;
+    }
+
+    memcpy(ip_str, іа_дані, іа_розмір);
+    ip_str[іа_розмір] = '\0';
+
+    res = uv_ip4_addr(ip_str, (int)порт, (struct sockaddr_in*)&addr);
+  } else if (іа_вид == 6) {
+    if (іа_розмір != 16) {
+      if (server->on_start) {
+        server->on_start((адреса)server, МАВКА_ІНЕТ_ПОМИЛКА_АРГУМЕНТУ);
+      }
+      uv_close((uv_handle_t*)&server->server, server_close_cb);
+      return;
+    }
+
+    struct sockaddr_in6* addr6 = (struct sockaddr_in6*)&addr;
+    addr6->sin6_family = AF_INET6;
+    addr6->sin6_port = htons((uint16_t)порт);
+    memcpy(&addr6->sin6_addr, іа_дані, 16);
+  } else {
+    if (server->on_start) {
+      server->on_start((адреса)server, МАВКА_ІНЕТ_ПОМИЛКА_АРГУМЕНТУ);
+    }
+    uv_close((uv_handle_t*)&server->server, server_close_cb);
+    return;
+  }
+
+  res = uv_tcp_bind(&server->server, (const struct sockaddr*)&addr, 0);
   if (res != 0) {
     if (server->on_start) {
       server->on_start((адреса)server, map_uv_error(res));
@@ -407,7 +443,9 @@ static void on_connect(uv_connect_t* req, int status) {
 }
 
 void бібліотека_мавки_інет_підключитись(
-    природне іа,
+    природне іа_вид,
+    п8* іа_дані,
+    природне іа_розмір,
     природне порт,
     БібліотекаМавкиІнетКлієнтОбробникПідключення обробник_підключення,
     БібліотекаМавкиІнетКлієнтОбробникДаних обробник_даних,
@@ -443,14 +481,48 @@ void бібліотека_мавки_інет_підключитись(
   conn->handle.data = conn;
   conn->connect_req.data = conn;
 
-  struct sockaddr_in addr;
+  struct sockaddr_storage addr;
   memset(&addr, 0, sizeof(addr));
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons((uint16_t)порт);
-  addr.sin_addr.s_addr = htonl(іа);
 
-  int res = uv_tcp_connect(&conn->connect_req, &conn->handle,
-                           (const struct sockaddr*)&addr, on_connect);
+  int res = 0;
+
+  if (іа_вид == 4) {
+    char ip_str[64];
+    if (іа_розмір >= sizeof(ip_str)) {
+      if (conn->client_on_connect) {
+        conn->client_on_connect((адреса)conn, МАВКА_ІНЕТ_ПОМИЛКА_АРГУМЕНТУ);
+      }
+      safe_close_conn(conn);
+      return;
+    }
+
+    memcpy(ip_str, іа_дані, іа_розмір);
+    ip_str[іа_розмір] = '\0';
+
+    res = uv_ip4_addr(ip_str, (int)порт, (struct sockaddr_in*)&addr);
+  } else if (іа_вид == 6) {
+    if (іа_розмір != 16) {
+      if (conn->client_on_connect) {
+        conn->client_on_connect((адреса)conn, МАВКА_ІНЕТ_ПОМИЛКА_АРГУМЕНТУ);
+      }
+      safe_close_conn(conn);
+      return;
+    }
+
+    struct sockaddr_in6* addr6 = (struct sockaddr_in6*)&addr;
+    addr6->sin6_family = AF_INET6;
+    addr6->sin6_port = htons((uint16_t)порт);
+    memcpy(&addr6->sin6_addr, іа_дані, 16);
+  } else {
+    if (conn->client_on_connect) {
+      conn->client_on_connect((адреса)conn, МАВКА_ІНЕТ_ПОМИЛКА_АРГУМЕНТУ);
+    }
+    safe_close_conn(conn);
+    return;
+  }
+
+  res = uv_tcp_connect(&conn->connect_req, &conn->handle,
+                       (const struct sockaddr*)&addr, on_connect);
   if (res != 0) {
     if (conn->client_on_connect) {
       conn->client_on_connect((адреса)conn, map_uv_error(res));
