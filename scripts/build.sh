@@ -15,11 +15,6 @@ BUILD_PLATFORM="$2"
 TSIL="${TSIL:-ціль}"
 ZIG="${ZIG:-zig}"
 
-ZIG_AVAILABLE=false
-if command -v "$ZIG" &> /dev/null; then
-  ZIG_AVAILABLE=true
-fi
-
 CLANG_OPTIONS="-DMAVKA_VERSION=\"$BUILD_VERSION\""
 
 print_usage() {
@@ -53,13 +48,8 @@ set_platform_vars() {
       TSIL_PLATFORM_FOLDER="лінукс-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME"
       extra_opts="-lm -ldl -lpthread"
-      if [ "$ZIG_AVAILABLE" = true ]; then
-        CLANG_BIN="$ZIG cc"
-        setup_linux_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
-      else
-        CLANG_BIN="clang"
-        setup_linux_libraries "ar" "ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
-      fi
+      CLANG_BIN="$ZIG cc"
+      setup_linux_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
       ;;
     linux-aarch64)
       BUILD_SYSTEM="linux"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="unix"
@@ -68,13 +58,8 @@ set_platform_vars() {
       TSIL_PLATFORM_FOLDER="лінукс-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
       extra_opts="-lm -ldl -lpthread"
-      if [ "$ZIG_AVAILABLE" = true ]; then
-        CLANG_BIN="$ZIG cc"
-        setup_linux_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
-      else
-        CLANG_BIN="clang"
-        setup_linux_libraries "ar" "ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
-      fi
+      CLANG_BIN="$ZIG cc"
+      setup_linux_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
       ;;
     macos-x86_64)
       BUILD_SYSTEM="macos"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="unix"
@@ -82,13 +67,8 @@ set_platform_vars() {
       TSIL_PLATFORM="макос-ікс86_64"
       TSIL_PLATFORM_FOLDER="макос-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME"
-      if [ "$ZIG_AVAILABLE" = true ]; then
-        CLANG_BIN="$ZIG cc"
-        setup_macos_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
-      else
-        CLANG_BIN="clang"
-        setup_macos_libraries "ar" "ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
-      fi
+      CLANG_BIN="$ZIG cc"
+      setup_macos_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
       extra_opts="-Wl,--export-dynamic -lm -lpthread"
       ;;
     macos-aarch64)
@@ -97,13 +77,8 @@ set_platform_vars() {
       TSIL_PLATFORM="макос-аарч64"
       TSIL_PLATFORM_FOLDER="макос-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
-      if [ "$ZIG_AVAILABLE" = true ]; then
-        CLANG_BIN="$ZIG cc"
-        setup_macos_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
-      else
-        CLANG_BIN="clang"
-        setup_macos_libraries "ar" "ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
-      fi
+      CLANG_BIN="$ZIG cc"
+      setup_macos_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
       extra_opts="-Wl,--export-dynamic -lm -lpthread"
       ;;
     windows-x86_64)
@@ -114,13 +89,8 @@ set_platform_vars() {
       OUTFILENAME="$PROGRAM_NAME.exe"
       extra_opts="-lws2_32 -liphlpapi -luserenv -ldbghelp -lole32 -lgdi32 -lcrypt32 -luser32"
       static_libs="scripts/icon.res"
-      if [ "$ZIG_AVAILABLE" = true ]; then
-        CLANG_BIN="$ZIG cc"
-        setup_windows_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
-      else
-        CLANG_BIN="clang"
-        setup_windows_libraries "ar" "ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
-      fi
+      CLANG_BIN="$ZIG cc"
+      setup_windows_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
       ;;
     windows-aarch64)
       BUILD_SYSTEM="windows"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="windows"
@@ -130,13 +100,8 @@ set_platform_vars() {
       OUTFILENAME="$PROGRAM_NAME.exe"
       extra_opts="-lws2_32 -liphlpapi -luserenv -ldbghelp -lole32 -lgdi32 -lcrypt32 -luser32"
       static_libs="scripts/icon.res"
-      if [ "$ZIG_AVAILABLE" = true ]; then
-        CLANG_BIN="$ZIG cc"
-        setup_windows_libraries "zig ar" "zig ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
-      else
-        CLANG_BIN="clang"
-        setup_windows_libraries "ar" "ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
-      fi
+      CLANG_BIN="$ZIG cc"
+      setup_windows_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
       ;;
     android-aarch64)
       if [ -z "$ANDROID_NDK_HOME" ]; then
@@ -162,7 +127,7 @@ set_platform_vars() {
       TSIL_PLATFORM="васм64"
       TSIL_PLATFORM_FOLDER="васм64"
       OUTFILENAME="$PROGRAM_NAME.wasm"
-      CLANG_BIN="clang"
+      CLANG_BIN="$ZIG cc"
       extra_opts="-nostdlib -Wl,--no-entry -Wl,--export-all -Wl,--allow-undefined -Wl,--export-dynamic -Wl,--export-memory -Wl,--initial-memory=16777216 -Wl,--max-memory=1073741824"
       ;;
     *)
@@ -204,7 +169,6 @@ LLIRFILES=$(/bin/bash "$SCRIPT_DIR/build_tsil.sh" \
 echo "створення виконуваного файлу"
 set -x
 
-# Include headers for all dependencies (libuv, openssl, curl)
 INC_OPTS="-Iexternal/include -Iбудування/libuv/$TARGET_TRIPLE/libuv-v1.51.0/include -Iбудування/openssl/$TARGET_TRIPLE/openssl-3.2.1/build_openssl/include -Iбудування/curl/$TARGET_TRIPLE/curl-8.6.0/build_curl/include"
 
 $CLANG $CLANG_OPTIONS \

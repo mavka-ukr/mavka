@@ -8,7 +8,7 @@
 
 - GNU/Linux
 - Ціль _0.76.0_
-- Zig _0.16.0_ (необовʼязково на і для `linux-x86_64`, необхідно для "кроскомпіляції")
+- Zig _0.16.0_
 
 ```shell
 bash scripts/download_libs.sh
