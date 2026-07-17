@@ -32,8 +32,16 @@ jobs:
       - name: Cache apt packages
         uses: awalsh128/cache-apt-pkgs-action@v1
         with:
-          packages: clang llvm lld make cmake ninja-build xz-utils curl unzip wget git patch python3 python-is-python3 libssl-dev lzma-dev libxml2-dev bzip2 cpio libbz2-dev zlib1g-dev bash build-essential libc6-dev-arm64-cross linux-libc-dev-arm64-cross gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu
-          version: v2
+          packages: clang llvm lld make cmake ninja-build xz-utils curl unzip wget git patch python3 python-is-python3 libssl-dev lzma-dev libxml2-dev bzip2 cpio libbz2-dev zlib1g-dev bash build-essential libc6-dev-arm64-cross linux-libc-dev-arm64-cross gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-arm64-cross
+          version: v3
+
+      - name: Fix aarch64 cross-compiler sysroot paths
+        if: matrix.platform == 'linux-aarch64'
+        run: |
+          # lld looks for /usr/aarch64-linux-gnu/usr/aarch64-linux-gnu/lib/libc.so.6
+          # We create a symlink so lld can resolve the absolute paths inside the libc.so linker script
+          sudo mkdir -p /usr/aarch64-linux-gnu/usr/aarch64-linux-gnu
+          sudo ln -s /usr/aarch64-linux-gnu/lib /usr/aarch64-linux-gnu/usr/aarch64-linux-gnu/lib
 
       - name: Test aarch64 cross-compiler
         if: matrix.platform == 'linux-aarch64'
