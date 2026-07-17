@@ -13,11 +13,11 @@ jobs:
     strategy:
       matrix:
         platform: [
-            # linux-x86_64,
-            # linux-aarch64,
+            linux-x86_64,
+            linux-aarch64,
             # macos-x86_64,
             # macos-aarch64,
-            windows-x86_64,
+            # windows-x86_64,
             # windows-aarch64,
             # android-aarch64,
             # wasm64,
@@ -29,22 +29,12 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Install system build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang llvm lld make cmake ninja-build xz-utils curl unzip wget git patch \
-            python3 python-is-python3 libssl-dev lzma-dev libxml2-dev bzip2 cpio libbz2-dev zlib1g-dev bash build-essential \
-            libc6-dev-arm64-cross linux-libc-dev-arm64-cross gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu \
-            libc6-arm64-cross qemu-user-static wine64
-
-      - name: Verify Wine installation
-        if: matrix.platform == 'windows-x86_64'
-        run: |
-          if ! command -v wine64 && ! command -v wine; then
-            echo "Error: Wine is not installed or not in PATH."
-            exit 1
-          fi
-          echo "Wine installed successfully: $(command -v wine64 || command -v wine)"
+      - name: Cache and install apt packages
+        uses: awalsh128/cache-apt-pkgs-action@v1
+        with:
+          packages: clang llvm lld make cmake ninja-build xz-utils curl unzip wget git patch python3 python-is-python3 libssl-dev lzma-dev libxml2-dev bzip2 cpio libbz2-dev zlib1g-dev bash build-essential libc6-dev-arm64-cross linux-libc-dev-arm64-cross gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-arm64-cross
+          version: v7
+          execute_install_scripts: true
 
       - name: Fix aarch64 cross-compiler sysroot paths
         if: matrix.platform == 'linux-aarch64'
@@ -169,62 +159,25 @@ jobs:
             "${{ matrix.mode }}" \
             "${{ matrix.platform }}" || (find build -name "config.log" -exec tail -n 200 {} \; && exit 1)
 
-      - name: Run Ubuntu tests (Linux/Windows via Wine)
-        if: matrix.platform == 'linux-x86_64' || matrix.platform == 'linux-aarch64' || matrix.platform == 'windows-x86_64'
-        run: |
-          chmod +x scripts/test.sh
-
-          VERSION=$(cat ВЕРСІЯ | xargs)
-
-          case "${{ matrix.platform }}" in
-            linux-x86_64)    TSIL_FOLDER="лінукс-ікс86_64" ;;
-            linux-aarch64)   TSIL_FOLDER="лінукс-аарч64" ;;
-            windows-x86_64)  TSIL_FOLDER="віндовс-ікс86_64" ;;
-          esac
-
-          if [ "${{ matrix.mode }}" = "release" ]; then
-            TSIL_MODE="випуск"
-          else
-            TSIL_MODE="відлагодження"
-          fi
-
-          MAVKA_BIN="мавка"
-          if [ "${{ matrix.platform }}" = "windows-x86_64" ]; then
-            MAVKA_BIN="мавка.exe"
-          fi
-
-          MAVKA_PATH="будування/${VERSION}/${TSIL_FOLDER}/${TSIL_MODE}/готове/${MAVKA_BIN}"
-          ABS_MAVKA_PATH="$PWD/$MAVKA_PATH"
-
-          WRAPPER_PATH="/tmp/mavka_wrapper"
-          echo "#!/bin/bash" > $WRAPPER_PATH
-
-          if [ "${{ matrix.platform }}" = "windows-x86_64" ]; then
-            WINE_CMD=$(command -v wine64 || command -v wine)
-            echo "$WINE_CMD \"$ABS_MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
-          elif [ "${{ matrix.platform }}" = "linux-aarch64" ]; then
-            echo "qemu-aarch64-static -L /usr/aarch64-linux-gnu \"$ABS_MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
-          else
-            echo "\"$ABS_MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
-          fi
-          chmod +x $WRAPPER_PATH
-
-          echo "Running tests using wrapper: $WRAPPER_PATH"
-          bash scripts/test.sh "$WRAPPER_PATH"
-
       - name: Set OS artifact paths
         id: os_paths
-        if: startsWith(matrix.platform, 'macos-') || matrix.platform == 'windows-x86_64'
+        if: startsWith(matrix.platform, 'macos-') || startsWith(matrix.platform, 'windows-') || startsWith(matrix.platform, 'linux-')
         run: |
           VERSION=$(cat ВЕРСІЯ | xargs)
           if [ "${{ matrix.mode }}" = "release" ]; then TSIL_MODE="випуск"; else TSIL_MODE="відлагодження"; fi
 
           TSIL_FOLDER=""
           MAVKA_BIN="мавка"
+          if [ "${{ matrix.platform }}" = "linux-x86_64" ]; then TSIL_FOLDER="лінукс-ікс86_64"; fi
+          if [ "${{ matrix.platform }}" = "linux-aarch64" ]; then TSIL_FOLDER="лінукс-аарч64"; fi
           if [ "${{ matrix.platform }}" = "macos-x86_64" ]; then TSIL_FOLDER="макос-ікс86_64"; fi
           if [ "${{ matrix.platform }}" = "macos-aarch64" ]; then TSIL_FOLDER="макос-аарч64"; fi
           if [ "${{ matrix.platform }}" = "windows-x86_64" ]; then
             TSIL_FOLDER="віндовс-ікс86_64"
+            MAVKA_BIN="мавка.exe"
+          fi
+          if [ "${{ matrix.platform }}" = "windows-aarch64" ]; then
+            TSIL_FOLDER="віндовс-аарч64"
             MAVKA_BIN="мавка.exe"
           fi
 
@@ -234,7 +187,7 @@ jobs:
           echo "bin=$MAVKA_BIN" >> $GITHUB_OUTPUT
 
       - name: Upload OS binaries
-        if: startsWith(matrix.platform, 'macos-') || matrix.platform == 'windows-x86_64'
+        if: startsWith(matrix.platform, 'macos-') || startsWith(matrix.platform, 'windows-') || startsWith(matrix.platform, 'linux-')
         uses: actions/upload-artifact@v4
         with:
           name: mavka-${{ matrix.platform }}-${{ matrix.mode }}
@@ -246,6 +199,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     outputs:
+      has_linux: ${{ steps.check.outputs.has_linux }}
       has_macos: ${{ steps.check.outputs.has_macos }}
       has_windows: ${{ steps.check.outputs.has_windows }}
     steps:
@@ -259,11 +213,59 @@ jobs:
               repo: context.repo.repo,
               run_id: context.runId,
             });
+            const hasLinux = artifacts.data.artifacts.some(a => a.name.startsWith('mavka-linux-'));
             const hasMacos = artifacts.data.artifacts.some(a => a.name.startsWith('mavka-macos-'));
             const hasWindows = artifacts.data.artifacts.some(a => a.name.startsWith('mavka-windows-'));
+            core.setOutput('has_linux', hasLinux);
             core.setOutput('has_macos', hasMacos);
             core.setOutput('has_windows', hasWindows);
-            console.log(`Has macOS: ${hasMacos}, Has Windows: ${hasWindows}`);
+            console.log(`Has Linux: ${hasLinux}, Has macOS: ${hasMacos}, Has Windows: ${hasWindows}`);
+
+  test-ubuntu:
+    name: Test (${{ matrix.platform }}, ${{ matrix.mode }})
+    needs: [build, check-artifacts]
+    if: needs.check-artifacts.outputs.has_linux == 'true'
+    strategy:
+      matrix:
+        platform: [linux-x86_64, linux-aarch64]
+        mode: [debug, release]
+        exclude:
+          - mode: ${{ github.ref_name == 'main' && 'debug' || 'release' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Install QEMU and dependencies for aarch64
+        if: matrix.platform == 'linux-aarch64'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-user-static libc6-arm64-cross
+
+      - name: Download Linux binary
+        uses: actions/download-artifact@v4
+        with:
+          name: mavka-${{ matrix.platform }}-${{ matrix.mode }}
+          path: mavka-bin
+
+      - name: Run tests
+        run: |
+          chmod +x scripts/test.sh
+          MAVKA_PATH="$PWD/mavka-bin/мавка"
+          chmod +x "$MAVKA_PATH"
+
+          WRAPPER_PATH="/tmp/mavka_wrapper"
+          echo "#!/bin/bash" > $WRAPPER_PATH
+
+          if [ "${{ matrix.platform }}" = "linux-aarch64" ]; then
+            echo "qemu-aarch64-static -L /usr/aarch64-linux-gnu \"$MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
+          else
+            echo "\"$MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
+          fi
+          chmod +x $WRAPPER_PATH
+
+          echo "Running tests using wrapper: $WRAPPER_PATH"
+          bash scripts/test.sh "$WRAPPER_PATH"
 
   test-macos:
     name: Test (${{ matrix.platform }}, ${{ matrix.mode }})
@@ -310,12 +312,13 @@ jobs:
           echo "Running tests using binary: $PWD/mavka-bin/мавка"
           $BASH_CMD scripts/test.sh "$PWD/mavka-bin/мавка"
 
-  test-windows:
-    name: Test (windows-x86_64, ${{ matrix.mode }})
+  test-windows-native:
+    name: Test Native (windows-x86_64, ${{ matrix.mode }})
     needs: [build, check-artifacts]
     if: needs.check-artifacts.outputs.has_windows == 'true'
     strategy:
       matrix:
+        platform: [windows-x86_64]
         mode: [debug, release]
         exclude:
           - mode: ${{ github.ref_name == 'main' && 'debug' || 'release' }}
@@ -339,3 +342,48 @@ jobs:
 
           echo "Running tests using binary: $MAVKA_PATH"
           bash scripts/test.sh "$MAVKA_PATH"
+
+  test-windows-wine:
+    name: Test Wine (windows-x86_64, ${{ matrix.mode }})
+    needs: [build, check-artifacts]
+    if: needs.check-artifacts.outputs.has_windows == 'true'
+    strategy:
+      matrix:
+        platform: [windows-x86_64]
+        mode: [debug, release]
+        exclude:
+          - mode: ${{ github.ref_name == 'main' && 'debug' || 'release' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Install Wine
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wine64
+
+      - name: Download Windows binary
+        uses: actions/download-artifact@v4
+        with:
+          name: mavka-windows-x86_64-${{ matrix.mode }}
+          path: mavka-bin
+
+      - name: Run tests
+        run: |
+          chmod +x scripts/test.sh
+          MAVKA_PATH="$PWD/mavka-bin/мавка.exe"
+
+          WINE_CMD=$(command -v wine64 || command -v wine)
+          if [ -z "$WINE_CMD" ]; then
+            echo "Error: Wine is not installed."
+            exit 1
+          fi
+
+          WRAPPER_PATH="/tmp/mavka_wrapper"
+          echo "#!/bin/bash" > $WRAPPER_PATH
+          echo "$WINE_CMD \"$MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
+          chmod +x $WRAPPER_PATH
+
+          echo "Running tests using wrapper: $WRAPPER_PATH"
+          bash scripts/test.sh "$WRAPPER_PATH"
