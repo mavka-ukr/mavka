@@ -14,7 +14,7 @@ if [ -d "$VERSIONDIR" ]; then
 fi
 
 rm -rf "будування"
-rm -rf "машина/будування"
+rm -rf "build"
 
 bash scripts/build.sh release linux-x86_64
 bash scripts/build.sh release linux-aarch64

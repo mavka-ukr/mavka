@@ -5,6 +5,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$ROOT_DIR"
 
+NCURSES_VERSION="$(cat "$SCRIPT_DIR/NCURSES_VERSION")"
+READLINE_VERSION="$(cat "$SCRIPT_DIR/READLINE_VERSION")"
+LIBUV_VERSION="$(cat "$SCRIPT_DIR/LIBUV_VERSION")"
+OPENSSL_VERSION="$(cat "$SCRIPT_DIR/OPENSSL_VERSION")"
+CURL_VERSION="$(cat "$SCRIPT_DIR/CURL_VERSION")"
+
 if command -v curl >/dev/null 2>&1; then
   FETCH="curl -L --fail -o"
 elif command -v wget >/dev/null 2>&1; then
@@ -37,10 +43,10 @@ This script downloads the third-party source archives required by
 scripts/build_deps.sh: ncurses, readline, libuv, openssl, curl.
 EOF
 
-download_file "https://invisible-mirror.net/archives/ncurses/ncurses-6.4.tar.gz" "scripts/ncurses-6.4.tar.gz"
-download_file "https://ftp.gnu.org/gnu/readline/readline-8.2.tar.gz" "scripts/readline-8.2.tar.gz"
-download_file "https://dist.libuv.org/dist/v1.51.0/libuv-v1.51.0.tar.gz" "scripts/libuv-v1.51.0.tar.gz"
-download_file "https://github.com/openssl/openssl/releases/download/openssl-3.2.1/openssl-3.2.1.tar.gz" "scripts/openssl-3.2.1.tar.gz"
-download_file "https://curl.se/download/curl-8.6.0.tar.gz" "scripts/curl-8.6.0.tar.gz"
+download_file "https://invisible-mirror.net/archives/ncurses/ncurses-${NCURSES_VERSION}.tar.gz" "scripts/ncurses-${NCURSES_VERSION}.tar.gz"
+download_file "https://ftp.gnu.org/gnu/readline/readline-${READLINE_VERSION}.tar.gz" "scripts/readline-${READLINE_VERSION}.tar.gz"
+download_file "https://dist.libuv.org/dist/v${LIBUV_VERSION}/libuv-v${LIBUV_VERSION}.tar.gz" "scripts/libuv-v${LIBUV_VERSION}.tar.gz"
+download_file "https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_VERSION}/openssl-${OPENSSL_VERSION}.tar.gz" "scripts/openssl-${OPENSSL_VERSION}.tar.gz"
+download_file "https://curl.se/download/curl-${CURL_VERSION}.tar.gz" "scripts/curl-${CURL_VERSION}.tar.gz"
 
 echo "Download complete."

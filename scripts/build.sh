@@ -48,8 +48,8 @@ set_platform_vars() {
       TSIL_PLATFORM_FOLDER="лінукс-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME"
       extra_opts="-lm -ldl -lpthread"
-      CLANG_BIN="$ZIG cc"
-      setup_linux_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
+      CLANG_BIN="$ZIG cc -target $TARGET_TRIPLE"
+      setup_linux_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" "" "$ZIG rc"
       ;;
     linux-aarch64)
       BUILD_SYSTEM="linux"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="unix"
@@ -58,8 +58,8 @@ set_platform_vars() {
       TSIL_PLATFORM_FOLDER="лінукс-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
       extra_opts="-lm -ldl -lpthread"
-      CLANG_BIN="$ZIG cc"
-      setup_linux_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
+      CLANG_BIN="$ZIG cc -target $TARGET_TRIPLE"
+      setup_linux_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" "" "$ZIG rc"
       ;;
     macos-x86_64)
       BUILD_SYSTEM="macos"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="unix"
@@ -67,8 +67,8 @@ set_platform_vars() {
       TSIL_PLATFORM="макос-ікс86_64"
       TSIL_PLATFORM_FOLDER="макос-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME"
-      CLANG_BIN="$ZIG cc"
-      setup_macos_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
+      CLANG_BIN="$ZIG cc -target $TARGET_TRIPLE"
+      setup_macos_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" "" "$ZIG rc"
       extra_opts="-Wl,--export-dynamic -lm -lpthread"
       ;;
     macos-aarch64)
@@ -77,8 +77,8 @@ set_platform_vars() {
       TSIL_PLATFORM="макос-аарч64"
       TSIL_PLATFORM_FOLDER="макос-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
-      CLANG_BIN="$ZIG cc"
-      setup_macos_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
+      CLANG_BIN="$ZIG cc -target $TARGET_TRIPLE"
+      setup_macos_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" "" "$ZIG rc"
       extra_opts="-Wl,--export-dynamic -lm -lpthread"
       ;;
     windows-x86_64)
@@ -89,8 +89,8 @@ set_platform_vars() {
       OUTFILENAME="$PROGRAM_NAME.exe"
       extra_opts="-lws2_32 -liphlpapi -luserenv -ldbghelp -lole32 -lgdi32 -lcrypt32 -luser32"
       static_libs="scripts/icon.res"
-      CLANG_BIN="$ZIG cc"
-      setup_windows_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
+      CLANG_BIN="$ZIG cc -target $TARGET_TRIPLE"
+      setup_windows_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" "" "$ZIG rc"
       ;;
     windows-aarch64)
       BUILD_SYSTEM="windows"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="windows"
@@ -100,8 +100,8 @@ set_platform_vars() {
       OUTFILENAME="$PROGRAM_NAME.exe"
       extra_opts="-lws2_32 -liphlpapi -luserenv -ldbghelp -lole32 -lgdi32 -lcrypt32 -luser32"
       static_libs="scripts/icon.res"
-      CLANG_BIN="$ZIG cc"
-      setup_windows_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" ""
+      CLANG_BIN="$ZIG cc -target $TARGET_TRIPLE"
+      setup_windows_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" "" "$ZIG rc"
       ;;
     android-aarch64)
       if [ -z "$ANDROID_NDK_HOME" ]; then
@@ -115,11 +115,11 @@ set_platform_vars() {
       TSIL_PLATFORM_FOLDER="андроїд-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
       CLANG_BIN="$ndk_toolchain/bin/aarch64-linux-android24-clang"
-      extra_opts="-ldl -lc -lm -lpthread"
+      extra_opts="-ldl -lc -lm"
       setup_linux_libraries \
         "$ndk_toolchain/bin/llvm-ar" \
         "$ndk_toolchain/bin/llvm-ranlib" \
-        "$CLANG_BIN" "$TARGET_TRIPLE" ""
+        "$CLANG_BIN" "$TARGET_TRIPLE" "" "$ndk_toolchain/bin/llvm-windres"
       ;;
     wasm64)
       BUILD_SYSTEM="wasm64"; BUILD_ARCH="wasm64"; COMMON_SYSTEM="wasm64"
@@ -127,7 +127,7 @@ set_platform_vars() {
       TSIL_PLATFORM="васм64"
       TSIL_PLATFORM_FOLDER="васм64"
       OUTFILENAME="$PROGRAM_NAME.wasm"
-      CLANG_BIN="$ZIG cc"
+      CLANG_BIN="$ZIG cc -target $TARGET_TRIPLE"
       extra_opts="-nostdlib -Wl,--no-entry -Wl,--export-all -Wl,--allow-undefined -Wl,--export-dynamic -Wl,--export-memory -Wl,--initial-memory=16777216 -Wl,--max-memory=1073741824"
       ;;
     *)
@@ -136,7 +136,7 @@ set_platform_vars() {
       exit 1 ;;
   esac
 
-  CLANG="$CLANG_BIN --target=$TARGET_TRIPLE"
+  CLANG="$CLANG_BIN"
   CLANG_OPTIONS+=" $extra_opts $DEPS_CFLAGS"
   STATIC_LIBS="${static_libs:+$static_libs }$DEPS_LIBS"
 }
@@ -169,7 +169,7 @@ LLIRFILES=$(/bin/bash "$SCRIPT_DIR/build_tsil.sh" \
 echo "створення виконуваного файлу"
 set -x
 
-INC_OPTS="-Iexternal/include -Iбудування/libuv/$TARGET_TRIPLE/libuv-v1.51.0/include -Iбудування/openssl/$TARGET_TRIPLE/openssl-3.2.1/build_openssl/include -Iбудування/curl/$TARGET_TRIPLE/curl-8.6.0/build_curl/include"
+INC_OPTS="-Iexternal/include -Ibuild/libuv/$TARGET_TRIPLE/libuv-v1.51.0/include -Ibuild/openssl/$TARGET_TRIPLE/openssl-3.2.1/build_openssl/include -Ibuild/curl/$TARGET_TRIPLE/curl-8.6.0/build_curl/include"
 
 $CLANG $CLANG_OPTIONS \
   -c -o "$READY_DIR/main.o" \

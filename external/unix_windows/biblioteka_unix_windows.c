@@ -61,5 +61,5 @@ static char* стрдуп(const char* s) {
   return dup;
 }
 
-#include "./http.c"
+// #include "./http.c"
 #include "./inet.c"
