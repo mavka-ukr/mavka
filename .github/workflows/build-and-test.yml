@@ -29,12 +29,6 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Cache apt packages
-        uses: actions/cache@v4
-        with:
-          path: /var/cache/apt/archives
-          key: apt-ubuntu-24.04-v1
-
       - name: Install system build dependencies
         run: |
           sudo apt-get update
@@ -201,7 +195,12 @@ jobs:
           echo "#!/bin/bash" > $WRAPPER_PATH
 
           if [ "${{ matrix.platform }}" = "windows-x86_64" ]; then
-            echo "wine64 \"$ABS_MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
+            WINE_CMD=$(command -v wine64 || command -v wine)
+            if [ -z "$WINE_CMD" ]; then
+              echo "Wine is not installed, skipping Windows tests."
+              exit 0
+            fi
+            echo "$WINE_CMD \"$ABS_MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
           elif [ "${{ matrix.platform }}" = "macos-x86_64" ]; then
             if ! command -v darling &> /dev/null; then
               echo "Darling is not installed, skipping macOS tests."
