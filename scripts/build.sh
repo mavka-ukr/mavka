@@ -13,9 +13,9 @@ BUILD_MODE="$1"
 BUILD_PLATFORM="$2"
 
 TSIL="${TSIL:-ціль}"
-ZIG="${ZIG:-zig}"
 
 CLANG_OPTIONS="-DMAVKA_VERSION=\"$BUILD_VERSION\" -Iexternal/include"
+OPTIMIZATIONS_CFLAGS=""
 
 print_usage() {
   echo "Usage: $0 <debug|release> <platform> [ll|o]"
@@ -24,8 +24,8 @@ print_usage() {
 
 set_build_mode() {
   case "$1" in
-    debug)   CLANG_OPTIONS+=" -g -O0" ;;
-    release) CLANG_OPTIONS+=" -O3" ;;
+    debug)   OPTIMIZATIONS_CFLAGS+="-g -O0" ;;
+    release) OPTIMIZATIONS_CFLAGS+="-O3" ;;
     *)
       echo "Unsupported build mode: $1"
       print_usage
@@ -43,12 +43,13 @@ set_platform_vars() {
   case "$platform" in
     linux-x86_64)
       BUILD_SYSTEM="linux"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="unix"
-      TARGET="x86_64-linux-gnu"
-      CC="$ZIG cc -target $TARGET"
-      AR="$ZIG ar"
-      RANLIB="$ZIG ranlib"
-      RC="$ZIG rc"
-      LDFLAGS=""
+      TARGET="x86_64-pc-linux-gnu"
+      TARGET_CC="$(which clang)"
+      TARGET_AR="$(which llvm-ar)"
+      TARGET_RANLIB="$(which llvm-ranlib)"
+      TARGET_RC="$(which llvm-rc)"
+      TARGET_CFLAGS="$OPTIMIZATIONS_CFLAGS"
+      TARGET_LDFLAGS="-fuse-ld=lld"
       TSIL_PLATFORM="лінукс-ікс86_64"
       TSIL_PLATFORM_FOLDER="лінукс-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME"
@@ -58,53 +59,60 @@ set_platform_vars() {
     linux-aarch64)
       BUILD_SYSTEM="linux"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="unix"
       TARGET="aarch64-linux-gnu"
-      CC="$ZIG cc -target $TARGET"
-      AR="$ZIG ar"
-      RANLIB="$ZIG ranlib"
-      RC="$ZIG rc"
-      LDFLAGS=""
+      TARGET_CC="$(which clang)"
+      TARGET_AR="$(which llvm-ar)"
+      TARGET_RANLIB="$(which llvm-ranlib)"
+      TARGET_RC="$(which llvm-rc)"
+      TARGET_CFLAGS="--target=$TARGET --sysroot=/usr/$TARGET $OPTIMIZATIONS_CFLAGS"
+      TARGET_LDFLAGS="-fuse-ld=lld"
       TSIL_PLATFORM="лінукс-аарч64"
       TSIL_PLATFORM_FOLDER="лінукс-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
-      extra_opts="-lm -ldl -lpthread"
+      extra_opts="-lm -ldl -lpthread $LDFLAGS"
       setup_linux_libraries
       ;;
     macos-x86_64)
       BUILD_SYSTEM="macos"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="unix"
-      TARGET="x86_64-macos"
-      CC="$ZIG cc -target $TARGET"
-      AR="$ZIG ar"
-      RANLIB="$ZIG ranlib"
-      RC="$ZIG rc"
-      LDFLAGS=""
+      TARGET="x86_64-apple-darwin23"
+      local osxcross_bin="/tmp/osxcross/target/bin"
+      export PATH="$osxcross_bin:$PATH"
+      TARGET_CC="$osxcross_bin/x86_64-apple-darwin23-clang"
+      TARGET_AR="$osxcross_bin/x86_64-apple-darwin23-ar"
+      TARGET_RANLIB="$osxcross_bin/x86_64-apple-darwin23-ranlib"
+      TARGET_RC="$osxcross_bin/x86_64-apple-darwin23-rc"
+      TARGET_CFLAGS="$OPTIMIZATIONS_CFLAGS"
       TSIL_PLATFORM="макос-ікс86_64"
       TSIL_PLATFORM_FOLDER="макос-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME"
       setup_macos_libraries
-      extra_opts="-Wl,--export-dynamic -lm -lpthread"
+      extra_opts="-Wl,-export_dynamic -lm -lpthread"
       ;;
     macos-aarch64)
       BUILD_SYSTEM="macos"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="unix"
-      TARGET="aarch64-macos"
-      CC="$ZIG cc -target $TARGET"
-      AR="$ZIG ar"
-      RANLIB="$ZIG ranlib"
-      RC="$ZIG rc"
-      LDFLAGS=""
+      TARGET="aarch64-apple-darwin23"
+      local osxcross_bin="/tmp/osxcross/target/bin"
+      export PATH="$osxcross_bin:$PATH"
+      TARGET_CC="$osxcross_bin/aarch64-apple-darwin23-clang"
+      TARGET_AR="$osxcross_bin/aarch64-apple-darwin23-ar"
+      TARGET_RANLIB="$osxcross_bin/aarch64-apple-darwin23-ranlib"
+      TARGET_RC="$osxcross_bin/aarch64-apple-darwin23-rc"
+      TARGET_CFLAGS="$OPTIMIZATIONS_CFLAGS"
       TSIL_PLATFORM="макос-аарч64"
       TSIL_PLATFORM_FOLDER="макос-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
       setup_macos_libraries
-      extra_opts="-Wl,--export-dynamic -lm -lpthread"
+      extra_opts="-Wl,-export_dynamic -lm -lpthread"
       ;;
     windows-x86_64)
       BUILD_SYSTEM="windows"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="windows"
-      TARGET="x86_64-windows-gnu"
-      CC="$ZIG cc -target $TARGET"
-      AR="$ZIG ar"
-      RANLIB="$ZIG ranlib"
-      RC="$ZIG rc"
-      LDFLAGS=""
+      TARGET="x86_64-w64-mingw32"
+      local llvm_mingw_toolchain="/home/prykhozhdenko/Compilers/llvm-mingw-20260616-ucrt-ubuntu-22.04-x86_64"
+      TARGET_CC="$llvm_mingw_toolchain/bin/x86_64-w64-mingw32-clang"
+      TARGET_AR="$llvm_mingw_toolchain/bin/x86_64-w64-mingw32-llvm-ar"
+      TARGET_RANLIB="$llvm_mingw_toolchain/bin/x86_64-w64-mingw32-llvm-ranlib"
+      TARGET_RC="$llvm_mingw_toolchain/bin/x86_64-w64-mingw32-llvm-rc"
+      TARGET_CPPFLAGS="-DNOCRYPT"
+      TARGET_CFLAGS="$OPTIMIZATIONS_CFLAGS"
       TSIL_PLATFORM="віндовс-ікс86_64"
       TSIL_PLATFORM_FOLDER="віндовс-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME.exe"
@@ -114,12 +122,14 @@ set_platform_vars() {
       ;;
     windows-aarch64)
       BUILD_SYSTEM="windows"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="windows"
-      TARGET="aarch64-windows-gnu"
-      CC="$ZIG cc -target $TARGET"
-      AR="$ZIG ar"
-      RANLIB="$ZIG ranlib"
-      RC="$ZIG rc"
-      LDFLAGS=""
+      TARGET="aarch64-w64-mingw32"
+      local llvm_mingw_toolchain="/home/prykhozhdenko/Compilers/llvm-mingw-20260616-ucrt-ubuntu-22.04-x86_64"
+      TARGET_CC="$llvm_mingw_toolchain/bin/aarch64-w64-mingw32-clang"
+      TARGET_AR="$llvm_mingw_toolchain/bin/aarch64-w64-mingw32-llvm-ar"
+      TARGET_RANLIB="$llvm_mingw_toolchain/bin/aarch64-w64-mingw32-llvm-ranlib"
+      TARGET_RC="$llvm_mingw_toolchain/bin/aarch64-w64-mingw32-llvm-rc"
+      TARGET_CPPFLAGS="-DNOCRYPT"
+      TARGET_CFLAGS="$OPTIMIZATIONS_CFLAGS"
       TSIL_PLATFORM="віндовс-аарч64"
       TSIL_PLATFORM_FOLDER="віндовс-аарч64"
       OUTFILENAME="$PROGRAM_NAME.exe"
@@ -135,11 +145,11 @@ set_platform_vars() {
       local ndk_toolchain="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64"
       BUILD_SYSTEM="linux"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="unix"
       TARGET="aarch64-linux-android24"
-      CC="$ndk_toolchain/bin/aarch64-linux-android24-clang"
-      AR="$ndk_toolchain/bin/llvm-ar"
-      RANLIB="$ndk_toolchain/bin/llvm-ranlib"
-      RC="$ndk_toolchain/bin/llvm-rc"
-      LDFLAGS=""
+      TARGET_CC="$ndk_toolchain/bin/aarch64-linux-android24-clang"
+      TARGET_AR="$ndk_toolchain/bin/llvm-ar"
+      TARGET_RANLIB="$ndk_toolchain/bin/llvm-ranlib"
+      TARGET_RC="$ndk_toolchain/bin/llvm-rc"
+      TARGET_CFLAGS="$OPTIMIZATIONS_CFLAGS"
       TSIL_PLATFORM="лінукс-аарч64"
       TSIL_PLATFORM_FOLDER="андроїд-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
@@ -149,11 +159,11 @@ set_platform_vars() {
     wasm64)
       BUILD_SYSTEM="wasm64"; BUILD_ARCH="wasm64"; COMMON_SYSTEM="wasm64"
       TARGET="wasm64-unknown-unknown"
-      CC="clang --target=$TARGET"
-      AR="llvm-ar"
-      RANLIB="llvm-ranlib"
-      RC="llvm-rc"
-      LDFLAGS=""
+      TARGET_CC="clang"
+      TARGET_AR="llvm-ar"
+      TARGET_RANLIB="llvm-ranlib"
+      TARGET_RC="llvm-rc"
+      TARGET_CFLAGS="--target=$TARGET $OPTIMIZATIONS_CFLAGS"
       TSIL_PLATFORM="васм64"
       TSIL_PLATFORM_FOLDER="васм64"
       OUTFILENAME="$PROGRAM_NAME.wasm"
@@ -165,8 +175,8 @@ set_platform_vars() {
       exit 1 ;;
   esac
 
-  CLANG="$CC"
-  CLANG_OPTIONS+=" $extra_opts $DEPS_CFLAGS"
+  CLANG="$TARGET_CC $TARGET_CPPFLAGS $TARGET_CFLAGS $TARGET_LDFLAGS"
+  CLANG_OPTIONS+=" $extra_opts $CFLAGS $DEPS_CFLAGS"
   STATIC_LIBS="${static_libs:+$static_libs }$DEPS_LIBS"
 }
 
@@ -186,27 +196,27 @@ esac
 READY_DIR="$ROOT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/$TSIL_MODE/готове"
 mkdir -p "$READY_DIR"
 
-CLANG_CMD="$CC $CLANG_OPTIONS"
+CLANG_CMD="$CLANG $CLANG_OPTIONS"
 
 LLIRFILES=$(/bin/bash "$SCRIPT_DIR/build_tsil.sh" \
   "$BUILD_MODE" \
   "$BUILD_PLATFORM" \
   "ll" \
   "$TSIL" \
-  "$CLANG_CMD")
+  "$CLANG")
 
 echo "створення виконуваного файлу"
 set -x
 
-$CLANG_CMD \
+ $CLANG_CMD \
   -c -o "$READY_DIR/main.o" \
   "external/$COMMON_SYSTEM/main_$COMMON_SYSTEM.c"
 
-$CLANG_CMD \
+ $CLANG_CMD \
   -c -o "$READY_DIR/prystriy_$COMMON_SYSTEM.o" \
   "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c"
 
-$CLANG_CMD \
+ $CLANG_CMD \
   -c -o "$READY_DIR/biblioteka_$COMMON_SYSTEM.o" \
   "external/$COMMON_SYSTEM/biblioteka_$COMMON_SYSTEM.c"
 
@@ -219,7 +229,7 @@ else
   BIBLIOTEKA_SYSTEM_OBJ=""
 fi
 
-$CLANG_CMD \
+ $CLANG_CMD \
   -o "$READY_DIR/$OUTFILENAME" \
   "$READY_DIR/main.o" \
   "$READY_DIR/prystriy_$COMMON_SYSTEM.o" \
