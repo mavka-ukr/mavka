@@ -327,6 +327,15 @@ jobs:
           name: mavka-${{ matrix.platform }}-${{ matrix.mode }}
           path: mavka-bin
 
+      - name: Direct execution diagnostic
+        shell: bash
+        run: |
+          MAVKA_PATH="$PWD/mavka-bin/мавка.exe"
+          chmod +x "$MAVKA_PATH"
+
+          "$MAVKA_PATH" "тестування/Число/більше_цілого.м"
+          echo "Exit code for test: $?"
+
       - name: Run tests
         shell: bash
         run: |
