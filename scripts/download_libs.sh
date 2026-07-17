@@ -43,7 +43,7 @@ This script downloads the third-party source archives required by
 scripts/build_deps.sh: ncurses, readline, libuv, openssl, curl.
 EOF
 
-download_file "https://invisible-mirror.net/archives/ncurses/ncurses-${NCURSES_VERSION}.tar.gz" "scripts/ncurses-${NCURSES_VERSION}.tar.gz"
+download_file "https://ftp.gnu.org/gnu/ncurses/ncurses-${NCURSES_VERSION}.tar.gz" "scripts/ncurses-${NCURSES_VERSION}.tar.gz"
 download_file "https://ftp.gnu.org/gnu/readline/readline-${READLINE_VERSION}.tar.gz" "scripts/readline-${READLINE_VERSION}.tar.gz"
 download_file "https://dist.libuv.org/dist/v${LIBUV_VERSION}/libuv-v${LIBUV_VERSION}.tar.gz" "scripts/libuv-v${LIBUV_VERSION}.tar.gz"
 download_file "https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_VERSION}/openssl-${OPENSSL_VERSION}.tar.gz" "scripts/openssl-${OPENSSL_VERSION}.tar.gz"
