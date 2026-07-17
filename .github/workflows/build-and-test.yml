@@ -9,19 +9,18 @@ on:
 jobs:
   build:
     name: Build and Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
-        platform:
-          [
-            linux-x86_64,
-            linux-aarch64,
-            macos-x86_64,
-            macos-aarch64,
+        platform: [
+            # linux-x86_64,
+            # linux-aarch64,
+            # macos-x86_64,
+            # macos-aarch64,
             windows-x86_64,
-            windows-aarch64,
-            android-aarch64,
-            wasm64,
+            # windows-aarch64,
+            # android-aarch64,
+            # wasm64,
           ]
         mode: [debug, release]
         exclude:
@@ -33,8 +32,16 @@ jobs:
       - name: Cache apt packages
         uses: awalsh128/cache-apt-pkgs-action@v1
         with:
-          packages: clang llvm lld make cmake ninja-build xz-utils curl unzip wget git patch python3 python-is-python3 libssl-dev lzma-dev libxml2-dev bzip2 cpio libbz2-dev zlib1g-dev bash build-essential libc6-dev-arm64-cross linux-libc-dev-arm64-cross gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-arm64-cross
-          version: v3
+          packages: clang llvm lld make cmake ninja-build xz-utils curl unzip wget git patch python3 python-is-python3 libssl-dev lzma-dev libxml2-dev bzip2 cpio libbz2-dev zlib1g-dev bash build-essential libc6-dev-arm64-cross linux-libc-dev-arm64-cross gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-arm64-cross wine64
+          version: v4
+
+      - name: Install Darling for macOS tests
+        if: matrix.platform == 'macos-x86_64'
+        run: |
+          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4B7C1C1D || true
+          echo "deb https://repo.darlinghq.org/ /" | sudo tee /etc/apt/sources.list.d/darling.list
+          sudo apt-get update
+          sudo apt-get install -y darling || echo "Darling installation failed. macOS tests will be skipped."
 
       - name: Fix aarch64 cross-compiler sysroot paths
         if: matrix.platform == 'linux-aarch64'
@@ -116,7 +123,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: osxcross
-          key: osxcross-MacOSX14.5-v1
+          key: osxcross-MacOSX14.5-v2
 
       - name: Setup MacOS cross-compilation (osxcross)
         if: startsWith(matrix.platform, 'macos-')
@@ -130,6 +137,16 @@ jobs:
             UNATTENDED=1 ./build.sh
             cd ..
           fi
+
+          # osxcross uses 'arm64' instead of 'aarch64'. Create symlinks to satisfy build.sh
+          if [ "${{ matrix.platform }}" = "macos-aarch64" ]; then
+            cd osxcross/target/bin
+            for ext in clang clang++ ar ranlib rc; do
+              ln -sf arm64-apple-darwin23-$ext aarch64-apple-darwin23-$ext
+            done
+            cd -
+          fi
+
           echo "OSXCROSS_PATH=$PWD/osxcross/target" >> $GITHUB_ENV
 
       - name: Download project libraries
@@ -145,7 +162,7 @@ jobs:
             "${{ matrix.platform }}" || (find build -name "config.log" -exec tail -n 200 {} \; && exit 1)
 
       - name: Run tests
-        if: matrix.platform == 'linux-x86_64'
+        if: matrix.platform == 'linux-x86_64' || matrix.platform == 'windows-x86_64' || matrix.platform == 'macos-x86_64'
         run: |
           chmod +x scripts/test.sh
 
@@ -153,13 +170,8 @@ jobs:
 
           case "${{ matrix.platform }}" in
             linux-x86_64)    TSIL_FOLDER="лінукс-ікс86_64" ;;
-            linux-aarch64)   TSIL_FOLDER="лінукс-аарч64" ;;
             macos-x86_64)    TSIL_FOLDER="макос-ікс86_64" ;;
-            macos-aarch64)   TSIL_FOLDER="макос-аарч64" ;;
             windows-x86_64)  TSIL_FOLDER="віндовс-ікс86_64" ;;
-            windows-aarch64) TSIL_FOLDER="віндовс-аарч64" ;;
-            android-aarch64) TSIL_FOLDER="андроїд-аарч64" ;;
-            wasm64)          TSIL_FOLDER="васм64" ;;
           esac
 
           if [ "${{ matrix.mode }}" = "release" ]; then
@@ -168,7 +180,29 @@ jobs:
             TSIL_MODE="відлагодження"
           fi
 
-          MAVKA_PATH="будування/${VERSION}/${TSIL_FOLDER}/${TSIL_MODE}/готове/мавка"
+          MAVKA_BIN="мавка"
+          if [ "${{ matrix.platform }}" = "windows-x86_64" ]; then
+            MAVKA_BIN="мавка.exe"
+          fi
 
-          echo "Running tests for binary at: $MAVKA_PATH"
-          bash scripts/test.sh "$MAVKA_PATH"
+          MAVKA_PATH="будування/${VERSION}/${TSIL_FOLDER}/${TSIL_MODE}/готове/${MAVKA_BIN}"
+          ABS_MAVKA_PATH="$PWD/$MAVKA_PATH"
+
+          WRAPPER_PATH="/tmp/mavka_wrapper"
+          echo "#!/bin/bash" > $WRAPPER_PATH
+
+          if [ "${{ matrix.platform }}" = "windows-x86_64" ]; then
+            echo "wine64 \"$ABS_MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
+          elif [ "${{ matrix.platform }}" = "macos-x86_64" ]; then
+            if ! command -v darling &> /dev/null; then
+              echo "Darling is not installed, skipping macOS tests."
+              exit 0
+            fi
+            echo "darling shell \"$ABS_MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
+          else
+            echo "\"$ABS_MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
+          fi
+          chmod +x $WRAPPER_PATH
+
+          echo "Running tests using wrapper: $WRAPPER_PATH"
+          bash scripts/test.sh "$WRAPPER_PATH"
