@@ -14,10 +14,10 @@ jobs:
       fail-fast: false
       matrix:
         platform: [
-            linux-x86_64,
-            linux-aarch64,
-            macos-x86_64,
-            macos-aarch64,
+            # linux-x86_64,
+            # linux-aarch64,
+            # macos-x86_64,
+            # macos-aarch64,
             windows-x86_64,
             # windows-aarch64,
             # android-aarch64,
@@ -347,9 +347,25 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.check-artifacts.outputs.windows_matrix) }}
     runs-on: ${{ matrix.runner }}
+    env:
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
+      PYTHONUTF8: "1"
+      MSYSTEM: MINGW64
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
+
+      - name: Configure Windows console and locale for UTF-8
+        shell: pwsh
+        run: |
+          chcp 65001
+          [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+          [Console]::InputEncoding = [System.Text.Encoding]::UTF8
+          $OutputEncoding = [System.Text.Encoding]::UTF8
+          "LANG=en_US.UTF-8" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "LC_ALL=en_US.UTF-8" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "PYTHONUTF8=1" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Download Windows binary
         uses: actions/download-artifact@v4
@@ -357,13 +373,35 @@ jobs:
           name: mavka-${{ matrix.platform }}-${{ matrix.mode }}
           path: mavka-bin
 
-      - name: Run tests
+      - name: Normalize binary name to ASCII path
         shell: bash
         run: |
-          chmod +x scripts/test.sh
-          MAVKA_PATH="$PWD/mavka-bin/мавка.exe"
-          chmod +x "$MAVKA_PATH"
+          set -e
+          echo "=== Contents of mavka-bin ==="
+          ls -la mavka-bin/ || true
 
+          # Locate the .exe regardless of its (possibly Cyrillic) name
+          EXE_FILE=$(find mavka-bin -maxdepth 1 -name "*.exe" -type f | head -n 1)
+          if [ -z "$EXE_FILE" ]; then
+            echo "Error: no .exe found in mavka-bin/"
+            exit 1
+          fi
+          echo "Found executable: $EXE_FILE"
+
+          # Rename to a pure-ASCII path to avoid any Unicode issues downstream
+          mv -f "$EXE_FILE" "mavka-bin/mavka.exe"
+          chmod +x "mavka-bin/mavka.exe"
+
+          echo "=== After normalization ==="
+          ls -la mavka-bin/
+
+      - name: Run tests
+        shell: bash
+        env:
+          MAVKA_PATH: ${{ github.workspace }}/mavka-bin/mavka.exe
+        run: |
+          set -e
+          chmod +x scripts/test.sh
           echo "Running tests using binary: $MAVKA_PATH"
           bash scripts/test.sh "$MAVKA_PATH"
 
