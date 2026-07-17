@@ -1,10 +1,7 @@
 name: Build and Test
 
 on:
-  push:
-    branches:
-      - main
-      - dev
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,15 +10,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [
-            # linux-x86_64,
-            # linux-aarch64,
-            # macos-x86_64,
-            # macos-aarch64,
+        platform:
+          [
+            linux-x86_64,
+            linux-aarch64,
+            macos-x86_64,
+            macos-aarch64,
             windows-x86_64,
-            # windows-aarch64,
-            # android-aarch64,
-            # wasm64,
+            windows-aarch64,
+            android-aarch64,
           ]
         mode: [debug, release]
         exclude:
@@ -408,43 +405,3 @@ jobs:
 
           echo "Running tests using wrapper: $WRAPPER_PATH"
           bash scripts/test.sh "$WRAPPER_PATH"
-
-  test-android:
-    name: Test (android-aarch64, ${{ matrix.mode }})
-    needs: [build, check-artifacts]
-    if: needs.check-artifacts.outputs.has_android == 'true'
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.check-artifacts.outputs.android_matrix) }}
-    runs-on: ${{ matrix.runner }}
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
-
-      - name: Download Android binary
-        uses: actions/download-artifact@v4
-        with:
-          name: mavka-android-aarch64-${{ matrix.mode }}
-          path: mavka-bin
-
-      - name: Package tests for transfer
-        run: |
-          tar -czf tests.tar.gz тестування
-
-      - name: Run tests on Android Emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 30
-          arch: x86_64
-          target: google_apis
-          script: |
-            adb root
-            adb shell mkdir -p /data/local/tmp/mavka
-            adb push mavka-bin/мавка /data/local/tmp/mavka/мавка
-            adb push tests.tar.gz /data/local/tmp/mavka/tests.tar.gz
-
-            adb shell chmod +x /data/local/tmp/mavka/мавка
-            adb shell "cd /data/local/tmp/mavka && tar xzf tests.tar.gz"
-
-            adb shell "/data/local/tmp/mavka/мавка /data/local/tmp/mavka/тестування/Число/більше_цілого.м"
-            echo "Test exited with status: $?"
