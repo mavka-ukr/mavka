@@ -770,35 +770,89 @@ static char* do_readline(char* prefix, size_t prefix_size, size_t* out_len) {
     return NULL;
   }
 
-  // Read wide characters (UTF-16) for proper Unicode support
+  DWORD режим;
+  int is_console = GetConsoleMode(hStdin, &режим);
+
   size_t wide_cap = 128;
   size_t wide_len = 0;
   WCHAR* wide_buf = (WCHAR*)пристрій_мавки_виділити(wide_cap * sizeof(WCHAR));
   if (!wide_buf)
     return NULL;
 
-  WCHAR wc;
-  DWORD charsRead;
+  if (is_console) {
+    // Real console: read UTF-16
+    WCHAR wc;
+    DWORD charsRead;
 
-  while (ReadConsoleW(hStdin, &wc, 1, &charsRead, NULL) && charsRead == 1) {
-    if (wc == L'\n')
-      break; // stop, but DON'T store '\n'
+    while (ReadConsoleW(hStdin, &wc, 1, &charsRead, NULL) && charsRead == 1) {
+      if (wc == L'\n')
+        break;
+      if (wc == L'\r')
+        continue;
 
-    if (wc == L'\r')
-      continue; // skip '\r' in Windows line endings
-
-    if (wide_len + 1 >= wide_cap) {
-      wide_cap *= 2;
-      WCHAR* tmp = (WCHAR*)пристрій_мавки_перевиділити(
-          wide_buf, wide_cap * sizeof(WCHAR));
-      if (!tmp) {
-        пристрій_мавки_звільнити(wide_buf);
-        return NULL;
+      if (wide_len + 1 >= wide_cap) {
+        wide_cap *= 2;
+        WCHAR* tmp = (WCHAR*)пристрій_мавки_перевиділити(
+            wide_buf, wide_cap * sizeof(WCHAR));
+        if (!tmp) {
+          пристрій_мавки_звільнити(wide_buf);
+          return NULL;
+        }
+        wide_buf = tmp;
       }
-      wide_buf = tmp;
+
+      wide_buf[wide_len++] = wc;
+    }
+  } else {
+    // Pipe or file: read UTF-8 bytes, then convert to UTF-16
+    char c;
+    DWORD charsRead;
+    size_t utf8_cap = 128;
+    size_t utf8_len = 0;
+    char* utf8_buf = (char*)пристрій_мавки_виділити(utf8_cap);
+    if (!utf8_buf) {
+      пристрій_мавки_звільнити(wide_buf);
+      return NULL;
     }
 
-    wide_buf[wide_len++] = wc;
+    while (ReadFile(hStdin, &c, 1, &charsRead, NULL) && charsRead == 1) {
+      if (c == '\n')
+        break;
+      if (c == '\r')
+        continue;
+
+      if (utf8_len + 1 >= utf8_cap) {
+        utf8_cap *= 2;
+        char* tmp = (char*)пристрій_мавки_перевиділити(utf8_buf, utf8_cap);
+        if (!tmp) {
+          пристрій_мавки_звільнити(utf8_buf);
+          пристрій_мавки_звільнити(wide_buf);
+          return NULL;
+        }
+        utf8_buf = tmp;
+      }
+      utf8_buf[utf8_len++] = c;
+    }
+
+    if (utf8_len > 0) {
+      int w_len = MultiByteToWideChar(CP_UTF8, 0, utf8_buf, utf8_len, NULL, 0);
+      if (w_len > 0) {
+        if ((size_t)w_len >= wide_cap) {
+          wide_cap = w_len + 1;
+          WCHAR* tmp = (WCHAR*)пристрій_мавки_перевиділити(
+              wide_buf, wide_cap * sizeof(WCHAR));
+          if (!tmp) {
+            пристрій_мавки_звільнити(utf8_buf);
+            пристрій_мавки_звільнити(wide_buf);
+            return NULL;
+          }
+          wide_buf = tmp;
+        }
+        MultiByteToWideChar(CP_UTF8, 0, utf8_buf, utf8_len, wide_buf, w_len);
+        wide_len = w_len;
+      }
+    }
+    пристрій_мавки_звільнити(utf8_buf);
   }
 
   // If nothing read, return NULL
@@ -807,7 +861,7 @@ static char* do_readline(char* prefix, size_t prefix_size, size_t* out_len) {
     return NULL;
   }
 
-  // Convert UTF-16 to UTF-8
+  // Convert UTF-16 back to UTF-8 for Mavka
   int utf8_size =
       WideCharToMultiByte(CP_UTF8, 0, wide_buf, wide_len, NULL, 0, NULL, NULL);
   if (utf8_size == 0) {
