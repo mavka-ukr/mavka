@@ -231,16 +231,15 @@ jobs:
         mode: [debug, release]
         exclude:
           - mode: ${{ github.ref_name == 'main' && 'debug' || 'release' }}
-    runs-on: ubuntu-latest
+        include:
+          - platform: linux-x86_64
+            runner: ubuntu-latest
+          - platform: linux-aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
-
-      - name: Install QEMU and dependencies for aarch64
-        if: matrix.platform == 'linux-aarch64'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y qemu-user-static libc6-arm64-cross
 
       - name: Download Linux binary
         uses: actions/download-artifact@v4
@@ -254,18 +253,8 @@ jobs:
           MAVKA_PATH="$PWD/mavka-bin/мавка"
           chmod +x "$MAVKA_PATH"
 
-          WRAPPER_PATH="/tmp/mavka_wrapper"
-          echo "#!/bin/bash" > $WRAPPER_PATH
-
-          if [ "${{ matrix.platform }}" = "linux-aarch64" ]; then
-            echo "qemu-aarch64-static -L /usr/aarch64-linux-gnu \"$MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
-          else
-            echo "\"$MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
-          fi
-          chmod +x $WRAPPER_PATH
-
-          echo "Running tests using wrapper: $WRAPPER_PATH"
-          bash scripts/test.sh "$WRAPPER_PATH"
+          echo "Running tests using binary: $MAVKA_PATH"
+          bash scripts/test.sh "$MAVKA_PATH"
 
   test-macos:
     name: Test (${{ matrix.platform }}, ${{ matrix.mode }})
@@ -313,16 +302,21 @@ jobs:
           $BASH_CMD scripts/test.sh "$PWD/mavka-bin/мавка"
 
   test-windows-native:
-    name: Test Native (windows-x86_64, ${{ matrix.mode }})
+    name: Test Native (${{ matrix.platform }}, ${{ matrix.mode }})
     needs: [build, check-artifacts]
     if: needs.check-artifacts.outputs.has_windows == 'true'
     strategy:
       matrix:
-        platform: [windows-x86_64]
+        platform: [windows-x86_64, windows-aarch64]
         mode: [debug, release]
         exclude:
           - mode: ${{ github.ref_name == 'main' && 'debug' || 'release' }}
-    runs-on: windows-latest
+        include:
+          - platform: windows-x86_64
+            runner: windows-latest
+          - platform: windows-aarch64
+            runner: windows-11-arm
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -330,7 +324,7 @@ jobs:
       - name: Download Windows binary
         uses: actions/download-artifact@v4
         with:
-          name: mavka-windows-x86_64-${{ matrix.mode }}
+          name: mavka-${{ matrix.platform }}-${{ matrix.mode }}
           path: mavka-bin
 
       - name: Run tests
