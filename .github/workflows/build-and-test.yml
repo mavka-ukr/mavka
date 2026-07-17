@@ -32,16 +32,20 @@ jobs:
       - name: Cache apt packages
         uses: awalsh128/cache-apt-pkgs-action@v1
         with:
-          packages: clang llvm lld make cmake ninja-build xz-utils curl unzip wget git patch python3 python-is-python3 libssl-dev lzma-dev libxml2-dev bzip2 cpio libbz2-dev zlib1g-dev bash build-essential libc6-dev-arm64-cross linux-libc-dev-arm64-cross gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-arm64-cross wine64
-          version: v4
+          packages: clang llvm lld make cmake ninja-build xz-utils curl unzip wget git patch python3 python-is-python3 libssl-dev lzma-dev libxml2-dev bzip2 cpio libbz2-dev zlib1g-dev bash build-essential libc6-dev-arm64-cross linux-libc-dev-arm64-cross gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-arm64-cross qemu-user-static
+          version: v5
 
-      - name: Install Darling for macOS tests
-        if: matrix.platform == 'macos-x86_64'
+      - name: Install Wine and Darling for tests
+        if: matrix.platform == 'windows-x86_64' || matrix.platform == 'macos-x86_64'
         run: |
-          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4B7C1C1D || true
-          echo "deb https://repo.darlinghq.org/ /" | sudo tee /etc/apt/sources.list.d/darling.list
           sudo apt-get update
-          sudo apt-get install -y darling || echo "Darling installation failed. macOS tests will be skipped."
+          sudo apt-get install -y wine64
+          if [ "${{ matrix.platform }}" = "macos-x86_64" ]; then
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4B7C1C1D || true
+            echo "deb https://repo.darlinghq.org/ /" | sudo tee /etc/apt/sources.list.d/darling.list
+            sudo apt-get update
+            sudo apt-get install -y darling || echo "Darling installation failed. macOS tests will be skipped."
+          fi
 
       - name: Fix aarch64 cross-compiler sysroot paths
         if: matrix.platform == 'linux-aarch64'
@@ -162,7 +166,7 @@ jobs:
             "${{ matrix.platform }}" || (find build -name "config.log" -exec tail -n 200 {} \; && exit 1)
 
       - name: Run tests
-        if: matrix.platform == 'linux-x86_64' || matrix.platform == 'windows-x86_64' || matrix.platform == 'macos-x86_64'
+        if: matrix.platform == 'linux-x86_64' || matrix.platform == 'linux-aarch64' || matrix.platform == 'windows-x86_64' || matrix.platform == 'macos-x86_64'
         run: |
           chmod +x scripts/test.sh
 
@@ -170,6 +174,7 @@ jobs:
 
           case "${{ matrix.platform }}" in
             linux-x86_64)    TSIL_FOLDER="лінукс-ікс86_64" ;;
+            linux-aarch64)   TSIL_FOLDER="лінукс-аарч64" ;;
             macos-x86_64)    TSIL_FOLDER="макос-ікс86_64" ;;
             windows-x86_64)  TSIL_FOLDER="віндовс-ікс86_64" ;;
           esac
@@ -199,6 +204,8 @@ jobs:
               exit 0
             fi
             echo "darling shell \"$ABS_MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
+          elif [ "${{ matrix.platform }}" = "linux-aarch64" ]; then
+            echo "qemu-aarch64-static -L /usr/aarch64-linux-gnu \"$ABS_MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
           else
             echo "\"$ABS_MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
           fi
