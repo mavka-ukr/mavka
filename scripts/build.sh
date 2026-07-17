@@ -128,7 +128,7 @@ set_platform_vars() {
       TSIL_PLATFORM="віндовс-ікс86_64"
       TSIL_PLATFORM_FOLDER="віндовс-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME.exe"
-      extra_opts="-lws2_32 -liphlpapi -luserenv -ldbghelp -lole32 -lgdi32 -lcrypt32 -luser32"
+      extra_opts="-static -lws2_32 -liphlpapi -luserenv -ldbghelp -lole32 -lgdi32 -lcrypt32 -luser32"
       static_libs="scripts/icon.res"
       setup_windows_libraries
       ;;
@@ -149,7 +149,7 @@ set_platform_vars() {
       TSIL_PLATFORM="віндовс-аарч64"
       TSIL_PLATFORM_FOLDER="віндовс-аарч64"
       OUTFILENAME="$PROGRAM_NAME.exe"
-      extra_opts="-lws2_32 -liphlpapi -luserenv -ldbghelp -lole32 -lgdi32 -lcrypt32 -luser32"
+      extra_opts="-static -lws2_32 -liphlpapi -luserenv -ldbghelp -lole32 -lgdi32 -lcrypt32 -luser32"
       static_libs="scripts/icon.res"
       setup_windows_libraries
       ;;
