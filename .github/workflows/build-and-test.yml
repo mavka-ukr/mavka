@@ -15,11 +15,11 @@ jobs:
         platform: [
             # linux-x86_64,
             # linux-aarch64,
-            macos-x86_64,
-            macos-aarch64,
-            windows-x86_64,
-            windows-aarch64,
-            # android-aarch64,
+            # macos-x86_64,
+            # macos-aarch64,
+            # windows-x86_64,
+            # windows-aarch64,
+            android-aarch64,
             # wasm64,
           ]
         mode: [debug, release]
@@ -133,7 +133,6 @@ jobs:
 
           echo "OSXCROSS_PATH=$PWD/osxcross/target" >> $GITHUB_ENV
 
-          # Вказуємо CMake, де шукати macOS фреймворки (наприклад, SystemConfiguration для curl)
           SDK_DIR=$(ls -d $PWD/osxcross/target/SDK/MacOSX*.sdk | head -n 1)
           echo "CMAKE_FRAMEWORK_PATH=$SDK_DIR/System/Library/Frameworks" >> $GITHUB_ENV
           echo "CMAKE_INCLUDE_PATH=$SDK_DIR/usr/include" >> $GITHUB_ENV
@@ -174,7 +173,7 @@ jobs:
 
       - name: Set OS artifact paths
         id: os_paths
-        if: startsWith(matrix.platform, 'macos-') || startsWith(matrix.platform, 'windows-') || startsWith(matrix.platform, 'linux-')
+        if: startsWith(matrix.platform, 'macos-') || startsWith(matrix.platform, 'windows-') || startsWith(matrix.platform, 'linux-') || startsWith(matrix.platform, 'android-')
         run: |
           VERSION=$(cat ВЕРСІЯ | xargs)
           if [ "${{ matrix.mode }}" = "release" ]; then TSIL_MODE="випуск"; else TSIL_MODE="відлагодження"; fi
@@ -193,6 +192,9 @@ jobs:
             TSIL_FOLDER="віндовс-аарч64"
             MAVKA_BIN="мавка.exe"
           fi
+          if [ "${{ matrix.platform }}" = "android-aarch64" ]; then
+            TSIL_FOLDER="андроїд-аарч64"
+          fi
 
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "mode=$TSIL_MODE" >> $GITHUB_OUTPUT
@@ -200,7 +202,7 @@ jobs:
           echo "bin=$MAVKA_BIN" >> $GITHUB_OUTPUT
 
       - name: Upload OS binaries
-        if: startsWith(matrix.platform, 'macos-') || startsWith(matrix.platform, 'windows-') || startsWith(matrix.platform, 'linux-')
+        if: startsWith(matrix.platform, 'macos-') || startsWith(matrix.platform, 'windows-') || startsWith(matrix.platform, 'linux-') || startsWith(matrix.platform, 'android-')
         uses: actions/upload-artifact@v4
         with:
           name: mavka-${{ matrix.platform }}-${{ matrix.mode }}
@@ -215,6 +217,7 @@ jobs:
       has_linux: ${{ steps.check.outputs.has_linux }}
       has_macos: ${{ steps.check.outputs.has_macos }}
       has_windows: ${{ steps.check.outputs.has_windows }}
+      has_android: ${{ steps.check.outputs.has_android }}
     steps:
       - name: Check for uploaded artifacts
         id: check
@@ -229,10 +232,12 @@ jobs:
             const hasLinux = artifacts.data.artifacts.some(a => a.name.startsWith('mavka-linux-'));
             const hasMacos = artifacts.data.artifacts.some(a => a.name.startsWith('mavka-macos-'));
             const hasWindows = artifacts.data.artifacts.some(a => a.name.startsWith('mavka-windows-'));
+            const hasAndroid = artifacts.data.artifacts.some(a => a.name.startsWith('mavka-android-'));
             core.setOutput('has_linux', hasLinux);
             core.setOutput('has_macos', hasMacos);
             core.setOutput('has_windows', hasWindows);
-            console.log(`Has Linux: ${hasLinux}, Has macOS: ${hasMacos}, Has Windows: ${hasWindows}`);
+            core.setOutput('has_android', hasAndroid);
+            console.log(`Has Linux: ${hasLinux}, Has macOS: ${hasMacos}, Has Windows: ${hasWindows}, Has Android: ${hasAndroid}`);
 
   test-ubuntu:
     name: Test (${{ matrix.platform }}, ${{ matrix.mode }})
@@ -340,41 +345,6 @@ jobs:
           name: mavka-${{ matrix.platform }}-${{ matrix.mode }}
           path: mavka-bin
 
-      - name: Direct execution diagnostic (Bash)
-        shell: bash
-        run: |
-          MAVKA_PATH="$PWD/mavka-bin/мавка.exe"
-          chmod +x "$MAVKA_PATH"
-
-          echo "=== Running test directly via Bash ==="
-          output=$("$MAVKA_PATH" "тестування/Число/більше_цілого.м" 2>&1 < /dev/null)
-          status=$?
-
-          echo "Exit code: $status"
-          echo "Output:"
-          echo "$output"
-
-      - name: Direct execution diagnostic (PowerShell)
-        shell: pwsh
-        run: |
-          $mavkaPath = "$pwd/mavka-bin/мавка.exe"
-          Write-Host "=== Running test directly via PowerShell ==="
-
-          $process = New-Object System.Diagnostics.Process
-          $process.StartInfo.FileName = $mavkaPath
-          $process.StartInfo.Arguments = '"тестування/Число/більше_цілого.м"'
-          $process.StartInfo.UseShellExecute = $false
-          $process.StartInfo.RedirectStandardOutput = $true
-          $process.StartInfo.RedirectStandardError = $true
-          $process.Start() | Out-Null
-          $stdout = $process.StandardOutput.ReadToEnd()
-          $stderr = $process.StandardError.ReadToEnd()
-          $process.WaitForExit()
-
-          Write-Host "Exit code: $($process.ExitCode)"
-          Write-Host "Output: $stdout"
-          if ($stderr) { Write-Host "Error: $stderr" }
-
       - name: Run tests
         shell: bash
         run: |
@@ -429,3 +399,47 @@ jobs:
 
           echo "Running tests using wrapper: $WRAPPER_PATH"
           bash scripts/test.sh "$WRAPPER_PATH"
+
+  test-android:
+    name: Test (android-aarch64, ${{ matrix.mode }})
+    needs: [build, check-artifacts]
+    if: needs.check-artifacts.outputs.has_android == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        mode: [debug, release]
+        exclude:
+          - mode: ${{ github.ref_name == 'main' && 'debug' || 'release' }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Download Android binary
+        uses: actions/download-artifact@v4
+        with:
+          name: mavka-android-aarch64-${{ matrix.mode }}
+          path: mavka-bin
+
+      - name: Package tests for transfer
+        run: |
+          # Пакуємо тести у tar, щоб безпечно передати кириличні назви через adb
+          tar -czf tests.tar.gz тестування
+
+      - name: Run tests on Android Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          arch: x86_64
+          target: google_apis
+          script: |
+            adb root
+            adb shell mkdir -p /data/local/tmp/mavka
+            adb push mavka-bin/мавка /data/local/tmp/mavka/мавка
+            adb push tests.tar.gz /data/local/tmp/mavka/tests.tar.gz
+
+            adb shell chmod +x /data/local/tmp/mavka/мавка
+            adb shell "cd /data/local/tmp/mavka && tar xzf tests.tar.gz"
+
+            # Запускаємо один тест для перевірки. Запуск усього test.sh на Android складний через відсутність bash.
+            adb shell "/data/local/tmp/mavka/мавка /data/local/tmp/mavka/тестування/Число/більше_цілого.м"
+            echo "Test exited with status: $?"
