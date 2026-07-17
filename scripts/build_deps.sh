@@ -9,6 +9,13 @@ LIBUV_VERSION="$(cat "$SCRIPT_DIR/LIBUV_VERSION")"
 OPENSSL_VERSION="$(cat "$SCRIPT_DIR/OPENSSL_VERSION")"
 CURL_VERSION="$(cat "$SCRIPT_DIR/CURL_VERSION")"
 
+AR="${AR:-}"
+RANLIB="${RANLIB:-}"
+CC="${CC:-}"
+TARGET="${TARGET:-}"
+LDFLAGS="${LDFLAGS:-}"
+RC="${RC:-}"
+
 extract_if_needed() {
   local tarball="$1"
   local extract_dir="$2"
@@ -29,8 +36,7 @@ ensure_tarball() {
 }
 
 build_ncurses() {
-  local ar="$1" ranlib="$2" cc="$3" target="$4" ldflags="$5" rc="$6"
-  local ncurses_dir="build/ncurses/$target/ncurses-${NCURSES_VERSION}"
+  local ncurses_dir="build/ncurses/$TARGET/ncurses-${NCURSES_VERSION}"
   local build_dir="$ncurses_dir/build_ncurses"
   local tarball="$(pwd)/scripts/ncurses-${NCURSES_VERSION}.tar.gz"
 
@@ -42,8 +48,8 @@ build_ncurses() {
 
   if [ ! -d "$build_dir" ]; then
     pushd "$ncurses_dir" > /dev/null
-    AR="$ar" RANLIB="$ranlib" CC="$cc" CFLAGS="-O3" LDFLAGS="$ldflags" RC="$rc" \
-      ./configure --host="$target" --prefix="$(pwd)/build_ncurses" \
+    AR="$AR" RANLIB="$RANLIB" CC="$CC" CFLAGS="-O3" LDFLAGS="$LDFLAGS" RC="$RC" \
+      ./configure --host="$TARGET" --prefix="$(pwd)/build_ncurses" \
         --with-shared=no --with-static=yes --without-progs --without-tests \
         --without-cxx --without-cxx-binding --without-ada --without-curses-h
     make -j"$(nproc)"
@@ -55,8 +61,8 @@ build_ncurses() {
 }
 
 build_readline() {
-  local ar="$1" ranlib="$2" cc="$3" target="$4" ldflags="$5" rc="$6" ncurses_build_dir="$7"
-  local readline_dir="build/readline/$target/readline-${READLINE_VERSION}"
+  local ncurses_build_dir="$1"
+  local readline_dir="build/readline/$TARGET/readline-${READLINE_VERSION}"
   local build_dir="$readline_dir/build_readline"
   local tarball="$(pwd)/scripts/readline-${READLINE_VERSION}.tar.gz"
 
@@ -74,15 +80,15 @@ build_readline() {
 
   if [ ! -d "$build_dir" ]; then
     pushd "$readline_dir" > /dev/null
-    if [[ "$target" == *"android"* ]]; then
+    if [[ "$TARGET" == *"android"* ]]; then
       export ac_cv_func_getpwent=no
       export ac_cv_func_setpwent=no
       export ac_cv_func_endpwent=no
     fi
-    AR="$ar" RANLIB="$ranlib" CC="$cc" \
+    AR="$AR" RANLIB="$RANLIB" CC="$CC" \
       CFLAGS="-O3 -I$ncurses_build_dir/include" \
-      LDFLAGS="$ldflags -L$ncurses_build_dir/lib" RC="$rc" \
-      ./configure --host="$target" --prefix="$(pwd)/build_readline" \
+      LDFLAGS="$LDFLAGS -L$ncurses_build_dir/lib" RC="$RC" \
+      ./configure --host="$TARGET" --prefix="$(pwd)/build_readline" \
         --enable-static --disable-shared --with-curses
     make -j"$(nproc)"
     make install
@@ -93,8 +99,7 @@ build_readline() {
 }
 
 build_libuv() {
-  local ar="$1" ranlib="$2" cc="$3" target="$4" ldflags="$5" rc="$6"
-  local uv_dir="build/libuv/$target/libuv-v${LIBUV_VERSION}"
+  local uv_dir="build/libuv/$TARGET/libuv-v${LIBUV_VERSION}"
   local build_dir="$uv_dir/build_libuv"
   local tarball="$(pwd)/scripts/libuv-v${LIBUV_VERSION}.tar.gz"
 
@@ -108,18 +113,18 @@ build_libuv() {
     pushd "$uv_dir" > /dev/null
     sh autogen.sh
 
-    local configure_host="$target"
-    if [ "$target" = "x86_64-windows-gnu" ]; then
+    local configure_host="$TARGET"
+    if [ "$TARGET" = "x86_64-windows-gnu" ]; then
       configure_host="x86_64-w64-mingw32"
-    elif [ "$target" = "aarch64-windows-gnu" ]; then
+    elif [ "$TARGET" = "aarch64-windows-gnu" ]; then
       configure_host="aarch64-w64-mingw32"
-    elif [ "$target" = "x86_64-macos" ]; then
+    elif [ "$TARGET" = "x86_64-macos" ]; then
       configure_host="x86_64-apple-darwin"
-    elif [ "$target" = "aarch64-macos" ]; then
+    elif [ "$TARGET" = "aarch64-macos" ]; then
       configure_host="aarch64-apple-darwin"
     fi
 
-    AR="$ar" RANLIB="$ranlib" CC="$cc" CFLAGS="-O3" LDFLAGS="$ldflags" RC="$rc" \
+    AR="$AR" RANLIB="$RANLIB" CC="$CC" CFLAGS="-O3" LDFLAGS="$LDFLAGS" RC="$RC" \
       ./configure --host="$configure_host" --prefix="$(pwd)/build_libuv" \
         --enable-static --disable-shared
     make -j"$(nproc)"
@@ -131,8 +136,7 @@ build_libuv() {
 }
 
 build_openssl() {
-  local ar="$1" ranlib="$2" cc="$3" target="$4" ldflags="$5" rc="$6"
-  local openssl_dir="build/openssl/$target/openssl-${OPENSSL_VERSION}"
+  local openssl_dir="build/openssl/$TARGET/openssl-${OPENSSL_VERSION}"
   local build_dir="$openssl_dir/build_openssl"
   local tarball="$(pwd)/scripts/openssl-${OPENSSL_VERSION}.tar.gz"
 
@@ -150,28 +154,29 @@ build_openssl() {
     abs_prefix="$(cd build_openssl && pwd)"
 
     local os_target="gcc"
-    if [[ "$target" == *"linux"* ]]; then
-      [[ "$target" == *"x86_64"* ]] && os_target="linux-x86_64"
-      [[ "$target" == *"aarch64"* ]] && os_target="linux-aarch64"
-    elif [[ "$target" == *"windows"* ]]; then
-      [[ "$target" == *"x86_64"* ]] && os_target="mingw64"
-      [[ "$target" == *"aarch64"* ]] && os_target="mingw64"
-    elif [[ "$target" == *"macos"* ]]; then
-      [[ "$target" == *"x86_64"* ]] && os_target="darwin64-x86_64-cc"
-      [[ "$target" == *"aarch64"* ]] && os_target="darwin64-arm64-cc"
-    elif [[ "$target" == *"android"* ]]; then
-      [[ "$target" == *"aarch64"* ]] && os_target="android64-aarch64"
+    if [[ "$TARGET" == *"linux"* ]]; then
+      [[ "$TARGET" == *"x86_64"* ]] && os_target="linux-x86_64"
+      [[ "$TARGET" == *"aarch64"* ]] && os_target="linux-aarch64"
+    elif [[ "$TARGET" == *"windows"* ]]; then
+      [[ "$TARGET" == *"x86_64"* ]] && os_target="mingw64"
+      [[ "$TARGET" == *"aarch64"* ]] && os_target="mingw64"
+    elif [[ "$TARGET" == *"macos"* ]]; then
+      [[ "$TARGET" == *"x86_64"* ]] && os_target="darwin64-x86_64-cc"
+      [[ "$TARGET" == *"aarch64"* ]] && os_target="darwin64-arm64-cc"
+    elif [[ "$TARGET" == *"android"* ]]; then
+      [[ "$TARGET" == *"aarch64"* ]] && os_target="android64-aarch64"
     fi
 
-    if [[ "$target" == *"aarch64"* ]]; then
-      local extra_config_flags="no-asm"
+    local extra_config_flags=""
+    if [[ "$TARGET" == *"aarch64"* ]]; then
+      extra_config_flags="no-asm"
     fi
 
     ./Configure "$os_target" \
       --prefix="$abs_prefix" \
       --libdir=lib \
       no-shared no-module no-dso no-tests no-docs $extra_config_flags \
-      CC="$cc" AR="$ar" RANLIB="$ranlib" LDFLAGS="$ldflags" RC="$rc" CFLAGS="-O3"
+      CC="$CC" AR="$AR" RANLIB="$RANLIB" LDFLAGS="$LDFLAGS" RC="$RC" CFLAGS="-O3"
 
     make -j"$(nproc)"
     make install_sw
@@ -182,7 +187,6 @@ build_openssl() {
 }
 
 setup_linux_libraries() {
-  local ar="$1" ranlib="$2" cc="$3" target="$4" ldflags="$5" rc="$6"
   local root
   root="$(pwd)"
 
@@ -194,40 +198,44 @@ setup_linux_libraries() {
   local uv_build=""
   local openssl_build=""
 
-  if build_ncurses "$ar" "$ranlib" "$cc" "$target" "$ldflags" "$rc"; then
+  if build_ncurses; then
     ncurses_build="$RESULT_DIR"
   else
     echo "ncurses support disabled"
   fi
 
-  if [ -n "$ncurses_build" ] && build_readline "$ar" "$ranlib" "$cc" "$target" "$ldflags" "$rc" "$ncurses_build"; then
+  if [ -n "$ncurses_build" ] && build_readline "$ncurses_build"; then
     readline_build="$RESULT_DIR"
   else
     echo "readline support disabled"
   fi
 
-  if build_libuv "$ar" "$ranlib" "$cc" "$target" "$ldflags" "$rc"; then
+  if build_libuv; then
     uv_build="$RESULT_DIR"
   else
     echo "libuv support disabled"
   fi
 
-  if build_openssl "$ar" "$ranlib" "$cc" "$target" "$ldflags" "$rc"; then
+  if build_openssl; then
     openssl_build="$RESULT_DIR"
   else
     echo "openssl support disabled"
   fi
 
   if [ -n "$ncurses_build" ]; then
-    DEPS_CFLAGS="-I$root/$ncurses_build/include"
+    DEPS_CFLAGS="${DEPS_CFLAGS:+$DEPS_CFLAGS }-I$root/$ncurses_build/include"
   fi
 
   if [ -n "$readline_build" ]; then
-    DEPS_CFLAGS+=" -DPROGRAM_USE_READLINE -I$root/$readline_build/include"
+    DEPS_CFLAGS="${DEPS_CFLAGS:+$DEPS_CFLAGS }-DPROGRAM_USE_READLINE -I$root/$readline_build/include"
+  fi
+
+  if [ -n "$uv_build" ]; then
+    DEPS_CFLAGS="${DEPS_CFLAGS:+$DEPS_CFLAGS }-I$root/$uv_build/include"
   fi
 
   if [ -n "$openssl_build" ]; then
-    DEPS_CFLAGS+=" -I$root/$openssl_build/include"
+    DEPS_CFLAGS="${DEPS_CFLAGS:+$DEPS_CFLAGS }-I$root/$openssl_build/include"
   fi
 
   if [ -n "$readline_build" ]; then
@@ -253,7 +261,6 @@ setup_linux_libraries() {
 }
 
 setup_windows_libraries() {
-  local ar="$1" ranlib="$2" cc="$3" target="$4" ldflags="$5" rc="$6"
   local root
   root="$(pwd)"
 
@@ -263,20 +270,24 @@ setup_windows_libraries() {
   local uv_build=""
   local openssl_build=""
 
-  if build_libuv "$ar" "$ranlib" "$cc" "$target" "$ldflags" "$rc"; then
+  if build_libuv; then
     uv_build="$RESULT_DIR"
   else
     echo "libuv support disabled"
   fi
 
-  if build_openssl "$ar" "$ranlib" "$cc" "$target" "$ldflags" "$rc"; then
+  if build_openssl; then
     openssl_build="$RESULT_DIR"
   else
     echo "openssl support disabled"
   fi
 
+  if [ -n "$uv_build" ]; then
+    DEPS_CFLAGS="${DEPS_CFLAGS:+$DEPS_CFLAGS }-I$root/$uv_build/include"
+  fi
+
   if [ -n "$openssl_build" ]; then
-    DEPS_CFLAGS+=" -I$root/$openssl_build/include"
+    DEPS_CFLAGS="${DEPS_CFLAGS:+$DEPS_CFLAGS }-I$root/$openssl_build/include"
   fi
 
   if [ -n "$uv_build" ]; then
@@ -291,7 +302,6 @@ setup_windows_libraries() {
 }
 
 setup_macos_libraries() {
-  local ar="$1" ranlib="$2" cc="$3" target="$4" ldflags="$5" rc="$6"
   local root
   root="$(pwd)"
 
@@ -301,20 +311,24 @@ setup_macos_libraries() {
   local uv_build=""
   local openssl_build=""
 
-  if build_libuv "$ar" "$ranlib" "$cc" "$target" "$ldflags" "$rc"; then
+  if build_libuv; then
     uv_build="$RESULT_DIR"
   else
     echo "libuv support disabled"
   fi
 
-  if build_openssl "$ar" "$ranlib" "$cc" "$target" "$ldflags" "$rc"; then
+  if build_openssl; then
     openssl_build="$RESULT_DIR"
   else
     echo "openssl support disabled"
   fi
 
+  if [ -n "$uv_build" ]; then
+    DEPS_CFLAGS="${DEPS_CFLAGS:+$DEPS_CFLAGS }-I$root/$uv_build/include"
+  fi
+
   if [ -n "$openssl_build" ]; then
-    DEPS_CFLAGS+=" -I$root/$openssl_build/include"
+    DEPS_CFLAGS="${DEPS_CFLAGS:+$DEPS_CFLAGS }-I$root/$openssl_build/include"
   fi
 
   if [ -n "$uv_build" ]; then

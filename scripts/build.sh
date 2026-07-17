@@ -15,7 +15,7 @@ BUILD_PLATFORM="$2"
 TSIL="${TSIL:-ціль}"
 ZIG="${ZIG:-zig}"
 
-CLANG_OPTIONS="-DMAVKA_VERSION=\"$BUILD_VERSION\""
+CLANG_OPTIONS="-DMAVKA_VERSION=\"$BUILD_VERSION\" -Iexternal/include"
 
 print_usage() {
   echo "Usage: $0 <debug|release> <platform> [ll|o]"
@@ -43,65 +43,89 @@ set_platform_vars() {
   case "$platform" in
     linux-x86_64)
       BUILD_SYSTEM="linux"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="unix"
-      TARGET_TRIPLE="x86_64-linux-gnu"
+      TARGET="x86_64-linux-gnu"
+      CC="$ZIG cc -target $TARGET"
+      AR="$ZIG ar"
+      RANLIB="$ZIG ranlib"
+      RC="$ZIG rc"
+      LDFLAGS=""
       TSIL_PLATFORM="лінукс-ікс86_64"
       TSIL_PLATFORM_FOLDER="лінукс-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME"
       extra_opts="-lm -ldl -lpthread"
-      CLANG_BIN="$ZIG cc -target $TARGET_TRIPLE"
-      setup_linux_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" "" "$ZIG rc"
+      setup_linux_libraries
       ;;
     linux-aarch64)
       BUILD_SYSTEM="linux"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="unix"
-      TARGET_TRIPLE="aarch64-linux-gnu"
+      TARGET="aarch64-linux-gnu"
+      CC="$ZIG cc -target $TARGET"
+      AR="$ZIG ar"
+      RANLIB="$ZIG ranlib"
+      RC="$ZIG rc"
+      LDFLAGS=""
       TSIL_PLATFORM="лінукс-аарч64"
       TSIL_PLATFORM_FOLDER="лінукс-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
       extra_opts="-lm -ldl -lpthread"
-      CLANG_BIN="$ZIG cc -target $TARGET_TRIPLE"
-      setup_linux_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" "" "$ZIG rc"
+      setup_linux_libraries
       ;;
     macos-x86_64)
       BUILD_SYSTEM="macos"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="unix"
-      TARGET_TRIPLE="x86_64-macos"
+      TARGET="x86_64-macos"
+      CC="$ZIG cc -target $TARGET"
+      AR="$ZIG ar"
+      RANLIB="$ZIG ranlib"
+      RC="$ZIG rc"
+      LDFLAGS=""
       TSIL_PLATFORM="макос-ікс86_64"
       TSIL_PLATFORM_FOLDER="макос-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME"
-      CLANG_BIN="$ZIG cc -target $TARGET_TRIPLE"
-      setup_macos_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" "" "$ZIG rc"
+      setup_macos_libraries
       extra_opts="-Wl,--export-dynamic -lm -lpthread"
       ;;
     macos-aarch64)
       BUILD_SYSTEM="macos"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="unix"
-      TARGET_TRIPLE="aarch64-macos"
+      TARGET="aarch64-macos"
+      CC="$ZIG cc -target $TARGET"
+      AR="$ZIG ar"
+      RANLIB="$ZIG ranlib"
+      RC="$ZIG rc"
+      LDFLAGS=""
       TSIL_PLATFORM="макос-аарч64"
       TSIL_PLATFORM_FOLDER="макос-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
-      CLANG_BIN="$ZIG cc -target $TARGET_TRIPLE"
-      setup_macos_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" "" "$ZIG rc"
+      setup_macos_libraries
       extra_opts="-Wl,--export-dynamic -lm -lpthread"
       ;;
     windows-x86_64)
       BUILD_SYSTEM="windows"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="windows"
-      TARGET_TRIPLE="x86_64-windows-gnu"
+      TARGET="x86_64-windows-gnu"
+      CC="$ZIG cc -target $TARGET"
+      AR="$ZIG ar"
+      RANLIB="$ZIG ranlib"
+      RC="$ZIG rc"
+      LDFLAGS=""
       TSIL_PLATFORM="віндовс-ікс86_64"
       TSIL_PLATFORM_FOLDER="віндовс-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME.exe"
       extra_opts="-lws2_32 -liphlpapi -luserenv -ldbghelp -lole32 -lgdi32 -lcrypt32 -luser32"
       static_libs="scripts/icon.res"
-      CLANG_BIN="$ZIG cc -target $TARGET_TRIPLE"
-      setup_windows_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" "" "$ZIG rc"
+      setup_windows_libraries
       ;;
     windows-aarch64)
       BUILD_SYSTEM="windows"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="windows"
-      TARGET_TRIPLE="aarch64-windows-gnu"
+      TARGET="aarch64-windows-gnu"
+      CC="$ZIG cc -target $TARGET"
+      AR="$ZIG ar"
+      RANLIB="$ZIG ranlib"
+      RC="$ZIG rc"
+      LDFLAGS=""
       TSIL_PLATFORM="віндовс-аарч64"
       TSIL_PLATFORM_FOLDER="віндовс-аарч64"
       OUTFILENAME="$PROGRAM_NAME.exe"
       extra_opts="-lws2_32 -liphlpapi -luserenv -ldbghelp -lole32 -lgdi32 -lcrypt32 -luser32"
       static_libs="scripts/icon.res"
-      CLANG_BIN="$ZIG cc -target $TARGET_TRIPLE"
-      setup_windows_libraries "$ZIG ar" "$ZIG ranlib" "$CLANG_BIN" "$TARGET_TRIPLE" "" "$ZIG rc"
+      setup_windows_libraries
       ;;
     android-aarch64)
       if [ -z "$ANDROID_NDK_HOME" ]; then
@@ -110,24 +134,29 @@ set_platform_vars() {
       fi
       local ndk_toolchain="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64"
       BUILD_SYSTEM="linux"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="unix"
-      TARGET_TRIPLE="aarch64-linux-android24"
+      TARGET="aarch64-linux-android24"
+      CC="$ndk_toolchain/bin/aarch64-linux-android24-clang"
+      AR="$ndk_toolchain/bin/llvm-ar"
+      RANLIB="$ndk_toolchain/bin/llvm-ranlib"
+      RC="$ndk_toolchain/bin/llvm-rc"
+      LDFLAGS=""
       TSIL_PLATFORM="лінукс-аарч64"
       TSIL_PLATFORM_FOLDER="андроїд-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
-      CLANG_BIN="$ndk_toolchain/bin/aarch64-linux-android24-clang"
       extra_opts="-ldl -lc -lm"
-      setup_linux_libraries \
-        "$ndk_toolchain/bin/llvm-ar" \
-        "$ndk_toolchain/bin/llvm-ranlib" \
-        "$CLANG_BIN" "$TARGET_TRIPLE" "" "$ndk_toolchain/bin/llvm-windres"
+      setup_linux_libraries
       ;;
     wasm64)
       BUILD_SYSTEM="wasm64"; BUILD_ARCH="wasm64"; COMMON_SYSTEM="wasm64"
-      TARGET_TRIPLE="wasm64-unknown-unknown"
+      TARGET="wasm64-unknown-unknown"
+      CC="clang --target=$TARGET"
+      AR="llvm-ar"
+      RANLIB="llvm-ranlib"
+      RC="llvm-rc"
+      LDFLAGS=""
       TSIL_PLATFORM="васм64"
       TSIL_PLATFORM_FOLDER="васм64"
       OUTFILENAME="$PROGRAM_NAME.wasm"
-      CLANG_BIN="$ZIG cc -target $TARGET_TRIPLE"
       extra_opts="-nostdlib -Wl,--no-entry -Wl,--export-all -Wl,--allow-undefined -Wl,--export-dynamic -Wl,--export-memory -Wl,--initial-memory=16777216 -Wl,--max-memory=1073741824"
       ;;
     *)
@@ -136,7 +165,7 @@ set_platform_vars() {
       exit 1 ;;
   esac
 
-  CLANG="$CLANG_BIN"
+  CLANG="$CC"
   CLANG_OPTIONS+=" $extra_opts $DEPS_CFLAGS"
   STATIC_LIBS="${static_libs:+$static_libs }$DEPS_LIBS"
 }
@@ -157,7 +186,7 @@ esac
 READY_DIR="$ROOT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/$TSIL_MODE/готове"
 mkdir -p "$READY_DIR"
 
-CLANG_CMD="$CLANG $CLANG_OPTIONS"
+CLANG_CMD="$CC $CLANG_OPTIONS"
 
 LLIRFILES=$(/bin/bash "$SCRIPT_DIR/build_tsil.sh" \
   "$BUILD_MODE" \
@@ -169,34 +198,28 @@ LLIRFILES=$(/bin/bash "$SCRIPT_DIR/build_tsil.sh" \
 echo "створення виконуваного файлу"
 set -x
 
-INC_OPTS="-Iexternal/include -Ibuild/libuv/$TARGET_TRIPLE/libuv-v1.51.0/include -Ibuild/openssl/$TARGET_TRIPLE/openssl-3.2.1/build_openssl/include -Ibuild/curl/$TARGET_TRIPLE/curl-8.6.0/build_curl/include"
-
-$CLANG $CLANG_OPTIONS \
+$CLANG_CMD \
   -c -o "$READY_DIR/main.o" \
-  $INC_OPTS \
   "external/$COMMON_SYSTEM/main_$COMMON_SYSTEM.c"
 
-$CLANG $CLANG_OPTIONS \
+$CLANG_CMD \
   -c -o "$READY_DIR/prystriy_$COMMON_SYSTEM.o" \
-  $INC_OPTS \
   "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c"
 
-$CLANG $CLANG_OPTIONS \
+$CLANG_CMD \
   -c -o "$READY_DIR/biblioteka_$COMMON_SYSTEM.o" \
-  $INC_OPTS \
   "external/$COMMON_SYSTEM/biblioteka_$COMMON_SYSTEM.c"
 
 if [ "$BUILD_SYSTEM" != "$COMMON_SYSTEM" ]; then
-  $CLANG $CLANG_OPTIONS \
+  $CLANG_CMD \
     -c -o "$READY_DIR/biblioteka_$BUILD_SYSTEM.o" \
-    $INC_OPTS \
     "external/$BUILD_SYSTEM/biblioteka_$BUILD_SYSTEM.c"
   BIBLIOTEKA_SYSTEM_OBJ="$READY_DIR/biblioteka_$BUILD_SYSTEM.o"
 else
   BIBLIOTEKA_SYSTEM_OBJ=""
 fi
 
-$CLANG $CLANG_OPTIONS \
+$CLANG_CMD \
   -o "$READY_DIR/$OUTFILENAME" \
   "$READY_DIR/main.o" \
   "$READY_DIR/prystriy_$COMMON_SYSTEM.o" \
