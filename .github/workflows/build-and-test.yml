@@ -133,6 +133,11 @@ jobs:
 
           echo "OSXCROSS_PATH=$PWD/osxcross/target" >> $GITHUB_ENV
 
+          # Вказуємо CMake, де шукати macOS фреймворки (наприклад, SystemConfiguration для curl)
+          SDK_DIR=$(ls -d $PWD/osxcross/target/SDK/MacOSX*.sdk | head -n 1)
+          echo "CMAKE_FRAMEWORK_PATH=$SDK_DIR/System/Library/Frameworks" >> $GITHUB_ENV
+          echo "CMAKE_INCLUDE_PATH=$SDK_DIR/usr/include" >> $GITHUB_ENV
+
       - name: Save osxcross cache
         id: cache-osxcross-save
         if: startsWith(matrix.platform, 'macos-') && steps.cache-osxcross-restore.outputs.cache-hit != 'true'
@@ -158,7 +163,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build
-          key: build-${{ matrix.platform }}-${{ matrix.mode }}-v2-${{ hashFiles('scripts/NCURSES_VERSION', 'scripts/READLINE_VERSION', 'scripts/LIBUV_VERSION', 'scripts/OPENSSL_VERSION', 'scripts/CURL_VERSION') }}
+          key: build-${{ matrix.platform }}-${{ matrix.mode }}-v3-${{ hashFiles('scripts/NCURSES_VERSION', 'scripts/READLINE_VERSION', 'scripts/LIBUV_VERSION', 'scripts/OPENSSL_VERSION', 'scripts/CURL_VERSION') }}
 
       - name: Run compilation
         run: |
