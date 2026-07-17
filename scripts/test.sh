@@ -257,3 +257,7 @@ echo -e "\n---"
 echo -e "Успішних: ${GREEN}$passed${NC}"
 echo -e "Невдалих: ${RED}$failed${NC}"
 echo -e "---"
+
+if [ $failed -ne 0 ]; then
+  exit 1
+fi
