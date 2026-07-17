@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build and Test
+    name: Build (${{ matrix.platform }}, ${{ matrix.mode }})
     runs-on: ubuntu-24.04
     strategy:
       matrix:
@@ -36,37 +36,18 @@ jobs:
           version: v6
           execute_install_scripts: true
 
-      - name: Install Darling for macOS tests
-        if: matrix.platform == 'macos-x86_64'
+      - name: Verify Wine installation
+        if: matrix.platform == 'windows-x86_64'
         run: |
-          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4B7C1C1D || true
-          echo "deb https://repo.darlinghq.org/ /" | sudo tee /etc/apt/sources.list.d/darling.list
-          sudo apt-get update
-          sudo apt-get install -y darling
-
-      - name: Verify Wine and Darling installation
-        if: matrix.platform == 'windows-x86_64' || matrix.platform == 'macos-x86_64'
-        run: |
-          if [ "${{ matrix.platform }}" = "windows-x86_64" ]; then
-            if ! command -v wine64 && ! command -v wine; then
-              echo "Error: Wine is not installed or not in PATH."
-              exit 1
-            fi
-            echo "Wine installed successfully: $(command -v wine64 || command -v wine)"
+          if ! command -v wine64 && ! command -v wine; then
+            echo "Error: Wine is not installed or not in PATH."
+            exit 1
           fi
-          if [ "${{ matrix.platform }}" = "macos-x86_64" ]; then
-            if ! command -v darling; then
-              echo "Error: Darling is not installed or not in PATH."
-              exit 1
-            fi
-            echo "Darling installed successfully: $(command -v darling)"
-          fi
+          echo "Wine installed successfully: $(command -v wine64 || command -v wine)"
 
       - name: Fix aarch64 cross-compiler sysroot paths
         if: matrix.platform == 'linux-aarch64'
         run: |
-          # lld looks for /usr/aarch64-linux-gnu/usr/aarch64-linux-gnu/lib/libc.so.6
-          # We create a symlink so lld can resolve the absolute paths inside the libc.so linker script
           sudo mkdir -p /usr/aarch64-linux-gnu/usr/aarch64-linux-gnu
           sudo ln -s /usr/aarch64-linux-gnu/lib /usr/aarch64-linux-gnu/usr/aarch64-linux-gnu/lib
 
@@ -187,8 +168,8 @@ jobs:
             "${{ matrix.mode }}" \
             "${{ matrix.platform }}" || (find build -name "config.log" -exec tail -n 200 {} \; && exit 1)
 
-      - name: Run tests
-        if: matrix.platform == 'linux-x86_64' || matrix.platform == 'linux-aarch64' || matrix.platform == 'windows-x86_64' || matrix.platform == 'macos-x86_64'
+      - name: Run Ubuntu tests (Linux/Windows)
+        if: matrix.platform == 'linux-x86_64' || matrix.platform == 'linux-aarch64' || matrix.platform == 'windows-x86_64'
         run: |
           chmod +x scripts/test.sh
 
@@ -197,7 +178,6 @@ jobs:
           case "${{ matrix.platform }}" in
             linux-x86_64)    TSIL_FOLDER="лінукс-ікс86_64" ;;
             linux-aarch64)   TSIL_FOLDER="лінукс-аарч64" ;;
-            macos-x86_64)    TSIL_FOLDER="макос-ікс86_64" ;;
             windows-x86_64)  TSIL_FOLDER="віндовс-ікс86_64" ;;
           esac
 
@@ -221,8 +201,6 @@ jobs:
           if [ "${{ matrix.platform }}" = "windows-x86_64" ]; then
             WINE_CMD=$(command -v wine64 || command -v wine)
             echo "$WINE_CMD \"$ABS_MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
-          elif [ "${{ matrix.platform }}" = "macos-x86_64" ]; then
-            echo "darling shell \"$ABS_MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
           elif [ "${{ matrix.platform }}" = "linux-aarch64" ]; then
             echo "qemu-aarch64-static -L /usr/aarch64-linux-gnu \"$ABS_MAVKA_PATH\" \"\$@\"" >> $WRAPPER_PATH
           else
@@ -232,3 +210,66 @@ jobs:
 
           echo "Running tests using wrapper: $WRAPPER_PATH"
           bash scripts/test.sh "$WRAPPER_PATH"
+
+      - name: Set macOS artifact paths
+        id: macos_paths
+        if: startsWith(matrix.platform, 'macos-')
+        run: |
+          VERSION=$(cat ВЕРСІЯ | xargs)
+          if [ "${{ matrix.mode }}" = "release" ]; then TSIL_MODE="випуск"; else TSIL_MODE="відлагодження"; fi
+          if [ "${{ matrix.platform }}" = "macos-x86_64" ]; then TSIL_FOLDER="макос-ікс86_64"; else TSIL_FOLDER="макос-аарч64"; fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "mode=$TSIL_MODE" >> $GITHUB_OUTPUT
+          echo "folder=$TSIL_FOLDER" >> $GITHUB_OUTPUT
+
+      - name: Upload macOS binary
+        if: startsWith(matrix.platform, 'macos-')
+        uses: actions/upload-artifact@v4
+        with:
+          name: mavka-${{ matrix.platform }}-${{ matrix.mode }}
+          path: будування/${{ steps.macos_paths.outputs.version }}/${{ steps.macos_paths.outputs.folder }}/${{ steps.macos_paths.outputs.mode }}/готове/мавка
+
+  test-macos:
+    name: Test (${{ matrix.platform }}, ${{ matrix.mode }})
+    needs: build
+    strategy:
+      matrix:
+        platform: [macos-x86_64, macos-aarch64]
+        mode: [debug, release]
+        exclude:
+          - mode: ${{ github.ref_name == 'main' && 'debug' || 'release' }}
+        include:
+          - platform: macos-x86_64
+            runner: macos-13
+          - platform: macos-aarch64
+            runner: macos-latest
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Install bash (macOS)
+        run: brew install bash
+
+      - name: Download macOS binary
+        uses: actions/download-artifact@v4
+        with:
+          name: mavka-${{ matrix.platform }}-${{ matrix.mode }}
+          path: mavka-bin
+
+      - name: Run tests
+        run: |
+          chmod +x mavka-bin/мавка
+          chmod +x scripts/test.sh
+
+          # Using the Homebrew bash explicitly if installed, otherwise default to system bash
+          if [ -f /usr/local/bin/bash ]; then
+            BASH_CMD="/usr/local/bin/bash"
+          elif [ -f /opt/homebrew/bin/bash ]; then
+            BASH_CMD="/opt/homebrew/bin/bash"
+          else
+            BASH_CMD="bash"
+          fi
+
+          echo "Running tests using binary: $PWD/mavka-bin/мавка"
+          $BASH_CMD scripts/test.sh "$PWD/mavka-bin/мавка"
