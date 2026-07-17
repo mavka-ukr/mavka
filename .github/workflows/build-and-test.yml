@@ -34,7 +34,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y clang llvm make cmake ninja-build xz-utils curl unzip wget \
-            git patch python libssl-dev lzma-dev libxml2-dev bzip2 cpio libbz2 zlib1g-dev bash
+            git patch python3 python-is-python3 libssl-dev lzma-dev libxml2-dev bzip2 cpio libbz2-dev zlib1g-dev bash
 
       - name: Cache tsil compiler
         id: cache-tsil
