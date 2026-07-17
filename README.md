@@ -10,7 +10,7 @@
 - Ціль _0.76.0_
 - Clang, LLVM, Make, CMake, etc
 - [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) (для компіляції для Windows)
-- [osxcross](https://github.com/tpoechtrager/osxcross) (для компіляції для MacOS)
+- [osxcross](https://github.com/tpoechtrager/osxcross) (для компіляції для MacOS, треба [MacOSX 14.0 SDK](https://github.com/roblabla/MacOSX-SDKs/releases/tag/macosx14.0))
 
 ```shell
 bash scripts/download_libs.sh
