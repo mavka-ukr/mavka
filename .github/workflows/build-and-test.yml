@@ -108,10 +108,10 @@ jobs:
           fi
           echo "ANDROID_NDK_HOME=$PWD/$NDK_DIR" >> $GITHUB_ENV
 
-      - name: Cache osxcross
-        id: cache-osxcross
+      - name: Restore osxcross cache
+        id: cache-osxcross-restore
         if: startsWith(matrix.platform, 'macos-')
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: osxcross
           key: osxcross-MacOSX14.0-v5
@@ -132,6 +132,14 @@ jobs:
           fi
 
           echo "OSXCROSS_PATH=$PWD/osxcross/target" >> $GITHUB_ENV
+
+      - name: Save osxcross cache
+        id: cache-osxcross-save
+        if: startsWith(matrix.platform, 'macos-') && steps.cache-osxcross-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: osxcross
+          key: ${{ steps.cache-osxcross-restore.outputs.cache-primary-key }}
 
       - name: Cache downloaded project libraries
         id: cache-libs
@@ -327,14 +335,40 @@ jobs:
           name: mavka-${{ matrix.platform }}-${{ matrix.mode }}
           path: mavka-bin
 
-      - name: Direct execution diagnostic
+      - name: Direct execution diagnostic (Bash)
         shell: bash
         run: |
           MAVKA_PATH="$PWD/mavka-bin/мавка.exe"
           chmod +x "$MAVKA_PATH"
 
-          "$MAVKA_PATH" "тестування/Число/більше_цілого.м"
-          echo "Exit code for test: $?"
+          echo "=== Running test directly via Bash ==="
+          output=$("$MAVKA_PATH" "тестування/Число/більше_цілого.м" 2>&1 < /dev/null)
+          status=$?
+
+          echo "Exit code: $status"
+          echo "Output:"
+          echo "$output"
+
+      - name: Direct execution diagnostic (PowerShell)
+        shell: pwsh
+        run: |
+          $mavkaPath = "$pwd/mavka-bin/мавка.exe"
+          Write-Host "=== Running test directly via PowerShell ==="
+
+          $process = New-Object System.Diagnostics.Process
+          $process.StartInfo.FileName = $mavkaPath
+          $process.StartInfo.Arguments = '"тестування/Число/більше_цілого.м"'
+          $process.StartInfo.UseShellExecute = $false
+          $process.StartInfo.RedirectStandardOutput = $true
+          $process.StartInfo.RedirectStandardError = $true
+          $process.Start() | Out-Null
+          $stdout = $process.StandardOutput.ReadToEnd()
+          $stderr = $process.StandardError.ReadToEnd()
+          $process.WaitForExit()
+
+          Write-Host "Exit code: $($process.ExitCode)"
+          Write-Host "Output: $stdout"
+          if ($stderr) { Write-Host "Error: $stderr" }
 
       - name: Run tests
         shell: bash
