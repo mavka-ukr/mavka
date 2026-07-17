@@ -66,6 +66,18 @@ ANDROID_NDK_HOME="/home/prykhozhdenko/Android/android-ndk-r27d" bash scripts/bui
 
 Для платформ **linux** та **android** будуть збудовані з нуля **ncurses**, **readline**.
 
+## Як збудувати osxcross
+
+```shell
+git clone https://github.com/tpoechtrager/osxcross.git --depth=1
+
+cd osxcross
+
+wget -P tarballs https://github.com/roblabla/MacOSX-SDKs/releases/download/macosx14.0/MacOSX14.0.sdk.tar.xz
+
+UNATTENDED=1 ./build.sh
+```
+
 ## Розробка
 
 Мавку написано мовою Ціль. Але.
