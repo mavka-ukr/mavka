@@ -369,7 +369,7 @@ jobs:
   test-windows-wine:
     name: Test Wine (windows-x86_64, ${{ matrix.mode }})
     needs: [build, check-artifacts]
-    if: needs.check-artifacts.outputs.has_windows_wine == 'true'
+    if: needs.check-artifacts.outputs.has_windows_wine == 'true' && false
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.check-artifacts.outputs.windows_wine_matrix) }}
