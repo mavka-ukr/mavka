@@ -8,7 +8,9 @@
 
 - GNU/Linux
 - Ціль _0.76.0_
-- Zig _0.16.0_
+- Make, CMake, etc
+- [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) (для компіляції для windows)
+- [osxcross](https://github.com/tpoechtrager/osxcross) (для компіляції для macos)
 
 ```shell
 bash scripts/download_libs.sh

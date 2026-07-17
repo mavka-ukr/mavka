@@ -110,14 +110,40 @@ build_libuv() {
   extract_if_needed "$tarball" "$uv_dir"
 
   if [ ! -d "$build_dir" ]; then
-    pushd "$uv_dir" > /dev/null
-    sh autogen.sh
+    local abs_uv_dir
+    abs_uv_dir="$(cd "$uv_dir" && pwd)"
+    local abs_prefix="$abs_uv_dir/build_libuv"
 
-    CC="$TARGET_CC" AR="$TARGET_AR" RANLIB="$TARGET_RANLIB" RC="$TARGET_RC" CPPFLAGS="$TARGET_CPPFLAGS" CFLAGS="$TARGET_CFLAGS" LDFLAGS="$TARGET_LDFLAGS" \
-      ./configure --build="$(clang -dumpmachine)" --host="$TARGET" --prefix="$(pwd)/build_libuv" \
-        --enable-static --disable-shared
+    mkdir -p "$build_dir"
+    pushd "$build_dir" > /dev/null
+
+    local cmake_system_name=""
+    if [[ "$TARGET" == *"w64-mingw32"* ]]; then
+      cmake_system_name="Windows"
+    elif [[ "$TARGET" == *"apple-darwin"* ]]; then
+      cmake_system_name="Darwin"
+    elif [[ "$TARGET" == *"android"* ]]; then
+      cmake_system_name="Android"
+    elif [[ "$TARGET" == *"linux"* ]]; then
+      cmake_system_name="Linux"
+    elif [[ "$TARGET" == *"wasm64"* ]]; then
+      cmake_system_name="Generic"
+    fi
+
+    cmake "$abs_uv_dir" \
+      -DCMAKE_SYSTEM_NAME="$cmake_system_name" \
+      -DCMAKE_INSTALL_PREFIX="$abs_prefix" \
+      -DCMAKE_C_COMPILER="$TARGET_CC" \
+      -DCMAKE_C_FLAGS="$TARGET_CPPFLAGS $TARGET_CFLAGS" \
+      -DCMAKE_EXE_LINKER_FLAGS="$TARGET_LDFLAGS" \
+      -DCMAKE_AR="$TARGET_AR" \
+      -DCMAKE_RANLIB="$TARGET_RANLIB" \
+      -DBUILD_SHARED_LIBS=OFF \
+      -DBUILD_TESTING=OFF
+
     make -j"$(nproc)"
     make install
+
     popd > /dev/null
   fi
 
