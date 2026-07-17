@@ -436,7 +436,6 @@ extern логічне пристрій_мавки_отримати_абсолю�
     природне розмір_шляху,
     п8** вихід_даних,
     природне* вихід_розміру) {
-  // Convert UTF-8 path to wide char
   int широких_символів =
       MultiByteToWideChar(CP_UTF8, 0, (char*)дані_шляху, розмір_шляху, NULL, 0);
   if (широких_символів == 0) {
@@ -453,7 +452,6 @@ extern логічне пристрій_мавки_отримати_абсолю�
                       широких_символів);
   широкий_шлях[широких_символів] = L'\0';
 
-  // Get full path using Windows API
   DWORD потрібно = GetFullPathNameW(широкий_шлях, 0, NULL, NULL);
   if (потрібно == 0) {
     пристрій_мавки_звільнити(широкий_шлях);
@@ -475,22 +473,24 @@ extern логічне пристрій_мавки_отримати_абсолю�
 
   пристрій_мавки_звільнити(широкий_шлях);
 
-  // Convert back to UTF-8
-  int байтів_ю8 = WideCharToMultiByte(CP_UTF8, 0, абсолютний_широкий, -1, NULL,
+  // Get exact size of string excluding null terminator by passing explicit length
+  int довжина_абсолютного = wcslen(абсолютний_широкий);
+  int байтів_ю8 = WideCharToMultiByte(CP_UTF8, 0, абсолютний_широкий, довжина_абсолютного, NULL,
                                       0, NULL, NULL);
   if (байтів_ю8 == 0) {
     пристрій_мавки_звільнити(абсолютний_широкий);
     return FALSE;
   }
 
-  *вихід_розміру = байтів_ю8 - 1; // Exclude null terminator
+  *вихід_розміру = байтів_ю8;
   *вихід_даних = (п8*)пристрій_мавки_виділити(*вихід_розміру);
   if (!*вихід_даних) {
     пристрій_мавки_звільнити(абсолютний_широкий);
     return FALSE;
   }
 
-  WideCharToMultiByte(CP_UTF8, 0, абсолютний_широкий, -1, (char*)*вихід_даних,
+  // Pass exact size, no null-terminator is written to the allocated buffer
+  WideCharToMultiByte(CP_UTF8, 0, абсолютний_широкий, довжина_абсолютного, (char*)*вихід_даних,
                       байтів_ю8, NULL, NULL);
 
   пристрій_мавки_звільнити(абсолютний_широкий);
@@ -502,7 +502,6 @@ extern логічне пристрій_мавки_отримати_теку_шл
                                                   п8** вихід_даних,
                                                   природне* вихід_розміру,
                                                   природне рівень) {
-  // Convert UTF-8 path to wide char
   int широких_символів =
       MultiByteToWideChar(CP_UTF8, 0, (char*)дані_шляху, розмір_шляху, NULL, 0);
   if (широких_символів == 0) {
@@ -519,9 +518,7 @@ extern логічне пристрій_мавки_отримати_теку_шл
                       широких_символів);
   широкий_шлях[широких_символів] = L'\0';
 
-  // Find parent directory 'рівень' times
   for (природне і = 0; і < рівень; і++) {
-    // Find last backslash or forward slash
     WCHAR* остання_коса = NULL;
     for (int j = широких_символів - 1; j >= 0; j--) {
       if (широкий_шлях[j] == L'\\') {
@@ -534,33 +531,32 @@ extern логічне пристрій_мавки_отримати_теку_шл
     if (остання_коса) {
       *остання_коса = L'\0';
     } else {
-      // No more parent directories
       break;
     }
   }
 
-  // Convert back to UTF-8
+  // Get UTF-8 bytes for the modified wide string length
   int байтів_ю8 =
-      WideCharToMultiByte(CP_UTF8, 0, широкий_шлях, -1, NULL, 0, NULL, NULL);
+      WideCharToMultiByte(CP_UTF8, 0, широкий_шлях, широких_символів, NULL, 0, NULL, NULL);
   if (байтів_ю8 == 0) {
     пристрій_мавки_звільнити(широкий_шлях);
     return FALSE;
   }
 
-  *вихід_розміру = байтів_ю8 - 1; // Exclude null terminator
+  *вихід_розміру = байтів_ю8;
   *вихід_даних = (п8*)пристрій_мавки_виділити(*вихід_розміру);
   if (!*вихід_даних) {
     пристрій_мавки_звільнити(широкий_шлях);
     return FALSE;
   }
 
-  WideCharToMultiByte(CP_UTF8, 0, широкий_шлях, -1, (char*)*вихід_даних,
-                      байтів_ю8 - 1, NULL, NULL);
+  WideCharToMultiByte(CP_UTF8, 0, широкий_шлях, широких_символів, (char*)*вихід_даних,
+                      байтів_ю8, NULL, NULL);
 
   пристрій_мавки_звільнити(широкий_шлях);
   return TRUE;
 }
-
+  
 extern логічне пристрій_мавки_отримати_теку_до_паків(п8* дані_шляху,
                                                      природне розмір_шляху,
                                                      п8** вихід_даних,
@@ -880,42 +876,37 @@ extern логічне пристрій_мавки_читати_ю8_асинхр�
 extern логічне пристрій_мавки_отримати_поточний_шлях_процесу(
     п8** вихід_даних,
     природне* вихід_розміру) {
-  // Get required buffer size for current directory (in wide chars)
   DWORD розмір = GetCurrentDirectoryW(0, NULL);
   if (розмір == 0) {
     return FALSE;
   }
 
-  // Allocate buffer for wide char path
   WCHAR* широкий_шлях = (WCHAR*)пристрій_мавки_виділити(розмір * sizeof(WCHAR));
   if (!широкий_шлях) {
     return FALSE;
   }
 
-  // Get current directory as wide char
   if (GetCurrentDirectoryW(розмір, широкий_шлях) == 0) {
     пристрій_мавки_звільнити(широкий_шлях);
     return FALSE;
   }
 
-  // Convert UTF-16 to UTF-8
+  int довжина_шляху = wcslen(широкий_шлях);
   int байтів_ю8 =
-      WideCharToMultiByte(CP_UTF8, 0, широкий_шлях, -1, NULL, 0, NULL, NULL);
+      WideCharToMultiByte(CP_UTF8, 0, широкий_шлях, довжина_шляху, NULL, 0, NULL, NULL);
   if (байтів_ю8 == 0) {
     пристрій_мавки_звільнити(широкий_шлях);
     return FALSE;
   }
 
-  // Allocate buffer for UTF-8 (excluding null terminator)
-  *вихід_розміру = байтів_ю8 - 1;
+  *вихід_розміру = байтів_ю8;
   *вихід_даних = (п8*)пристрій_мавки_виділити(*вихід_розміру);
   if (!*вихід_даних) {
     пристрій_мавки_звільнити(широкий_шлях);
     return FALSE;
   }
 
-  // Convert to UTF-8
-  WideCharToMultiByte(CP_UTF8, 0, широкий_шлях, -1, (char*)*вихід_даних,
+  WideCharToMultiByte(CP_UTF8, 0, широкий_шлях, довжина_шляху, (char*)*вихід_даних,
                       байтів_ю8, NULL, NULL);
 
   пристрій_мавки_звільнити(широкий_шлях);
