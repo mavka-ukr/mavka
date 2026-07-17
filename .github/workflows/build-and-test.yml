@@ -250,7 +250,7 @@ jobs:
             }
 
             const linuxMatrix = buildMatrix({ 'linux-x86_64': 'ubuntu-latest', 'linux-aarch64': 'ubuntu-24.04-arm' });
-            const macosMatrix = buildMatrix({ 'macos-x86_64': 'macos-13', 'macos-aarch64': 'macos-latest' });
+            const macosMatrix = buildMatrix({ 'macos-x86_64': 'macos-14', 'macos-aarch64': 'macos-latest' });
             const windowsMatrix = buildMatrix({ 'windows-x86_64': 'windows-latest', 'windows-aarch64': 'windows-11-arm' });
             const androidMatrix = buildMatrix({ 'android-aarch64': 'ubuntu-latest' });
 
