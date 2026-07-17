@@ -69,7 +69,7 @@ jobs:
         run: |
           MINGW_DIR="llvm-mingw-20231128-ucrt-ubuntu-22.04-x86_64"
           if [ ! -d "$MINGW_DIR" ]; then
-            MINGW_URL="https://github.com/mstorsjo/llvm-mingw/releases/download/20231128/llvm-mingw-20231128-ucrt-ubuntu-22.04-x86_64.tar.xz"
+            MINGW_URL="https://github.com/mstorsjo/llvm-mingw/releases/download/20260616/llvm-mingw-20260616-ucrt-ubuntu-22.04-x86_64.tar.xz"
             curl -L "$MINGW_URL" -o mingw.tar.xz
             tar -xf mingw.tar.xz
             rm -f mingw.tar.xz
