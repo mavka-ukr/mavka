@@ -44,7 +44,7 @@ bash scripts/build.sh debug linux-x86_64
 - `android-aarch64`
 - `wasm64`
 
-Для будування для Windows треба вказати **повний** шлях до [llvm-mingw](https://github.com/mstorsjo/llvm-mingw):
+Для будування для Windows треба вказати **повний** шлях до [llvm-mingw](https://github.com/mstorsjo/llvm-mingw/releases/tag/20260616):
 
 ```shell
 LLVM_MINGW_PATH="/home/prykhozhdenko/Compilers/llvm-mingw-20260616-ucrt-ubuntu-22.04-x86_64" bash scripts/build.sh debug windows-x86_64
