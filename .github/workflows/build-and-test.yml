@@ -17,7 +17,7 @@ jobs:
             # linux-aarch64,
             macos-x86_64,
             # macos-aarch64,
-            # windows-x86_64,
+            windows-x86_64,
             # windows-aarch64,
             # android-aarch64,
             # wasm64,
@@ -123,7 +123,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: osxcross
-          key: osxcross-MacOSX14.5-v3
+          key: osxcross-MacOSX14.0-v3
 
       - name: Setup MacOS cross-compilation (osxcross)
         if: startsWith(matrix.platform, 'macos-')
@@ -132,8 +132,8 @@ jobs:
             echo "osxcross missing or corrupted. Rebuilding..."
             rm -rf osxcross
             git clone https://github.com/tpoechtrager/osxcross.git
-            curl -L "https://github.com/roblabla/MacOSX-SDKs/releases/download/macosx14.5/MacOSX14.5.sdk.tar.xz" \
-              -o osxcross/tarballs/MacOSX14.5.sdk.tar.xz
+            curl -L "https://github.com/roblabla/MacOSX-SDKs/releases/download/macosx14.0/MacOSX14.0.sdk.tar.xz" \
+              -o osxcross/tarballs/MacOSX14.0.sdk.tar.xz
 
             cd osxcross
             UNATTENDED=1 ./build.sh
@@ -177,7 +177,7 @@ jobs:
             "${{ matrix.mode }}" \
             "${{ matrix.platform }}" || (find build -name "config.log" -exec tail -n 200 {} \; && exit 1)
 
-      - name: Run Ubuntu tests (Linux/Windows)
+      - name: Run Ubuntu tests (Linux/Windows via Wine)
         if: matrix.platform == 'linux-x86_64' || matrix.platform == 'linux-aarch64' || matrix.platform == 'windows-x86_64'
         run: |
           chmod +x scripts/test.sh
@@ -220,23 +220,33 @@ jobs:
           echo "Running tests using wrapper: $WRAPPER_PATH"
           bash scripts/test.sh "$WRAPPER_PATH"
 
-      - name: Set macOS artifact paths
-        id: macos_paths
-        if: startsWith(matrix.platform, 'macos-')
+      - name: Set OS artifact paths
+        id: os_paths
+        if: startsWith(matrix.platform, 'macos-') || matrix.platform == 'windows-x86_64'
         run: |
           VERSION=$(cat ВЕРСІЯ | xargs)
           if [ "${{ matrix.mode }}" = "release" ]; then TSIL_MODE="випуск"; else TSIL_MODE="відлагодження"; fi
-          if [ "${{ matrix.platform }}" = "macos-x86_64" ]; then TSIL_FOLDER="макос-ікс86_64"; else TSIL_FOLDER="макос-аарч64"; fi
+
+          TSIL_FOLDER=""
+          MAVKA_BIN="мавка"
+          if [ "${{ matrix.platform }}" = "macos-x86_64" ]; then TSIL_FOLDER="макос-ікс86_64"; fi
+          if [ "${{ matrix.platform }}" = "macos-aarch64" ]; then TSIL_FOLDER="макос-аарч64"; fi
+          if [ "${{ matrix.platform }}" = "windows-x86_64" ]; then
+            TSIL_FOLDER="віндовс-ікс86_64"
+            MAVKA_BIN="мавка.exe"
+          fi
+
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "mode=$TSIL_MODE" >> $GITHUB_OUTPUT
           echo "folder=$TSIL_FOLDER" >> $GITHUB_OUTPUT
+          echo "bin=$MAVKA_BIN" >> $GITHUB_OUTPUT
 
-      - name: Upload macOS binary
-        if: startsWith(matrix.platform, 'macos-')
+      - name: Upload OS binaries
+        if: startsWith(matrix.platform, 'macos-') || matrix.platform == 'windows-x86_64'
         uses: actions/upload-artifact@v4
         with:
           name: mavka-${{ matrix.platform }}-${{ matrix.mode }}
-          path: будування/${{ steps.macos_paths.outputs.version }}/${{ steps.macos_paths.outputs.folder }}/${{ steps.macos_paths.outputs.mode }}/готове/мавка
+          path: будування/${{ steps.os_paths.outputs.version }}/${{ steps.os_paths.outputs.folder }}/${{ steps.os_paths.outputs.mode }}/готове/${{ steps.os_paths.outputs.bin }}
 
   test-macos:
     name: Test (${{ matrix.platform }}, ${{ matrix.mode }})
@@ -282,3 +292,33 @@ jobs:
 
           echo "Running tests using binary: $PWD/mavka-bin/мавка"
           $BASH_CMD scripts/test.sh "$PWD/mavka-bin/мавка"
+
+  test-windows:
+    name: Test (windows-x86_64, ${{ matrix.mode }})
+    needs: build
+    strategy:
+      matrix:
+        mode: [debug, release]
+        exclude:
+          - mode: ${{ github.ref_name == 'main' && 'debug' || 'release' }}
+    runs-on: windows-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Download Windows binary
+        uses: actions/download-artifact@v4
+        with:
+          name: mavka-windows-x86_64-${{ matrix.mode }}
+          path: mavka-bin
+
+      - name: Run tests
+        shell: bash
+        run: |
+          chmod +x scripts/test.sh
+          # The binary path uses Cyrillic characters, might need quotes
+          MAVKA_PATH="$PWD/mavka-bin/мавка.exe"
+          chmod +x "$MAVKA_PATH"
+
+          echo "Running tests using binary: $MAVKA_PATH"
+          bash scripts/test.sh "$MAVKA_PATH"
