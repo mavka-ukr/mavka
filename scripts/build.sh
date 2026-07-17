@@ -219,7 +219,7 @@ LLIRFILES=$(/bin/bash "$SCRIPT_DIR/build_tsil.sh" \
   "$BUILD_PLATFORM" \
   "ll" \
   "$TSIL" \
-  "$CLANG")
+  "$TARGET_CC $TARGET_CPPFLAGS $TARGET_CFLAGS")
 
 echo "створення виконуваного файлу"
 set -x

@@ -5,6 +5,7 @@ BUILD_MODE="$1"
 BUILD_PLATFORM="$2"
 OUTPUT_FORMAT="${3:-ll}"
 TSIL_CMD="${4:-ціль}"
+CLANG="$5"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LIST_FILE="$ROOT_DIR/БУДЦ"
@@ -14,11 +15,9 @@ BUILD_VERSION=$(cat "$ROOT_DIR/ВЕРСІЯ" | xargs)
 case "$BUILD_MODE" in
   debug)
     TSIL_MODE="відлагодження"
-    CLANG_FLAGS="-O0 -g"
     ;;
   release)
     TSIL_MODE="випуск"
-    CLANG_FLAGS="-O3"
     ;;
   *)
     echo "Unsupported build mode: $BUILD_MODE" >&2
@@ -100,7 +99,7 @@ while IFS= read -r line || [ -n "$line" ]; do
     "$(realpath --relative-to="$(pwd)" "$line")" -В=./КД/визначення -В=./визначення >&2
 
   if [ "$OUTPUT_FORMAT" = "o" ]; then
-    zig cc -target $TARGET_TRIPLE $CLANG_FLAGS -c -o "$SEMIREADY_DIR/$line.ллвмо" -x ir "$SEMIREADY_DIR/$line.ллвмір"
+    $CLANG -c -o "$SEMIREADY_DIR/$line.ллвмо" -x ir "$SEMIREADY_DIR/$line.ллвмір"
     LLIRFILES+=" $SEMIREADY_DIR/$line.ллвмо"
     rm -f "$SEMIREADY_DIR/$line.ллвмір"
   else
