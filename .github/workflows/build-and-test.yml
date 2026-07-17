@@ -220,6 +220,11 @@ jobs:
       windows_matrix: ${{ steps.check.outputs.windows_matrix }}
       windows_wine_matrix: ${{ steps.check.outputs.windows_wine_matrix }}
       android_matrix: ${{ steps.check.outputs.android_matrix }}
+      has_linux: ${{ steps.check.outputs.has_linux }}
+      has_macos: ${{ steps.check.outputs.has_macos }}
+      has_windows: ${{ steps.check.outputs.has_windows }}
+      has_windows_wine: ${{ steps.check.outputs.has_windows_wine }}
+      has_android: ${{ steps.check.outputs.has_android }}
     steps:
       - name: Check for uploaded artifacts
         id: check
@@ -244,30 +249,36 @@ jobs:
                   matrix.push({ platform: platform, mode: allowedMode, runner: runner });
                 }
               }
-              return JSON.stringify(matrix);
+              return matrix;
             }
 
-            const linuxRunners = { 'linux-x86_64': 'ubuntu-latest', 'linux-aarch64': 'ubuntu-24.04-arm' };
-            const macosRunners = { 'macos-x86_64': 'macos-13', 'macos-aarch64': 'macos-latest' };
-            const windowsRunners = { 'windows-x86_64': 'windows-latest', 'windows-aarch64': 'windows-11-arm' };
-            const androidRunners = { 'android-aarch64': 'ubuntu-latest' };
+            const linuxMatrix = buildMatrix({ 'linux-x86_64': 'ubuntu-latest', 'linux-aarch64': 'ubuntu-24.04-arm' });
+            const macosMatrix = buildMatrix({ 'macos-x86_64': 'macos-13', 'macos-aarch64': 'macos-latest' });
+            const windowsMatrix = buildMatrix({ 'windows-x86_64': 'windows-latest', 'windows-aarch64': 'windows-11-arm' });
+            const androidMatrix = buildMatrix({ 'android-aarch64': 'ubuntu-latest' });
 
-            core.setOutput('linux_matrix', buildMatrix(linuxRunners));
-            core.setOutput('macos_matrix', buildMatrix(macosRunners));
-            core.setOutput('windows_matrix', buildMatrix(windowsRunners));
-            core.setOutput('android_matrix', buildMatrix(androidRunners));
+            core.setOutput('linux_matrix', JSON.stringify({ include: linuxMatrix }));
+            core.setOutput('macos_matrix', JSON.stringify({ include: macosMatrix }));
+            core.setOutput('windows_matrix', JSON.stringify({ include: windowsMatrix }));
+            core.setOutput('android_matrix', JSON.stringify({ include: androidMatrix }));
+
+            core.setOutput('has_linux', linuxMatrix.length > 0);
+            core.setOutput('has_macos', macosMatrix.length > 0);
+            core.setOutput('has_windows', windowsMatrix.length > 0);
+            core.setOutput('has_android', androidMatrix.length > 0);
 
             // Special case for Windows Wine
             let winWineMatrix = [];
             if (names.includes(`mavka-windows-x86_64-${allowedMode}`)) {
               winWineMatrix.push({ platform: 'windows-x86_64', mode: allowedMode, runner: 'ubuntu-latest' });
             }
-            core.setOutput('windows_wine_matrix', JSON.stringify(winWineMatrix));
+            core.setOutput('windows_wine_matrix', JSON.stringify({ include: winWineMatrix }));
+            core.setOutput('has_windows_wine', winWineMatrix.length > 0);
 
   test-ubuntu:
     name: Test (${{ matrix.platform }}, ${{ matrix.mode }})
     needs: [build, check-artifacts]
-    if: needs.check-artifacts.outputs.linux_matrix != '[]'
+    if: needs.check-artifacts.outputs.has_linux == 'true'
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.check-artifacts.outputs.linux_matrix) }}
@@ -294,7 +305,7 @@ jobs:
   test-macos:
     name: Test (${{ matrix.platform }}, ${{ matrix.mode }})
     needs: [build, check-artifacts]
-    if: needs.check-artifacts.outputs.macos_matrix != '[]'
+    if: needs.check-artifacts.outputs.has_macos == 'true'
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.check-artifacts.outputs.macos_matrix) }}
@@ -331,7 +342,7 @@ jobs:
   test-windows-native:
     name: Test Native (${{ matrix.platform }}, ${{ matrix.mode }})
     needs: [build, check-artifacts]
-    if: needs.check-artifacts.outputs.windows_matrix != '[]'
+    if: needs.check-artifacts.outputs.has_windows == 'true'
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.check-artifacts.outputs.windows_matrix) }}
@@ -346,43 +357,6 @@ jobs:
           name: mavka-${{ matrix.platform }}-${{ matrix.mode }}
           path: mavka-bin
 
-      - name: Direct execution diagnostic (Bash)
-        shell: bash
-        run: |
-          MAVKA_PATH="$PWD/mavka-bin/мавка.exe"
-          chmod +x "$MAVKA_PATH"
-
-          echo "=== Running test directly via Bash ==="
-          set +e
-          output=$("$MAVKA_PATH" "тестування/Число/більше_цілого.м" 2>&1 < /dev/null)
-          status=$?
-          set -e
-
-          echo "Exit code: $status"
-          echo "Output:"
-          echo "$output"
-
-      - name: Direct execution diagnostic (PowerShell)
-        shell: pwsh
-        run: |
-          $mavkaPath = "$pwd/mavka-bin/мавка.exe"
-          Write-Host "=== Running test directly via PowerShell ==="
-
-          $process = New-Object System.Diagnostics.Process
-          $process.StartInfo.FileName = $mavkaPath
-          $process.StartInfo.Arguments = '"тестування/Число/більше_цілого.м"'
-          $process.StartInfo.UseShellExecute = $false
-          $process.StartInfo.RedirectStandardOutput = $true
-          $process.StartInfo.RedirectStandardError = $true
-          $process.Start() | Out-Null
-          $stdout = $process.StandardOutput.ReadToEnd()
-          $stderr = $process.StandardError.ReadToEnd()
-          $process.WaitForExit()
-
-          Write-Host "Exit code: $($process.ExitCode)"
-          Write-Host "Output: $stdout"
-          if ($stderr) { Write-Host "Error: $stderr" }
-
       - name: Run tests
         shell: bash
         run: |
@@ -396,7 +370,7 @@ jobs:
   test-windows-wine:
     name: Test Wine (windows-x86_64, ${{ matrix.mode }})
     needs: [build, check-artifacts]
-    if: needs.check-artifacts.outputs.windows_wine_matrix != '[]'
+    if: needs.check-artifacts.outputs.has_windows_wine == 'true'
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.check-artifacts.outputs.windows_wine_matrix) }}
@@ -438,7 +412,7 @@ jobs:
   test-android:
     name: Test (android-aarch64, ${{ matrix.mode }})
     needs: [build, check-artifacts]
-    if: needs.check-artifacts.outputs.android_matrix != '[]'
+    if: needs.check-artifacts.outputs.has_android == 'true'
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.check-artifacts.outputs.android_matrix) }}
