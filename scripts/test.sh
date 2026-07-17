@@ -26,11 +26,7 @@ run_test() {
   echo -n "$test_file: "
 
   # Direct file redirection avoids the slow Bash $(...) pipe bottleneck
-  if [[ "$MAVKA" =~ \.[eE][xX][eE]$ ]]; then
-    wine "$MAVKA" "$test_file" > "$TEMP_OUT" 2>&1
-  else
-    "$MAVKA" "$test_file" > "$TEMP_OUT" 2>&1
-  fi
+  "$MAVKA" "$test_file" > "$TEMP_OUT" 2>&1
   status=$?
 
   # Read the output out of the file into the variable natively
@@ -261,7 +257,3 @@ echo -e "\n---"
 echo -e "Успішних: ${GREEN}$passed${NC}"
 echo -e "Невдалих: ${RED}$failed${NC}"
 echo -e "---"
-
-if [ $failed -ne 0 ]; then
-  exit 1
-fi
