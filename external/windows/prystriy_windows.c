@@ -8,28 +8,35 @@ void out_utf8_data(п8* дані, природне розмір) {
     return;
   }
 
-  // Convert UTF-8 to UTF-16 for Windows
-  int широких_символів =
-      MultiByteToWideChar(CP_UTF8, 0, (char*)дані, розмір, NULL, 0);
-  if (широких_символів == 0) {
-    return;
-  }
-
-  WCHAR* широкий_буфер =
-      (WCHAR*)пристрій_мавки_виділити(широких_символів * sizeof(WCHAR));
-  if (!широкий_буфер) {
-    return;
-  }
-
-  MultiByteToWideChar(CP_UTF8, 0, (char*)дані, розмір, широкий_буфер,
-                      широких_символів);
-
-  // Write to console using Windows API
   HANDLE консоль = GetStdHandle(STD_OUTPUT_HANDLE);
+  DWORD режим;
   DWORD записано;
-  WriteConsoleW(консоль, широкий_буфер, широких_символів, &записано, NULL);
 
-  пристрій_мавки_звільнити(широкий_буфер);
+  // Check if the output is a real console
+  if (GetConsoleMode(консоль, &режим)) {
+    // It's a console. Convert to UTF-16 and use WriteConsoleW
+    int широких_символів =
+        MultiByteToWideChar(CP_UTF8, 0, (char*)дані, розмір, NULL, 0);
+    if (широких_символів == 0) {
+      return;
+    }
+
+    WCHAR* широкий_буфер =
+        (WCHAR*)пристрій_мавки_виділити(широких_символів * sizeof(WCHAR));
+    if (!широкий_буфер) {
+      return;
+    }
+
+    MultiByteToWideChar(CP_UTF8, 0, (char*)дані, розмір, широкий_буфер,
+                        широких_символів);
+
+    WriteConsoleW(консоль, широкий_буфер, широких_символів, &записано, NULL);
+
+    пристрій_мавки_звільнити(широкий_буфер);
+  } else {
+    // It's a pipe or file (e.g. CI pipeline). Write the original UTF-8 bytes directly.
+    WriteFile(консоль, дані, (DWORD)розмір, &записано, NULL);
+  }
 }
 
 void out_utf8_string(char* дані) {
@@ -475,8 +482,8 @@ extern логічне пристрій_мавки_отримати_абсолю�
 
   // Get exact size of string excluding null terminator by passing explicit length
   int довжина_абсолютного = wcslen(абсолютний_широкий);
-  int байтів_ю8 = WideCharToMultiByte(CP_UTF8, 0, абсолютний_широкий, довжина_абсолютного, NULL,
-                                      0, NULL, NULL);
+  int байтів_ю8 = WideCharToMultiByte(CP_UTF8, 0, абсолютний_широкий,
+                                      довжина_абсолютного, NULL, 0, NULL, NULL);
   if (байтів_ю8 == 0) {
     пристрій_мавки_звільнити(абсолютний_широкий);
     return FALSE;
@@ -490,8 +497,8 @@ extern логічне пристрій_мавки_отримати_абсолю�
   }
 
   // Pass exact size, no null-terminator is written to the allocated buffer
-  WideCharToMultiByte(CP_UTF8, 0, абсолютний_широкий, довжина_абсолютного, (char*)*вихід_даних,
-                      байтів_ю8, NULL, NULL);
+  WideCharToMultiByte(CP_UTF8, 0, абсолютний_широкий, довжина_абсолютного,
+                      (char*)*вихід_даних, байтів_ю8, NULL, NULL);
 
   пристрій_мавки_звільнити(абсолютний_широкий);
   return TRUE;
@@ -536,8 +543,8 @@ extern логічне пристрій_мавки_отримати_теку_шл
   }
 
   // Get UTF-8 bytes for the modified wide string length
-  int байтів_ю8 =
-      WideCharToMultiByte(CP_UTF8, 0, широкий_шлях, широких_символів, NULL, 0, NULL, NULL);
+  int байтів_ю8 = WideCharToMultiByte(CP_UTF8, 0, широкий_шлях,
+                                      широких_символів, NULL, 0, NULL, NULL);
   if (байтів_ю8 == 0) {
     пристрій_мавки_звільнити(широкий_шлях);
     return FALSE;
@@ -550,13 +557,13 @@ extern логічне пристрій_мавки_отримати_теку_шл
     return FALSE;
   }
 
-  WideCharToMultiByte(CP_UTF8, 0, широкий_шлях, широких_символів, (char*)*вихід_даних,
-                      байтів_ю8, NULL, NULL);
+  WideCharToMultiByte(CP_UTF8, 0, широкий_шлях, широких_символів,
+                      (char*)*вихід_даних, байтів_ю8, NULL, NULL);
 
   пристрій_мавки_звільнити(широкий_шлях);
   return TRUE;
 }
-  
+
 extern логічне пристрій_мавки_отримати_теку_до_паків(п8* дані_шляху,
                                                      природне розмір_шляху,
                                                      п8** вихід_даних,
@@ -892,8 +899,8 @@ extern логічне пристрій_мавки_отримати_поточн�
   }
 
   int довжина_шляху = wcslen(широкий_шлях);
-  int байтів_ю8 =
-      WideCharToMultiByte(CP_UTF8, 0, широкий_шлях, довжина_шляху, NULL, 0, NULL, NULL);
+  int байтів_ю8 = WideCharToMultiByte(CP_UTF8, 0, широкий_шлях, довжина_шляху,
+                                      NULL, 0, NULL, NULL);
   if (байтів_ю8 == 0) {
     пристрій_мавки_звільнити(широкий_шлях);
     return FALSE;
@@ -906,8 +913,8 @@ extern логічне пристрій_мавки_отримати_поточн�
     return FALSE;
   }
 
-  WideCharToMultiByte(CP_UTF8, 0, широкий_шлях, довжина_шляху, (char*)*вихід_даних,
-                      байтів_ю8, NULL, NULL);
+  WideCharToMultiByte(CP_UTF8, 0, широкий_шлях, довжина_шляху,
+                      (char*)*вихід_даних, байтів_ю8, NULL, NULL);
 
   пристрій_мавки_звільнити(широкий_шлях);
   return TRUE;
