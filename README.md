@@ -50,7 +50,7 @@ bash scripts/build.sh debug linux-x86_64
 LLVM_MINGW_PATH="/home/prykhozhdenko/Compilers/llvm-mingw-20260616-ucrt-ubuntu-22.04-x86_64" bash scripts/build.sh debug windows-x86_64
 ```
 
-Для будування для MacOS треба вказати **повний** шлях до збудованого [osxcross](https://github.com/tpoechtrager/osxcross):
+Для будування для MacOS треба вказати **повний** шлях до збудованого [osxcross](https://github.com/tpoechtrager/osxcross) ([MacOSX 14.0 SDK](https://github.com/roblabla/MacOSX-SDKs/releases/tag/macosx14.0)):
 
 ```shell
 OSXCROSS_PATH="/home/prykhozhdenko/Compilers/osxcross/target" bash scripts/build.sh debug macos-x86_64
