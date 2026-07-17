@@ -44,10 +44,22 @@ bash scripts/build.sh debug linux-x86_64
 - `android-aarch64`
 - `wasm64`
 
+Для будування для Windows треба вказати **повний** шлях до [llvm-mingw](https://github.com/mstorsjo/llvm-mingw):
+
+```shell
+LLVM_MINGW_PATH="/home/prykhozhdenko/Compilers/llvm-mingw-20260616-ucrt-ubuntu-22.04-x86_64" bash scripts/build.sh debug windows-x86_64
+```
+
+Для будування для MacOS треба вказати **повний** шлях до збудованого [osxcross](https://github.com/tpoechtrager/osxcross):
+
+```shell
+OSXCROSS_PATH="/home/prykhozhdenko/Compilers/osxcross/target" bash scripts/build.sh debug macos-x86_64
+```
+
 Для будування для Android треба вказати **повний** шлях до [NDK](https://developer.android.com/ndk/downloads):
 
-```
-ANDROID_NDK_HOME="/home/kohutd/Android/android-ndk-r27d" bash scripts/build.sh debug android-aarch64
+```shell
+ANDROID_NDK_HOME="/home/prykhozhdenko/Android/android-ndk-r27d" bash scripts/build.sh debug android-aarch64
 ```
 
 Для всіх платформ, окрім **wasm**, будуть збудовані з нуля **libuv**, **openssl**, **curl**.

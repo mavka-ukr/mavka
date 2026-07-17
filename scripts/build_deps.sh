@@ -118,12 +118,20 @@ build_libuv() {
     pushd "$build_dir" > /dev/null
 
     local cmake_system_name=""
+    local cmake_android_flags=""
+
     if [[ "$TARGET" == *"w64-mingw32"* ]]; then
       cmake_system_name="Windows"
     elif [[ "$TARGET" == *"apple-darwin"* ]]; then
       cmake_system_name="Darwin"
     elif [[ "$TARGET" == *"android"* ]]; then
       cmake_system_name="Android"
+      if [ -z "$ANDROID_NDK_HOME" ]; then
+        echo "ANDROID_NDK_HOME is not set."
+        exit 1
+      fi
+      local api_level="${TARGET##*android}"
+      cmake_android_flags="-DCMAKE_ANDROID_NDK=$ANDROID_NDK_HOME -DCMAKE_SYSTEM_VERSION=$api_level -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a"
     elif [[ "$TARGET" == *"linux"* ]]; then
       cmake_system_name="Linux"
     elif [[ "$TARGET" == *"wasm64"* ]]; then
@@ -132,6 +140,7 @@ build_libuv() {
 
     cmake "$abs_uv_dir" \
       -DCMAKE_SYSTEM_NAME="$cmake_system_name" \
+      $cmake_android_flags \
       -DCMAKE_INSTALL_PREFIX="$abs_prefix" \
       -DCMAKE_C_COMPILER="$TARGET_CC" \
       -DCMAKE_C_FLAGS="$TARGET_CPPFLAGS $TARGET_CFLAGS" \
@@ -230,13 +239,21 @@ build_curl() {
     pushd "$build_dir" > /dev/null
 
     local cmake_system_name=""
+    local cmake_android_flags=""
+
     if [[ "$TARGET" == *"w64-mingw32"* ]]; then
       cmake_system_name="Windows"
     elif [[ "$TARGET" == *"apple-darwin"* ]]; then
       cmake_system_name="Darwin"
     elif [[ "$TARGET" == *"android"* ]]; then
       cmake_system_name="Android"
-    elif [[ "$TARGET" == *"aarch64-linux-gnu" ]]; then
+      if [ -z "$ANDROID_NDK_HOME" ]; then
+        echo "ANDROID_NDK_HOME is not set."
+        exit 1
+      fi
+      local api_level="${TARGET##*android}"
+      cmake_android_flags="-DCMAKE_ANDROID_NDK=$ANDROID_NDK_HOME -DCMAKE_SYSTEM_VERSION=$api_level -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a"
+    elif [[ "$TARGET" == *"linux"* ]]; then
       cmake_system_name="Linux"
     elif [[ "$TARGET" == *"wasm64"* ]]; then
       cmake_system_name="Generic"
@@ -244,6 +261,7 @@ build_curl() {
 
     cmake "$abs_curl_dir" \
       -DCMAKE_SYSTEM_NAME="$cmake_system_name" \
+      $cmake_android_flags \
       -DCMAKE_INSTALL_PREFIX="$abs_prefix" \
       -DCMAKE_C_COMPILER="$TARGET_CC" \
       -DCMAKE_C_FLAGS="$TARGET_CPPFLAGS $TARGET_CFLAGS" \

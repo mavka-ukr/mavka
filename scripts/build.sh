@@ -72,14 +72,18 @@ set_platform_vars() {
       setup_linux_libraries
       ;;
     macos-x86_64)
+      if [ -z "$OSXCROSS_PATH" ]; then
+        echo "OSXCROSS_PATH is not set."
+        exit 1
+      fi
+      local osxcross_path="$OSXCROSS_PATH"
+      export PATH="$osxcross_path/bin:$PATH"
       BUILD_SYSTEM="macos"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="unix"
       TARGET="x86_64-apple-darwin23"
-      local osxcross_bin="/tmp/osxcross/target/bin"
-      export PATH="$osxcross_bin:$PATH"
-      TARGET_CC="$osxcross_bin/x86_64-apple-darwin23-clang"
-      TARGET_AR="$osxcross_bin/x86_64-apple-darwin23-ar"
-      TARGET_RANLIB="$osxcross_bin/x86_64-apple-darwin23-ranlib"
-      TARGET_RC="$osxcross_bin/x86_64-apple-darwin23-rc"
+      TARGET_CC="$osxcross_path/bin/x86_64-apple-darwin23-clang"
+      TARGET_AR="$osxcross_path/bin/x86_64-apple-darwin23-ar"
+      TARGET_RANLIB="$osxcross_path/bin/x86_64-apple-darwin23-ranlib"
+      TARGET_RC="$osxcross_path/bin/x86_64-apple-darwin23-rc"
       TARGET_CFLAGS="$OPTIMIZATIONS_CFLAGS"
       TSIL_PLATFORM="макос-ікс86_64"
       TSIL_PLATFORM_FOLDER="макос-ікс86_64"
@@ -88,14 +92,18 @@ set_platform_vars() {
       extra_opts="-Wl,-export_dynamic -lm -lpthread"
       ;;
     macos-aarch64)
+      if [ -z "$OSXCROSS_PATH" ]; then
+        echo "OSXCROSS_PATH is not set."
+        exit 1
+      fi
+      local osxcross_path="$OSXCROSS_PATH"
+      export PATH="$osxcross_path/bin:$PATH"
       BUILD_SYSTEM="macos"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="unix"
       TARGET="aarch64-apple-darwin23"
-      local osxcross_bin="/tmp/osxcross/target/bin"
-      export PATH="$osxcross_bin:$PATH"
-      TARGET_CC="$osxcross_bin/aarch64-apple-darwin23-clang"
-      TARGET_AR="$osxcross_bin/aarch64-apple-darwin23-ar"
-      TARGET_RANLIB="$osxcross_bin/aarch64-apple-darwin23-ranlib"
-      TARGET_RC="$osxcross_bin/aarch64-apple-darwin23-rc"
+      TARGET_CC="$osxcross_path/bin/aarch64-apple-darwin23-clang"
+      TARGET_AR="$osxcross_path/bin/aarch64-apple-darwin23-ar"
+      TARGET_RANLIB="$osxcross_path/bin/aarch64-apple-darwin23-ranlib"
+      TARGET_RC="$osxcross_path/bin/aarch64-apple-darwin23-rc"
       TARGET_CFLAGS="$OPTIMIZATIONS_CFLAGS"
       TSIL_PLATFORM="макос-аарч64"
       TSIL_PLATFORM_FOLDER="макос-аарч64"
@@ -104,13 +112,17 @@ set_platform_vars() {
       extra_opts="-Wl,-export_dynamic -lm -lpthread"
       ;;
     windows-x86_64)
+      if [ -z "$LLVM_MINGW_PATH" ]; then
+        echo "LLVM_MINGW_PATH is not set."
+        exit 1
+      fi
+      local llvm_mingw_path="$LLVM_MINGW_PATH"
       BUILD_SYSTEM="windows"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="windows"
       TARGET="x86_64-w64-mingw32"
-      local llvm_mingw_toolchain="/home/prykhozhdenko/Compilers/llvm-mingw-20260616-ucrt-ubuntu-22.04-x86_64"
-      TARGET_CC="$llvm_mingw_toolchain/bin/x86_64-w64-mingw32-clang"
-      TARGET_AR="$llvm_mingw_toolchain/bin/x86_64-w64-mingw32-llvm-ar"
-      TARGET_RANLIB="$llvm_mingw_toolchain/bin/x86_64-w64-mingw32-llvm-ranlib"
-      TARGET_RC="$llvm_mingw_toolchain/bin/x86_64-w64-mingw32-llvm-rc"
+      TARGET_CC="$llvm_mingw_path/bin/x86_64-w64-mingw32-clang"
+      TARGET_AR="$llvm_mingw_path/bin/x86_64-w64-mingw32-llvm-ar"
+      TARGET_RANLIB="$llvm_mingw_path/bin/x86_64-w64-mingw32-llvm-ranlib"
+      TARGET_RC="$llvm_mingw_path/bin/x86_64-w64-mingw32-llvm-rc"
       TARGET_CPPFLAGS="-DNOCRYPT"
       TARGET_CFLAGS="$OPTIMIZATIONS_CFLAGS"
       TSIL_PLATFORM="віндовс-ікс86_64"
@@ -121,13 +133,17 @@ set_platform_vars() {
       setup_windows_libraries
       ;;
     windows-aarch64)
+      if [ -z "$LLVM_MINGW_PATH" ]; then
+        echo "LLVM_MINGW_PATH is not set."
+        exit 1
+      fi
+      local llvm_mingw_path="$LLVM_MINGW_PATH"
       BUILD_SYSTEM="windows"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="windows"
       TARGET="aarch64-w64-mingw32"
-      local llvm_mingw_toolchain="/home/prykhozhdenko/Compilers/llvm-mingw-20260616-ucrt-ubuntu-22.04-x86_64"
-      TARGET_CC="$llvm_mingw_toolchain/bin/aarch64-w64-mingw32-clang"
-      TARGET_AR="$llvm_mingw_toolchain/bin/aarch64-w64-mingw32-llvm-ar"
-      TARGET_RANLIB="$llvm_mingw_toolchain/bin/aarch64-w64-mingw32-llvm-ranlib"
-      TARGET_RC="$llvm_mingw_toolchain/bin/aarch64-w64-mingw32-llvm-rc"
+      TARGET_CC="$llvm_mingw_path/bin/aarch64-w64-mingw32-clang"
+      TARGET_AR="$llvm_mingw_path/bin/aarch64-w64-mingw32-llvm-ar"
+      TARGET_RANLIB="$llvm_mingw_path/bin/aarch64-w64-mingw32-llvm-ranlib"
+      TARGET_RC="$llvm_mingw_path/bin/aarch64-w64-mingw32-llvm-rc"
       TARGET_CPPFLAGS="-DNOCRYPT"
       TARGET_CFLAGS="$OPTIMIZATIONS_CFLAGS"
       TSIL_PLATFORM="віндовс-аарч64"
