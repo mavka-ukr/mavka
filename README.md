@@ -66,7 +66,7 @@ ANDROID_NDK_HOME="/home/prykhozhdenko/Android/android-ndk-r27d" bash scripts/bui
 
 Для платформ **linux** та **android** будуть збудовані з нуля **ncurses**, **readline**.
 
-## Як збудувати osxcross
+### Як збудувати osxcross
 
 ```shell
 git clone https://github.com/tpoechtrager/osxcross.git --depth=1
