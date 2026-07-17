@@ -33,9 +33,9 @@ jobs:
       - name: Install system build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang llvm make cmake ninja-build xz-utils curl unzip wget \
+          sudo apt-get install -y clang llvm lld make cmake ninja-build xz-utils curl unzip wget \
             git patch python3 python-is-python3 libssl-dev lzma-dev libxml2-dev bzip2 cpio libbz2-dev zlib1g-dev bash \
-            binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc6-dev-arm64-cross
+            build-essential binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc6-dev-arm64-cross
 
       - name: Cache tsil compiler
         id: cache-tsil
