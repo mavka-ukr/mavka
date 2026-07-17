@@ -34,7 +34,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y clang llvm make cmake ninja-build xz-utils curl unzip wget \
-            git patch python3 python-is-python3 libssl-dev lzma-dev libxml2-dev bzip2 cpio libbz2-dev zlib1g-dev bash
+            git patch python3 python-is-python3 libssl-dev lzma-dev libxml2-dev bzip2 cpio libbz2-dev zlib1g-dev bash \
+            binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc6-dev-arm64-cross
 
       - name: Cache tsil compiler
         id: cache-tsil
@@ -61,13 +62,13 @@ jobs:
         if: startsWith(matrix.platform, 'windows-')
         uses: actions/cache@v4
         with:
-          path: llvm-mingw-20231128-ucrt-ubuntu-22.04-x86_64
-          key: llvm-mingw-20231128-ucrt-ubuntu-22.04-x86_64
+          path: llvm-mingw-20260616-ucrt-ubuntu-22.04-x86_64
+          key: llvm-mingw-20260616-ucrt-ubuntu-22.04-x86_64
 
       - name: Setup Windows cross-compilation (llvm-mingw)
         if: startsWith(matrix.platform, 'windows-')
         run: |
-          MINGW_DIR="llvm-mingw-20231128-ucrt-ubuntu-22.04-x86_64"
+          MINGW_DIR="llvm-mingw-20260616-ucrt-ubuntu-22.04-x86_64"
           if [ ! -d "$MINGW_DIR" ]; then
             MINGW_URL="https://github.com/mstorsjo/llvm-mingw/releases/download/20260616/llvm-mingw-20260616-ucrt-ubuntu-22.04-x86_64.tar.xz"
             curl -L "$MINGW_URL" -o mingw.tar.xz
