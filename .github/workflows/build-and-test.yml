@@ -17,7 +17,7 @@ jobs:
             # linux-aarch64,
             macos-x86_64,
             # macos-aarch64,
-            windows-x86_64,
+            # windows-x86_64,
             # windows-aarch64,
             # android-aarch64,
             # wasm64,
@@ -29,12 +29,13 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Cache and install apt packages
-        uses: awalsh128/cache-apt-pkgs-action@v1
-        with:
-          packages: clang llvm lld make cmake ninja-build xz-utils curl unzip wget git patch python3 python-is-python3 libssl-dev lzma-dev libxml2-dev bzip2 cpio libbz2-dev zlib1g-dev bash build-essential libc6-dev-arm64-cross linux-libc-dev-arm64-cross gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-arm64-cross qemu-user-static wine64
-          version: v7
-          execute_install_scripts: true
+      - name: Install system build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang llvm lld make cmake ninja-build xz-utils curl unzip wget git patch \
+            python3 python-is-python3 libssl-dev lzma-dev libxml2-dev bzip2 cpio libbz2-dev zlib1g-dev bash build-essential \
+            libc6-dev-arm64-cross linux-libc-dev-arm64-cross gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu \
+            libc6-arm64-cross qemu-user-static wine64
 
       - name: Verify Wine installation
         if: matrix.platform == 'windows-x86_64'
@@ -151,6 +152,14 @@ jobs:
 
           echo "OSXCROSS_PATH=$PWD/osxcross/target" >> $GITHUB_ENV
 
+          # Final verification to prevent silent failures
+          if [ ! -f "osxcross/target/bin/x86_64-apple-darwin23-clang" ]; then
+            echo "Error: osxcross compiler x86_64-apple-darwin23-clang not found!"
+            echo "Contents of osxcross/target/bin/:"
+            ls -la osxcross/target/bin/ || true
+            exit 1
+          fi
+
       - name: Cache downloaded project libraries
         id: cache-libs
         uses: actions/cache@v4
@@ -168,7 +177,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build
-          key: build-${{ matrix.platform }}-${{ matrix.mode }}-${{ hashFiles('scripts/NCURSES_VERSION', 'scripts/READLINE_VERSION', 'scripts/LIBUV_VERSION', 'scripts/OPENSSL_VERSION', 'scripts/CURL_VERSION') }}
+          key: build-${{ matrix.platform }}-${{ matrix.mode }}-v2-${{ hashFiles('scripts/NCURSES_VERSION', 'scripts/READLINE_VERSION', 'scripts/LIBUV_VERSION', 'scripts/OPENSSL_VERSION', 'scripts/CURL_VERSION') }}
 
       - name: Run compilation
         run: |
@@ -247,6 +256,7 @@ jobs:
         with:
           name: mavka-${{ matrix.platform }}-${{ matrix.mode }}
           path: будування/${{ steps.os_paths.outputs.version }}/${{ steps.os_paths.outputs.folder }}/${{ steps.os_paths.outputs.mode }}/готове/${{ steps.os_paths.outputs.bin }}
+          retention-days: 1
 
   test-macos:
     name: Test (${{ matrix.platform }}, ${{ matrix.mode }})
