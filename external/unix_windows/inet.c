@@ -46,6 +46,7 @@ struct MavkaConn {
   int is_client;
   int write_backlog_active;
   int pending_close;
+  int end_disconnect;
   size_t active_writes;
   MavkaConnState state;
 };
@@ -113,6 +114,17 @@ static природне map_uv_error(int err) {
   }
 }
 
+static void fire_disconnect_if_pending(MavkaConn* conn) {
+  if (conn->end_disconnect) {
+    conn->end_disconnect = 0;
+    if (conn->server && conn->server->on_disconnect) {
+      conn->server->on_disconnect((адреса)conn->server, (адреса)conn);
+    } else if (conn->is_client && conn->client_on_disconnect) {
+      conn->client_on_disconnect((адреса)conn);
+    }
+  }
+}
+
 static void alloc_cb(uv_handle_t* handle,
                      size_t suggested_size,
                      uv_buf_t* buf) {
@@ -133,6 +145,8 @@ static void maybe_destroy_server(MavkaServer* server) {
 static void conn_close_cb(uv_handle_t* handle) {
   MavkaConn* conn = (MavkaConn*)handle->data;
   conn->state = CONN_STATE_DISCONNECTED;
+
+  fire_disconnect_if_pending(conn);
 
   MavkaServer* server = conn->server;
   if (server) {
@@ -596,6 +610,7 @@ static void on_write_complete(uv_write_t* req, int status) {
       conn->state != CONN_STATE_CLOSING &&
       conn->state != CONN_STATE_DISCONNECTED &&
       !uv_is_closing((uv_handle_t*)&conn->handle)) {
+    fire_disconnect_if_pending(conn);
     conn->state = CONN_STATE_CLOSING;
     uv_close((uv_handle_t*)&conn->handle, conn_close_cb);
   }
@@ -682,6 +697,8 @@ void бібліотека_мавки_інет_звʼязок_закінчити(
     return;
   }
 
+  conn->end_disconnect = 1;
+
   if (дані && розмір > 0) {
     MavkaWriteReq* wreq = (MavkaWriteReq*)каллок(1, sizeof(MavkaWriteReq));
     if (wreq) {
@@ -716,6 +733,7 @@ void бібліотека_мавки_інет_звʼязок_закінчити(
   if (обробник) {
     обробник((адреса)conn, аргумент);
   }
+  fire_disconnect_if_pending(conn);
   safe_close_conn(conn);
 }
 
