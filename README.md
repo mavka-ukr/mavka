@@ -59,7 +59,7 @@ OSXCROSS_PATH="/home/$USER/Compilers/osxcross/target" bash scripts/build.sh debu
 Для будування для Android треба вказати **повний** шлях до [NDK](https://developer.android.com/ndk/downloads):
 
 ```shell
-ANDROID_NDK_HOME="/home/$USER/Compilers/Android/android-ndk-r27d" bash scripts/build.sh debug android-aarch64
+ANDROID_NDK_HOME="/home/$USER/Compilers/android-ndk-r27d" bash scripts/build.sh debug android-aarch64
 ```
 
 Для всіх платформ, окрім **wasm**, будуть збудовані з нуля **libuv**, **openssl**, **curl**.
