@@ -2,6 +2,8 @@
 #include "mavka/biblioteka.h"
 #include "mavka/prystriy.h"
 
+// згенеровано glm-5.2
+
 #define MAVKA_NET_HIGH_WATERMARK (16 * 1024)
 
 typedef enum {
