@@ -44,19 +44,19 @@ bash scripts/build.sh debug linux-x86_64
 - `android-aarch64`
 - `wasm64`
 
-Для будування для Windows треба вказати **повний** шлях до [llvm-mingw](https://github.com/mstorsjo/llvm-mingw/releases/tag/20260616):
+Для будування для Windows треба вказати **абсолютний** шлях до [llvm-mingw](https://github.com/mstorsjo/llvm-mingw/releases/tag/20260616):
 
 ```shell
 LLVM_MINGW_PATH="$HOME/Compilers/llvm-mingw-20260616-ucrt-ubuntu-22.04-x86_64" bash scripts/build.sh debug windows-x86_64
 ```
 
-Для будування для MacOS треба вказати **повний** шлях до збудованого [osxcross](https://github.com/tpoechtrager/osxcross) ([MacOSX 14.0 SDK](https://github.com/roblabla/MacOSX-SDKs/releases/tag/macosx14.0)):
+Для будування для MacOS треба вказати **абсолютний** шлях до збудованого [osxcross](https://github.com/tpoechtrager/osxcross) ([MacOSX 14.0 SDK](https://github.com/roblabla/MacOSX-SDKs/releases/tag/macosx14.0)):
 
 ```shell
 OSXCROSS_PATH="$HOME/Compilers/osxcross/target" bash scripts/build.sh debug macos-x86_64
 ```
 
-Для будування для Android треба вказати **повний** шлях до [NDK](https://developer.android.com/ndk/downloads):
+Для будування для Android треба вказати **абсолютний** шлях до [NDK](https://developer.android.com/ndk/downloads):
 
 ```shell
 ANDROID_NDK_HOME="$HOME/Compilers/android-ndk-r27d" bash scripts/build.sh debug android-aarch64
