@@ -1,6 +1,9 @@
 name: Update Stargazers
 
 on:
+  push:
+    branches:
+      - dev
   workflow_dispatch:
 
 permissions:
