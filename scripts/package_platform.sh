@@ -17,6 +17,8 @@ set_platform_vars() {
   local system arch tsil_system tsil_arch outfile
 
   case "$platform" in
+    linux-i686)
+      system="linux"; arch="i686"; tsil_system="лінукс"; tsil_arch="ай686"; outfile="$PROGRAM_NAME" ;;
     linux-x86_64)
       system="linux"; arch="x86_64"; tsil_system="лінукс"; tsil_arch="ікс86_64"; outfile="$PROGRAM_NAME" ;;
     linux-aarch64)

@@ -41,6 +41,21 @@ set_platform_vars() {
   DEPS_LIBS=""
 
   case "$platform" in
+    linux-i686)
+      BUILD_SYSTEM="linux"; BUILD_ARCH="i686"; COMMON_SYSTEM="unix"
+      TARGET="i686-pc-linux-gnu"
+      TARGET_CC="$(which clang)"
+      TARGET_AR="$(which llvm-ar)"
+      TARGET_RANLIB="$(which llvm-ranlib)"
+      TARGET_RC="$(which llvm-rc)"
+      TARGET_CFLAGS="$OPTIMIZATIONS_CFLAGS"
+      TARGET_LDFLAGS="-fuse-ld=lld"
+      TSIL_PLATFORM="лінукс-ай686"
+      TSIL_PLATFORM_FOLDER="лінукс-ай686"
+      OUTFILENAME="$PROGRAM_NAME"
+      extra_opts="-lm -ldl -lpthread"
+      setup_linux_libraries
+      ;;
     linux-x86_64)
       BUILD_SYSTEM="linux"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="unix"
       TARGET="x86_64-pc-linux-gnu"
@@ -214,7 +229,7 @@ mkdir -p "$READY_DIR"
 
 CLANG_CMD="$CLANG $CLANG_OPTIONS"
 
-LLIRFILES=$(/bin/bash "$SCRIPT_DIR/build_tsil.sh" \
+OFILES=$(/bin/bash "$SCRIPT_DIR/build_tsil.sh" \
   "$BUILD_MODE" \
   "$BUILD_PLATFORM" \
   "ll" \
@@ -251,7 +266,7 @@ fi
   "$READY_DIR/prystriy_$COMMON_SYSTEM.o" \
   "$READY_DIR/biblioteka_$COMMON_SYSTEM.o" \
   $BIBLIOTEKA_SYSTEM_OBJ \
-  $LLIRFILES \
+  $OFILES \
   $STATIC_LIBS
 
 echo "готово: $READY_DIR/$OUTFILENAME"

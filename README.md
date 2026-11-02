@@ -7,7 +7,7 @@
 Треба:
 
 - GNU/Linux
-- [Ціль](https://ціль.мавка.укр) _0.80.0_
+- [Ціль](https://ціль.мавка.укр) _0.81.0_
 - Clang, LLVM, LLD, Make, CMake, etc
 - [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) (для компіляції для Windows)
 - [osxcross](https://github.com/tpoechtrager/osxcross) (для компіляції для MacOS, треба [MacOSX 14.0 SDK](https://github.com/roblabla/MacOSX-SDKs/releases/tag/macosx14.0))
@@ -35,6 +35,7 @@ bash scripts/build.sh debug linux-x86_64
 
 Доступні платформи будування:
 
+- `linux-i686`
 - `linux-x86_64`
 - `linux-aarch64`
 - `macos-x86_64`
@@ -96,9 +97,6 @@ UNATTENDED=1 ./build.sh
 у Мавці на вхід передаються саме Unicode-файли (UTF-8),
 але вони надалі перекодовуються в Дієкод. І вже під час розбору (і далі) Unicode не використовується.
 По-суті, Unicode використовується лише для входу і виходу в ОС. Цього позбутись, щонайменше на Linux/MacOS/Windows, не вийде.
-
-ДУЖЕ ВАЖЛИВО: так як Ціль ще не має досконалої підтримки зовнішніх дій для взаємодії з _C (eng)_, усі значення які передаються через аргументи
-мають бути рівно 64 біт!
 
 ## Тестування
 

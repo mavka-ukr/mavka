@@ -3,7 +3,6 @@ set -e
 
 BUILD_MODE="$1"
 BUILD_PLATFORM="$2"
-OUTPUT_FORMAT="${3:-ll}"
 TSIL_CMD="${4:-ціль}"
 CLANG="$5"
 
@@ -25,6 +24,10 @@ case "$BUILD_MODE" in
 esac
 
 case "$BUILD_PLATFORM" in
+  linux-i686)
+    TSIL_PLATFORM="ай686-пк-лінукс-гну"; TSIL_PLATFORM_FOLDER="лінукс-ай686"
+    TARGET_TRIPLE="i686-linux-gnu"
+    ;;
   linux-x86_64)
     TSIL_PLATFORM="ікс86_64-пк-лінукс-гну"; TSIL_PLATFORM_FOLDER="лінукс-ікс86_64"
     TARGET_TRIPLE="x86_64-linux-gnu"
@@ -70,11 +73,8 @@ case "$BUILD_PLATFORM" in
     exit 1 ;;
 esac
 
-if [ "$OUTPUT_FORMAT" = "o" ]; then
-  SEMIREADY_DIR="$ROOT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/$TSIL_MODE/напівготове/ллвмо"
-else
-  SEMIREADY_DIR="$ROOT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/$TSIL_MODE/напівготове/ллвмір"
-fi
+
+SEMIREADY_DIR="$ROOT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/$TSIL_MODE/напівготове/сіанг"
 
 if [ ! -f "$LIST_FILE" ]; then
   echo "Помилка: Файл конфігурації '$LIST_FILE' не знайдено." >&2
@@ -87,25 +87,19 @@ while IFS= read -r line || [ -n "$line" ]; do
   mkdir -p "$SEMIREADY_DIR/$(dirname "$line")"
 done < "$LIST_FILE"
 
-LLIRFILES=""
+OFILES=""
 while IFS= read -r line || [ -n "$line" ]; do
   line=$(echo "$line" | xargs)
   [[ -z "$line" || "$line" =~ ^# ]] && continue
 
   echo "компілювання $line" >&2
   $TSIL_CMD \
-    "$(realpath --relative-to="$(pwd)" "$SEMIREADY_DIR/$line.ллвмір")" -П="$TSIL_PLATFORM" \
+    "$(realpath --relative-to="$(pwd)" "$SEMIREADY_DIR/$line.c")" -Ф=сіанг -П="$TSIL_PLATFORM" \
     скомпілювати \
     "$(realpath --relative-to="$(pwd)" "$line")" -В=./КД/визначення -В=./визначення >&2
 
-  if [ "$OUTPUT_FORMAT" = "o" ]; then
-    $CLANG -c -o "$SEMIREADY_DIR/$line.ллвмо" -x ir "$SEMIREADY_DIR/$line.ллвмір"
-    LLIRFILES+=" $SEMIREADY_DIR/$line.ллвмо"
-    rm -f "$SEMIREADY_DIR/$line.ллвмір"
-  else
-    mv "$SEMIREADY_DIR/$line.ллвмір" "$SEMIREADY_DIR/$line.ллвмір.ll"
-    LLIRFILES+=" $SEMIREADY_DIR/$line.ллвмір.ll"
-  fi
+  $CLANG -c -o "$SEMIREADY_DIR/$line.o" "$SEMIREADY_DIR/$line.c"
+  OFILES+=" $SEMIREADY_DIR/$line.o"
 done < "$LIST_FILE"
 
-echo "$LLIRFILES"
+echo "$OFILES"
