@@ -95,7 +95,7 @@ while IFS= read -r line || [ -n "$line" ]; do
   echo "переклад $line" >&2
   $TSIL_CMD \
     "$(realpath --relative-to="$(pwd)" "$SEMIREADY_DIR/$line.c")" -Ф=сіанг -П="$TSIL_PLATFORM" \
-    скомпілювати \
+    перекласти \
     "$(realpath --relative-to="$(pwd)" "$line")" -В=./КД/визначення -В=./визначення >&2
 
   $CLANG -c -o "$SEMIREADY_DIR/$line.o" "$SEMIREADY_DIR/$line.c"
