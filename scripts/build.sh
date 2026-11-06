@@ -5,8 +5,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$ROOT_DIR"
 
-source "$SCRIPT_DIR/build_deps.sh"
-
 PROGRAM_NAME="мавка"
 BUILD_VERSION=$(cat ВЕРСІЯ)
 BUILD_MODE="$1"
@@ -54,7 +52,6 @@ set_platform_vars() {
       TSIL_PLATFORM_FOLDER="лінукс-ай686"
       OUTFILENAME="$PROGRAM_NAME"
       extra_opts="-lm -ldl -lpthread"
-      setup_linux_libraries
       ;;
     linux-x86_64)
       BUILD_SYSTEM="linux"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="unix"
@@ -69,7 +66,6 @@ set_platform_vars() {
       TSIL_PLATFORM_FOLDER="лінукс-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME"
       extra_opts="-lm -ldl -lpthread"
-      setup_linux_libraries
       ;;
     linux-aarch64)
       BUILD_SYSTEM="linux"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="unix"
@@ -84,7 +80,6 @@ set_platform_vars() {
       TSIL_PLATFORM_FOLDER="лінукс-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
       extra_opts="-lm -ldl -lpthread $LDFLAGS"
-      setup_linux_libraries
       ;;
     macos-x86_64)
       if [ -z "$OSXCROSS_PATH" ]; then
@@ -103,7 +98,6 @@ set_platform_vars() {
       TSIL_PLATFORM="макос-ікс86_64"
       TSIL_PLATFORM_FOLDER="макос-ікс86_64"
       OUTFILENAME="$PROGRAM_NAME"
-      setup_macos_libraries
       extra_opts="-Wl,-export_dynamic -lm -lpthread"
       ;;
     macos-aarch64)
@@ -123,7 +117,6 @@ set_platform_vars() {
       TSIL_PLATFORM="макос-аарч64"
       TSIL_PLATFORM_FOLDER="макос-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
-      setup_macos_libraries
       extra_opts="-Wl,-export_dynamic -lm -lpthread"
       ;;
     windows-x86_64)
@@ -145,7 +138,6 @@ set_platform_vars() {
       OUTFILENAME="$PROGRAM_NAME.exe"
       extra_opts="-static -lws2_32 -liphlpapi -luserenv -ldbghelp -lole32 -lgdi32 -lcrypt32 -luser32"
       static_libs="scripts/icon.res"
-      setup_windows_libraries
       ;;
     windows-aarch64)
       if [ -z "$LLVM_MINGW_PATH" ]; then
@@ -166,7 +158,6 @@ set_platform_vars() {
       OUTFILENAME="$PROGRAM_NAME.exe"
       extra_opts="-static -lws2_32 -liphlpapi -luserenv -ldbghelp -lole32 -lgdi32 -lcrypt32 -luser32"
       static_libs="scripts/icon.res"
-      setup_windows_libraries
       ;;
     android-aarch64)
       if [ -z "$ANDROID_NDK_HOME" ]; then
@@ -185,7 +176,6 @@ set_platform_vars() {
       TSIL_PLATFORM_FOLDER="андроїд-аарч64"
       OUTFILENAME="$PROGRAM_NAME"
       extra_opts="-ldl -lc -lm"
-      setup_linux_libraries
       ;;
     wasm64)
       BUILD_SYSTEM="wasm64"; BUILD_ARCH="wasm64"; COMMON_SYSTEM="wasm64"
@@ -248,24 +238,9 @@ set -x
   "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c"
 
  $CLANG_CMD \
-  -c -o "$READY_DIR/biblioteka_$COMMON_SYSTEM.o" \
-  "external/$COMMON_SYSTEM/biblioteka_$COMMON_SYSTEM.c"
-
-if [ "$BUILD_SYSTEM" != "$COMMON_SYSTEM" ]; then
-  $CLANG_CMD \
-    -c -o "$READY_DIR/biblioteka_$BUILD_SYSTEM.o" \
-    "external/$BUILD_SYSTEM/biblioteka_$BUILD_SYSTEM.c"
-  BIBLIOTEKA_SYSTEM_OBJ="$READY_DIR/biblioteka_$BUILD_SYSTEM.o"
-else
-  BIBLIOTEKA_SYSTEM_OBJ=""
-fi
-
- $CLANG_CMD \
   -o "$READY_DIR/$OUTFILENAME" \
   "$READY_DIR/main.o" \
   "$READY_DIR/prystriy_$COMMON_SYSTEM.o" \
-  "$READY_DIR/biblioteka_$COMMON_SYSTEM.o" \
-  $BIBLIOTEKA_SYSTEM_OBJ \
   $OFILES \
   $STATIC_LIBS
 

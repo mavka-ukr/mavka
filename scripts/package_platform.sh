@@ -65,7 +65,6 @@ prepare_platform_dir() {
   echo "$PWD"
   cp "будування/$BUILD_VERSION/$TSIL_SYSTEM-$TSIL_ARCH/випуск/готове/$OUTFILENAME" "$BINDIR"
   # mkdir -p "$PLATFORMDIR/визначення"
-  # cp -a "бібліотека/визначення" "$PLATFORMDIR"
   # cp -a "машина/визначення" "$PLATFORMDIR"
   cp ДОЗВІЛ "$PLATFORMDIR/ДОЗВІЛ"
   cp LICENSE "$PLATFORMDIR/LICENSE"

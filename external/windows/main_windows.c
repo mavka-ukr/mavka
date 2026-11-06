@@ -1,4 +1,3 @@
-#include <uv.h>
 #include <windows.h>
 #include "mavka/main.h"
 
@@ -68,9 +67,5 @@ int main(void) {
   HeapFree(купа, 0, аргументи);
   LocalFree(argv);
 
-  if (r != 0) {
-    return r;
-  }
-
-  return uv_run(uv_default_loop(), UV_RUN_DEFAULT);
+  return r;
 }

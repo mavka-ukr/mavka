@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <uv.h>
 #include "mavka/main.h"
 
 int main(int argc, char** argv) {
@@ -19,9 +18,5 @@ int main(int argc, char** argv) {
 
   free(аргументи);
 
-  if (r != 0) {
-    return r;
-  }
-
-  return uv_run(uv_default_loop(), UV_RUN_DEFAULT);
+  return r;
 }

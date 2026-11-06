@@ -7,14 +7,10 @@
 Треба:
 
 - GNU/Linux
-- [Ціль](https://ціль.мавка.укр) _0.83.0_
+- [Ціль](https://ціль.мавка.укр) _0.84.0_
 - Clang, LLVM, LLD, Make, CMake, etc
 - [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) (для компіляції для Windows)
 - [osxcross](https://github.com/tpoechtrager/osxcross) (для компіляції для MacOS, треба [MacOSX 14.0 SDK](https://github.com/roblabla/MacOSX-SDKs/releases/tag/macosx14.0))
-
-```shell
-bash scripts/download_libs.sh
-```
 
 ```shell
 bash scripts/build.sh debug linux-x86_64
@@ -63,10 +59,6 @@ OSXCROSS_PATH="$HOME/Compilers/osxcross/target" bash scripts/build.sh debug maco
 ANDROID_NDK_HOME="$HOME/Compilers/android-ndk-r27d" bash scripts/build.sh debug android-aarch64
 ```
 
-Для всіх платформ, окрім **wasm**, будуть збудовані з нуля **libuv**, **openssl**, **curl**.
-
-Для платформ **linux** та **android** будуть збудовані з нуля **ncurses**, **readline**.
-
 ### Як збудувати osxcross
 
 ```shell
@@ -85,7 +77,7 @@ UNATTENDED=1 ./build.sh
 ## Розробка
 
 Мавку написано мовою Ціль. Але.
-Деякі частини, такі як взаємодія з операційною системою (Linux/MacOS/Windows) і взаємодія з мережею, написані мовою _C (eng)_ (зараз зробити інакше не вийде).
+Деякі частини, такі як взаємодія з операційною системою (Linux/MacOS/Windows), написані мовою _C (eng)_ (зараз зробити інакше не вийде).
 Тому під час розробки це треба мати наувазі - використання _C (eng)_ лише для крайньої необхідності.
 
 Усі файли, що написані мовою _C (eng)_, розташовуються в папці `external` та підпапках відповідно до ОС.

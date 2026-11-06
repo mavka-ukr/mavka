@@ -92,7 +92,7 @@ while IFS= read -r line || [ -n "$line" ]; do
   line=$(echo "$line" | xargs)
   [[ -z "$line" || "$line" =~ ^# ]] && continue
 
-  echo "компілювання $line" >&2
+  echo "переклад $line" >&2
   $TSIL_CMD \
     "$(realpath --relative-to="$(pwd)" "$SEMIREADY_DIR/$line.c")" -Ф=сіанг -П="$TSIL_PLATFORM" \
     скомпілювати \
