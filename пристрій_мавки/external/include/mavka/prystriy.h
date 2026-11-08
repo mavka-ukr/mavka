@@ -3,11 +3,25 @@
 
 #include "mavka/tsil.h"
 
-#define КолірВиводуСтандартний 0
-#define КолірВиводуЧервоний 1
-#define КолірВиводуЗелений 2
-#define КолірВиводуСиній 3
-#define КолірВиводуЖовтий 4
+typedef enum PristriyMavkyWriteToStdoutColor {
+  КолірВиводуСтандартний = 0,
+  КолірВиводуЧервоний = 1,
+  КолірВиводуЗелений = 2,
+  КолірВиводуСиній = 3,
+  КолірВиводуЖовтий = 4,
+} PristriyMavkyWriteToStdoutColor;
+
+void* pristriy_mavky_malloc(size_t size);
+
+void* pristriy_mavky_realloc(void* value, size_t new_size);
+
+void pristriy_mavky_free(void* value);
+
+void pristriy_mavky_write_to_stdout(char* data, size_t size);
+
+void pristriy_mavky_write_utf8_to_stdout(PristriyMavkyWriteToStdoutColor color,
+                                         char* data,
+                                         size_t size);
 
 double pristriy_mavky_double_pow(double value, double exp);
 
@@ -47,35 +61,6 @@ bool pristriy_mavky_read_input_async(
     void* arg,
     bool allow_history);
 
-// ---
-
-логічне пристрій_мавки_отримати_версію_як_ю8(п8** вихід_даних,
-                                             природне* вихід_розміру);
-
-void пристрій_мавки_вивести_сирі_дані(п8* дані, природне розмір);
-
-void пристрій_мавки_вивести_шлях(природне колір, п8* дані, природне розмір);
-
-void пристрій_мавки_вивести_ю8(природне колір, п8* дані, природне розмір);
-
-адреса пристрій_мавки_виділити(природне розмір);
-
-адреса пристрій_мавки_перевиділити(адреса значення, природне новий_розмір);
-
-void пристрій_мавки_звільнити(адреса значення);
-
-void пристрій_мавки_вийти(ц32 код_виходу);
-
-логічне пристрій_мавки_перекодувати_ю8_в_кд(природне розмір,
-                                            п8* дані,
-                                            природне* вихід_розміру,
-                                            п8** вихід_даних,
-                                            природне* вихід_позиції_помилки);
-
-логічне пристрій_мавки_перекодувати_кд_в_ю8(природне розмір,
-                                            п8* дані,
-                                            природне* вихід_розміру,
-                                            п8** вихід_даних,
-                                            природне* вихід_позиції_помилки);
+void pristriy_mavky_exit(int code);
 
 #endif // PRYSTRIY_H

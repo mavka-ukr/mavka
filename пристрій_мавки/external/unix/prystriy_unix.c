@@ -8,24 +8,16 @@
 #include <unistd.h>
 #include "mavka/prystriy.h"
 
-логічне пристрій_мавки_отримати_версію_як_ю8(п8** вихід_даних,
-                                             природне* вихід_розміру) {
-  *вихід_розміру = strlen(MAVKA_VERSION);
-  *вихід_даних = (п8*)strdup(MAVKA_VERSION);
-
-  return true;
+void* pristriy_mavky_malloc(size_t size) {
+  return malloc(size);
 }
 
-адреса пристрій_мавки_виділити(природне розмір) {
-  return (адреса)malloc(розмір);
+void* pristriy_mavky_realloc(void* value, size_t new_size) {
+  return realloc(value, new_size);
 }
 
-адреса пристрій_мавки_перевиділити(адреса значення, природне новий_розмір) {
-  return (адреса)realloc(значення, новий_розмір);
-}
-
-void пристрій_мавки_звільнити(адреса значення) {
-  free(значення);
+void pristriy_mavky_free(void* value) {
+  free(value);
 }
 
 static void пристрій_мавки_вивести_колір(природне значення) {
@@ -50,46 +42,36 @@ static void пристрій_мавки_вивести_колір(природн
   }
 }
 
-extern void пристрій_мавки_вивести_сирі_дані(п8* дані, природне розмір) {
-  fwrite(дані, 1, розмір, stdout);
+void pristriy_mavky_write_to_stdout(char* data, size_t size) {
+  fwrite(data, 1, size, stdout);
 }
 
-extern void пристрій_мавки_вивести_шлях(природне колір,
-                                        п8* дані,
-                                        природне розмір) {
-  пристрій_мавки_вивести_колір(колір);
+void pristriy_mavky_write_utf8_to_stdout(PristriyMavkyWriteToStdoutColor color,
+                                         char* data,
+                                         size_t size) {
+  пристрій_мавки_вивести_колір(color);
 
-  fwrite(дані, 1, розмір, stdout);
+  fwrite(data, 1, size, stdout);
 
   пристрій_мавки_вивести_колір(КолірВиводуСтандартний);
 }
 
-extern void пристрій_мавки_вивести_ю8(природне колір,
-                                      п8* дані,
-                                      природне розмір) {
-  пристрій_мавки_вивести_колір(колір);
-
-  fwrite(дані, 1, розмір, stdout);
-
-  пристрій_мавки_вивести_колір(КолірВиводуСтандартний);
-}
-
-extern void пристрій_мавки_вийти(ц32 код_виходу) {
-  exit(код_виходу);
+void pristriy_mavky_exit(int code) {
+  exit(code);
 }
 
 bool pristriy_mavky_read_file(char* path_data,
                               size_t path_size,
                               char** data_out,
                               size_t* size_out) {
-  char* pathstr = (char*)пристрій_мавки_виділити(path_size + 1);
+  char* pathstr = (char*)pristriy_mavky_malloc(path_size + 1);
   for (size_t і = 0; і < path_size; і++) {
     pathstr[і] = (char)path_data[і];
   }
   pathstr[path_size] = '\0';
 
   FILE* f = fopen(pathstr, "rb");
-  пристрій_мавки_звільнити(pathstr);
+  pristriy_mavky_free(pathstr);
   if (!f) {
     return false;
   }
@@ -98,7 +80,7 @@ bool pristriy_mavky_read_file(char* path_data,
   *size_out = ftell(f);
   fseek(f, 0, SEEK_SET);
 
-  *data_out = (char*)пристрій_мавки_виділити(*size_out);
+  *data_out = (char*)pristriy_mavky_malloc(*size_out);
   if (!*data_out) {
     fclose(f);
     return false;
@@ -118,7 +100,7 @@ bool pristriy_mavky_uint64_to_str(size_t value,
     return false;
   }
   *size_out = (size_t)len;
-  *data_out = (char*)пристрій_мавки_виділити(*size_out);
+  *data_out = (char*)pristriy_mavky_malloc(*size_out);
   if (!*data_out) {
     return false;
   }
@@ -137,7 +119,7 @@ bool pristriy_mavky_int64_to_str(ssize_t value,
     return false;
   }
   *size_out = (size_t)len;
-  *data_out = (char*)пристрій_мавки_виділити(*size_out);
+  *data_out = (char*)pristriy_mavky_malloc(*size_out);
   if (!*data_out) {
     return false;
   }
@@ -162,7 +144,7 @@ bool pristriy_mavky_double_to_str(double value,
   if (isnan(value)) {
     char nan_str[] = "невизначеність";
     *size_out = sizeof(nan_str) - 1;
-    *data_out = (char*)пристрій_мавки_виділити(*size_out);
+    *data_out = (char*)pristriy_mavky_malloc(*size_out);
     if (!*data_out)
       return false;
     memcpy(*data_out, nan_str, *size_out);
@@ -174,7 +156,7 @@ bool pristriy_mavky_double_to_str(double value,
     char* inf_str = value > 0 ? "нескінченність" : "-нескінченність";
     *size_out = value > 0 ? sizeof("нескінченність") - 1
                           : sizeof("-нескінченність") - 1;
-    *data_out = (char*)пристрій_мавки_виділити(*size_out);
+    *data_out = (char*)pristriy_mavky_malloc(*size_out);
     if (!*data_out)
       return false;
     memcpy(*data_out, inf_str, *size_out);
@@ -208,7 +190,7 @@ bool pristriy_mavky_double_to_str(double value,
     size_t mantissa_len = (size_t)(e_pos - buf);
 
     *size_out = mantissa_len;
-    *data_out = (char*)пристрій_мавки_виділити(*size_out);
+    *data_out = (char*)pristriy_mavky_malloc(*size_out);
     if (!*data_out)
       return false;
 
@@ -219,7 +201,7 @@ bool pristriy_mavky_double_to_str(double value,
     *exp_size_out = 0;
 
     *size_out = (size_t)len;
-    *data_out = (char*)пристрій_мавки_виділити(*size_out);
+    *data_out = (char*)pristriy_mavky_malloc(*size_out);
     if (!*data_out)
       return false;
 
@@ -232,7 +214,7 @@ bool pristriy_mavky_double_to_str(double value,
 }
 
 bool pristriy_mavky_str_to_double(char* data, size_t size, double* out) {
-  char* str = (char*)пристрій_мавки_виділити(size + 1);
+  char* str = (char*)pristriy_mavky_malloc(size + 1);
   size_t len = 0;
   for (size_t і = 0; і < size; і++) {
     unsigned char c = (unsigned char)data[і];
@@ -261,17 +243,17 @@ bool pristriy_mavky_str_to_double(char* data, size_t size, double* out) {
   *out = strtod(str, &endptr);
 
   if (str == endptr) {
-    пристрій_мавки_звільнити(str);
+    pristriy_mavky_free(str);
     return false;
   } else if (errno == ERANGE) {
-    пристрій_мавки_звільнити(str);
+    pristriy_mavky_free(str);
     return false;
   } else if (*endptr != '\0') {
-    пристрій_мавки_звільнити(str);
+    pristriy_mavky_free(str);
     return false;
   }
 
-  пристрій_мавки_звільнити(str);
+  pristriy_mavky_free(str);
   return true;
 }
 
@@ -280,7 +262,7 @@ double pristriy_mavky_double_pow(double value, double exp) {
 }
 
 bool pristriy_mavky_check_if_file_exists(char* path_data, size_t path_size) {
-  char* pathstr = (char*)пристрій_мавки_виділити(path_size + 1);
+  char* pathstr = (char*)pristriy_mavky_malloc(path_size + 1);
   for (size_t і = 0; і < path_size; і++) {
     pathstr[і] = (char)path_data[і];
   }
@@ -294,7 +276,7 @@ bool pristriy_mavky_check_if_file_exists(char* path_data, size_t path_size) {
     }
   }
 
-  пристрій_мавки_звільнити(pathstr);
+  pristriy_mavky_free(pathstr);
   return res;
 }
 
@@ -302,14 +284,14 @@ bool pristriy_mavky_get_absolute_path(char* path_data,
                                       size_t path_size,
                                       char** data_out,
                                       size_t* size_out) {
-  char* pathstr = (char*)пристрій_мавки_виділити(path_size + 1);
+  char* pathstr = (char*)pristriy_mavky_malloc(path_size + 1);
   for (size_t і = 0; і < path_size; і++) {
     pathstr[і] = (char)path_data[і];
   }
   pathstr[path_size] = '\0';
 
   char* abspath = realpath(pathstr, NULL);
-  пристрій_мавки_звільнити(pathstr);
+  pristriy_mavky_free(pathstr);
 
   if (abspath == NULL) {
     return false;
@@ -317,9 +299,9 @@ bool pristriy_mavky_get_absolute_path(char* path_data,
 
   size_t len = strlen(abspath);
   *size_out = len;
-  *data_out = (char*)пристрій_мавки_виділити(len);
+  *data_out = (char*)pristriy_mavky_malloc(len);
   if (!*data_out) {
-    пристрій_мавки_звільнити(abspath);
+    pristriy_mavky_free(abspath);
     return false;
   }
 
@@ -327,7 +309,7 @@ bool pristriy_mavky_get_absolute_path(char* path_data,
     (*data_out)[і] = abspath[і];
   }
 
-  пристрій_мавки_звільнити(abspath);
+  pristriy_mavky_free(abspath);
   return true;
 }
 
@@ -345,12 +327,12 @@ static char* do_readline(char* prefix, size_t prefix_size, size_t* out_len) {
 }
 #else
 static char* do_readline(char* prefix, size_t prefix_size, size_t* out_len) {
-  пристрій_мавки_вивести_ю8(КолірВиводуСтандартний, (п8*)prefix,
-                            (природне)prefix_size);
+  pristriy_mavky_write_utf8_to_stdout(КолірВиводуСтандартний, prefix,
+                                      prefix_size);
 
   size_t cap = 128;
   size_t len = 0;
-  char* buf = пристрій_мавки_виділити(cap);
+  char* buf = (char*)pristriy_mavky_malloc(cap);
   if (!buf)
     return NULL;
 
@@ -361,9 +343,9 @@ static char* do_readline(char* prefix, size_t prefix_size, size_t* out_len) {
 
     if (len + 1 >= cap) {
       cap *= 2;
-      char* tmp = пристрій_мавки_перевиділити(buf, cap);
+      char* tmp = pristriy_mavky_realloc(buf, cap);
       if (!tmp) {
-        пристрій_мавки_звільнити(buf);
+        pristriy_mavky_free(buf);
         return NULL;
       }
       buf = tmp;
@@ -374,7 +356,7 @@ static char* do_readline(char* prefix, size_t prefix_size, size_t* out_len) {
 
   // If nothing read and EOF, return NULL
   if (len == 0 && c == EOF) {
-    пристрій_мавки_звільнити(buf);
+    pristriy_mavky_free(buf);
     return NULL;
   }
 
@@ -414,13 +396,13 @@ bool pristriy_mavky_get_cwd(char** data_out, size_t* size_out) {
   }
 
   *size_out = strlen(cwd);
-  *data_out = (char*)пристрій_мавки_виділити(*size_out);
+  *data_out = (char*)pristriy_mavky_malloc(*size_out);
   if (!*data_out) {
-    пристрій_мавки_звільнити(cwd);
+    pristriy_mavky_free(cwd);
     return false;
   }
 
   memcpy(*data_out, cwd, *size_out);
-  пристрій_мавки_звільнити(cwd);
+  pristriy_mavky_free(cwd);
   return true;
 }

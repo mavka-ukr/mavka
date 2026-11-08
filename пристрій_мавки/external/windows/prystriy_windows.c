@@ -53,21 +53,6 @@ void out_utf8_string(char* дані) {
   out_utf8_data((п8*)дані, довжина);
 }
 
-extern логічне пристрій_мавки_отримати_версію_як_ю8(п8** вихід_даних,
-                                                    природне* вихід_розміру) {
-  char* версія_ю8 = MAVKA_VERSION;
-
-  природне довжина_версії_ю8 = 0;
-  while (версія_ю8[довжина_версії_ю8] != '\0') {
-    довжина_версії_ю8++;
-  }
-
-  *вихід_розміру = довжина_версії_ю8;
-  *вихід_даних = (п8*)strdup((char*)версія_ю8);
-
-  return TRUE;
-}
-
 static void пристрій_мавки_вивести_колір(природне значення) {
   HANDLE консоль = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -102,26 +87,19 @@ static void пристрій_мавки_вивести_колір(природн
   SetConsoleTextAttribute(консоль, атрибути);
 }
 
-extern void пристрій_мавки_вивести_сирі_дані(п8* дані, природне розмір) {
-  out_utf8_data(дані, розмір);
+void pristriy_mavky_write_to_stdout(char* data, size_t size) {
+  HANDLE консоль = GetStdHandle(STD_OUTPUT_HANDLE);
+  DWORD записано;
+
+  WriteFile(консоль, data, (DWORD)size, &записано, NULL);
 }
 
-extern void пристрій_мавки_вивести_шлях(природне колір,
-                                        п8* дані,
-                                        природне розмір) {
+void pristriy_mavky_write_utf8_to_stdout(PristriyMavkyWriteToStdoutColor color,
+                                         char* data,
+                                         size_t size) {
   пристрій_мавки_вивести_колір(колір);
 
-  out_utf8_data(дані, розмір);
-
-  пристрій_мавки_вивести_колір(КолірВиводуСтандартний);
-}
-
-extern void пристрій_мавки_вивести_ю8(природне колір,
-                                      п8* дані,
-                                      природне розмір) {
-  пристрій_мавки_вивести_колір(колір);
-
-  out_utf8_data(дані, розмір);
+  out_utf8_data(data, size);
 
   пристрій_мавки_вивести_колір(КолірВиводуСтандартний);
 }
@@ -144,8 +122,8 @@ extern void пристрій_мавки_звільнити(адреса знач
   }
 }
 
-extern void пристрій_мавки_вийти(ц32 код_виходу) {
-  ExitProcess((UINT)код_виходу);
+void pristriy_mavky_exit(int code) {
+  ExitProcess((UINT)code);
 }
 
 extern логічне pristriy_mavky_read_file(п8* дані_шляху,
@@ -501,8 +479,8 @@ extern логічне pristriy_mavky_get_absolute_path(п8* дані_шляху,
 }
 
 static char* do_readline(char* prefix, size_t prefix_size, size_t* out_len) {
-  пристрій_мавки_вивести_ю8(КолірВиводуСтандартний, (п8*)prefix,
-                            (природне)prefix_size);
+  pristriy_mavky_write_utf8_to_stdout(КолірВиводуСтандартний, (п8*)prefix,
+                                      (природне)prefix_size);
 
   HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
   if (hStdin == INVALID_HANDLE_VALUE) {
