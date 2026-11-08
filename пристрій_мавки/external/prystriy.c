@@ -32,13 +32,13 @@
 
 п8 пристрій_мавки_отримати_ос() {
 #if defined(_WIN32) || defined(_MSC_VER) || defined(__WIN32__)
-  return 8;
+  return 18;
 #elif defined(__linux__)
-  return 3;
+  return 17;
 #elif defined(__APPLE__)
-  return 4;
+  return 24;
 #elif defined(__FreeBSD__)
-  return 5;
+  return 58;
 #endif
 
   return 0;
