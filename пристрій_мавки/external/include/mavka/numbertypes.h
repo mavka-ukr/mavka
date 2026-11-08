@@ -1,12 +1,13 @@
-#ifndef NUMBERTYPES_H
-#define NUMBERTYPES_H
+#ifndef MAVKA_NUMBERTYPES_H
+#define MAVKA_NUMBERTYPES_H
+
+#ifdef MAVKA_CUSTOM_NUMBERTYPES_H_PATH
+#include MAVKA_CUSTOM_NUMBERTYPES_H_PATH
+#else
 
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-
-#ifndef MAVKA_TYPES_GUARD
-#define MAVKA_TYPES_GUARD
 
 #if defined(_WIN32) || defined(_MSC_VER) || defined(__WIN32__)
 #include <basetsd.h>
@@ -20,4 +21,4 @@ typedef ptrdiff_t ssize_t;
 
 #endif
 
-#endif // NUMBERTYPES_H
+#endif // MAVKA_NUMBERTYPES_H

@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "mavka/prystriy.h"
+#include "../include/mavka/prystriy.h"
 
 static void print_color(PristriyMavkyWriteToStdoutColor color);
 static char* do_readline(char* prefix, size_t prefix_size, size_t* out_len);

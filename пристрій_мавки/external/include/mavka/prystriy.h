@@ -3,6 +3,10 @@
 
 #include "./numbertypes.h"
 
+#ifndef MAVKA_VERSION
+#define MAVKA_VERSION "0.0.0"
+#endif
+
 typedef enum PristriyMavkyWriteToStdoutColor {
   PristriyMavkyColorReset = 0,
   PristriyMavkyColorRed = 1,
