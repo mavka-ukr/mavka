@@ -40,7 +40,7 @@ set_platform_vars() {
 
   case "$platform" in
     linux-i686)
-      BUILD_SYSTEM="linux"; BUILD_ARCH="i686"; COMMON_SYSTEM="stdlib"
+      BUILD_SYSTEM="linux"; BUILD_ARCH="i686"; COMMON_SYSTEM="cstd"
       TARGET="i686-pc-linux-gnu"
       TARGET_CC="$(which clang)"
       TARGET_AR="$(which llvm-ar)"
@@ -54,7 +54,7 @@ set_platform_vars() {
       extra_opts="-lm -ldl -lpthread"
       ;;
     linux-x86_64)
-      BUILD_SYSTEM="linux"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="stdlib"
+      BUILD_SYSTEM="linux"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="cstd"
       TARGET="x86_64-pc-linux-gnu"
       TARGET_CC="$(which clang)"
       TARGET_AR="$(which llvm-ar)"
@@ -68,7 +68,7 @@ set_platform_vars() {
       extra_opts="-lm -ldl -lpthread"
       ;;
     linux-aarch64)
-      BUILD_SYSTEM="linux"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="stdlib"
+      BUILD_SYSTEM="linux"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="cstd"
       TARGET="aarch64-linux-gnu"
       TARGET_CC="$(which clang)"
       TARGET_AR="$(which llvm-ar)"
@@ -88,7 +88,7 @@ set_platform_vars() {
       fi
       local osxcross_path="$OSXCROSS_PATH"
       export PATH="$osxcross_path/bin:$PATH"
-      BUILD_SYSTEM="macos"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="stdlib"
+      BUILD_SYSTEM="macos"; BUILD_ARCH="x86_64"; COMMON_SYSTEM="cstd"
       TARGET="x86_64-apple-darwin23"
       TARGET_CC="$osxcross_path/bin/x86_64-apple-darwin23-clang"
       TARGET_AR="$osxcross_path/bin/x86_64-apple-darwin23-ar"
@@ -107,7 +107,7 @@ set_platform_vars() {
       fi
       local osxcross_path="$OSXCROSS_PATH"
       export PATH="$osxcross_path/bin:$PATH"
-      BUILD_SYSTEM="macos"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="stdlib"
+      BUILD_SYSTEM="macos"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="cstd"
       TARGET="aarch64-apple-darwin23"
       TARGET_CC="$osxcross_path/bin/aarch64-apple-darwin23-clang"
       TARGET_AR="$osxcross_path/bin/aarch64-apple-darwin23-ar"
@@ -165,7 +165,7 @@ set_platform_vars() {
         exit 1
       fi
       local ndk_toolchain="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64"
-      BUILD_SYSTEM="linux"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="stdlib"
+      BUILD_SYSTEM="linux"; BUILD_ARCH="aarch64"; COMMON_SYSTEM="cstd"
       TARGET="aarch64-linux-android24"
       TARGET_CC="$ndk_toolchain/bin/aarch64-linux-android24-clang"
       TARGET_AR="$ndk_toolchain/bin/llvm-ar"
