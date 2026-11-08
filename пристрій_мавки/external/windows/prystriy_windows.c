@@ -628,7 +628,7 @@ static char* do_readline(char* prefix, size_t prefix_size, size_t* out_len) {
   return buf;
 }
 
-extern логічне пристрій_мавки_читати_ю8_асинхронно(
+extern логічне pristriy_mavky_read_input_async(
     п8* дані_перед,
     природне розмір_перед,
     void (*обробник)(п8* дані,

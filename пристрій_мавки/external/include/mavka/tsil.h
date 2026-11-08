@@ -50,7 +50,7 @@ typedef struct ю8 ю8;
 typedef struct кд кд;
 
 static логічне ні = 0;
-static логічне так = 0;
+static логічне так = 1;
 static адреса пусто = NULL;
 
 struct ю8 {

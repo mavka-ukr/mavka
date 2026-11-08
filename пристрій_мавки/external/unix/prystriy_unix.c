@@ -98,7 +98,7 @@ bool pristriy_mavky_read_file(char* path_data,
   *size_out = ftell(f);
   fseek(f, 0, SEEK_SET);
 
-  *data_out = (п8*)пристрій_мавки_виділити(*size_out);
+  *data_out = (char*)пристрій_мавки_виділити(*size_out);
   if (!*data_out) {
     fclose(f);
     return false;
@@ -320,14 +320,14 @@ bool pristriy_mavky_get_absolute_path(char* path_data,
 
   size_t len = strlen(abspath);
   *size_out = len;
-  *data_out = (п8*)пристрій_мавки_виділити(len);
+  *data_out = (char*)пристрій_мавки_виділити(len);
   if (!*data_out) {
     пристрій_мавки_звільнити(abspath);
     return false;
   }
 
-  for (природне і = 0; і < len; і++) {
-    (*data_out)[і] = (п8)abspath[і];
+  for (size_t і = 0; і < len; і++) {
+    (*data_out)[і] = abspath[і];
   }
 
   пристрій_мавки_звільнити(abspath);
@@ -390,25 +390,22 @@ static char* do_readline(char* prefix, size_t prefix_size, size_t* out_len) {
 }
 #endif
 
-extern логічне пристрій_мавки_читати_ю8_асинхронно(
-    п8* дані_перед,
-    природне розмір_перед,
-    void (*обробник)(п8* дані,
-                     природне розмір,
-                     природне кінець_файлу,
-                     адреса аргумент),
-    адреса аргумент,
-    природне дозволити_історію) {
+bool pristriy_mavky_read_input_async(
+    char* prefix_data,
+    size_t prefix_size,
+    void (*callback)(char* data, size_t data_size, bool eof, void* arg),
+    void* arg,
+    bool allow_history) {
   size_t len;
-  char* data = do_readline((char*)дані_перед, (size_t)розмір_перед, &len);
+  char* data = do_readline(prefix_data, prefix_size, &len);
 
   if (!data) {
-    обробник((п8*)data, (природне)len, true, аргумент);
+    callback(data, len, true, arg);
 
     return true;
   }
 
-  обробник((п8*)data, (природне)len, false, аргумент);
+  callback(data, len, false, arg);
 
   return true;
 }
@@ -420,7 +417,7 @@ bool pristriy_mavky_get_cwd(char** data_out, size_t* size_out) {
   }
 
   *size_out = strlen(cwd);
-  *data_out = (п8*)пристрій_мавки_виділити(*size_out);
+  *data_out = (char*)пристрій_мавки_виділити(*size_out);
   if (!*data_out) {
     пристрій_мавки_звільнити(cwd);
     return false;
