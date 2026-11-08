@@ -56,7 +56,7 @@ int main(void) {
     аргументи[i].дані = allocated_buffers[i];
   }
 
-  int r = почати(argc, аргументи);
+  int r = почати_мавку_ю8_ю8(argc, аргументи);
 
   for (int i = 0; i < argc; i++) {
     if (allocated_buffers[i]) {

@@ -5,6 +5,26 @@ size_t strlen(const char* str);
 char* strdup(const char* s);
 void* memcpy(void* restrict dest, const void* restrict src, size_t n);
 
+логічне пристрій_мавки_отримати_версію_як_ю8(п8** вихід_даних,
+                                             природне* вихід_розміру) {
+  *вихід_розміру = strlen(MAVKA_VERSION);
+  *вихід_даних = (п8*)strdup(MAVKA_VERSION);
+
+  return true;
+}
+
+адреса пристрій_мавки_виділити(природне розмір) {
+  return (адреса)malloc(розмір);
+}
+
+адреса пристрій_мавки_перевиділити(адреса значення, природне новий_розмір) {
+  return (адреса)realloc(значення, новий_розмір);
+}
+
+void пристрій_мавки_звільнити(адреса значення) {
+  free(значення);
+}
+
 size_t strlen(const char* str) {
   size_t len = 0;
   while (str[len] != '\0') {
