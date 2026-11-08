@@ -48,7 +48,10 @@ typedef void* адреса;
 
 typedef struct ю8 ю8;
 typedef struct кд кд;
-typedef struct Дані Дані;
+
+static логічне ні = 0;
+static логічне так = 0;
+static адреса пусто = NULL;
 
 struct ю8 {
   п8* дані;
@@ -58,11 +61,6 @@ struct ю8 {
 struct кд {
   п8* дані;
   природне розмір;
-};
-
-struct Дані {
-  природне розмір;
-  п8* дані;
 };
 
 #endif // TSIL_H

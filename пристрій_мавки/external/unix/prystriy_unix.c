@@ -78,34 +78,34 @@ extern void пристрій_мавки_вийти(ц32 код_виходу) {
   exit(код_виходу);
 }
 
-extern логічне пристрій_мавки_прочитати_файл(п8* дані_шляху,
-                                             природне розмір_шляху,
-                                             п8** вихід_даних,
-                                             природне* вихід_розміру) {
-  char* шлях_рядок = (char*)пристрій_мавки_виділити(розмір_шляху + 1);
-  for (природне і = 0; і < розмір_шляху; і++) {
-    шлях_рядок[і] = (char)дані_шляху[і];
+bool pristriy_mavky_read_file(char* path_data,
+                              size_t path_size,
+                              char** data_out,
+                              size_t* size_out) {
+  char* pathstr = (char*)пристрій_мавки_виділити(path_size + 1);
+  for (size_t і = 0; і < path_size; і++) {
+    pathstr[і] = (char)path_data[і];
   }
-  шлях_рядок[розмір_шляху] = '\0';
+  pathstr[path_size] = '\0';
 
-  FILE* файл = fopen(шлях_рядок, "rb");
-  пристрій_мавки_звільнити(шлях_рядок);
-  if (!файл) {
+  FILE* f = fopen(pathstr, "rb");
+  пристрій_мавки_звільнити(pathstr);
+  if (!f) {
     return false;
   }
 
-  fseek(файл, 0, SEEK_END);
-  *вихід_розміру = ftell(файл);
-  fseek(файл, 0, SEEK_SET);
+  fseek(f, 0, SEEK_END);
+  *size_out = ftell(f);
+  fseek(f, 0, SEEK_SET);
 
-  *вихід_даних = (п8*)пристрій_мавки_виділити(*вихід_розміру);
-  if (!*вихід_даних) {
-    fclose(файл);
+  *data_out = (п8*)пристрій_мавки_виділити(*size_out);
+  if (!*data_out) {
+    fclose(f);
     return false;
   }
 
-  fread(*вихід_даних, 1, *вихід_розміру, файл);
-  fclose(файл);
+  fread(*data_out, 1, *size_out, f);
+  fclose(f);
   return true;
 }
 
@@ -282,58 +282,55 @@ extern р64 пристрій_мавки_піднести_до_степеня_р6
   return pow(значення, степінь);
 }
 
-extern логічне пристрій_мавки_перевірити_чи_шлях_існує_і_є_файлом(
-    п8* дані_шляху,
-    природне розмір_шляху) {
-  char* шлях_рядок = (char*)пристрій_мавки_виділити(розмір_шляху + 1);
-  for (природне і = 0; і < розмір_шляху; і++) {
-    шлях_рядок[і] = (char)дані_шляху[і];
+bool pristriy_mavky_check_if_file_exists(char* path_data, size_t path_size) {
+  char* pathstr = (char*)пристрій_мавки_виділити(path_size + 1);
+  for (size_t і = 0; і < path_size; і++) {
+    pathstr[і] = (char)path_data[і];
   }
-  шлях_рядок[розмір_шляху] = '\0';
+  pathstr[path_size] = '\0';
 
-  struct stat буфер_статистики;
-  логічне результат = false;
-  if (stat(шлях_рядок, &буфер_статистики) == 0) {
-    if (S_ISREG(буфер_статистики.st_mode)) {
-      результат = true;
+  struct stat statbuf;
+  bool res = false;
+  if (stat(pathstr, &statbuf) == 0) {
+    if (S_ISREG(statbuf.st_mode)) {
+      res = true;
     }
   }
 
-  пристрій_мавки_звільнити(шлях_рядок);
-  return результат;
+  пристрій_мавки_звільнити(pathstr);
+  return res;
 }
 
-extern логічне пристрій_мавки_отримати_абсолютний_шлях(
-    п8* дані_шляху,
-    природне розмір_шляху,
-    п8** вихід_даних,
-    природне* вихід_розміру) {
-  char* шлях_рядок = (char*)пристрій_мавки_виділити(розмір_шляху + 1);
-  for (природне і = 0; і < розмір_шляху; і++) {
-    шлях_рядок[і] = (char)дані_шляху[і];
+bool pristriy_mavky_get_absolute_path(char* path_data,
+                                      size_t path_size,
+                                      char** data_out,
+                                      size_t* size_out) {
+  char* pathstr = (char*)пристрій_мавки_виділити(path_size + 1);
+  for (size_t і = 0; і < path_size; і++) {
+    pathstr[і] = (char)path_data[і];
   }
-  шлях_рядок[розмір_шляху] = '\0';
+  pathstr[path_size] = '\0';
 
-  char* абсолютний_шлях = realpath(шлях_рядок, NULL);
-  пристрій_мавки_звільнити(шлях_рядок);
+  char* abspath = realpath(pathstr, NULL);
+  пристрій_мавки_звільнити(pathstr);
 
-  if (абсолютний_шлях == NULL) {
+  if (abspath == NULL) {
     return false;
   }
 
-  природне довжина = strlen(абсолютний_шлях);
-  *вихід_розміру = довжина;
-  *вихід_даних = (п8*)пристрій_мавки_виділити(довжина);
-  if (!*вихід_даних) {
-    пристрій_мавки_звільнити(абсолютний_шлях);
+  size_t len = strlen(abspath);
+  *size_out = len;
+  *data_out = (п8*)пристрій_мавки_виділити(len);
+  if (!*data_out) {
+    пристрій_мавки_звільнити(abspath);
     return false;
   }
 
-  for (природне і = 0; і < довжина; і++) {
-    (*вихід_даних)[і] = (п8)абсолютний_шлях[і];
+  for (природне і = 0; і < len; і++) {
+    (*data_out)[і] = (п8)abspath[і];
   }
 
-  пристрій_мавки_звільнити(абсолютний_шлях);
+  пристрій_мавки_звільнити(abspath);
   return true;
 }
 
@@ -416,22 +413,20 @@ extern логічне пристрій_мавки_читати_ю8_асинхр�
   return true;
 }
 
-extern логічне пристрій_мавки_отримати_поточний_шлях_процесу(
-    п8** вихід_даних,
-    природне* вихід_розміру) {
-  char* поточна_тека = getcwd(NULL, 0);
-  if (поточна_тека == NULL) {
+bool pristriy_mavky_get_cwd(char** data_out, size_t* size_out) {
+  char* cwd = getcwd(NULL, 0);
+  if (cwd == NULL) {
     return false;
   }
 
-  *вихід_розміру = strlen(поточна_тека);
-  *вихід_даних = (п8*)пристрій_мавки_виділити(*вихід_розміру);
-  if (!*вихід_даних) {
-    пристрій_мавки_звільнити(поточна_тека);
+  *size_out = strlen(cwd);
+  *data_out = (п8*)пристрій_мавки_виділити(*size_out);
+  if (!*data_out) {
+    пристрій_мавки_звільнити(cwd);
     return false;
   }
 
-  memcpy(*вихід_даних, поточна_тека, *вихід_розміру);
-  пристрій_мавки_звільнити(поточна_тека);
+  memcpy(*data_out, cwd, *size_out);
+  пристрій_мавки_звільнити(cwd);
   return true;
 }

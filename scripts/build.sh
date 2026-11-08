@@ -234,12 +234,17 @@ set -x
   "пристрій_мавки/external/$COMMON_SYSTEM/main_$COMMON_SYSTEM.c"
 
  $CLANG_CMD \
+  -c -o "$READY_DIR/prystriy.o" \
+  "пристрій_мавки/external/prystriy.c"
+
+ $CLANG_CMD \
   -c -o "$READY_DIR/prystriy_$COMMON_SYSTEM.o" \
   "пристрій_мавки/external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c"
 
  $CLANG_CMD \
   -o "$READY_DIR/$OUTFILENAME" \
   "$READY_DIR/main.o" \
+  "$READY_DIR/prystriy.o" \
   "$READY_DIR/prystriy_$COMMON_SYSTEM.o" \
   $OFILES \
   $STATIC_LIBS
