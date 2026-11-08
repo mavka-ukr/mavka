@@ -1,8 +1,3 @@
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <sys/types.h>
-
 #include "mavka/prystriy.h"
 #include "mavka/tsil.h"
 
@@ -33,6 +28,20 @@
   }
 
   return так;
+}
+
+п8 пристрій_мавки_отримати_ос() {
+#if defined(_WIN32) || defined(_MSC_VER) || defined(__WIN32__)
+  return 8;
+#elif defined(__linux__)
+  return 3;
+#elif defined(__APPLE__)
+  return 4;
+#elif defined(__FreeBSD__)
+  return 5;
+#endif
+
+  return 0;
 }
 
 адреса пристрій_мавки_виділити(природне розмір) {

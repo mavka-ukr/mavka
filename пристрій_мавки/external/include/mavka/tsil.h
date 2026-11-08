@@ -1,6 +1,8 @@
 #ifndef TSIL_H
 #define TSIL_H
 
+#include "./numbertypes.h"
+
 typedef bool логічне;
 typedef uint8_t п8;
 typedef uint16_t п16;

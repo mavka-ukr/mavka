@@ -1,9 +1,5 @@
 #include <signal.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
 #include <string.h>
-#include <sys/types.h>
 
 #include "mavka/main.h"
 #include "mavka/prystriy.h"

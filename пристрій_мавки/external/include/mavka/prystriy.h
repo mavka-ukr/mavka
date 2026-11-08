@@ -1,6 +1,8 @@
 #ifndef PRYSTRIY_H
 #define PRYSTRIY_H
 
+#include "./numbertypes.h"
+
 typedef enum PristriyMavkyWriteToStdoutColor {
   PristriyMavkyColorReset = 0,
   PristriyMavkyColorRed = 1,
