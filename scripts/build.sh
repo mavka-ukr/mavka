@@ -12,7 +12,7 @@ BUILD_PLATFORM="$2"
 
 TSIL="${TSIL:-ціль}"
 
-CLANG_OPTIONS="-DMAVKA_VERSION=\"$BUILD_VERSION\" -Iexternal/include"
+CLANG_OPTIONS="-DMAVKA_VERSION=\"$BUILD_VERSION\" -Iпристрій_мавки/external/include"
 OPTIMIZATIONS_CFLAGS=""
 
 print_usage() {
@@ -231,11 +231,11 @@ set -x
 
  $CLANG_CMD \
   -c -o "$READY_DIR/main.o" \
-  "external/$COMMON_SYSTEM/main_$COMMON_SYSTEM.c"
+  "пристрій_мавки/external/$COMMON_SYSTEM/main_$COMMON_SYSTEM.c"
 
  $CLANG_CMD \
   -c -o "$READY_DIR/prystriy_$COMMON_SYSTEM.o" \
-  "external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c"
+  "пристрій_мавки/external/$COMMON_SYSTEM/prystriy_$COMMON_SYSTEM.c"
 
  $CLANG_CMD \
   -o "$READY_DIR/$OUTFILENAME" \
