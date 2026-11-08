@@ -80,8 +80,56 @@ void пристрій_мавки_вивести_кд(природне колір
   пристрій_мавки_звільнити(дані_ю8);
 }
 
-р64 пристрій_мавки_піднести_до_степеня_р64(р64 значення, р64 степінь) {
+р64 пристрій_мавки_мат_степінь(р64 значення, р64 степінь) {
   return (double)pristriy_mavky_double_pow((double)значення, (double)степінь);
+}
+
+р64 пристрій_мавки_мат_син(р64 значення) {
+  return (double)pristriy_mavky_double_sin((double)значення);
+}
+
+р64 пристрій_мавки_мат_кос(р64 значення) {
+  return (double)pristriy_mavky_double_cos((double)значення);
+}
+
+р64 пристрій_мавки_мат_тан(р64 значення) {
+  return (double)pristriy_mavky_double_tan((double)значення);
+}
+
+р64 пристрій_мавки_мат_асин(р64 значення) {
+  return (double)pristriy_mavky_double_asin((double)значення);
+}
+
+р64 пристрій_мавки_мат_акос(р64 значення) {
+  return (double)pristriy_mavky_double_acos((double)значення);
+}
+
+р64 пристрій_мавки_мат_атан(р64 значення) {
+  return (double)pristriy_mavky_double_atan((double)значення);
+}
+
+р64 пристрій_мавки_мат_абс(р64 значення) {
+  return (double)pristriy_mavky_double_abs((double)значення);
+}
+
+р64 пристрій_мавки_мат_експ(р64 значення) {
+  return (double)pristriy_mavky_double_exp((double)значення);
+}
+
+р64 пристрій_мавки_мат_кор2(р64 значення) {
+  return (double)pristriy_mavky_double_sqrt2((double)значення);
+}
+
+р64 пристрій_мавки_мат_стеля(р64 значення) {
+  return (double)pristriy_mavky_double_ceil((double)значення);
+}
+
+р64 пристрій_мавки_мат_підлога(р64 значення) {
+  return (double)pristriy_mavky_double_floor((double)значення);
+}
+
+р64 пристрій_мавки_мат_округлити(р64 значення) {
+  return (double)pristriy_mavky_double_round((double)значення);
 }
 
 логічне пристрій_мавки_перетворити_п64_в_кд(п64 значення,

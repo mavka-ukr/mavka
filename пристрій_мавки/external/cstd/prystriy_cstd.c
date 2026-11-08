@@ -42,6 +42,42 @@ void pristriy_mavky_write_utf8_to_stdout(PristriyMavkyWriteToStdoutColor color,
 double pristriy_mavky_double_pow(double value, double exp) {
   return pow(value, exp);
 }
+double pristriy_mavky_double_sin(double value) {
+  return sin(value);
+}
+double pristriy_mavky_double_cos(double value) {
+  return cos(value);
+}
+double pristriy_mavky_double_tan(double value) {
+  return tan(value);
+}
+double pristriy_mavky_double_asin(double value) {
+  return asin(value);
+}
+double pristriy_mavky_double_acos(double value) {
+  return acos(value);
+}
+double pristriy_mavky_double_atan(double value) {
+  return atan(value);
+}
+double pristriy_mavky_double_abs(double value) {
+  return fabs(value);
+}
+double pristriy_mavky_double_exp(double value) {
+  return exp(value);
+}
+double pristriy_mavky_double_sqrt2(double value) {
+  return sqrt(value);
+}
+double pristriy_mavky_double_ceil(double value) {
+  return ceil(value);
+}
+double pristriy_mavky_double_floor(double value) {
+  return floor(value);
+}
+double pristriy_mavky_double_round(double value) {
+  return round(value);
+}
 
 bool pristriy_mavky_uint64_to_str(size_t value,
                                   char** data_out,
