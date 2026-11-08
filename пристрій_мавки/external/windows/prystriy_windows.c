@@ -53,7 +53,7 @@ void out_utf8_string(char* дані) {
   out_utf8_data((п8*)дані, довжина);
 }
 
-static void пристрій_мавки_вивести_колір(природне значення) {
+static void print_color(природне значення) {
   HANDLE консоль = GetStdHandle(STD_OUTPUT_HANDLE);
 
   // Enable virtual terminal processing for ANSI color support
@@ -64,19 +64,19 @@ static void пристрій_мавки_вивести_колір(природн
 
   WORD атрибути;
   switch (значення) {
-    case КолірВиводуСтандартний:
+    case PristriyMavkyColorReset:
       атрибути = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
       break;
-    case КолірВиводуЧервоний:
+    case PristriyMavkyColorRed:
       атрибути = FOREGROUND_RED | FOREGROUND_INTENSITY;
       break;
-    case КолірВиводуЗелений:
+    case PristriyMavkyColorGreen:
       атрибути = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
       break;
-    case КолірВиводуСиній:
+    case PristriyMavkyColorBlue:
       атрибути = FOREGROUND_BLUE | FOREGROUND_INTENSITY;
       break;
-    case КолірВиводуЖовтий:
+    case PristriyMavkyColorYellow:
       атрибути = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
       break;
     default:
@@ -97,11 +97,11 @@ void pristriy_mavky_write_to_stdout(char* data, size_t size) {
 void pristriy_mavky_write_utf8_to_stdout(PristriyMavkyWriteToStdoutColor color,
                                          char* data,
                                          size_t size) {
-  пристрій_мавки_вивести_колір(колір);
+  print_color(колір);
 
   out_utf8_data(data, size);
 
-  пристрій_мавки_вивести_колір(КолірВиводуСтандартний);
+  print_color(PristriyMavkyColorReset);
 }
 
 extern адреса пристрій_мавки_виділити(природне розмір) {
@@ -479,7 +479,7 @@ extern логічне pristriy_mavky_get_absolute_path(п8* дані_шляху,
 }
 
 static char* do_readline(char* prefix, size_t prefix_size, size_t* out_len) {
-  pristriy_mavky_write_utf8_to_stdout(КолірВиводуСтандартний, (п8*)prefix,
+  pristriy_mavky_write_utf8_to_stdout(PristriyMavkyColorReset, (п8*)prefix,
                                       (природне)prefix_size);
 
   HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);

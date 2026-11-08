@@ -1,14 +1,12 @@
 #ifndef PRYSTRIY_H
 #define PRYSTRIY_H
 
-#include "mavka/tsil.h"
-
 typedef enum PristriyMavkyWriteToStdoutColor {
-  КолірВиводуСтандартний = 0,
-  КолірВиводуЧервоний = 1,
-  КолірВиводуЗелений = 2,
-  КолірВиводуСиній = 3,
-  КолірВиводуЖовтий = 4,
+  PristriyMavkyColorReset = 0,
+  PristriyMavkyColorRed = 1,
+  PristriyMavkyColorGreen = 2,
+  PristriyMavkyColorBlue = 3,
+  PristriyMavkyColorYellow = 4,
 } PristriyMavkyWriteToStdoutColor;
 
 void* pristriy_mavky_malloc(size_t size);

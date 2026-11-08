@@ -1,36 +1,6 @@
 #ifndef TSIL_H
 #define TSIL_H
 
-#ifdef _WIN32
-
-#include <windows.h>
-
-typedef BOOL логічне;
-typedef UINT8 п8;
-typedef UINT16 п16;
-typedef UINT32 п32;
-typedef UINT64 п64;
-typedef INT32 ц32;
-typedef INT64 ц64;
-typedef double р64;
-typedef SIZE_T природне;
-typedef SSIZE_T ціле;
-
-#else
-
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-// Include unistd.h on POSIX systems
-#if defined(__unix__) || defined(__unix) || \
-    (defined(__APPLE__) && defined(__MACH__))
-#include <unistd.h>
-#else
-// Define ssize_t for non-POSIX, non-Windows systems
-typedef intptr_t ssize_t;
-#endif
-
 typedef bool логічне;
 typedef uint8_t п8;
 typedef uint16_t п16;
@@ -38,20 +8,15 @@ typedef uint32_t п32;
 typedef uint64_t п64;
 typedef int32_t ц32;
 typedef int64_t ц64;
+typedef float р32;
 typedef double р64;
 typedef size_t природне;
 typedef ssize_t ціле;
-
-#endif
 
 typedef void* адреса;
 
 typedef struct ю8 ю8;
 typedef struct кд кд;
-
-static логічне ні = 0;
-static логічне так = 1;
-static адреса пусто = NULL;
 
 struct ю8 {
   п8* дані;
@@ -62,5 +27,9 @@ struct кд {
   п8* дані;
   природне розмір;
 };
+
+static const логічне ні = 0;
+static const логічне так = 1;
+static const адреса пусто = NULL;
 
 #endif // TSIL_H

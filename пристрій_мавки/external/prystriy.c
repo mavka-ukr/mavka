@@ -1,5 +1,10 @@
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <sys/types.h>
 
 #include "mavka/prystriy.h"
+#include "mavka/tsil.h"
 
 логічне пристрій_мавки_перекодувати_ю8_в_кд(природне розмір,
                                             п8* дані,

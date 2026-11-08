@@ -1,12 +1,22 @@
 #include <errno.h>
 #include <libgen.h>
 #include <math.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
+
 #include "mavka/prystriy.h"
+
+static void print_color(PristriyMavkyWriteToStdoutColor color);
+static char* do_readline(char* prefix, size_t prefix_size, size_t* out_len);
+
+// ----------------------------
 
 void* pristriy_mavky_malloc(size_t size) {
   return malloc(size);
@@ -20,28 +30,6 @@ void pristriy_mavky_free(void* value) {
   free(value);
 }
 
-static void пристрій_мавки_вивести_колір(природне значення) {
-  if (значення == КолірВиводуСтандартний) {
-    printf("\033[0m");
-  }
-
-  if (значення == КолірВиводуЧервоний) {
-    printf("\033[0;31m");
-  }
-
-  if (значення == КолірВиводуЗелений) {
-    printf("\033[0;32m");
-  }
-
-  if (значення == КолірВиводуСиній) {
-    printf("\033[0;34m");
-  }
-
-  if (значення == КолірВиводуЖовтий) {
-    printf("\033[0;33m");
-  }
-}
-
 void pristriy_mavky_write_to_stdout(char* data, size_t size) {
   fwrite(data, 1, size, stdout);
 }
@@ -49,46 +37,15 @@ void pristriy_mavky_write_to_stdout(char* data, size_t size) {
 void pristriy_mavky_write_utf8_to_stdout(PristriyMavkyWriteToStdoutColor color,
                                          char* data,
                                          size_t size) {
-  пристрій_мавки_вивести_колір(color);
+  print_color(color);
 
   fwrite(data, 1, size, stdout);
 
-  пристрій_мавки_вивести_колір(КолірВиводуСтандартний);
+  print_color(PristriyMavkyColorReset);
 }
 
-void pristriy_mavky_exit(int code) {
-  exit(code);
-}
-
-bool pristriy_mavky_read_file(char* path_data,
-                              size_t path_size,
-                              char** data_out,
-                              size_t* size_out) {
-  char* pathstr = (char*)pristriy_mavky_malloc(path_size + 1);
-  for (size_t і = 0; і < path_size; і++) {
-    pathstr[і] = (char)path_data[і];
-  }
-  pathstr[path_size] = '\0';
-
-  FILE* f = fopen(pathstr, "rb");
-  pristriy_mavky_free(pathstr);
-  if (!f) {
-    return false;
-  }
-
-  fseek(f, 0, SEEK_END);
-  *size_out = ftell(f);
-  fseek(f, 0, SEEK_SET);
-
-  *data_out = (char*)pristriy_mavky_malloc(*size_out);
-  if (!*data_out) {
-    fclose(f);
-    return false;
-  }
-
-  fread(*data_out, 1, *size_out, f);
-  fclose(f);
-  return true;
+double pristriy_mavky_double_pow(double value, double exp) {
+  return pow(value, exp);
 }
 
 bool pristriy_mavky_uint64_to_str(size_t value,
@@ -173,7 +130,7 @@ bool pristriy_mavky_double_to_str(double value,
     }
 
     // Перевіряємо чи round-trip працює
-    р64 parsed = strtod(buf, NULL);
+    double parsed = strtod(buf, NULL);
     if (parsed == value) {
       break;
     }
@@ -185,7 +142,7 @@ bool pristriy_mavky_double_to_str(double value,
 
   char* e_pos = strchr(buf, 'e');
   if (e_pos != NULL) {
-    *exp_size_out = (ціле)strtol(e_pos + 1, NULL, 10);
+    *exp_size_out = (ssize_t)strtol(e_pos + 1, NULL, 10);
 
     size_t mantissa_len = (size_t)(e_pos - buf);
 
@@ -257,27 +214,22 @@ bool pristriy_mavky_str_to_double(char* data, size_t size, double* out) {
   return true;
 }
 
-double pristriy_mavky_double_pow(double value, double exp) {
-  return pow(value, exp);
-}
-
-bool pristriy_mavky_check_if_file_exists(char* path_data, size_t path_size) {
-  char* pathstr = (char*)pristriy_mavky_malloc(path_size + 1);
-  for (size_t і = 0; і < path_size; і++) {
-    pathstr[і] = (char)path_data[і];
-  }
-  pathstr[path_size] = '\0';
-
-  struct stat statbuf;
-  bool res = false;
-  if (stat(pathstr, &statbuf) == 0) {
-    if (S_ISREG(statbuf.st_mode)) {
-      res = true;
-    }
+bool pristriy_mavky_get_cwd(char** data_out, size_t* size_out) {
+  char* cwd = getcwd(NULL, 0);
+  if (cwd == NULL) {
+    return false;
   }
 
-  pristriy_mavky_free(pathstr);
-  return res;
+  *size_out = strlen(cwd);
+  *data_out = (char*)pristriy_mavky_malloc(*size_out);
+  if (!*data_out) {
+    pristriy_mavky_free(cwd);
+    return false;
+  }
+
+  memcpy(*data_out, cwd, *size_out);
+  pristriy_mavky_free(cwd);
+  return true;
 }
 
 bool pristriy_mavky_get_absolute_path(char* path_data,
@@ -313,6 +265,104 @@ bool pristriy_mavky_get_absolute_path(char* path_data,
   return true;
 }
 
+bool pristriy_mavky_check_if_file_exists(char* path_data, size_t path_size) {
+  char* pathstr = (char*)pristriy_mavky_malloc(path_size + 1);
+  for (size_t і = 0; і < path_size; і++) {
+    pathstr[і] = (char)path_data[і];
+  }
+  pathstr[path_size] = '\0';
+
+  struct stat statbuf;
+  bool res = false;
+  if (stat(pathstr, &statbuf) == 0) {
+    if (S_ISREG(statbuf.st_mode)) {
+      res = true;
+    }
+  }
+
+  pristriy_mavky_free(pathstr);
+  return res;
+}
+
+bool pristriy_mavky_read_file(char* path_data,
+                              size_t path_size,
+                              char** data_out,
+                              size_t* size_out) {
+  char* pathstr = (char*)pristriy_mavky_malloc(path_size + 1);
+  for (size_t і = 0; і < path_size; і++) {
+    pathstr[і] = (char)path_data[і];
+  }
+  pathstr[path_size] = '\0';
+
+  FILE* f = fopen(pathstr, "rb");
+  pristriy_mavky_free(pathstr);
+  if (!f) {
+    return false;
+  }
+
+  fseek(f, 0, SEEK_END);
+  *size_out = ftell(f);
+  fseek(f, 0, SEEK_SET);
+
+  *data_out = (char*)pristriy_mavky_malloc(*size_out);
+  if (!*data_out) {
+    fclose(f);
+    return false;
+  }
+
+  fread(*data_out, 1, *size_out, f);
+  fclose(f);
+  return true;
+}
+
+bool pristriy_mavky_read_input_async(
+    char* prefix_data,
+    size_t prefix_size,
+    void (*callback)(char* data, size_t data_size, bool eof, void* arg),
+    void* arg,
+    bool allow_history) {
+  size_t len;
+  char* data = do_readline(prefix_data, prefix_size, &len);
+
+  if (!data) {
+    callback(data, len, true, arg);
+
+    return true;
+  }
+
+  callback(data, len, false, arg);
+
+  return true;
+}
+
+void pristriy_mavky_exit(int code) {
+  exit(code);
+}
+
+// ----------------------------
+
+static void print_color(PristriyMavkyWriteToStdoutColor color) {
+  if (color == PristriyMavkyColorReset) {
+    printf("\033[0m");
+  }
+
+  if (color == PristriyMavkyColorRed) {
+    printf("\033[0;31m");
+  }
+
+  if (color == PristriyMavkyColorGreen) {
+    printf("\033[0;32m");
+  }
+
+  if (color == PristriyMavkyColorBlue) {
+    printf("\033[0;34m");
+  }
+
+  if (color == PristriyMavkyColorYellow) {
+    printf("\033[0;33m");
+  }
+}
+
 #ifdef PROGRAM_USE_READLINE
 #include <readline/readline.h>
 
@@ -327,7 +377,7 @@ static char* do_readline(char* prefix, size_t prefix_size, size_t* out_len) {
 }
 #else
 static char* do_readline(char* prefix, size_t prefix_size, size_t* out_len) {
-  pristriy_mavky_write_utf8_to_stdout(КолірВиводуСтандартний, prefix,
+  pristriy_mavky_write_utf8_to_stdout(PristriyMavkyColorReset, prefix,
                                       prefix_size);
 
   size_t cap = 128;
@@ -368,41 +418,3 @@ static char* do_readline(char* prefix, size_t prefix_size, size_t* out_len) {
   return buf;
 }
 #endif
-
-bool pristriy_mavky_read_input_async(
-    char* prefix_data,
-    size_t prefix_size,
-    void (*callback)(char* data, size_t data_size, bool eof, void* arg),
-    void* arg,
-    bool allow_history) {
-  size_t len;
-  char* data = do_readline(prefix_data, prefix_size, &len);
-
-  if (!data) {
-    callback(data, len, true, arg);
-
-    return true;
-  }
-
-  callback(data, len, false, arg);
-
-  return true;
-}
-
-bool pristriy_mavky_get_cwd(char** data_out, size_t* size_out) {
-  char* cwd = getcwd(NULL, 0);
-  if (cwd == NULL) {
-    return false;
-  }
-
-  *size_out = strlen(cwd);
-  *data_out = (char*)pristriy_mavky_malloc(*size_out);
-  if (!*data_out) {
-    pristriy_mavky_free(cwd);
-    return false;
-  }
-
-  memcpy(*data_out, cwd, *size_out);
-  pristriy_mavky_free(cwd);
-  return true;
-}

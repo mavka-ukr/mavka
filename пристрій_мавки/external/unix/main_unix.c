@@ -1,13 +1,17 @@
 #include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <string.h>
+#include <sys/types.h>
+
 #include "mavka/main.h"
+#include "mavka/prystriy.h"
 
 int main(int argc, char** argv) {
   signal(SIGPIPE, SIG_IGN);
 
-  ю8* аргументи = (ю8*)malloc(argc * sizeof(ю8));
+  ю8* аргументи = (ю8*)pristriy_mavky_malloc(argc * sizeof(ю8));
 
   for (int i = 0; i < argc; i++) {
     аргументи[i].розмір = strlen(argv[i]);
@@ -16,7 +20,7 @@ int main(int argc, char** argv) {
 
   ціле r = почати_мавку_ю8_ю8(argc, аргументи);
 
-  free(аргументи);
+  pristriy_mavky_free(аргументи);
 
   return r;
 }
