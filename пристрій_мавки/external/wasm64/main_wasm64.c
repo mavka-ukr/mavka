@@ -19,7 +19,7 @@ extern ц32 wasmMain(int argc, char** argv) {
 
   int r = почати_мавку_ю8_ю8(argc, аргументи);
 
-  пристрій_мавки_звільнити(аргументи);
+  pristriy_mavky_free(аргументи);
 
   return r;
 }
