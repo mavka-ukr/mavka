@@ -400,8 +400,8 @@ extern логічне pristriy_mavky_read_file(п8* дані_шляху,
   return TRUE;
 }
 
-extern р64 пристрій_мавки_піднести_до_степеня_р64(р64 значення, р64 степінь) {
-  return pow(значення, степінь);
+double pristriy_mavky_double_pow(double value, double exp) {
+  return pow(value, exp);
 }
 
 extern логічне pristriy_mavky_check_if_file_exists(п8* дані_шляху,

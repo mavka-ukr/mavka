@@ -9,6 +9,23 @@
 #define КолірВиводуСиній 3
 #define КолірВиводуЖовтий 4
 
+double pristriy_mavky_double_pow(double value, double exp);
+
+bool pristriy_mavky_uint64_to_str(size_t value,
+                                  char** data_out,
+                                  size_t* size_out);
+
+bool pristriy_mavky_int64_to_str(ssize_t value,
+                                 char** data_out,
+                                 size_t* size_out);
+
+bool pristriy_mavky_double_to_str(double value,
+                                  char** data_out,
+                                  size_t* size_out,
+                                  ssize_t* exp_size_out);
+
+bool pristriy_mavky_str_to_double(char* data, size_t size, double* out);
+
 bool pristriy_mavky_get_cwd(char** data_out, size_t* size_out);
 
 bool pristriy_mavky_get_absolute_path(char* path_data,
@@ -48,23 +65,6 @@ void пристрій_мавки_вивести_ю8(природне колір,
 void пристрій_мавки_звільнити(адреса значення);
 
 void пристрій_мавки_вийти(ц32 код_виходу);
-
-логічне pristriy_mavky_uint64_to_str(п64 значення,
-                                     п8** вихід_даних,
-                                     природне* вихід_розміру);
-
-логічне pristriy_mavky_int64_to_str(ц64 значення,
-                                    п8** вихід_даних,
-                                    природне* вихід_розміру);
-
-логічне pristriy_mavky_double_to_str(р64 значення,
-                                     п8** вихід_даних,
-                                     природне* вихід_розміру,
-                                     ціле* вихід_розміру_експоненти);
-
-логічне pristriy_mavky_str_to_double(п8* дані, природне розмір, р64* вихід);
-
-р64 пристрій_мавки_піднести_до_степеня_р64(р64 значення, р64 степінь);
 
 логічне пристрій_мавки_перекодувати_ю8_в_кд(природне розмір,
                                             п8* дані,

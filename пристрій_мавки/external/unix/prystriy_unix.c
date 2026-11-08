@@ -109,41 +109,40 @@ bool pristriy_mavky_read_file(char* path_data,
   return true;
 }
 
-логічне pristriy_mavky_uint64_to_str(п64 значення,
-                                     п8** вихід_даних,
-                                     природне* вихід_розміру) {
-  char буфер[32];
-  int довжина =
-      snprintf(буфер, sizeof(буфер), "%llu", (unsigned long long)значення);
-  if (довжина < 0) {
+bool pristriy_mavky_uint64_to_str(size_t value,
+                                  char** data_out,
+                                  size_t* size_out) {
+  char buf[32];
+  int len = snprintf(buf, sizeof(buf), "%llu", (unsigned long long)value);
+  if (len < 0) {
     return false;
   }
-  *вихід_розміру = (природне)довжина;
-  *вихід_даних = (п8*)пристрій_мавки_виділити(*вихід_розміру);
-  if (!*вихід_даних) {
+  *size_out = (size_t)len;
+  *data_out = (char*)пристрій_мавки_виділити(*size_out);
+  if (!*data_out) {
     return false;
   }
-  for (природне і = 0; і < *вихід_розміру; і++) {
-    (*вихід_даних)[і] = (п8)буфер[і];
+  for (size_t і = 0; і < *size_out; і++) {
+    (*data_out)[і] = buf[і];
   }
   return true;
 }
 
-логічне pristriy_mavky_int64_to_str(ц64 значення,
-                                    п8** вихід_даних,
-                                    природне* вихід_розміру) {
-  char буфер[32];
-  int довжина = snprintf(буфер, sizeof(буфер), "%lld", (long long)значення);
-  if (довжина < 0) {
+bool pristriy_mavky_int64_to_str(ssize_t value,
+                                 char** data_out,
+                                 size_t* size_out) {
+  char buf[32];
+  int len = snprintf(buf, sizeof(buf), "%lld", (long long)value);
+  if (len < 0) {
     return false;
   }
-  *вихід_розміру = (природне)довжина;
-  *вихід_даних = (п8*)пристрій_мавки_виділити(*вихід_розміру);
-  if (!*вихід_даних) {
+  *size_out = (size_t)len;
+  *data_out = (char*)пристрій_мавки_виділити(*size_out);
+  if (!*data_out) {
     return false;
   }
-  for (природне і = 0; і < *вихід_розміру; і++) {
-    (*вихід_даних)[і] = (п8)буфер[і];
+  for (size_t і = 0; і < *size_out; і++) {
+    (*data_out)[і] = buf[і];
   }
   return true;
 }
@@ -153,93 +152,93 @@ bool pristriy_mavky_read_file(char* path_data,
 // -0.00123 => "-0.00123"
 // 1.2e+30 => "1.2" 30
 // 1.2e-30 => "1.2" -30
-логічне pristriy_mavky_double_to_str(р64 значення,
-                                     п8** вихід_даних,
-                                     природне* вихід_розміру,
-                                     ціле* вихід_розміру_експоненти) {
-  char буфер[64];
-  int довжина;
+bool pristriy_mavky_double_to_str(double value,
+                                  char** data_out,
+                                  size_t* size_out,
+                                  ssize_t* exp_size_out) {
+  char buf[64];
+  int len;
 
-  if (isnan(значення)) {
+  if (isnan(value)) {
     char nan_str[] = "невизначеність";
-    *вихід_розміру = sizeof(nan_str) - 1;
-    *вихід_даних = (п8*)пристрій_мавки_виділити(*вихід_розміру);
-    if (!*вихід_даних)
+    *size_out = sizeof(nan_str) - 1;
+    *data_out = (char*)пристрій_мавки_виділити(*size_out);
+    if (!*data_out)
       return false;
-    memcpy(*вихід_даних, nan_str, *вихід_розміру);
-    *вихід_розміру_експоненти = 0;
+    memcpy(*data_out, nan_str, *size_out);
+    *exp_size_out = 0;
     return true;
   }
 
-  if (isinf(значення)) {
-    char* inf_str = значення > 0 ? "нескінченність" : "-нескінченність";
-    *вихід_розміру = значення > 0 ? sizeof("нескінченність") - 1
-                                  : sizeof("-нескінченність") - 1;
-    *вихід_даних = (п8*)пристрій_мавки_виділити(*вихід_розміру);
-    if (!*вихід_даних)
+  if (isinf(value)) {
+    char* inf_str = value > 0 ? "нескінченність" : "-нескінченність";
+    *size_out = value > 0 ? sizeof("нескінченність") - 1
+                          : sizeof("-нескінченність") - 1;
+    *data_out = (char*)пристрій_мавки_виділити(*size_out);
+    if (!*data_out)
       return false;
-    memcpy(*вихід_даних, inf_str, *вихід_розміру);
-    *вихід_розміру_експоненти = 0;
+    memcpy(*data_out, inf_str, *size_out);
+    *exp_size_out = 0;
     return true;
   }
 
   // Знаходимо найкоротше представлення, яке round-trips
   // Пробуємо від 15 до 17 цифр точності
   for (int precision = 15; precision <= 17; precision++) {
-    довжина = snprintf(буфер, sizeof(буфер), "%.*g", precision, значення);
-    if (довжина < 0 || довжина >= (int)sizeof(буфер)) {
+    len = snprintf(buf, sizeof(buf), "%.*g", precision, value);
+    if (len < 0 || len >= (int)sizeof(buf)) {
       continue;
     }
 
     // Перевіряємо чи round-trip працює
-    р64 parsed = strtod(буфер, NULL);
-    if (parsed == значення) {
+    р64 parsed = strtod(buf, NULL);
+    if (parsed == value) {
       break;
     }
   }
 
-  if (довжина < 0 || довжина >= (int)sizeof(буфер)) {
+  if (len < 0 || len >= (int)sizeof(buf)) {
     return false;
   }
 
-  char* e_pos = strchr(буфер, 'e');
+  char* e_pos = strchr(buf, 'e');
   if (e_pos != NULL) {
-    *вихід_розміру_експоненти = (ціле)strtol(e_pos + 1, NULL, 10);
+    *exp_size_out = (ціле)strtol(e_pos + 1, NULL, 10);
 
-    природне довжина_мантиси = (природне)(e_pos - буфер);
+    size_t mantissa_len = (size_t)(e_pos - buf);
 
-    *вихід_розміру = довжина_мантиси;
-    *вихід_даних = (п8*)пристрій_мавки_виділити(*вихід_розміру);
-    if (!*вихід_даних)
+    *size_out = mantissa_len;
+    *data_out = (char*)пристрій_мавки_виділити(*size_out);
+    if (!*data_out)
       return false;
 
-    for (природне і = 0; і < довжина_мантиси; і++) {
-      (*вихід_даних)[і] = (п8)буфер[і];
+    for (size_t і = 0; і < mantissa_len; і++) {
+      (*data_out)[і] = buf[і];
     }
   } else {
-    *вихід_розміру_експоненти = 0;
+    *exp_size_out = 0;
 
-    *вихід_розміру = (природне)довжина;
-    *вихід_даних = (п8*)пристрій_мавки_виділити(*вихід_розміру);
-    if (!*вихід_даних)
+    *size_out = (size_t)len;
+    *data_out = (char*)пристрій_мавки_виділити(*size_out);
+    if (!*data_out)
       return false;
 
-    for (природне і = 0; і < *вихід_розміру; і++) {
-      (*вихід_даних)[і] = (п8)буфер[і];
+    for (size_t і = 0; і < *size_out; і++) {
+      (*data_out)[і] = buf[і];
     }
   }
 
   return true;
 }
 
-логічне pristriy_mavky_str_to_double(п8* дані, природне розмір, р64* вихід) {
-  char* str = (char*)пристрій_мавки_виділити(розмір + 1);
-  природне len = 0;
-  for (природне і = 0; і < розмір; і++) {
-    unsigned char c = (unsigned char)дані[і];
+bool pristriy_mavky_str_to_double(char* data, size_t size, double* out) {
+  char* str = (char*)пристрій_мавки_виділити(size + 1);
+  size_t len = 0;
+  for (size_t і = 0; і < size; і++) {
+    unsigned char c = (unsigned char)data[і];
     if (c == 0xD0 || c == 0xD1) {
-      if (і + 1 < розмір) {
-        unsigned char c2 = (unsigned char)дані[і + 1];
+      if (і + 1 < size) {
+        unsigned char c2 = (unsigned char)data[і + 1];
         if (c == 0xD0 && c2 == 0xB5) {
           str[len++] = 'e';
           і++;
@@ -259,7 +258,7 @@ bool pristriy_mavky_read_file(char* path_data,
 
   char* endptr;
 
-  *вихід = strtod(str, &endptr);
+  *out = strtod(str, &endptr);
 
   if (str == endptr) {
     пристрій_мавки_звільнити(str);
@@ -276,8 +275,8 @@ bool pristriy_mavky_read_file(char* path_data,
   return true;
 }
 
-extern р64 пристрій_мавки_піднести_до_степеня_р64(р64 значення, р64 степінь) {
-  return pow(значення, степінь);
+double pristriy_mavky_double_pow(double value, double exp) {
+  return pow(value, exp);
 }
 
 bool pristriy_mavky_check_if_file_exists(char* path_data, size_t path_size) {
