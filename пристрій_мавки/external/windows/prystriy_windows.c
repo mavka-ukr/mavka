@@ -1,7 +1,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <windows.h>
-#include "mavka/prystriy.h"
+
+#include "../include/mavka/prystriy.h"
 
 static void out_utf8_data(char* дані, size_t розмір);
 static void out_utf8_string(char* дані);

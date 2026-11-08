@@ -1,8 +1,8 @@
 #include <signal.h>
 #include <string.h>
 
-#include "mavka/main.h"
-#include "mavka/prystriy.h"
+#include "../include/mavka/main.h"
+#include "../include/mavka/prystriy.h"
 
 int main(int argc, char** argv) {
   signal(SIGPIPE, SIG_IGN);
