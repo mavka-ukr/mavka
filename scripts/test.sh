@@ -26,7 +26,7 @@ run_test() {
   echo -n "$test_file: "
 
   # Direct file redirection avoids the slow Bash $(...) pipe bottleneck
-  "$MAVKA" "$test_file" > "$TEMP_OUT" 2>&1
+  $MAVKA "$test_file" > "$TEMP_OUT" 2>&1
   status=$?
 
   # Read the output out of the file into the variable natively
