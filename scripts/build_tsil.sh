@@ -96,7 +96,7 @@ while IFS= read -r line || [ -n "$line" ]; do
   $TSIL_CMD \
     "$(realpath --relative-to="$(pwd)" "$SEMIREADY_DIR/$line.c")" -Ф=сіанг -П="$TSIL_PLATFORM" \
     перекласти \
-    "$(realpath --relative-to="$(pwd)" "$line")" -В=./КД/визначення -В=./визначення -В=./пристрій_мавки/визначення >&2
+    "$(realpath --relative-to="$(pwd)" "$line")" -В=./машина/КД/визначення -В=./машина/визначення -В=./пристрій_мавки/визначення >&2
 
   $CLANG -c -o "$SEMIREADY_DIR/$line.o" "$SEMIREADY_DIR/$line.c"
   OFILES+=" $SEMIREADY_DIR/$line.o"
