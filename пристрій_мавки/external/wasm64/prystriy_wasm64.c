@@ -60,5 +60,3 @@ void* memcpy(void* restrict dest, const void* restrict src, size_t n) {
   // The standard specifies that memcpy always returns the original dest pointer
   return dest;
 }
-
-#include "../unix_wasm/prystriy_unix_wasm64.c"
