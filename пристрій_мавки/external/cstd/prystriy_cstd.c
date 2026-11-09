@@ -8,21 +8,31 @@
 
 #include "../include/mavka/prystriy.h"
 
+#ifndef MAVKA_MALLOC_FN
+#define MAVKA_MALLOC_FN malloc
+#endif
+#ifndef MAVKA_REALLOC_FN
+#define MAVKA_REALLOC_FN realloc
+#endif
+#ifndef MAVKA_FREE_FN
+#define MAVKA_FREE_FN free
+#endif
+
 static void print_color(PristriyMavkyWriteToStdoutColor color);
 static char* do_readline(char* prefix, size_t prefix_size, size_t* out_len);
 
 // ----------------------------
 
 void* pristriy_mavky_malloc(size_t size) {
-  return malloc(size);
+  return MAVKA_MALLOC_FN(size);
 }
 
 void* pristriy_mavky_realloc(void* value, size_t new_size) {
-  return realloc(value, new_size);
+  return MAVKA_REALLOC_FN(value, new_size);
 }
 
 void pristriy_mavky_free(void* value) {
-  free(value);
+  MAVKA_FREE_FN(value);
 }
 
 void pristriy_mavky_write_to_stdout(char* data, size_t size) {
