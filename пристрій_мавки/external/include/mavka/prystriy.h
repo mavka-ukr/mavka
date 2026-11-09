@@ -77,6 +77,15 @@ bool pristriy_mavky_read_input_async(
     void* arg,
     bool allow_history);
 
+void* pristriy_mavky_dlopen(char* path_data, size_t path_size, int* err_out);
+
+void* pristriy_mavky_dlsym(void* dl,
+                           char* name_data,
+                           size_t name_size,
+                           int* err_out);
+
+int pristriy_mavky_dlclose(void* dl);
+
 void pristriy_mavky_exit(int code);
 
 #endif // PRYSTRIY_H

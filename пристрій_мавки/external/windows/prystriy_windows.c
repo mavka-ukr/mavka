@@ -490,6 +490,97 @@ bool pristriy_mavky_read_input_async(
   return TRUE;
 }
 
+void* pristriy_mavky_dlopen(char* path_data, size_t path_size, int* err_out) {
+  *err_out = 0;
+
+  if (!path_data || path_size == 0) {
+    *err_out = -1;
+    return NULL;
+  }
+
+  /* path_data may or may not be NUL-terminated within path_size bytes. */
+  size_t len = strnlen(path_data, path_size);
+
+  /* UTF-8 -> UTF-16, two-step (measure, then convert). */
+  int wlen = MultiByteToWideChar(CP_UTF8, 0, path_data, (int)len, NULL, 0);
+  if (wlen <= 0) {
+    *err_out = -1;
+    return NULL;
+  }
+
+  wchar_t* wpath =
+      (wchar_t*)malloc((size_t)wlen * sizeof(wchar_t) + sizeof(wchar_t));
+  if (!wpath) {
+    *err_out = -1;
+    return NULL;
+  }
+
+  int written =
+      MultiByteToWideChar(CP_UTF8, 0, path_data, (int)len, wpath, wlen);
+  if (written <= 0) {
+    free(wpath);
+    *err_out = -1;
+    return NULL;
+  }
+  wpath[written] = L'\0';
+
+  HMODULE dl = LoadLibraryW(wpath);
+  free(wpath);
+
+  if (!dl) {
+    *err_out = -1;
+    return NULL;
+  }
+
+  return (void*)dl;
+}
+
+void* pristriy_mavky_dlsym(void* dl,
+                           char* name_data,
+                           size_t name_size,
+                           int* err_out) {
+  *err_out = 0;
+
+  if (!dl || !name_data || name_size == 0) {
+    *err_out = -1;
+    return NULL;
+  }
+
+  /* PE export names are ASCII by spec, so valid UTF-8 (i.e. pure ASCII)
+     names work directly with GetProcAddress (LPCSTR). We only need to
+     guarantee NUL-termination, since name_size implies the buffer may
+     not be NUL-terminated. */
+  size_t len = strnlen(name_data, name_size);
+
+  FARPROC dls;
+  if (len < name_size && name_data[len] == '\0') {
+    /* Already NUL-terminated. */
+    dls = GetProcAddress((HMODULE)dl, name_data);
+  } else {
+    char* tmp = (char*)malloc(len + 1);
+    if (!tmp) {
+      *err_out = -1;
+      return NULL;
+    }
+    memcpy(tmp, name_data, len);
+    tmp[len] = '\0';
+    dls = GetProcAddress((HMODULE)dl, tmp);
+    free(tmp);
+  }
+
+  if (!dls) {
+    *err_out = -1;
+    return NULL;
+  }
+
+  return (void*)dls;
+}
+
+int pristriy_mavky_dlclose(void* dl) {
+  BOOL result = FreeLibrary((HMODULE)dl);
+  return result ? 0 : -1;
+}
+
 void pristriy_mavky_exit(int code) {
   ExitProcess((UINT)code);
 }
