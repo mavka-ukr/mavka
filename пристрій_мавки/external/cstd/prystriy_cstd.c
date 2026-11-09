@@ -1,4 +1,3 @@
-#include <dlfcn.h>
 #include <errno.h>
 #include <math.h>
 #include <stdio.h>
@@ -377,6 +376,9 @@ bool pristriy_mavky_read_input_async(
   return true;
 }
 
+#ifndef MAVKA_NO_DLFCN
+#include <dlfcn.h>
+
 void* pristriy_mavky_dlopen(char* path_data, size_t path_size, int* err_out) {
   (void)path_size;
 
@@ -413,6 +415,7 @@ void* pristriy_mavky_dlsym(void* dl,
 int pristriy_mavky_dlclose(void* dl) {
   return dlclose(dl);
 }
+#endif
 
 void pristriy_mavky_exit(int code) {
   exit(code);
