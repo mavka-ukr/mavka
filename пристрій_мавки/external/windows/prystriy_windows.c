@@ -508,8 +508,8 @@ void* pristriy_mavky_dlopen(char* path_data, size_t path_size, int* err_out) {
     return NULL;
   }
 
-  wchar_t* wpath =
-      (wchar_t*)malloc((size_t)wlen * sizeof(wchar_t) + sizeof(wchar_t));
+  wchar_t* wpath = (wchar_t*)pristriy_mavky_malloc(
+      (size_t)wlen * sizeof(wchar_t) + sizeof(wchar_t));
   if (!wpath) {
     *err_out = -1;
     return NULL;
@@ -518,14 +518,14 @@ void* pristriy_mavky_dlopen(char* path_data, size_t path_size, int* err_out) {
   int written =
       MultiByteToWideChar(CP_UTF8, 0, path_data, (int)len, wpath, wlen);
   if (written <= 0) {
-    free(wpath);
+    pristriy_mavky_free(wpath);
     *err_out = -1;
     return NULL;
   }
   wpath[written] = L'\0';
 
   HMODULE dl = LoadLibraryW(wpath);
-  free(wpath);
+  pristriy_mavky_free(wpath);
 
   if (!dl) {
     *err_out = -1;
@@ -557,7 +557,7 @@ void* pristriy_mavky_dlsym(void* dl,
     /* Already NUL-terminated. */
     dls = GetProcAddress((HMODULE)dl, name_data);
   } else {
-    char* tmp = (char*)malloc(len + 1);
+    char* tmp = (char*)pristriy_mavky_malloc(len + 1);
     if (!tmp) {
       *err_out = -1;
       return NULL;
@@ -565,7 +565,7 @@ void* pristriy_mavky_dlsym(void* dl,
     memcpy(tmp, name_data, len);
     tmp[len] = '\0';
     dls = GetProcAddress((HMODULE)dl, tmp);
-    free(tmp);
+    pristriy_mavky_free(tmp);
   }
 
   if (!dls) {
