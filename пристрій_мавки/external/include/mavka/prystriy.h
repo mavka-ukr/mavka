@@ -36,7 +36,7 @@ double pristriy_mavky_double_acos(double value);
 double pristriy_mavky_double_atan(double value);
 double pristriy_mavky_double_abs(double value);
 double pristriy_mavky_double_exp(double value);
-double pristriy_mavky_double_sqrt2(double value);
+double pristriy_mavky_double_sqrt(double value);
 double pristriy_mavky_double_ceil(double value);
 double pristriy_mavky_double_floor(double value);
 double pristriy_mavky_double_round(double value);

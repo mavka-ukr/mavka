@@ -117,7 +117,7 @@ void пристрій_мавки_вивести_кд(природне колір
 }
 
 р64 пристрій_мавки_мат_кор2(р64 значення) {
-  return (double)pristriy_mavky_double_sqrt2((double)значення);
+  return (double)pristriy_mavky_double_sqrt((double)значення);
 }
 
 р64 пристрій_мавки_мат_стеля(р64 значення) {

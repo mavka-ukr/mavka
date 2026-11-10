@@ -76,7 +76,7 @@ double pristriy_mavky_double_abs(double value) {
 double pristriy_mavky_double_exp(double value) {
   return exp(value);
 }
-double pristriy_mavky_double_sqrt2(double value) {
+double pristriy_mavky_double_sqrt(double value) {
   return sqrt(value);
 }
 double pristriy_mavky_double_ceil(double value) {
