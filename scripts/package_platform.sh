@@ -67,7 +67,6 @@ prepare_platform_dir() {
   # mkdir -p "$PLATFORMDIR/визначення"
   # cp -a "машина/визначення" "$PLATFORMDIR"
   cp ДОЗВІЛ "$PLATFORMDIR/ДОЗВІЛ"
-  cp LICENSE "$PLATFORMDIR/LICENSE"
 }
 
 create_platform_tarball() {
