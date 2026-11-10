@@ -510,6 +510,10 @@ static void read_input_async_callback(char* data,
   return dls;
 }
 
+ціле пристрій_мавки_закрити_динамічну_бібліотеку(адреса дб) {
+  return (ціле)pristriy_mavky_dlclose((void*)дб);
+}
+
 void пристрій_мавки_вийти(ціле код_виходу) {
   pristriy_mavky_exit((int)код_виходу);
 }
