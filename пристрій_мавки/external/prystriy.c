@@ -6,7 +6,7 @@ static char* MAVKA_VERSION_STATIC = MAVKA_VERSION;
 bool pristriy_mavky_get_version(char** data_out, size_t* size_out) {
   *data_out = MAVKA_VERSION_STATIC;
 
-  while (*data_out[*size_out] != '\0') {
+  while ((*data_out)[*size_out] != '\0') {
     *size_out = (*size_out) + 1;
   }
 
