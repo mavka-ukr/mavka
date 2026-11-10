@@ -7,7 +7,7 @@
 Треба:
 
 - GNU/Linux
-- [Ціль](https://ціль.мавка.укр) _0.85.0_
+- [Ціль](https://ціль.мавка.укр) _0.86.0_
 - Clang
 - [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) (для компіляції для Windows)
 - [osxcross](https://github.com/tpoechtrager/osxcross) (для компіляції для MacOS, треба [MacOSX 14.0 SDK](https://github.com/roblabla/MacOSX-SDKs/releases/tag/macosx14.0))
