@@ -1,6 +1,18 @@
 #include "./include/mavka/prystriy.h"
 #include "./include/mavka/tsil.h"
 
+static char* MAVKA_VERSION_STATIC = MAVKA_VERSION;
+
+bool pristriy_mavky_get_version(char** data_out, size_t* size_out) {
+  *data_out = MAVKA_VERSION_STATIC;
+
+  while (*data_out[*size_out] != '\0') {
+    *size_out = (*size_out) + 1;
+  }
+
+  return 1;
+}
+
 логічне пристрій_мавки_перекодувати_ю8_в_кд(природне розмір,
                                             п8* дані,
                                             природне* вихід_розміру,
@@ -15,11 +27,12 @@
 
 логічне пристрій_мавки_отримати_версію(п8** вихід_даних,
                                        природне* вихід_розміру) {
-  п8* дані_версії_ю8 = (п8*)MAVKA_VERSION;
-  природне довжина_версії_ю8 = 0;
+  п8* дані_версії_ю8;
+  природне довжина_версії_ю8;
 
-  while (дані_версії_ю8[довжина_версії_ю8] != '\0') {
-    довжина_версії_ю8++;
+  if (!pristriy_mavky_get_version((char**)&дані_версії_ю8,
+                                  (size_t*)&довжина_версії_ю8)) {
+    return ні;
   }
 
   if (!пристрій_мавки_перекодувати_ю8_в_кд(довжина_версії_ю8, дані_версії_ю8,
