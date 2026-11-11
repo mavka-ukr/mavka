@@ -7,7 +7,11 @@ TSIL_CMD="${4:-ціль}"
 CLANG="$5"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-LIST_FILE="$ROOT_DIR/БУДЦ"
+
+LIST_FILES=(
+  "$ROOT_DIR/машина/ФайлиЦілі"
+  "$ROOT_DIR/пристрій_мавки/ФайлиЦілі"
+)
 
 BUILD_VERSION=$(cat "$ROOT_DIR/ВЕРСІЯ" | xargs)
 
@@ -76,16 +80,22 @@ esac
 
 SEMIREADY_DIR="$ROOT_DIR/будування/$BUILD_VERSION/$TSIL_PLATFORM_FOLDER/$TSIL_MODE/напівготове/сіанг"
 
-if [ ! -f "$LIST_FILE" ]; then
-  echo "Помилка: Файл конфігурації '$LIST_FILE' не знайдено." >&2
-  exit 1
-fi
+# Перевіряємо, що кожен файл зі списку існує
+for f in "${LIST_FILES[@]}"; do
+  if [ ! -f "$f" ]; then
+    echo "Помилка: Файл конфігурації '$f' не знайдено." >&2
+    exit 1
+  fi
+done
 
+# Читаємо рядки з усіх файлів одразу (concatenate).
+# Process substitution < <(...) замість pipe, щоб змінні (зокрема OFILES)
+# зберігалися після завершення циклу в поточній оболонці.
 while IFS= read -r line || [ -n "$line" ]; do
   line=$(echo "$line" | xargs)
   [[ -z "$line" || "$line" =~ ^# ]] && continue
   mkdir -p "$SEMIREADY_DIR/$(dirname "$line")"
-done < "$LIST_FILE"
+done < <(cat "${LIST_FILES[@]}")
 
 OFILES=""
 while IFS= read -r line || [ -n "$line" ]; do
@@ -100,6 +110,6 @@ while IFS= read -r line || [ -n "$line" ]; do
 
   $CLANG -c -o "$SEMIREADY_DIR/$line.o" "$SEMIREADY_DIR/$line.c"
   OFILES+=" $SEMIREADY_DIR/$line.o"
-done < "$LIST_FILE"
+done < <(cat "${LIST_FILES[@]}")
 
 echo "$OFILES"
