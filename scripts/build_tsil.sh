@@ -8,6 +8,11 @@ CLANG="$5"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+# Додайте сюди будь-яку кількість файлів.
+# Кожен рядок із файлу буде автоматично отримувати префікс —
+# шлях до директорії цього файлу відносно поточної директорії (pwd).
+# Наприклад, для /root/hello/БУДЦ при запуску з /root
+# рядок "а.ц" стане "./hello/а.ц"
 LIST_FILES=(
   "$ROOT_DIR/машина/ФайлиЦілі"
   "$ROOT_DIR/пристрій_мавки/ФайлиЦілі"
@@ -88,20 +93,35 @@ for f in "${LIST_FILES[@]}"; do
   fi
 done
 
-# Читаємо рядки з усіх файлів одразу (concatenate).
-# Process substitution < <(...) замість pipe, щоб змінні (зокрема OFILES)
-# зберігалися після завершення циклу в поточній оболонці.
+# Для кожного файлу виводить його рядки з префіксом ./<директорія-файлу-відносно-pwd>/
+# Порожні рядки та рядки, що починаються з #, пропускаються.
+prefixed_lines() {
+  local file="$1"
+  local rel_dir prefix
+  rel_dir="$(realpath --relative-to="$(pwd)" "$(dirname "$file")")"
+  if [ "$rel_dir" = "." ]; then
+    prefix="."
+  else
+    prefix="./$rel_dir"
+  fi
+  while IFS= read -r line || [ -n "$line" ]; do
+    line=$(echo "$line" | xargs)
+    [[ -z "$line" || "$line" =~ ^# ]] && continue
+    echo "$prefix/$line"
+  done < "$file"
+}
+
+# Проходимо по всіх файлах списку, кожен рядок уже з префіксом.
 while IFS= read -r line || [ -n "$line" ]; do
-  line=$(echo "$line" | xargs)
-  [[ -z "$line" || "$line" =~ ^# ]] && continue
   mkdir -p "$SEMIREADY_DIR/$(dirname "$line")"
-done < <(cat "${LIST_FILES[@]}")
+done < <(
+  for f in "${LIST_FILES[@]}"; do
+    prefixed_lines "$f"
+  done
+)
 
 OFILES=""
 while IFS= read -r line || [ -n "$line" ]; do
-  line=$(echo "$line" | xargs)
-  [[ -z "$line" || "$line" =~ ^# ]] && continue
-
   echo "переклад $line" >&2
   $TSIL_CMD \
     "$(realpath --relative-to="$(pwd)" "$SEMIREADY_DIR/$line.c")" -Ф=сіанг -П="$TSIL_PLATFORM" \
@@ -110,6 +130,10 @@ while IFS= read -r line || [ -n "$line" ]; do
 
   $CLANG -c -o "$SEMIREADY_DIR/$line.o" "$SEMIREADY_DIR/$line.c"
   OFILES+=" $SEMIREADY_DIR/$line.o"
-done < <(cat "${LIST_FILES[@]}")
+done < <(
+  for f in "${LIST_FILES[@]}"; do
+    prefixed_lines "$f"
+  done
+)
 
 echo "$OFILES"
