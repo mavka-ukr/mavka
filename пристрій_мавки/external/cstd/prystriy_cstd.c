@@ -424,6 +424,7 @@ void pristriy_mavky_exit(int code) {
 // ----------------------------
 
 static void print_color(PristriyMavkyWriteToStdoutColor color) {
+#ifndef MAVKA_NO_COLORS
   if (color == PristriyMavkyColorReset) {
     printf("\033[0m");
   }
@@ -443,6 +444,7 @@ static void print_color(PristriyMavkyWriteToStdoutColor color) {
   if (color == PristriyMavkyColorYellow) {
     printf("\033[0;33m");
   }
+#endif
 }
 
 #ifdef PROGRAM_USE_READLINE
