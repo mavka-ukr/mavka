@@ -490,7 +490,9 @@ bool pristriy_mavky_read_input_async(
   return TRUE;
 }
 
-void* pristriy_mavky_dlopen(char* path_data, size_t path_size, int* err_out) {
+void* pristriy_mavky_dlopen(char* path_data,
+                            size_t path_size,
+                            ssize_t* err_out) {
   *err_out = 0;
 
   if (!path_data || path_size == 0) {
@@ -538,7 +540,7 @@ void* pristriy_mavky_dlopen(char* path_data, size_t path_size, int* err_out) {
 void* pristriy_mavky_dlsym(void* dl,
                            char* name_data,
                            size_t name_size,
-                           int* err_out) {
+                           ssize_t* err_out) {
   *err_out = 0;
 
   if (!dl || !name_data || name_size == 0) {
@@ -576,12 +578,12 @@ void* pristriy_mavky_dlsym(void* dl,
   return (void*)dls;
 }
 
-int pristriy_mavky_dlclose(void* dl) {
+ssize_t pristriy_mavky_dlclose(void* dl) {
   BOOL result = FreeLibrary((HMODULE)dl);
   return result ? 0 : -1;
 }
 
-void pristriy_mavky_exit(int code) {
+void pristriy_mavky_exit(ssize_t code) {
   ExitProcess((UINT)code);
 }
 

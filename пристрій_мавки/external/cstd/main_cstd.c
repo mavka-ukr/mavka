@@ -14,9 +14,13 @@ int main(int argc, char** argv) {
     аргументи[i].дані = (п8*)argv[i];
   }
 
-  ціле r = почати_мавку_ю8_ю8(argc, аргументи);
+  int r = (int)почати_мавку_ю8_ю8(argc, аргументи);
 
+  if (r != 0) {
+    goto exit;
+  }
+
+exit:
   pristriy_mavky_free(аргументи);
-
   return r;
 }

@@ -57,8 +57,13 @@ int main(void) {
     аргументи[i].дані = allocated_buffers[i];
   }
 
-  int r = почати_мавку_ю8_ю8(argc, аргументи);
+  int r = (int)почати_мавку_ю8_ю8(argc, аргументи);
 
+  if (r != 0) {
+    goto exit;
+  }
+
+exit:
   for (int i = 0; i < argc; i++) {
     if (allocated_buffers[i]) {
       HeapFree(купа, 0, allocated_buffers[i]);
@@ -67,6 +72,5 @@ int main(void) {
   HeapFree(купа, 0, allocated_buffers);
   HeapFree(купа, 0, аргументи);
   LocalFree(argv);
-
   return r;
 }
