@@ -16,6 +16,7 @@ if [ "$SYSTEM" = "linux" ]; then
   clang -shared -fPIC -o ./будування/р/р.so ./будування/р/р.ц.linux.c
   bash scripts/build.sh debug linux-x86_64
   "./будування/$BUILD_VERSION/лінукс-ікс86_64/відлагодження/готове/мавка" -Б=./будування/р/р.so тест.м
+  cp -a ./будування/$BUILD_VERSION/лінукс-ікс86_64/відлагодження/готове/мавка /home/kohutd/Projects/Mavka/mavka-bib/мавкасо
 fi
 
 if [ "$SYSTEM" = "macos" ]; then
